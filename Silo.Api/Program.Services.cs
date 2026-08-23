@@ -114,6 +114,24 @@ public static partial class Program
             client.DefaultRequestHeaders.Add("X-Api-Key", configuration["AiApi:ApiKey"] ?? string.Empty);
         });
 
+        services.AddOptions<RagAiOptions>()
+            .Bind(configuration.GetSection(RagAiOptions.SectionName));
+
+        var siloAiOptions = configuration.GetSection(RagAiOptions.SectionName).Get<RagAiOptions>() ?? new RagAiOptions();
+
+        services.AddHttpClient(SiloAiClient.HttpClientName, client =>
+        {
+            client.BaseAddress = new Uri(siloAiOptions.BaseUrl.HasValue() ? siloAiOptions.BaseUrl : "http://localhost:5100/");
+            client.Timeout = TimeSpan.FromSeconds(30);
+
+            if (siloAiOptions.ApiKey.HasValue())
+            {
+                client.DefaultRequestHeaders.Add("X-Api-Key", siloAiOptions.ApiKey);
+            }
+        });
+
+        services.AddScoped<ISiloAiClient, SiloAiClient>();
+
         return services;
     }
 }

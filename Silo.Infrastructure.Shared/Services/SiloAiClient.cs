@@ -50,7 +50,7 @@ public class SiloAiClient : ISiloAiClient
         }
     }
 
-    public async Task<RagChatResponse?> SendAsync(Guid? conversationId, string message, CancellationToken cancellationToken)
+    public async Task<RagChatResponse?> SendAsync(Guid? conversationId, string message, CancellationToken cancellationToken, RagDocType? docType = null)
     {
         var request = new RagChatRequest
         {
@@ -58,7 +58,7 @@ public class SiloAiClient : ISiloAiClient
             Message = message,
             TopK = _options.TopK,
             IsMainChat = true,
-            DocType = _options.DocType,
+            DocType = docType ?? _options.DocType,
             Key = _options.Key
         };
 

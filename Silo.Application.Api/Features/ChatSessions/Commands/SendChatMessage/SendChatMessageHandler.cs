@@ -1,73 +1,67 @@
 ﻿using Microsoft.Extensions.Logging;
-using Silo.Application.Api.Contracts;
-using Silo.Application.Contracts;
-using Silo.Shared.Tools;
 
 namespace Silo.Application.Api.Features;
 
 public class SendChatMessageHandler(
     WmsApiContext context,
-    IAiApiClient aiApiClient,
-    IDataAccess dataAccess,
+    ISiloAiClient siloAiClient,
     ILogger<SendChatMessageHandler> logger)
     : IRequestHandler<SendChatMessageCommand, SendChatMessageVm>
 {
+    private const string FallbackErrorMessage = "متأسفانه در حال حاضر امکان پاسخگویی وجود ندارد. لطفاً کمی بعد دوباره تلاش کنید.";
+
     public async Task<SendChatMessageVm> Handle(SendChatMessageCommand request, CancellationToken cancellationToken)
     {
         Silo.Domains.Entities.ChatSessions? existingSession = null;
-        string? sessionJson = null;
+        var state = new ChatSessionStateDto();
 
         if (request.SessionId != 0)
         {
             existingSession = await context.ChatSessions
                 .FirstOrDefaultAsync(s => s.SessionId == request.SessionId && s.UserId == request.UserId, cancellationToken);
 
-            sessionJson = existingSession?.SessionData;
+            if (existingSession?.SessionData.HasValue() == true)
+            {
+                try
+                {
+                    state = JsonSerializer.Deserialize<ChatSessionStateDto>(existingSession.SessionData) ?? state;
+                }
+                catch (JsonException)
+                {
+                    state = new ChatSessionStateDto();
+                }
+            }
         }
 
-        var result = await aiApiClient.SendMessageAsync(
-           sessionJson,
-           request.Message,
-           "کاربر",
-          request.PromptKeys,
-         cancellationToken);
+        var result = await siloAiClient.SendAsync(state.ConversationId, request.Message, cancellationToken, request.Mode);
 
-        var responseText = result.ResponseText;
-        var updatedJson = result.UpdatedSessionJson;
-        var tokenUsage = result.TokenUsage;
-        var priceUsage = result.PriceUsage;
-
-        // Strip SQL blocks from the AI response and collect the SQL commands.
-        // updatedJson (saved to DB) keeps the raw response for session restoration;
-        // the cleaned text is returned to the UI.
-        var sqlCommands = new List<string>();
-        var cleanResponseText = SqlTextTools.StripSqlBlocks(responseText, sqlCommands);
-
-        // Execute the first extracted SQL command and return results to the UI.
-        var sqlResults = new List<List<object>>();
-        if (sqlCommands.Count > 0)
+        if (result is null)
         {
-            try
+            logger.LogWarning("Silo AI request failed for user {UserId}, sessionId {SessionId}", request.UserId, request.SessionId);
+
+            return new SendChatMessageVm
             {
-                var data = DataTableTools.DataTableToObjects(dataAccess.SqlDataAdapter(sqlCommands[0]));
-                sqlResults.Add(data);
-            }
-            catch (Exception ex)
-            {
-                logger.LogWarning(ex, "Failed to execute SQL command from AI response for user {UserId}", request.UserId);
-            }
+                ResponseText = FallbackErrorMessage,
+                SessionId = request.SessionId
+            };
         }
+
+        state.ConversationId = result.ConversationId;
+
+        state.Messages.Add(new ChatMessageDto { Text = request.Message, IsUser = true, Datetime = DateTime.Now });
+        state.Messages.Add(new ChatMessageDto { Text = result.ResponseText ?? string.Empty, IsUser = false, Datetime = DateTime.Now });
+
+        var updatedJson = JsonSerializer.Serialize(state);
 
         int sessionId = request.SessionId;
 
-        if (sessionId == 0)
+        if (existingSession is null)
         {
             var chatSession = new Silo.Domains.Entities.ChatSessions
             {
                 UserId = request.UserId,
                 SessionData = updatedJson,
-                TokenUsage = JsonSerializer.Serialize(tokenUsage ?? new ChatTokenUsageDto()),
-                PriceUsage = priceUsage,
+                TokenUsage = JsonSerializer.Serialize(result.TokenUsage ?? new ChatTokenUsageDto()),
                 Mode = (int)request.Mode,
                 CreatedDate = DateTime.Now,
                 LastUpdated = DateTime.Now
@@ -79,11 +73,11 @@ public class SendChatMessageHandler(
 
             sessionId = chatSession.SessionId;
         }
-        else if (existingSession is not null)
+        else
         {
             existingSession.SessionData = updatedJson;
 
-            if (tokenUsage is not null)
+            if (result.TokenUsage is not null)
             {
                 ChatTokenUsageDto usage;
 
@@ -93,28 +87,26 @@ public class SendChatMessageHandler(
                 }
                 else
                 {
-                    usage = JsonSerializer.Deserialize<ChatTokenUsageDto>(existingSession.TokenUsage)  ?? new ChatTokenUsageDto();
+                    usage = JsonSerializer.Deserialize<ChatTokenUsageDto>(existingSession.TokenUsage) ?? new ChatTokenUsageDto();
                 }
 
-                usage.InputTokenCount += tokenUsage.InputTokenCount;
-                usage.OutputTokenCount += tokenUsage.OutputTokenCount;
-                usage.CachedInputTokenCount += tokenUsage.CachedInputTokenCount;
-                usage.TotalTokenCount += tokenUsage.TotalTokenCount;
+                usage.InputTokenCount += result.TokenUsage.InputTokenCount;
+                usage.OutputTokenCount += result.TokenUsage.OutputTokenCount;
+                usage.CachedInputTokenCount += result.TokenUsage.CachedInputTokenCount;
+                usage.TotalTokenCount += result.TokenUsage.TotalTokenCount;
 
                 existingSession.TokenUsage = JsonSerializer.Serialize(usage);
             }
 
-            existingSession.PriceUsage += priceUsage;
-
             existingSession.LastUpdated = DateTime.Now;
+
             await context.SaveChangesAsync(cancellationToken);
         }
 
         return new SendChatMessageVm
         {
-            ResponseText = cleanResponseText,
-            SessionId = sessionId,
-            SqlCommandsResults = sqlResults
+            ResponseText = result.ResponseText ?? string.Empty,
+            SessionId = sessionId
         };
     }
 }

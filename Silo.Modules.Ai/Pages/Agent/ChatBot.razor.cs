@@ -9,7 +9,7 @@ namespace Silo.Modules.Ai.Pages.Agent;
 
 public partial class ChatBot : SiloBasePage
 {
-    private List<CopilotMessageRequest> chatMessages = new();
+    private List<ChatMessageDto> chatMessages = new();
     private string currentMessage = string.Empty;
     private bool IsLoading = true;
     private bool IsSending = false;
@@ -18,11 +18,10 @@ public partial class ChatBot : SiloBasePage
     private ElementReference chatMessagesElement;
     private readonly Markdig.MarkdownPipeline markdownPipeline;
     private bool ShowModeSelectionDialog = false;
-    private Application.Features.RagDocType selectedMode = Application.Features.RagDocType.Agent;
+    private RagDocType selectedMode = RagDocType.PageAgent;
     private bool isSidebarExpanded = false;
-    private List<ChatHistory> chatHistories = new();
+    private List<ChatHistoryDto> chatHistories = new();
     private int currentChatId = 0;
-    private List<string> currentPromptKeys = new();
 
     [Inject] public IJSRuntime JSRuntime { get; set; }
     [Inject] public RfidConnectApi Api { get; set; }
@@ -30,7 +29,7 @@ public partial class ChatBot : SiloBasePage
     [Inject] public ILogger<ChatBot> Logger { get; set; }
     [Inject] public IExcelExport ExcelExporter { get; set; }
 
-    [Parameter] public Application.Features.RagDocType? Mode { get; set; }
+    [Parameter] public RagDocType? Mode { get; set; }
 
     [CascadingParameter] public DialogFactory Dialog { get; set; }
 
@@ -62,7 +61,7 @@ public partial class ChatBot : SiloBasePage
 
     private async Task<bool> LoadUserChatHistoriesFromDb()
     {
-        chatHistories = new List<ChatHistory>();
+        chatHistories = new List<ChatHistoryDto>();
 
         UserId = (await AuthState.GetAuthenticationStateAsync()).User.GetUserId();
 
@@ -82,31 +81,17 @@ public partial class ChatBot : SiloBasePage
     }
 
 
-    private async Task InitializeChatWithMode(Application.Features.RagDocType mode)
+    private async Task InitializeChatWithMode(RagDocType mode)
     {
         Mode = mode;
 
         ShowModeSelectionDialog = false;
 
-        List<string> keys = mode switch
-        {
-            Application.Features.RagDocType.Report => new List<string> { "report", "report-query" },
-            //ChatPageMode.Help => new List<string> { "help", "support", "troubleshooting" },
-            Application.Features.RagDocType.Agent => new()
-            {
-                "agent-general","add-product","report-builder","exit-report-builder","product-report-builder","truckcross","location",
-                "inventory-conflict","reports-truckcross"
-            },
-            _ => new()
-        };
-
-        currentPromptKeys = keys;
-
         await LoadUserChatHistoriesFromDb();
 
         currentChatId = 0;
 
-        chatMessages = new List<CopilotMessageRequest>
+        chatMessages = new List<ChatMessageDto>
         {
             new()
             {
@@ -116,11 +101,11 @@ public partial class ChatBot : SiloBasePage
             }
         };
 
-        chatHistories.Insert(0, new ChatHistory
+        chatHistories.Insert(0, new ChatHistoryDto
         {
             Id = 0,
             Title = "گفتگوی جدید",
-            Messages = new List<CopilotMessageRequest>(chatMessages),
+            Messages = new List<ChatMessageDto>(chatMessages),
             CreatedDate = DateTime.Now,
             LastUpdated = DateTime.Now
         });
@@ -137,23 +122,24 @@ public partial class ChatBot : SiloBasePage
         await InitializeChatWithMode(selectedMode);
     }
 
-    private string GetModeFriendlyName(Application.Features.RagDocType mode)
+    private string GetModeFriendlyName(RagDocType mode)
     {
         return mode switch
         {
-            Application.Features.RagDocType.Report => "گزارش‌گیری",
-            Application.Features.RagDocType.Agent => "دستیار هوشمند",
+            RagDocType.Report => "گزارش‌گیری",
+            RagDocType.PageAgent => "دستیار هوشمند",
+            RagDocType.GeneralChat => "گفتگوی عمومی",
+            RagDocType.Image => "تصویر",
             _ => mode.ToString()
         };
     }
 
-    private string GetModeIcon(Application.Features.RagDocType mode)
+    private string GetModeIcon(RagDocType mode)
     {
         return mode switch
         {
-            Application.Features.RagDocType.Report => MaterialIconsHelper.InsertChart2,
-            //ChatPageMode.Help => MaterialIconsHelper.Help,
-            Application.Features.RagDocType.Agent => MaterialIconsHelper.SmartToy,
+            RagDocType.Report => MaterialIconsHelper.InsertChart2,
+            RagDocType.PageAgent => MaterialIconsHelper.SmartToy,
             _ => MaterialIconsHelper.Info
         };
     }
@@ -164,7 +150,7 @@ public partial class ChatBot : SiloBasePage
         StateHasChanged();
     }
 
-    private void LoadChatHistory(ChatHistory history)
+    private void LoadChatHistory(ChatHistoryDto history)
     {
         currentChatId = history.Id;
 
@@ -188,8 +174,7 @@ public partial class ChatBot : SiloBasePage
             new NewChatSessionCommand
             {
                 UserId = UserId,
-                Mode = Mode.Value,
-                PromptKeys = currentPromptKeys
+                Mode = Mode.Value
             }
         );
 
@@ -198,7 +183,7 @@ public partial class ChatBot : SiloBasePage
             currentChatId = result.Value.SessionId;
         }
 
-        chatMessages = new List<CopilotMessageRequest>
+        chatMessages = new List<ChatMessageDto>
         {
             new()
             {
@@ -208,11 +193,11 @@ public partial class ChatBot : SiloBasePage
             }
         };
 
-        chatHistories.Insert(0, new ChatHistory
+        chatHistories.Insert(0, new ChatHistoryDto
         {
             Id = 0,
             Title = "گفتگوی جدید",
-            Messages = new List<CopilotMessageRequest>(chatMessages),
+            Messages = new List<ChatMessageDto>(chatMessages),
             CreatedDate = DateTime.Now,
             LastUpdated = DateTime.Now
         });
@@ -317,12 +302,11 @@ public partial class ChatBot : SiloBasePage
                     UserId = UserId,
                     SessionId = currentChatId,
                     Message = userMessage,
-                    Mode = Mode.Value,
-                    PromptKeys = currentPromptKeys
+                    Mode = Mode.Value
                 }
             );
 
-            CopilotMessageRequest response = new()
+            ChatMessageDto response = new()
             {
                 Text = sendResult?.Value?.ResponseText ?? string.Empty,
                 IsUser = false,
@@ -332,11 +316,6 @@ public partial class ChatBot : SiloBasePage
             if (currentChatId == 0 && sendResult?.Value?.SessionId > 0)
             {
                 currentChatId = sendResult.Value.SessionId;
-            }
-
-            if (sendResult?.Value?.SqlCommandsResults is { Count: > 0 })
-            {
-                response.SqlCommandsResults = sendResult.Value.SqlCommandsResults;
             }
 
             chatMessages.Add(response);
@@ -411,7 +390,7 @@ public partial class ChatBot : SiloBasePage
         }
     }
 
-    private async Task DeleteHistory(ChatHistory history)
+    private async Task DeleteHistory(ChatHistoryDto history)
     {
         var resultDialog = await Dialog.ConfirmAsync(
             TextResources.APP_StringKeys_Message_Delete,

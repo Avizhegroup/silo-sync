@@ -3,7 +3,6 @@
 @namespace Silo.Modules.Ai.Pages.Agent
 @using Silo.Application.Features
 @using Microsoft.AspNetCore.Components
-@using Silo.Shared.Components.Ai;
 @inherits SiloBasePage
 
 <PageTitle>@PageTitle</PageTitle>
@@ -66,9 +65,6 @@
                                         else
                                         {
                                             @((MarkupString)ConvertMarkdownToHtml(message.Text))
-
-                                            <AiResultGrid Data="@message.SqlCommandsResults" />
-                                                   
                                         }
                                        
                                     </div>

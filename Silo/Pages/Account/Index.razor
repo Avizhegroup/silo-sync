@@ -1,0 +1,61 @@
+@page "/account/index"
+@inherits SiloBasePage
+@namespace Silo.Pages.Account
+@using Silo.Application.Features;
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+        <div class="form-search-span" style="margin-top:-10px !important;">
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:5px!important;margin-top:15px;">
+                <label style="margin-right: 18px;">@TextResources.APP_StringKeys_Search:</label>
+                <TelerikTextBox @bind-Value="SearchText" Class="form-control input-search-span-lg pointer"></TelerikTextBox>
+                <button type="button"
+                        class="btn btn-primary"
+                        style="margin-right:5px;"
+                        @onclick="OnSearchClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                </button>
+                <NavButton Class="btn btn-success" Link="/account/add" Style="margin-right:5px;">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Add"></MaterialIcon>
+                </NavButton>
+            </div>
+        </div>
+    </div>
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+        <br />
+        <div class="col-md-12 text-align-center">
+            <TelerikGrid Data="ShownUsers"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="user">
+                    <td class="td-style td-dt">@user.Name</td>
+                    <td class="td-style td-dt">@user.Username</td>
+                    <td class="td-style td-dt">
+                        <NavButton Class="btn btn-primary tr-buttom" Link="@($"/account/edit/{user.Username}")">
+                            <img src="/images/Utilities/edit.png" width="15" height="15" />
+                        </NavButton>
+                        <NavButton Class="btn btn-warning tr-buttom" Link="@($"/account/access/{user.Username}")">
+                            <img src="/images/Utilities/unlock.png" width="15" height="15" />
+                        </NavButton>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllUsersVm.Name)"
+                                Title="@TextResources.APP_StringKeys_Name"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllUsersVm.Username)"
+                                Title="@TextResources.APP_StringKeys_Field_Username"></GridColumn>
+                    <GridColumn Width="80px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </div>
+</div>
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

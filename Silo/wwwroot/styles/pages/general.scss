@@ -1,0 +1,560 @@
+﻿// ─────────────────────────────────────────────────────────────────
+// general.scss — global page styles
+// All colours reference tokens from abstracts/colors.scss
+// ─────────────────────────────────────────────────────────────────
+
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+a {
+    color: $text-link;
+}
+
+article.content.login-page-article {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: $action-accent-text;
+    background-color: $action-accent-bg;
+    border-color: $color-blue-navy;
+}
+
+html {
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+body {
+    background: $surface-page;
+    margin-bottom: 60px;
+}
+
+.border-top {
+    border-top: 1px solid $border-color;
+}
+
+.border-bottom {
+    border-bottom: 1px solid $border-color;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px;
+}
+
+// ─── Legacy nav bottom border (kept for non-silo nav contexts) ───
+nav {
+    border-bottom: solid 1px $border-color;
+}
+
+// ─── Text & direction utilities ──────────────────────────────────
+.text-align-right   { text-align: right !important; }
+.text-align-center  { text-align: center !important; }
+.text-align-left    { text-align: left !important; }
+.text-dir-right     { direction: rtl !important; }
+.text-dir-left      { direction: ltr !important; }
+.content-align-center { align-items: center !important; }
+
+// ─── Layout helpers ──────────────────────────────────────────────
+.row {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.card {
+    margin-right: 8px;
+    margin-left: 12px;
+    border-radius: 8px;
+}
+
+.card-full {
+    margin-right: 17px;
+}
+
+.card-stats {
+    margin-right: 4px;
+    margin-left: 4px;
+}
+
+// ─── Buttons ─────────────────────────────────────────────────────
+button {
+    cursor: pointer;
+}
+
+.btn-primary {
+    color: $action-primary-text;
+    background-color: $action-primary-bg;
+    border-color: $action-primary-bg;
+}
+
+.btn-light {
+    background-color: $color-grey-500 !important;
+    border-color: $color-grey-500 !important;
+}
+
+.btn-truck {
+    background-color: $action-accent-bg;
+    border-radius: 25px;
+    height: 65px;
+    width: 81px;
+}
+
+.btn-TagHistoryModal {
+    margin-right: 8px !important;
+    border: 1px solid;
+    width: 180px;
+    height: 48px;
+    background-color: $action-primary-bg;
+    border-radius: 10px;
+    margin-top: 5px;
+    padding-left: 25px;
+    color: $text-on-dark;
+}
+
+.TagHistoryModalSummary {
+    margin-right: -34px !important;
+    width: 30px;
+    height: 30px;
+    background-color: $color-yellow;
+    padding-top: 2px;
+    border-radius: 5px;
+    margin-top: 5px;
+    color: $color-black;
+}
+
+// ─── Form / search inputs ─────────────────────────────────────────
+.form-search-span {
+    font-size: 11px;
+}
+
+.input-search-span {
+    font-size: 11px;
+    margin: 3px;
+    width: 85px !important;
+}
+
+.input-search-span-lg {
+    font-size: 11px;
+    margin: 3px;
+    width: 200px !important;
+}
+
+.input-search-span-slg {
+    font-size: 11px;
+    margin: 3px;
+    width: 300px !important;
+}
+
+.input-search-span-xxslg {
+    font-size: 11px;
+    margin: 3px;
+    width: 500px !important;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+form {
+    width: 100%;
+}
+
+// ─── Typography ───────────────────────────────────────────────────
+td, th {
+    font-family: IRANSans !important;
+    font-size: 12px;
+}
+
+.k-grid-excel,
+.k-link,
+.k-label,
+.k-window-titlebar,
+.k-in,
+.k-item,
+.k-dialog-buttongroup .k-button,
+.font-main {
+    font-family: IRANSans !important;
+}
+
+.k-item {
+    font-family: 'IRANSans(FaNum)';
+}
+
+// ─── Misc element helpers ─────────────────────────────────────────
+.button-detail-info {
+    width: 50px;
+    margin-top: 5px;
+    left: 5px;
+}
+
+.export-pdf {
+    width: 50px;
+}
+
+.image-main {
+    background-image: url(../images/Back/main.png);
+    background-repeat: no-repeat;
+    width: auto;
+    height: 452px;
+    background-size: contain;
+}
+
+// ─── Grid / table helpers ─────────────────────────────────────────
+.thead {
+    background-color: $thead-bg !important;
+    color: $thead-text;
+}
+
+.tr-style {
+    background-color: $tbody-row-bg;
+}
+
+.td-style {
+    padding: 5px 0px 5px 0px !important;
+}
+
+.tr-buttom {
+    background-color: $tbody-row-alt-bg;
+    border-color: $tbody-row-alt-bg;
+    padding: 0 5px 0 5px;
+    font-size: 13px;
+    color: $text-primary;
+    margin-right: 5px;
+}
+
+.th-style {
+    padding: 8px 0px 8px 0px !important;
+}
+
+.k-grid .k-grid-header .k-table-th {
+    position: relative;
+    vertical-align: bottom;
+    cursor: default;
+    color: $thead-text;
+    background-color: $cornFlowerBlue;
+}
+
+.k-listview-header {
+    background-color: $action-primary-bg !important;
+    color: $text-on-dark;
+}
+
+.k-listview-content {
+    background-color: $tbody-row-bg;
+}
+
+.k-grid.table-boarder-collapse {
+    .k-grid-container .k-grid-content div div table {
+        border-collapse: collapse !important;
+    }
+}
+
+// ─── Nav helpers (non-silo-navbar contexts) ───────────────────────
+.navbar-left {
+    float: left;
+}
+
+.nav-report-summary-li {
+    background-color: $action-primary-bg !important;
+    color: $text-on-dark !important;
+    font-weight: 500;
+    padding: 9px 2px 9px 2px;
+}
+
+.nav-table-navigate {
+    margin-right: -40px !important;
+    margin-top: -11px !important;
+}
+
+.nav-table-navigate-li {
+    background-color: $tbody-row-alt-bg !important;
+    color: $text-primary;
+    border-color: #ffffe0 !important;
+}
+
+.nav-report-summary {
+    margin-top: -48px;
+    text-align: left;
+    margin-right: 644px;
+}
+
+.nav-flesh {
+    cursor: pointer;
+    z-index: 1;
+
+    &:hover {
+        background-color: rgba(0, 120, 212, .1);
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// .silo-navbar — global baseline
+// (Scoped overrides live inside Navbar.razor <style>)
+// ─────────────────────────────────────────────────────────────────
+.silo-navbar {
+    background: $navbar-bg;
+    border-bottom: 1px solid $navbar-border;
+    height: $navbar-height;
+    z-index: 1040;
+}
+
+// Keep legacy .navbar rules limited to non-silo contexts
+// (e.g. TruckLogin page which still uses Bootstrap .navbar)
+.navbar {
+    background-color: $navbar-bg;
+    border: none;
+    z-index: 4;
+}
+
+// ─── Backdrop ────────────────────────────────────────────────────
+.navbar-backdrop {
+    z-index: 1039;
+    background-color: $backdrop-bg;
+    backdrop-filter: blur(2px);
+    position: fixed;
+    inset: 0;
+    overflow: auto;
+}
+
+// ─── Dialogs ─────────────────────────────────────────────────────
+.k-dialog {
+    box-shadow: 2px 2px $color-grey-600;
+}
+
+.k-button {
+    cursor: pointer;
+}
+
+// ─── Status / highlight helpers ───────────────────────────────────
+.green-excel {
+    background-color: $color-green !important;
+    color: $text-on-dark !important;
+}
+
+.orange-pdf {
+    background-color: $color-orange-button !important;
+}
+
+.rfid-conf {
+    background-color: #ff7070 !important;
+}
+
+.acc-conf {
+    background-color: #f79900 !important;
+}
+
+.label-gray {
+    color: $grey;
+}
+
+.border-bottom-black {
+    border-bottom: 1px solid $border-color-strong;
+}
+
+.row-selected {
+    background-color: #ef7272;
+}
+
+.lime {
+    background-color: lime;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.7;
+    background-color: $color-grey-500;
+}
+
+// ─── Layout utilities ─────────────────────────────────────────────
+.expand-sidebar {
+    min-width: 30px;
+
+    div {
+        .btn-expand {
+            padding: 5px;
+            bottom: 0;
+            width: 100%;
+            right: 0;
+            position: absolute;
+        }
+    }
+}
+
+.gallery-context {
+    z-index: 2000 !important;
+}
+
+.div-bar-save {
+    background-color: $action-primary-bg !important;
+
+    button {
+        margin: 5px 0px;
+    }
+}
+
+// ─── Card inner (image card layout) ──────────────────────────────
+.card-inner {
+    flex: unset !important;
+    padding-top: 5px;
+
+    img {
+        width: 100px;
+        height: 100px;
+        position: absolute;
+        margin-top: 20px;
+    }
+
+    .col-md-12 {
+        flex: unset !important;
+        margin-bottom: 5px;
+        margin-right: 100px;
+    }
+}
+
+// ─── Misc component overrides ─────────────────────────────────────
+.k-textbox.form-control {
+    width: unset !important;
+}
+
+.plaque-part {
+    input {
+        width: 70px !important;
+        margin-left: 5px;
+    }
+}
+
+.card.step {
+    flex: 0 0 31%;
+    max-width: 31%;
+}
+
+.modal-lg {
+    min-width: 70%;
+}
+
+.form-title {
+    text-align: left !important;
+    margin-top: 10px !important;
+}
+
+.search-button-div {
+    display: block !important;
+    text-align: left !important;
+    margin-top: -60px !important;
+}
+
+.save-button-div {
+    display: block !important;
+    text-align: left !important;
+}
+
+.search-element {
+    margin-bottom: 0.1rem !important;
+}
+
+.index-jumbo {
+    height: 80vh;
+    background-image: url(../images/Back/main.png);
+    background-repeat: no-repeat;
+    margin-top: 20px;
+    padding-top: 40px;
+    background-position-x: center;
+}
+
+// ─── Telerik component tweaks ────────────────────────────────────
+.k-treeview .k-in {
+    padding: 0.2rem 0.375rem !important;
+}
+
+.telerik-stepper-label {
+    .k-step-link .k-step-label .k-step-text {
+        max-width: none;
+    }
+}
+
+.telerik-stepper-direction-ltr {
+    direction: ltr !important;
+}
+
+// ─── Truck-cross config ───────────────────────────────────────────
+.truck-cross-config {
+    .menu-item {
+        cursor: pointer;
+    }
+
+    .menu-item:hover {
+        color: $text-primary;
+        background-color: #e0a890;
+        border-color: #d39e50;
+    }
+
+    .selected-item {
+        color: $text-primary;
+        background-color: #e0a800;
+        border-color: #d39e00;
+    }
+}
+
+// ─── List item ────────────────────────────────────────────────────
+.list-item {
+    margin: 4px;
+    background-color: $surface-card;
+    cursor: pointer;
+    font-size: 10px;
+
+    &:hover {
+        background-color: #007bff;
+    }
+}
+
+// ─── Print ────────────────────────────────────────────────────────
+@media print {
+    .printable-element {
+        width: 50%;
+        height: auto;
+
+        svg {
+            width: 50% !important;
+            height: auto !important;
+        }
+    }
+}
+
+// ─── Animations ───────────────────────────────────────────────────
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes fadeout {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}

@@ -1,0 +1,280 @@
+﻿@page "/gate/truckcross"
+@page "/gate/truckcross/{Id:int}"
+@inherits SiloBasePage
+@namespace Silo.Modules.TruckCross.Pages
+@using Silo.Identity.Client;
+@using Silo.Shared
+@using Silo.Modules.TruckCross.Components
+@using Silo.Application.Features;
+
+<PageTitle>@TextResources.APP_StringKeys_Gate_TruckCross</PageTitle>
+
+<div class="container-fluid px-3 py-3">
+
+    @* ── Search bar ── *@
+    @if (IsFiltersShown)
+    {
+        <div class="card border-0 shadow-sm mb-3 tc-filter-bar">
+            <div class="card-body">
+                <EditForm Model="Search"
+                          OnInvalidSubmit="OnInvalidSubmit"
+                          OnValidSubmit="OnSearchValidSubmit">
+                    <DataAnnotationsValidator />
+                    <div class="row g-2 align-items-end">
+                        <div class="col-auto">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_Field_Id</span>
+                            <TelerikNumericTextBox Class="form-control input-search-span"
+                                                   @bind-Value="CrossRequest.Id"
+                                                   Width="90px"
+                                                   ReadOnly="true"
+                                                   Arrows="false" />
+                        </div>
+                        <div class="col-auto">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_NationalCode</span>
+                            <TelerikMaskedTextBox Class="form-control input-search-span text-dir-left"
+                                                  Mask="000 000000 0"
+                                                  @bind-Value="Search.NationalCode"
+                                                  Width="160px" />
+                        </div>
+                        <div class="col-auto">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_DriverName</span>
+                            <TelerikTextBox Class="form-control input-search-span"
+                                            @bind-Value="Search.DriverName"
+                                            Width="160px" />
+                        </div>
+                        <div class="col-auto">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_Phone</span>
+                            <TelerikMaskedTextBox Class="form-control input-search-span text-dir-left"
+                                                  Mask="0900 000 0000"
+                                                  @bind-Value="Search.DriverPhone"
+                                                  Width="160px" />
+                        </div>
+                        <div class="col-auto">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_Plaque</span>
+                            <TelerikTextBox Class="form-control input-search-span text-dir-left"
+                                            @bind-Value="Search.Plaque"
+                                            Enabled="false"
+                                            Width="160px" />
+                        </div>
+                        <div class="col-auto d-flex gap-2">
+                            <button type="button" class="btn btn-warning" @onclick="OnSearchClearClick">
+                                <MaterialIcon IconName="refresh" />
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <MaterialIcon IconName="search" />
+                                <span class="ms-1 d-none d-md-inline">@TextResources.APP_StringKeys_Search</span>
+                            </button>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+
+    @* ── Stepper ── *@
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body py-2 px-3">
+            <div class="tc-stepper">
+                <div class="tc-step @(Mode >= TruckCrossItemModes.Present ? "done" : "") @(Mode == TruckCrossItemModes.Present ? "active" : "") pointer"
+                     @onclick="async () => await OnStepperChange(0)">
+                    <span class="tc-step-icon"><MaterialIcon IconName="how_to_reg" /></span>
+                    <span class="tc-step-label">@TextResources.APP_StringKeys_TruckCross_Steps_Present</span>
+                    @if (Mode > TruckCrossItemModes.Present)
+                    {
+                        <span class="tc-step-badge"><MaterialIcon IconName="check" /></span>
+                    }
+                </div>
+                <span class="tc-step-divider"><MaterialIcon IconName="arrow_back_ios_new" /></span>
+                <div class="tc-step @(Mode >= TruckCrossItemModes.Enter ? "done" : "") @(Mode == TruckCrossItemModes.Enter ? "active" : "") pointer"
+                     @onclick="async () => await OnStepperChange(1)">
+                    <span class="tc-step-icon"><MaterialIcon IconName="login" /></span>
+                    <span class="tc-step-label">@TextResources.APP_StringKeys_TruckCross_Steps_Enter</span>
+                    @if (Mode > TruckCrossItemModes.Enter)
+                    {
+                        <span class="tc-step-badge"><MaterialIcon IconName="check" /></span>
+                    }
+                </div>
+                <span class="tc-step-divider"><MaterialIcon IconName="arrow_back_ios_new" /></span>
+                <div class="tc-step @(Mode >= TruckCrossItemModes.Exit ? "done" : "") @(Mode == TruckCrossItemModes.Exit ? "active" : "") pointer"
+                     @onclick="async () => await OnStepperChange(2)">
+                    <span class="tc-step-icon"><MaterialIcon IconName="logout" /></span>
+                    <span class="tc-step-label">@TextResources.APP_StringKeys_TruckCross_Steps_Exit</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Main layout ── *@
+    <div class="row g-3">
+
+        @* Workflow component *@
+        @if (Mode != TruckCrossItemModes.Empty)
+        {
+            <div class="col-md-8">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-3">
+                        <CascadingValue Value="TruckCrossContext">
+                            <CascadingValue Value="Api">
+                                <CascadingValue Value="Gallery">
+                                    <CascadingValue Value="IsLoading">
+                                        <CascadingValue Value="Notification">
+                                            <CascadingValue Value="PageTitle">
+                                                @if (Mode == TruckCrossItemModes.Present)
+                                                {
+                                                    <TruckCrossPresent @ref="TruckCrossPresent"
+                                                                       Causes="Causes"
+                                                                       CrossRequest="CrossRequest"
+                                                                       Customers="Customers"
+                                                                       Shipments="Shipments"
+                                                                       TruckCompanies="TruckCompanies"
+                                                                       TruckTypes="TruckTypes"
+                                                                       OperationDestinations="OperationDestinations"
+                                                                       Username="@Username"
+                                                                       UserId="@UserId"
+                                                                       OnClearClick="OnClearClick"
+                                                                       OnReviewTruckCrossChoosen="OnChooseReviewTruckCross"
+                                                                       OnRevokeSuccess="OnRevokeSuccess" />
+                                                }
+                                                @if (Mode == TruckCrossItemModes.Enter)
+                                                {
+                                                    <TruckCrossEnter @ref="TruckCrossEnter"
+                                                                     CrossRequest="CrossRequest"
+                                                                     TruckCrossProductTypes="TruckCrossProductTypes"
+                                                                     OnClearClick="OnClearClick"
+                                                                     Username="@Username"
+                                                                     UserId="@UserId"
+                                                                     Items="Items" />
+                                                }
+                                                @if (Mode == TruckCrossItemModes.Exit)
+                                                {
+                                                    <TruckCrossExit @ref="TruckCrossExit"
+                                                                    CrossRequest="CrossRequest"
+                                                                    OnClearClick="OnClearClick"
+                                                                    TruckCrossProductTypes="TruckCrossProductTypes"
+                                                                    Username="@Username"
+                                                                    UserId="@UserId"
+                                                                    Items="Items"
+                                                                    Causes="Causes" />
+                                                }
+                                            </CascadingValue>
+                                        </CascadingValue>
+                                    </CascadingValue>
+                                </CascadingValue>
+                            </CascadingValue>
+                        </CascadingValue>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @* ── Pending crosses ── *@
+        <div class="@(Mode != TruckCrossItemModes.Empty ? "col-md-4" : "col-12")">
+            <div class="card border-0 shadow-sm h-100 tc-pending-list">
+                <div class="card-header">
+                    <MaterialIcon IconName="local_shipping" />
+                    @TextResources.APP_StringKeys_TruckCross_NotExitedCrosses
+                </div>
+                <div class="card-body p-0">
+                    @if (NotExitedCrosses is not null)
+                    {
+                        <TelerikGrid Data="NotExitedCrosses"
+                                     PageSize="10"
+                                     Navigable="true"
+                                     Pageable="true"
+                                     Sortable="true"
+                                     OnRowClick="OnUnxitedCrossClick">
+                            <GridColumns>
+                                <GridColumn Field="@nameof(TruckCrossDataDto.PresentTurn)"
+                                            Title="@TextResources.APP_StringKeys_TruckCross_Turn"
+                                            Width="60px" />
+                                <GridColumn Field="@nameof(TruckCrossDataDto.DriverName)"
+                                            Title="@TextResources.APP_StringKeys_DriverName" />
+                                <GridColumn Title="@TextResources.APP_StringKeys_Field_Status" Width="90px">
+                                    <Template Context="cross">
+                                        @{
+                                            var item = (TruckCrossDataDto)cross;
+                                        }
+                                        @if (item.TruckCrossStatus == TruckCrossStatuses.Present)
+                                        {
+                                            <span class="tc-status-badge status-present">@TextResources.APP_StringKeys_TruckCross_Presented</span>
+                                        }
+                                        else if (item.TruckCrossStatus == TruckCrossStatuses.Enter)
+                                        {
+                                            <span class="tc-status-badge status-enter">@TextResources.APP_StringKeys_TruckCross_Entered</span>
+                                        }
+                                        else if (item.TruckCrossStatus == TruckCrossStatuses.Exit)
+                                        {
+                                            <span class="tc-status-badge status-exit">@TextResources.APP_StringKeys_TruckCross_Exited</span>
+                                        }
+                                    </Template>
+                                </GridColumn>
+                            </GridColumns>
+                        </TelerikGrid>
+                        <div class="d-flex justify-content-end p-2">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="OnUnxitedCrossRefreshDataClick">
+                                <MaterialIcon IconName="sync" />
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<CascadingValue Value="Notification">
+    <Gallery @ref="Gallery"
+             OnOcrTextExtracted="OnGalleryOcrExecuted">
+    </Gallery>
+</CascadingValue>
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Choose"
+       @ref="ModalReviewPlaque"
+       Size="ModalSize.Normal"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+    <div class="text-align-center">
+        <div class="alert alert-warning mb-2">
+            @TextResources.APP_StringKeys_TruckCross_ChoosePlaque
+        </div>
+            <TelerikGrid Data="ReviewPlaqueCrosses"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="cross">
+                    <td class="td-style">
+                        @cross.Plaque.Substring(6, 2)
+                        @TextResources.APP_StringKeys_Iran
+                        @cross.Plaque.Substring(3, 3)
+                        @cross.Plaque.Substring(2, 1)
+                        @cross.Plaque.Substring(0, 2)
+                    </td>
+                    <td class="td-style">
+                        @(PersianCalendarTools.GregorianToPersian(cross.PresentDateTime))
+                        @(((DateTime)cross.PresentDateTime).ToString("HH:mm"))
+                    </td>
+                    <td class="td-style">
+                        <button type="button"
+                                class="btn btn-success btn-details tr-buttom"
+                                @onclick="async () => await OnChooseReviewTruckCross(cross)">
+                            @TextResources.APP_StringKeys_Choose
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(TruckCrossDataDto.Plaque)"
+                                Title="@TextResources.APP_StringKeys_Plaque"></GridColumn>
+                    <GridColumn Field="@nameof(TruckCrossDataDto.PresentDateTime)"
+                                Title="@TextResources.APP_StringKeys_TruckCross_Present_Date"></GridColumn>
+                    <GridColumn Width="60px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>

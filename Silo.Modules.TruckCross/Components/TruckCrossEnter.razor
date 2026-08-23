@@ -1,0 +1,244 @@
+@using Silo.Application.Dto;
+@using Silo.Application.Features;
+
+<EditForm Model="CrossRequest"
+          OnInvalidSubmit="OnInvalidSubmit"
+          OnValidSubmit="OnEnterValidSubmit"
+          Context="editFormContext">
+    <DataAnnotationsValidator />
+
+    <TelerikTabStrip ActiveTabIndexChanged="OnActiveTabbChanged" PersistTabContent="true">
+        <TabStripTab Title="@TextResources.APP_StringKeys_Enter">
+
+            @* ── Enter data ── *@
+            <div class="tc-form-section mt-3">
+                <div class="tc-form-section-header">
+                    <span class="tc-form-section-icon"><MaterialIcon IconName="login" /></span>
+                    <span class="tc-form-section-title">@TextResources.APP_StringKeys_Enter</span>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_TruckCross_Enter_WeightTonage</label>
+                            <div class="input-group">
+                                <TelerikNumericTextBox Class="form-control"
+                                                       @bind-Value="CrossRequest.EnterWeightTonage"
+                                                       Min="0" />
+                                <button class="btn btn-outline-primary" type="button" @onclick="OnGetEnterWeightClick">
+                                    <MaterialIcon IconName="@MaterialIconsHelper.Scale" />
+                                    <TelerikLoader Type="@LoaderType.Pulsing"
+                                                   Size="@(ThemeConstants.Loader.Size.Small)"
+                                                   Visible="IsEnterWeightLoading" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_TruckCross_Enter_AcceptPlace</label>
+                            <TelerikDropDownList Data="AcceptPlaces"
+                                                 TextField="@nameof(GetAllAcceptPlacesVm.Title)"
+                                                 ValueField="@nameof(GetAllAcceptPlacesVm.Id)"
+                                                 @bind-Value="CrossRequest.EnterAcceptPlaceId"
+                                                 DefaultText=""
+                                                 Filterable="true"
+                                                 FilterOperator="StringFilterOperator.Contains"
+                                                 Class="drop-all w-100">
+                                <DropDownListSettings>
+                                    <DropDownListPopupSettings Class="text-align-right" />
+                                </DropDownListSettings>
+                            </TelerikDropDownList>
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button class="btn btn-success w-100" type="button" @onclick="OnModalTruckCrossItemsClick">
+                            <MaterialIcon IconName="inventory_2" />
+                            @TextResources.APP_StringKeys_View_Product_Add
+                            <span class="badge bg-white text-success ms-1">@TruckCrossEnterItems.Count</span>
+                        </button>
+                    </div>
+                </div>
+                <TruckCrossDynamics SectionId="4"
+                                    CrossRequest="CrossRequest"
+                                    LabelMarginRightsFirst="@(new List<string>{ "136px", "156px", "66px" })"
+                                    LabelMarginRightsSecond="@(new List<string>{ "20px", "68px", "55px" })"
+                                    FieldWidth="200px"
+                                    RichTextMarginTop="10px" />
+            </div>
+
+            @* ── Metadata ── *@
+            @if (CrossRequest.EnterUsername.HasValue() || CrossRequest.EnterDateTime is not null)
+            {
+                <div class="tc-form-section">
+                    <div class="tc-form-section-header">
+                        <span class="tc-form-section-icon"><MaterialIcon IconName="info" /></span>
+                        <span class="tc-form-section-title">@TextResources.APP_StringKeys_Username</span>
+                    </div>
+                    <div class="tc-meta-row">
+                        @if (CrossRequest.EnterUsername.HasValue())
+                        {
+                            <span class="tc-meta-chip">
+                                <MaterialIcon IconName="person" />
+                                <span class="tc-meta-label">@TextResources.APP_StringKeys_Username:</span>
+                                @CrossRequest.EnterUsername
+                            </span>
+                        }
+                        @if (CrossRequest.EnterDateTime is not null)
+                        {
+                            <span class="tc-meta-chip">
+                                <MaterialIcon IconName="calendar_today" />
+                                <span class="tc-meta-label">@TextResources.APP_StringKeys_TruckCross_Enter_Date:</span>
+                                @(PersianCalendarTools.GregorianToPersian(CrossRequest.EnterDateTime))
+                            </span>
+                            <span class="tc-meta-chip">
+                                <MaterialIcon IconName="schedule" />
+                                <span class="tc-meta-label">@TextResources.APP_StringKeys_TruckCross_Enter_Time:</span>
+                                @(((DateTime)CrossRequest.EnterDateTime).ToString("HH:mm"))
+                            </span>
+                        }
+                    </div>
+                </div>
+            }
+
+        </TabStripTab>
+    </TelerikTabStrip>
+
+    <div class="tc-action-bar">
+        <button type="button" class="btn btn-warning" @onclick="OnClearClick">
+            <MaterialIcon IconName="refresh" />
+        </button>
+        <button type="button" class="btn btn-success">
+            <MaterialIcon IconName="print" />
+        </button>
+        <button type="submit" class="btn btn-primary">
+            <MaterialIcon IconName="save" />
+        </button>
+    </div>
+</EditForm>
+
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TruckCrossItemsModalTitle"
+       @ref="ModalTruckCrossItems"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalFooterHtmlWhitoutCloseBtn>
+        <button type="button" class="btn btn-warning" @onclick="OnTruckCrossItemRefreshClick">
+            <MaterialIcon IconName="refresh"></MaterialIcon>
+        </button>
+        <button type="button" class="btn btn-primary" @onclick="OnItemsSaveClick">
+            <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+        </button>
+    </ModalFooterHtmlWhitoutCloseBtn>
+    <ModalBodyContentHtml>
+        @if (TruckCrossItemsModalError.HasValue())
+        {
+            <div class="alert alert-danger mb-2">@TruckCrossItemsModalError</div>
+        }
+        <div class="tc-form-section mb-3">
+            <div class="tc-form-section-header">
+                <span class="tc-form-section-icon"><MaterialIcon IconName="add_box" /></span>
+                <span class="tc-form-section-title">@TextResources.APP_StringKeys_View_Product_Add</span>
+            </div>
+            <EditForm Model="TruckCrossItemRequest" OnValidSubmit="OnItemAddValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="text-danger mb-2"><ValidationSummary /></div>
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_Field_ProductType</label>
+                            <TelerikDropDownList Data="TruckCrossProductTypes"
+                                                 TextField="Title"
+                                                 ValueField="Id"
+                                                 @bind-Value="TruckCrossItemRequest.TruckCrossProductTypeId"
+                                                 DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                                 Filterable="true"
+                                                 FilterOperator="StringFilterOperator.Contains"
+                                                 Class="drop-all w-100">
+                                <DropDownListSettings>
+                                    <DropDownListPopupSettings Class="text-align-right" />
+                                </DropDownListSettings>
+                            </TelerikDropDownList>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_ProductCount</label>
+                            <TelerikNumericTextBox Class="form-control"
+                                                   @bind-Value="TruckCrossItemRequest.ProductCount"
+                                                   Arrows="false" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_ProductUnit</label>
+                            <TelerikTextBox Class="form-control"
+                                            @bind-Value="TruckCrossItemRequest.ProductUnit" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_Product_Description</label>
+                            <TelerikTextBox Class="form-control"
+                                            @bind-Value="TruckCrossItemRequest.Title" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Add" />
+                            @TextResources.APP_StringKeys_Add
+                        </button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+        <TelerikGrid Data="TruckCrossEnterItems"
+                     Sortable="true"
+                     PageSize="10"
+                     Pageable="true"
+                     @ref="TruckCrossEnterItemsGrid">
+            <RowTemplate Context="item">
+                <td class="td-style">@item.TruckCrossProductTypeTitle</td>
+                <td class="td-style">@item.ProductCount</td>
+                <td class="td-style">@item.ProductUnit</td>
+                <td class="td-style">@item.Title</td>
+                <td class="td-style">
+                    @if (!item.IsDeleteMessageShown)
+                    {
+                        <button type="button" class="btn btn-success btn-details tr-buttom"
+                                @onclick="() => OnTruckCrossItemChoose(item)">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Edit"></MaterialIcon>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-details tr-buttom"
+                                @onclick="() => item.IsDeleteMessageShown = true">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                        </button>
+                    }
+                    else
+                    {
+                        @TextResources.APP_StringKeys_Message_Delete
+                        <button type="button" class="btn btn-success btn-details tr-buttom"
+                                @onclick="() => item.IsDeleteMessageShown = false">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Cancel"></MaterialIcon>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-details tr-buttom"
+                                @onclick="() => OnTruckCrossItemConfirmRemove(item)">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                        </button>
+                    }
+                </td>
+            </RowTemplate>
+            <GridColumns>
+                <GridColumn Field="@nameof(GetTruckCrossItemsByTruckCrossIdVm.TruckCrossProductTypeTitle)"
+                            Title="@TextResources.APP_StringKeys_Field_ProductType"></GridColumn>
+                <GridColumn Field="@nameof(GetTruckCrossItemsByTruckCrossIdVm.ProductCount)"
+                            Title="@TextResources.APP_StringKeys_Value"></GridColumn>
+                <GridColumn Field="@nameof(GetTruckCrossItemsByTruckCrossIdVm.ProductUnit)"
+                            Title="@TextResources.APP_StringKeys_ProductUnit"></GridColumn>
+                <GridColumn Field="@nameof(GetTruckCrossItemsByTruckCrossIdVm.Title)"
+                            Title="@TextResources.APP_StringKeys_Product_Description"></GridColumn>
+                <GridColumn></GridColumn>
+            </GridColumns>
+        </TelerikGrid>
+    </ModalBodyContentHtml>
+</Modal>

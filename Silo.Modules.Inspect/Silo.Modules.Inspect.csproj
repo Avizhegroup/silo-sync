@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <ItemGroup>
+        <SupportedPlatform Include="browser" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+        <PackageReference Include="Telerik.UI.for.Blazor" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Silo.Application\Silo.Application.Shared.csproj" />
+        <ProjectReference Include="..\Silo.Identity.Client\Silo.Identity.Client.csproj" />
+        <ProjectReference Include="..\Silo.Shared.Components\Silo.Shared.Components.csproj" />
+        <ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
+        <ProjectReference Include="..\Silo.Infrastructure.Web\Silo.Infrastructure.Web.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Silo.Source\Silo.Source.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" SetTargetFramework="TargetFramework=netstandard2.0" />
+    </ItemGroup>
+
+</Project>

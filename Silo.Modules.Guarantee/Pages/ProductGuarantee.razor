@@ -1,0 +1,269 @@
+@page "/product/guarantee"
+@page "/product/guarantee/{ExitActionCode:int?}"
+@inherits SiloBasePage
+@namespace Silo.Modules.Guarantee.Pages
+@using Silo.Application.Dto;
+@using Silo.Application.Features;
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Silo.Identity.Client
+@using Silo.Shared.Components.Report
+@using Telerik.Blazor.Components
+@using Silo.Shared.Components
+@using Telerik.FontIcons;
+
+<PageTitle>@TextResources.APP_StringKeys_Cartable_ProductGuarantee</PageTitle>
+
+    @if (IsFiltersShown)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 " style="min-height:100px;">
+            <h6>@TextResources.APP_StringKeys_Filters</h6>
+            <div class="form-group form-inline  search-button-div" style="margin-top:-136px !important;width:480px;">
+                <button class="btn btn-success" type="button" title="@TextResources.APP_StringKeys_Filters"
+                        style="margin-left: 2px;" @onclick="OnFilterModalClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Filter_alt"></MaterialIcon>
+                </button>
+                <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                        style="margin-left: 2px;" @onclick="OnClearClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                </button>
+                <button class="btn btn-primary" type="button"
+                        title="@TextResources.APP_StringKeys_Send"
+                        @onclick="OnSearchClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                </button>
+            </div>
+            @if (ApplyFilters.Any())
+            {
+                <div class="form-group form-inline col-md-10" style="margin-bottom:10px!important; margin-top:15px;">
+                    <FilterReportEditSection Filters="ApplyFilters">
+                    </FilterReportEditSection>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center">
+        <TelerikGrid Data="Products"
+                     PageSize="10"
+                     Navigable="true"
+                     Pageable="true"
+                     Sortable="true"
+                     Width="100%"
+                     ScrollMode="@GridScrollMode.Scrollable">
+            <RowTemplate Context="product">
+                <td class="td-style td-style-full">
+                    <TelerikCheckBox @bind-Value="product.IsSelected"
+                                     OnChange="OnToggleSelectChange">
+                    </TelerikCheckBox>
+                </td>
+                <td class="td-style td-style-full">@product.ProductSerial</td>
+                <td class="td-style td-style-full">@product.OldSerial</td>
+                <td class="td-style td-style-full">@product.ProductCode</td>
+                <td class="td-style td-style-full">@product.RegCode</td>
+                <td class="td-style td-style-full">@product.ProductTitle</td>
+                <td class="td-style td-style-full">@product.ProductType</td>
+                <td class="td-style td-style-full">@product.ProductGroup</td>
+                <td class="td-style td-style-full">@product.ProductSubGroup</td>
+                <td class="td-style td-style-full">@product.ProductClass</td>
+                <td class="td-style td-style-full">@product.ProductBrand</td>
+                <td class="td-style td-style-full">@product.ProductStatus</td>
+                <td class="td-style td-style-full">
+                    @if (product.RegisterShamsiDate.HasValue() && product.RegisterShamsiDate.Length == 14)
+                    {
+                        @(DateTimeTools.ToNormalPersianDateTime(product.RegisterShamsiDate))
+                    }
+                </td>
+                <td class="td-style td-style-full">@product.InspectStatusTitle</td>
+                <td class="td-style td-style-full">@product.InspectDate</td>
+                <td class="td-style td-style-full">@product.EnterActionDate</td>
+                <td class="td-style td-style-full">@product.ExitActionDate</td>
+                <td class="td-style td-style-full">@product.ActivationType</td>
+                <td class="td-style td-style-full">@product.GuaranteeExpireDays</td>
+                <td class="td-style td-style-full">@product.GuaranteeStatus</td>
+                <td class="td-style td-style-full">@product.GuaranteeRemainingDays</td>
+                <td class="td-style td-style-full">@product.GuaranteeStartDate</td>
+                <td class="td-style td-style-full">@product.GuaranteeEndDate</td>
+            </RowTemplate>
+            <GridToolBarTemplate>
+                <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                    @TextResources.APP_StringKeys_ExportExcel
+                </GridCommandButton>
+                <TelerikButton Icon="@FontIcon.Print" OnClick="@OnExportToPdfClick" Class="orange-pdf">
+                    @TextResources.APP_StringKeys_Print
+                </TelerikButton>
+            </GridToolBarTemplate>
+            <GridExport>
+                <GridExcelExport FileName="@TextResources.APP_StringKeys_Serial_ExpireAndGuarantee_Status" AllPages="true" />
+            </GridExport>
+            <GridColumns>
+                <GridColumn Visible="true" Width="50px" HeaderClass="header-select-all">
+                    <HeaderTemplate>
+                        @{
+                            @if (Products is not null)
+                            {
+                                <TelerikCheckBox @bind-Value="@IsAllSelected"
+                                                 TabIndex="-1"
+                                                 OnChange="OnToggleSelectAll" />
+                            }
+                        }
+                    </HeaderTemplate>
+                     <FooterTemplate>
+                        @{
+                            @if (Products is not null)
+                            {
+                                <label>
+                                    @Products.Count(p => p.IsSelected)
+                                </label>
+                            }
+                        }
+                     </FooterTemplate>
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.ProductSerial)"
+                            Width="100px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.OldSerial)"
+                            Width="100px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.ProductCode)"
+                            Width="150px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.RegCode)"
+                            Width="100px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.ProductTitle)"
+                            Width="200px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.ProductType)"
+                            Width="100px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.ProductGroup)"
+                            Width="100px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.ProductSubGroup)"
+                            Width="100px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.ProductClass)"
+                            Width="100px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.ProductBrand)"
+                            Width="100px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.ProductStatus)"
+                            Width="100px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.RegisterShamsiDate)"
+                            Width="120px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.InspectStatusTitle)"
+                            Width="100px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.InspectDate)"
+                            Width="100px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.EnterActionDate)"
+                            Width="120px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.ExitActionDate)"
+                            Width="120px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.ActivationType)"
+                            Width="120px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.GuaranteeExpireDays)"
+                            Width="120px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.GuaranteeStatus)"
+                            Width="120px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.GuaranteeRemainingDays)"
+                            Width="120px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.GuaranteeStartDate)"
+                            Width="120px">
+                </GridColumn>
+                <GridColumn Field="@nameof(GetProductGuaranteesVm.GuaranteeEndDate)"
+                            Width="120px">
+                </GridColumn>
+            </GridColumns>
+        </TelerikGrid>
+    </div>
+</div>
+
+@if (Products is not null)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center form-search-span">
+            <EditForm Model="Command"
+                      OnInvalidSubmit="OnInvalidSubmit"
+                      OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator/>
+                <div class="form-group form-inline" style="margin-bottom:20px!important; margin-top:15px;">
+                    <label style="margin-right:-200px;">@TextResources.APP_StringKeys_ExpireAndGuarantee_GuaranteeStatus</label>
+                    <TelerikDropDownList Data="SerialGuaranteeStatusItems"
+                                         TextField="@(nameof(TelerikDropDownItemGeneric<string>.Name))"
+                                         ValueField="@(nameof(TelerikDropDownItemGeneric<string>.Value))"
+                                         @bind-Value="Command.GuaranteeStatus"
+                                         Width="180px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right:10px;">@TextResources.APP_StringKeys_ExpireAndGuarantee_StartDate</label>
+                    <DatePicker InputClass=" input-search-span-lg pointer "
+                                Style="width:150px !important;" @bind-Value="Command.GuaranteeStartDate">
+                    </DatePicker>
+                    <label style="margin-right:60px;">@TextResources.APP_StringKeys_ExpireAndGuarantee_EndDate</label>
+                    <DatePicker InputClass=" input-search-span-lg pointer "
+                                Style="width:150px !important;" @bind-Value="Command.GuaranteedEndDate">
+                    </DatePicker>
+                    <label style="margin-right:60px;">@TextResources.APP_StringKeys_Guarantee_Type</label>
+                    <TelerikDropDownList Data="GuaranteeActivationTypes"
+                                         TextField="@(nameof(TelerikDropDownItemGeneric<GuaranteeTypes>.Name))"
+                                         ValueField="@(nameof(TelerikDropDownItemGeneric<GuaranteeTypes>.Value))"
+                                         @bind-Value="Command.GuaranteeActivationType"
+                                         Width="180px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                </div>
+                <div class="form-group form-inline  search-button-div" style="margin-top:-136px !important;width:480px;">
+                    <button type="button"
+                            class="btn btn-warning"
+                            @onclick="OnClearClick"
+                            style="margin-right: 10px">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    <button type="submit"
+                            class="btn btn-primary"
+                            style="margin-right: 5px">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_Filters"
+       @ref="FiltersModal"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-right">
+            @if (FiltersModal.ModalClass.Equals("Show"))
+            {
+                <FilterReportSelectSection Filters="Filters" OnSearchClick="OnAddNewFilterClick">
+                </FilterReportSelectSection>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

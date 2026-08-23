@@ -1,0 +1,144 @@
+@page "/settings/reportlinks/{Link}/{FormatId:int?}"
+@using Silo.Application.Features
+@inherits SiloBasePage
+
+<PageTitle>@TextResources.APP_StringKeys_Settings_ReportLinks</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; padding:10px;">
+        <EditForm Model="Request"
+                  OnInvalidSubmit="OnInvalidSubmit"
+                  OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                <label>@TextResources.APP_StringKeys_Address</label>
+                <TelerikTextBox @bind-Value="Request.Url"
+                                Class="form-control input-search-span"
+                                ReadOnly="true"></TelerikTextBox>
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_ReportFormat</label>
+                <TelerikTextBox @bind-Value="Format.Name"
+                                Class="form-control input-search-span"
+                                ReadOnly="true"></TelerikTextBox>
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_Field_Title</label>
+                <TelerikTextBox @bind-Value="Request.Title"
+                                Class="form-control input-search-span"></TelerikTextBox>
+                <div style="left:5px; position:absolute;">
+                    <button type="button"
+                            class="btn btn-warning"
+                            @onclick="OnRefreshClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                    </button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; padding:10px;">
+        <TelerikStepper Linear="false"
+                        Orientation="@StepperOrientation.Horizontal"
+                        StepType="@StepperStepType.Steps"
+                        @bind-Value="ActiveStepperIndex">
+            <StepperSteps>
+                <StepperStep Icon="@SvgIcon.User"
+                             Label="@TextResources.APP_StringKeys_User">
+                </StepperStep>
+                <StepperStep Icon="@SvgIcon.Menu"
+                             Label="@TextResources.APP_StringKeys_Menu">
+                </StepperStep>
+            </StepperSteps>
+        </TelerikStepper>
+    </div>
+</div>
+
+@if (ActiveStepperIndex == 0)
+{
+    @if (Users is not null)
+    {
+        <div class="row col-md-12">
+            <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; padding:10px;">
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <label>@TextResources.APP_StringKeys_Search</label>
+                    <TelerikTextBox @bind-Value="UserSearch"
+                                    Class="form-control input-search-span">
+                    </TelerikTextBox>
+                    <button type="button"
+                            class="btn btn-primary"
+                            @onclick="OnSearchClick"
+                            style="margin-right:10px">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <TelerikGrid Data="Users"
+                     PageSize="10"
+                     Navigable="true"
+                     Pageable="true"
+                     Sortable="true"
+                     ScrollMode="GridScrollMode.Scrollable"
+                     Resizable="true"
+                     Width="100%">
+            <RowTemplate Context="user">
+                <td class="td-style">
+                    <TelerikCheckBox @bind-Value="user.IsChoosed">
+                    </TelerikCheckBox>
+                </td>
+                <td class="td-style">@user.Name</td>
+                <td class="td-style">@user.UserName</td>
+            </RowTemplate>
+            <GridColumns>
+                <GridColumn Field="@nameof(UserChoosableDto.IsChoosed)"
+                            Title="" Width="40px">
+                </GridColumn>
+                <GridColumn Field="@nameof(UserChoosableDto.Name)"
+                            Title="@TextResources.APP_StringKeys_NameAndFamily">
+                </GridColumn>
+                <GridColumn Field="@nameof(UserChoosableDto.UserName)"
+                            Title="@TextResources.APP_StringKeys_Field_Username">
+                </GridColumn>
+            </GridColumns>
+        </TelerikGrid>
+    }
+}
+else if (ActiveStepperIndex == 1)
+{
+    @if (IsShownTreeview)
+    {
+        <div class="row col-md-12">
+            <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; padding:10px;">
+                <div style="margin-bottom:10px">
+                    <h6 class="form-title card-title" style="text-align: right !important;">
+                        @TextResources.APP_StringKeys_ReportLink_ChooseCategory
+                    </h6>
+                </div>
+                <TelerikTreeView Data="@Nodes">
+                    <TreeViewBindings>
+                        <TreeViewBinding TextField="@nameof(TreeviewNode.text)"
+                                         ItemsField="@nameof(TreeviewNode.nodes)">
+                            <ItemTemplate>
+                                @{
+                                    TreeviewNode currentNode = context as TreeviewNode;
+                                    <div class="@(currentNode.isSelected ? "bg-danger" : "")"
+                                         @onclick="async()=> await OnNodeClick(currentNode)">
+                                        @currentNode.text
+                                    </div>
+                                }
+                            </ItemTemplate>
+                        </TreeViewBinding>
+                    </TreeViewBindings>
+                </TelerikTreeView>
+            </div>
+        </div>
+    }
+}
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

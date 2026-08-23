@@ -1,0 +1,29 @@
+{
+  "name": "Ceramic Client PWA",
+  "short_name": "CCP",
+  "description": "Tadbir daade avizhe PWA for WMS",
+  "icons": [
+    {
+      "src": "/images/Icons/144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/Icons/192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/images/Icons/168.png",
+      "sizes": "168x168",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/Icons/512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "display": "standalone",
+  "start_url": "/"
+}

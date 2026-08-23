@@ -1,0 +1,59 @@
+﻿@namespace Silo.Components
+@inherits ErrorBoundaryBase
+
+@if (CurrentException is null)
+{
+    @ChildContent
+}
+else if (ErrorContent is null)
+{
+    <div class="eb-overlay">
+
+        <header class="eb-topbar">
+            <MaterialIcon IconName="@MaterialIconsHelper.Inventory2" />
+            <span>@TextResources.APP_StringKeys_AppName</span>
+        </header>
+
+        <main class="eb-body">
+            <div class="card border-0 shadow-sm eb-card">
+                <div class="card-body eb-card-body">
+
+                    <span class="eb-icon">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Error" />
+                    </span>
+
+                    <h2 class="eb-title">@TextResources.APP_StringKeys_Alert_Fail</h2>
+                    <p class="eb-subtitle">@TextResources.APP_StringKeys_Alert_TryAgain</p>
+
+                    <hr class="eb-divider" />
+
+                    <div class="eb-actions">
+                        <button type="button" class="btn btn-warning" @onclick="Recover">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Refresh" />
+                            @TextResources.APP_StringKeys_Refresh
+                        </button>
+                        <button type="button" class="btn btn-primary" @onclick="GoHome">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Home" />
+                            @TextResources.APP_StringKeys_HomePage
+                        </button>
+                    </div>
+
+                    @if (ShowException)
+                    {
+                        <div class="eb-detail">@CurrentException?.ToString()</div>
+                    }
+
+                </div>
+            </div>
+        </main>
+
+        <footer class="eb-footer">
+            <small>@TextResources.APP_StringKeys_AppName</small>
+        </footer>
+
+    </div>
+}
+else
+{
+    @ErrorContent(CurrentException)
+}

@@ -1,0 +1,58 @@
+// ─── PrintManagement page ─────────────────────────────────────────────────────
+// All colours reference semantic tokens from abstracts/colors.scss
+
+.page-print-management {
+
+    // ── Operation nav (prev / next action code) ───────────────────────────────
+    .action-nav {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+
+        .action-code-badge {
+            font-size: .875rem;
+            font-weight: 600;
+            padding: .35rem .85rem;
+            border-radius: 20px;
+            background-color: $action-primary-bg;
+            color: $action-primary-text;
+            letter-spacing: .02em;
+        }
+    }
+
+    // ── Toolbar row (action buttons strip) ────────────────────────────────────
+    .toolbar-strip {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+
+    // ── Product code / title wide inputs ──────────────────────────────────────
+    .input-wide {
+        width: 340px;
+    }
+
+    // ── Staged serials grid ───────────────────────────────────────────────────
+    .serials-grid-wrapper {
+        .card-body {
+            padding: 0;
+        }
+    }
+
+    // ── Search modal filter bar ───────────────────────────────────────────────
+    .search-filter-bar {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: .5rem;
+        direction: rtl;
+
+        label {
+            margin-bottom: 0;
+            color: $text-secondary;
+            font-size: .875rem;
+        }
+    }
+}

@@ -1,0 +1,100 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="arm64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="NuGet.Config" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Core/" />
+  <Folder Name="/src/Core/Applications/">
+    <Project Path="Silo.Application.Api/Silo.Application.Api.csproj" Id="3291f43c-71e4-4744-be36-bf76ecde3114" />
+    <Project Path="Silo.Application/Silo.Application.Shared.csproj" />
+  </Folder>
+  <Folder Name="/src/Core/Domains/">
+    <Project Path="Silo.Domains.Android/Silo.Domains.Android.csproj" />
+    <Project Path="Silo.Domains/Silo.Domains.csproj" />
+  </Folder>
+  <Folder Name="/src/Core/Infrastructures/">
+    <Project Path="Silo.Infrastructure.Shared/Silo.Infrastructure.Shared.csproj" />
+    <Project Path="Silo.Infrastructure.Web/Silo.Infrastructure.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/Identity/">
+    <Project Path="Silo.Identity.Client/Silo.Identity.Client.csproj" />
+    <Project Path="Silo.Identity.Server/Silo.Identity.Server.csproj" />
+  </Folder>
+  <Folder Name="/src/Presentation/" />
+  <Folder Name="/src/Presentation/Service/">
+    <Project Path="Silo.Jobs.Win/Silo.Jobs.Win.csproj" />
+    <Project Path="Silo.Service.Sharif/Silo.Service.Sharif.csproj" Id="61cba309-bcd5-4e05-8e93-2135a590e69f" />
+  </Folder>
+  <Folder Name="/src/Presentation/Service/Customer Care/">
+    <Project Path="Silo.Ui.Customer/Silo.Ui.Customer.csproj" />
+  </Folder>
+  <Folder Name="/src/Presentation/UI/" />
+  <Folder Name="/src/Presentation/UI/Api/">
+    <Project Path="Silo.Api.Db/Silo.Api.Db.sqlproj" Id="925c7de7-333a-4f88-a954-3486fef61d97">
+      <Platform Project="AnyCPU" />
+      <Build />
+      <Deploy />
+    </Project>
+    <Project Path="Silo.Api/Silo.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/Presentation/UI/Api/External/">
+    <Project Path="Silo.Api.External.Sharif/Silo.Api.External.Sharif.csproj" Id="9d64c240-4450-47c0-b652-3ea53ca59f2e" />
+  </Folder>
+  <Folder Name="/src/Presentation/UI/Bot/">
+    <Project Path="Silo.Bot.Support/Silo.Bot.Support.csproj" Id="71e575c3-51c7-429f-a6f0-746470a3ebce" />
+  </Folder>
+  <Folder Name="/src/Presentation/UI/Web/" />
+  <Folder Name="/src/Presentation/UI/Web/Main/">
+    <Project Path="Silo.Ui.Bypass/Silo.Ui.Bypass.csproj" />
+    <Project Path="Silo/Silo.csproj" />
+  </Folder>
+  <Folder Name="/src/Presentation/UI/Web/Main/Modules/">
+    <Project Path="Silo.Modules.Ai/Silo.Modules.Ai.csproj" />
+    <Project Path="Silo.Modules.Document/Silo.Modules.Document.csproj" />
+    <Project Path="Silo.Modules.Guarantee/Silo.Modules.Guarantee.csproj" />
+    <Project Path="Silo.Modules.Inspect/Silo.Modules.Inspect.csproj" />
+    <Project Path="Silo.Modules.Product/Silo.Modules.Product.csproj" />
+    <Project Path="Silo.Modules.TruckCross/Silo.Modules.TruckCross.csproj" />
+  </Folder>
+  <Folder Name="/src/Presentation/UI/Web/Shared/">
+    <Project Path="Silo.Shared.Components/Silo.Shared.Components.csproj" />
+  </Folder>
+  <Folder Name="/src/Presentation/UI/Windows/">
+    <Project Path="Silo.Ui.Gate/Silo.Ui.Gate.csproj" />
+  </Folder>
+  <Folder Name="/src/Shared/">
+    <Project Path="Silo.Shared/Silo.Shared.csproj" />
+    <Project Path="Silo.Source/Silo.Source.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/Docs/" />
+  <Folder Name="/Solution Items/Docs/AI/">
+    <File Path="Docs/RAG-Chat-Guide.md" />
+  </Folder>
+  <Folder Name="/Solution Items/Instructions/" Id="e0e4cc51-b0da-7568-b131-ce88e8f54da0">
+    <File Path=".github/copilot-instructions.md" />
+    <File Path=".github/ui-design-system.md" />
+  </Folder>
+  <Folder Name="/Solution Items/Skills/" />
+  <Folder Name="/Solution Items/Skills/blazor-refactor/">
+    <File Path=".copilot/skills/blazor-refactor/SKILL.md" />
+  </Folder>
+  <Folder Name="/Solution Items/Skills/cqrs/">
+    <File Path=".copilot/skills/cqrs/SKILL.md" />
+  </Folder>
+  <Folder Name="/Solution Items/Skills/dynamic-report/">
+    <File Path=".copilot/skills/dynamic-report/SKILL.md" />
+  </Folder>
+  <Folder Name="/Solution Items/Skills/sql-tune/">
+    <File Path=".copilot/skills/sql-tune/SKILL.md" />
+  </Folder>
+</Solution>

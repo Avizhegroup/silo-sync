@@ -1,0 +1,76 @@
+﻿@page "/warehouse/imageanalize"
+@inherits SiloBasePage
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="page-image-analysis">
+    @if (IsFiltersShown)
+    {
+        <div class="page-header">
+            <h3>
+                @if (SelectedWarehouse is null)
+                {
+                    <span class="header-title">سیستم مدیریت انبار</span>
+                    <span class="header-subtitle">Warehouse Management System</span>
+                }
+                else
+                {
+                    <span class="header-title">نقشه انبار / @SelectedWarehouse.DestinationTitle</span>
+                    <span class="header-subtitle">Warehouse Floor Plan</span>
+                }
+            </h3>
+        </div>
+    }
+
+    <div class="warehouse-3d-container" id="warehouse3DContainer">
+        <canvas id="warehouse3DCanvas"></canvas>
+        <div id="zone-tooltip-3d" class="zone-tooltip-3d"></div>
+        <div class="zoom-controls">
+            <button class="btn-zoom" title="تمام صفحه" @onclick="ToggleFullscreen">
+                <MaterialIcon IconName="@MaterialIconsHelper.Fullscreen" />
+            </button>
+            <button class="btn-zoom" title="بزرگ‌نمایی" @onclick="ZoomIn">
+                <MaterialIcon IconName="@MaterialIconsHelper.ZoomIn" />
+            </button>
+            <button class="btn-zoom" title="کوچک‌نمایی" @onclick="ZoomOut">
+                <MaterialIcon IconName="@MaterialIconsHelper.ZoomOut" />
+            </button>
+            <button class="btn-zoom @(IsCorridorDrawMode ? "btn-zoom-active" : "")"
+                    title="@(IsCorridorDrawMode ? "لغو ترسیم راهرو" : "ترسیم راهرو")"
+                    @onclick="ToggleCorridorDrawMode">
+                <MaterialIcon IconName="@MaterialIconsHelper.Route" />
+            </button>
+            @if (IsCorridorDrawMode)
+            {
+                <div class="corridor-width-control" title="عرض راهرو (متر)">
+                    <label>عرض:</label>
+                    <input type="range" min="0.5" max="10" step="0.5"
+                           value="@CorridorWidth"
+                           @oninput="OnCorridorWidthChanged" />
+                    <span>@CorridorWidth.ToString("0.#") m</span>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (IsCorridorRelocateMode)
+{
+    <div class="corridor-relocate-banner">
+        <span>حالت جابجایی راهرو: دو نقطه جدید را روی صحنه انتخاب کنید</span>
+        <button class="btn btn-sm btn-warning" @onclick="CancelCorridorRelocate">لغو</button>
+    </div>
+}
+
+<TelerikContextMenu @ref="_corridorContextMenu"
+                    Data="_corridorMenuItems"
+                    TextField="Text"
+                    IconField="Icon"
+                    OnClick="@((CorridorContextMenuItem item) => OnCorridorMenuItemClick(item))">
+</TelerikContextMenu>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

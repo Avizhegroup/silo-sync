@@ -1,0 +1,250 @@
+@page "/rule/add"
+@using Silo.Application.Features;
+@inherits SiloBasePage
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center">
+        <form asp-action="Search" asp-controller="Home" method="post" role="form" class="form-search-span" id="form-main">
+            <div class="card card-stats col-md-3 text-align-center" style="margin-right: 76% !important;height: 304px !important;border: 0px;">
+                <div>
+                    <div class=" d-flex flex-row align-items-center flex-wrap">
+                        <img width="290" height="272" src="/images/Utilities/checking_rules.png" style="      ">
+                    </div>
+                </div>
+            </div>
+            <div class="card card-stats col-md-9 text-align-center" style="    margin-top: -303px;">
+                <div>
+                    <h6 class="form-title card-title" style="text-align: center !important;">
+                        @TextResources.APP_StringKeys_Rule_Add
+                    </h6>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="    margin-bottom: 2px !important;">
+                    <label style="margin-right: 10px !important;">@TextResources.APP_StringKeys_Code</label>
+                    <input @bind-value="Request.Id" type="text" style="width: 80px !important;" readonly
+                           class="form-control input-search-span-lg pointer" />
+                    <label style="margin-right: 10px !important;">@TextResources.APP_StringKeys_Field_Title</label>
+                    <input @bind-value="Request.Title" type="text" style="    width: 160px !important;"
+                           class="form-control input-search-span-lg pointer" />
+                    <label style="margin-right: 10px !important;">
+                        @TextResources.APP_StringKeys_CheckingRulesType
+                    </label>
+                    <TelerikDropDownList Data="CheckingRuleTypes"
+                                         TextField="Name"
+                                         ValueField="Value"
+                                         @bind-Value="Request.Type"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="130px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 10px !important;">
+                        @TextResources.APP_StringKeys_ResultType
+                    </label>
+                    <TelerikDropDownList Data="CheckingRuleResultTypes"
+                                         TextField="Name"
+                                         ValueField="Value"
+                                         @bind-Value="Request.ResultType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="130px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 10px !important;">
+                        @TextResources.APP_StringKeys_CheckingRulesStationCode
+                    </label>
+                    <input @bind-value="Request.StationCode" type="text" style="    width: 55px !important;"
+                           class="form-control input-search-span-lg pointer" />
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                    <label style="margin-right: 27px !important;"></label>
+                    <textarea @bind="Request.Command" @bind:event="oninput"
+                              style="min-height: 170px;
+                                  min-width: 500px !important;
+                                  font-size: 150%; direction:ltr;"
+                              class="form-control input-search-span-lg pointer"
+                              readonly>@Request.Command</textarea>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 40px !important;margin-right: 597px;margin-top: -154px;">
+                    <button class="btn btn-warning btn-op" type="button" style="padding: 5px;margin: 10px;width: 41px;height: 41px;"
+                            @onclick="async ()=> await OnOperationClick(CheckingRuleOperator.OpenParentheses)">
+                        (
+                    </button>
+                    <button class="btn btn-warning btn-op" type="button" style="padding: 5px;margin: 10px;width: 41px;height: 41px;"
+                            @onclick="async ()=> await OnOperationClick(CheckingRuleOperator.CloseParentheses)">
+                        )
+                    </button>
+                    <button class="btn btn-warning btn-op" type="button" style="padding: 5px;margin: 10px;width: 41px;height: 41px;"
+                            @onclick="async ()=> await OnOperationClick(CheckingRuleOperator.Equals)">
+                        =
+                    </button>
+                    <button class="btn btn-warning btn-op" type="button" style="padding: 5px;margin: 10px;width: 41px;height: 41px;"
+                            @onclick="async ()=> await OnOperationClick(CheckingRuleOperator.BiggerThan)">
+                        @(">")
+                    </button>
+                    <button class="btn btn-warning btn-op" type="button" style="padding: 5px;margin: 10px;width: 41px;height: 41px;"
+                            @onclick="async ()=> await OnOperationClick(CheckingRuleOperator.BiggerEqualsThan)">
+                        @(">=")
+                    </button>
+                    <button class="btn btn-warning btn-op" type="button" style="padding: 5px;margin: 10px;width: 41px;height: 41px;"
+                            @onclick="async ()=> await OnOperationClick(CheckingRuleOperator.SmallerThan)">
+                        @("<")
+                    </button>
+                    <button class="btn btn-warning btn-op" type="button" style="padding: 5px;margin: 10px;width: 41px;height: 41px;"
+                            @onclick="async ()=> await OnOperationClick(CheckingRuleOperator.BiggerEqualsThan)">
+                        @("<=")
+                    </button>
+                    <button class="btn btn-warning btn-op" type="button" style="padding: 5px;margin: 10px;width: 41px;height: 41px;"
+                            @onclick="async ()=> await OnOperationClick(CheckingRuleOperator.And)">
+                        AND
+                    </button>
+                    <button class="btn btn-warning btn-op" type="button" style="padding: 5px;margin: 10px;width: 41px;height: 41px;"
+                            @onclick="async ()=> await OnOperationClick(CheckingRuleOperator.Or)">
+                        OR
+                    </button>
+                    <button class="btn btn-warning btn-op" type="button" style="padding: 5px;margin: 10px;width: 41px;height: 41px;"
+                            @onclick="async ()=> await OnOperationClick(CheckingRuleOperator.Delete)">
+                        DEL
+                    </button>
+                    <button class="btn btn-warning" id="btn-dialog" type="button"
+                            @onclick="async(e)=> await ModalElements.Open(e)"
+                            style="padding: 5px;margin: 10px;min-width: 41px;height: 41px;">
+                        @TextResources.APP_StringKeys_AddElement
+                    </button>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                    <label style="margin-right: 5px !important;">@TextResources.APP_StringKeys_CheckingRulesReturnResultTrue</label>
+                    <input @bind-value="Request.ReturnResultTrue" type="text"
+                           style="width: 817px !important;" class="form-control input-search-span-lg pointer" />
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                    <label style="margin-right: 15px !important;">@TextResources.APP_StringKeys_CheckingRulesReturnResultFalse</label>
+                    <input @bind-value="Request.ReturnResultFalse" type="text"
+                           style="width: 817px !important;" class="form-control input-search-span-lg pointer" />
+                </div>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap save-button-div" style="margin-top: -35px;">
+                <button type="button" id="btn-load-data" class="btn btn-primary"
+                        title="@TextResources.APP_StringKeys_DataList"
+                        @onclick="async(e)=>await ModalDetails.Open(e)">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                </button>
+                <button class="btn btn-danger" type="button"
+                        style="margin-left: 2px;"
+                        @onclick="async(e)=>await ModalDelete.Open(e)">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                </button>
+                <button type="button" class="btn btn-warning" title="@TextResources.APP_StringKeys_Clear"
+                        style="margin-left: 2px;margin-right: 2px;"
+                        @onclick="OnClearClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                </button>
+                <button type="button" id="btn-send" class="btn btn-primary"
+                        title="@TextResources.APP_StringKeys_Send"
+                        @onclick="OnSubmitClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Attention"
+       @ref="ModalMessage"
+       Size="ModalSize.Normal"
+       OkBtnText="@TextResources.APP_StringKeys_Ok"
+       CloseBtnText="@TextResources.APP_StringKeys_Close">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @MessageText
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalDetails"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="Rules"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="rule">
+                    <td class="td-style td-dt">@rule.Id</td>
+                    <td class="td-style td-dt">@rule.Title</td>
+                    <td class="td-style td-dt">@rule.StationCode</td>
+                    <td class="td-style td-dt">@CheckingRuleTypes.FirstOrDefault(t=>t.Value.Equals(rule.Type)).Name</td>
+                    <td class="td-style td-dt">
+                        <button class="btn btn-success btn-details tr-buttom"
+                                @onclick="async()=> await OnChooseRule(rule)">
+                            @TextResources.APP_StringKeys_Choose
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllRuleVm.Id)"
+                                Title="@TextResources.APP_StringKeys_Code"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllRuleVm.Title)"
+                                Title="@TextResources.APP_StringKeys_Field_Title"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllRuleVm.StationCode)"
+                                Title="@TextResources.APP_StringKeys_CheckingRulesStationCode"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllRuleVm.Type)"
+                                Title="@TextResources.APP_StringKeys_CheckingRulesType"></GridColumn>
+                    <GridColumn></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalElements"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @foreach (var element in Elements)
+            {
+                <button type="button" class="btn btn-warning" style="padding: 5px;margin: 10px;"
+                    @onclick="async()=> await OnChooseElement(element.DataMiningElementsTitle)">
+                    @element.DataMiningElementsTitle
+                </button>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<style>
+    .btn-element {
+        margin-left: 5px;
+        margin-bottom: 5px;
+        font-size: 80%;
+        min-width: 50px;
+    }
+
+    .btn-delete {
+        margin-right: 5px;
+        background-color: indianred;
+    }
+</style>
+
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_Attention"
+       @ref="ModalDelete"
+       Size="ModalSize.Normal"
+       OnYesModal="OnRemoveClick"
+       YesBtnText="@TextResources.APP_StringKeys_Delete"
+       CancelBtnText="@TextResources.APP_StringKeys_Close">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @TextResources.APP_StringKeys_Remove_CheckBeforeDelete
+        </div>
+    </ModalBodyContentHtml>
+</Modal>

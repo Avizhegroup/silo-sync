@@ -1,0 +1,65 @@
+﻿@if (Cargo is not null)
+{
+    <div class="div-confirm text-align-center">
+        <div class="div-confirm-message">
+            <p>
+                <h5>
+                    @TextResources.APP_StringKeys_Truck_Confirm_First
+                </h5>
+            </p>
+            <p>
+                <h5>
+                    @TextResources.APP_StringKeys_Truck_Confirm_Second
+                </h5>
+            </p>
+        </div>
+        <div class="div-confirm-location d-flex flex-row align-items-center flex-wrap">
+            <label>@TextResources.APP_StringKeys_Warehouse</label>
+            <select class="form-control"
+                    style="width:200px;"
+                    @bind="@Cargo.DestinationWarehouseCode"
+                    @bind:event="oninput"
+                    @onchange="OnSelectWarehouseChange">
+                @foreach (var warehouse in Warehouses)
+                {
+                    <option value="@warehouse.DestinationCode">
+                        @warehouse.DestinationTitle
+                    </option>
+                }
+            </select>
+
+            <label style="margin-right: 40px;">@TextResources.APP_StringKeys_Location</label>
+            <select class="form-control"
+                    @bind="@Cargo.DestinationZoneCode"
+                    @bind:event="oninput"
+                    style="width:200px;">
+                @if (Zones is not null)
+                {
+                    @foreach (var zone in Zones)
+                    {
+                        <option value="@zone.ZoneCode"
+                                style="width:200px;">
+                            @zone.Title
+                        </option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    <div class="div-footer">
+        <TruckButton OnClick="OnVerifyClick"
+                 Class="btn-verify">
+            <MaterialIcon IconName="done"
+                      Style="font-size:50px; color:white;"></MaterialIcon>
+        </TruckButton>
+        <TruckButton OnClick="OnCancelClick"
+                 Class="btn-cancel">
+            <MaterialIcon IconName="close"
+                      Style="font-size:50px; color:white;"></MaterialIcon>
+        </TruckButton>
+        <TruckButton OnClick="OnBackClick">
+            <MaterialIcon IconName="arrow_forward"
+                      Style="font-size:50px; color:white;"></MaterialIcon>
+        </TruckButton>
+    </div>
+}

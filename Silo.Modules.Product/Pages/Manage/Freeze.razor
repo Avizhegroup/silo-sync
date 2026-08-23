@@ -1,0 +1,96 @@
+@page "/product/freeze"
+@inherits SiloBasePage
+@namespace Silo.Modules.Product.Pages
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Silo.Application.Features
+@using Silo.Shared.Components
+@using Telerik.Blazor.Components
+@using Silo.Shared.Components.Modals
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center form-search-span" style="margin-bottom:5px; padding:5px;">
+        <EditForm Model="Command"
+                  OnInvalidSubmit="OnInvalidSubmit"
+                  OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_OperationType :</label>
+                <TelerikDropDownList Data="FreezeStatuses"
+                                     TextField="Name"
+                                     ValueField="Value"
+                                     @bind-Value="Command.Status"
+                                     Width="100px"
+                                     Class="drop-all">
+                </TelerikDropDownList>
+                <button type="button" class="btn btn-success" style="margin-right:10px;"
+                        @onclick="async ()=> await ProductModal.Open()">
+                    @TextResources.APP_StringKeys_Choose_Serial
+                    <MaterialIcon IconName="@MaterialIconsHelper.Check_box"></MaterialIcon>
+                </button>
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_Description :</label>
+                <TelerikTextBox @bind-Value="Command.Description"
+                                Class="form-control input-search-span"
+                                Width="400px!important"></TelerikTextBox>
+
+                <div style="left:5px; position:absolute;">
+                    <button type="button"
+                            class="btn btn-warning"
+                            @onclick="OnRefreshClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                    </button>
+                </div>
+
+            </div>
+        </EditForm>
+    </div>
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; padding:5px;">
+        <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-right:15px;">
+            <TelerikGrid @ref="Grid"
+                         Data="SelectedTags"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style td-dt">@product.ProductSerial</td>
+                    <td class="td-style td-dt">@product.ProductCode</td>
+                    <td class="td-style td-dt">@product.ProductName</td>
+                    <td class="td-style td-dt">@product.TechnicalCode</td>
+                    <td class="td-style td-dt">
+                        <button @onclick="async()=> await OnDeleteSerialProductClick(product)"
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                            <MaterialIcon IconName="delete"></MaterialIcon>
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllProductBySerialVm.ProductSerial)"
+                                Title="@TextResources.APP_StringKeys_ProductSerial" Width="140px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllProductBySerialVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_ProductCode" Width="200px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllProductBySerialVm.ProductName)"
+                                Title="@TextResources.APP_StringKeys_Field_Name"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllProductBySerialVm.TechnicalCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_Regcode" Width="120px"></GridColumn>
+                    <GridColumn Width="50px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </div>
+</div>
+
+<ProductSerialModal @ref="ProductModal"
+                    OnSelectSerials="OnSelectSerials" MultiSelect="true"></ProductSerialModal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

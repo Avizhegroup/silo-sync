@@ -1,0 +1,146 @@
+﻿@namespace Silo.Shared.Components.Report
+@using Silo.Application.Dto
+@using Silo.Shared.Components
+@using Silo.Shared.Components.Modals
+
+<div class=" d-flex flex-row align-items-center flex-wrap col-md-12" style="margin-bottom:10px!important;">
+    @foreach (var filter in Filters)
+    {
+        <label style="margin-right:20px;">@filter.Label :</label>
+        if (filter.Component == FilterComponent.Text)
+        {
+            <TelerikTextBox @bind-Value="filter.Value"
+                            Class="@InputClass"
+                            Enabled="IsEditable"
+                            Width="200px"
+                            OnChange="async (e) => await OnChange(e, filter)">
+            </TelerikTextBox>
+        }
+        else if (filter.Component == FilterComponent.Drop)
+        {
+            <TelerikDropDownList Data="filter.Items"
+                                 TextField="@nameof(ReportDataItem.Label)"
+                                 ValueField="@nameof(ReportDataItem.Value)"
+                                 @bind-Value="filter.Value"
+                                 OnChange="(e)=>OnDropChange(e,filter)"
+                                 Class="@InputClass"
+                                 Width="200px"
+                                 Filterable="true"
+                                 Enabled="IsEditable"
+                                 FilterOperator="StringFilterOperator.Contains">
+            </TelerikDropDownList>
+        }
+        else if (filter.Component == FilterComponent.PersianDate)
+        {
+            <DatePicker InputClass="@InputClass"
+                        @bind-Value="filter.Value"
+                        IsEnabled="IsEditable"
+                        OnChange="(e) => OnChange(new (){Value = e}, filter)"></DatePicker>
+        }
+        else if (filter.Component == FilterComponent.Modal)
+        {
+            <button type="button"
+                    class="btn-dt-1 btn-success tr-buttom btn"
+                    disabled=@(!IsEditable)
+            @onclick="async()=> await OnModalOpenClick(filter)">
+                @if (filter.Items.Any(p => p.IsChoosen))
+                {
+                    @(filter.Items.Where(p => p.IsChoosen).Select(p => p.Label).Aggregate((p, q) => p + ", " + q))
+                }
+                <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+            </button>
+            <Modal Buttons="ModalButtons.OKClose"
+           ModalTitle="@TextResources.APP_StringKeys_Details"
+           @ref="ModalDetails"
+           Size="ModalSize.ExtraLarge"
+           CloseBtnText="@TextResources.APP_StringKeys_Close"
+           OkBtnText="@TextResources.APP_StringKeys_Choose">
+                <ModalBodyContentHtml>
+                    <div class="text-align-center">
+                        <TelerikGrid Data="filter.Items"
+                             PageSize="5"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true">
+                            <RowTemplate Context="item">
+                                <td class="td-style td-dt">
+                                    <TelerikCheckBox @bind-Value="item.IsChoosen"
+                                             OnChange="async(e)=> await OnModalCheckboxChange(filter)"></TelerikCheckBox>
+                                </td>
+                                <td class="td-style td-dt">@item.Label</td>
+                                <td class="td-style td-dt">@item.Value</td>
+                            </RowTemplate>
+                            <GridColumns>
+                                <GridColumn Field="@nameof(ReportDataItem.IsChoosen)"
+                                    Title="" Width="40px"></GridColumn>
+                                <GridColumn Field="@nameof(ReportDataItem.Label)"
+                                    Title="@TextResources.APP_StringKeys_Field_Title"></GridColumn>
+                                <GridColumn Field="@nameof(ReportDataItem.Value)"
+                                    Title="@TextResources.APP_StringKeys_Code"></GridColumn>
+                            </GridColumns>
+                        </TelerikGrid>
+                    </div>
+                </ModalBodyContentHtml>
+            </Modal>
+        }
+        else if (filter.Component == FilterComponent.ProductCodeModal)
+        {
+            <TelerikTextBox @bind-Value="filter.Value"
+                            Class="form-control input-search-span-lg pointer"
+                            Enabled="IsEditable"
+                            OnChange="async (e) => await OnChange(e, filter)">
+            </TelerikTextBox>
+            <button type="button"
+                    class="btn btn-light"
+                    disabled=@(!IsEditable)
+                    @onclick="async ()=> await ProductCodeModal.Show()">
+                <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+            </button>
+            <ProductCodeModal @ref="ProductCodeModal"
+                              OnClickProductCode="(code)=> OnProductCodeChange(code,filter)">
+            </ProductCodeModal>
+        }
+        else if (filter.Component == FilterComponent.LocationModal)
+        {
+            var warehouseFilter = Filters.FirstOrDefault(p => p.FieldName.Equals("Destination")
+            || p.FieldName.Equals("Store")
+            || p.FieldName.Equals("Warehouse"));
+            string warehouseCode = warehouseFilter is not null ? warehouseFilter.Value : "";
+            <TelerikTextBox @bind-Value="filter.Value"
+                    Class="form-control input-search-span-lg pointer"
+                    Enabled="IsEditable">
+            </TelerikTextBox>
+            <button type="button"
+                    class="btn btn-light"
+                    disabled=@(!IsEditable)
+            @onclick="async ()=> await LocationCodeModal.Show()">
+                <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+            </button>
+            <LocationModal WarehouseCode="@warehouseCode"
+                   @ref="LocationCodeModal"
+                   OnClickLocation="(code)=> filter.Value = code">
+            </LocationModal>
+        } 
+        else if(filter.Component == FilterComponent.Time)
+        {
+            <ClockPicker Class="@InputClass"
+                @bind-Value="filter.Value">
+            </ClockPicker>
+
+        }
+        @if (filter.IsLikeCheckboxShown)
+        {
+            <label style="margin-right:10px">@TextResources.APP_StringKeys_Like:</label>
+            <TelerikCheckBox @bind-Value="filter.IsLike" OnChange="async(e)=> await OnLikeCheckboxChange(filter)"
+                     Enabled="IsEditable">
+            </TelerikCheckBox>
+        }
+        <button type="button"
+                class="btn-dt-1 btn-danger tr-buttom btn"
+                disabled=@(!IsEditable)
+                style="margin-right:5px"
+            @onclick="async()=> await OnFilterRemoveClick(filter)">
+            <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+        </button>
+    }
+</div>

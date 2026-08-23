@@ -1,0 +1,33 @@
+﻿@using Silo.Components
+@inherits LayoutComponentBase
+
+<PageTitle>@Title</PageTitle>
+
+<TelerikRootComponent EnableRtl="true">
+    <CascadingValue Value="Notification">
+        <CascadingValue Value="SiloContext">
+                @if (IsAutheticated)
+                {
+                    if (!IsTruckRoute)
+                    {
+                        <Navbar></Navbar>
+                    }
+                }
+
+                <div class="page">
+                    <main>
+                    <article class="content @(isLoginPage ? "login-page-article" : "px-4")">
+                        <AppErrorBoundary>
+                            @Body
+                        </AppErrorBoundary>
+                    </article>
+                    </main>
+                </div>
+
+                <TelerikNotification @ref="Notification"
+                                     HorizontalPosition="@NotificationHorizontalPosition.Right"
+                                     VerticalPosition="@NotificationVerticalPosition.Bottom">
+                </TelerikNotification>
+            </CascadingValue>
+        </CascadingValue>
+</TelerikRootComponent>

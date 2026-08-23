@@ -1,0 +1,121 @@
+﻿@using System.Text.Json
+
+@namespace Silo.Shared.Components
+
+@using Silo.Application.Dto;
+@using Silo.Application.Features;
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_Gallery_Title"
+       @ref="Modal"
+       Size="ModalSize.Large">
+    <ModalBodyContentHtml>
+        <div class="gallery-container">
+            @if (!Readonly)
+            {
+                <div class="gallery-upload-section">
+                    <CascadingValue Value="Notification">
+                        <FileUpload @ref="FileUploadComponent"
+                                    AllowedExtensions="@AllowedExtensions"
+                                    OnStartUpload="()=> IsLoading = true"
+                                    ButtonClass="btn btn-success"
+                                    MaterialIconClass="Upload"
+                                    MaxAllowedSizeMB="MaxAllowedSizeMB"
+                                    ShowDropZone="true"
+                                    DropZoneText="کلیک کنید یا را در اینجا رها کنید"
+                                    OnUpload="OnFileUpload">
+                        </FileUpload>
+                    </CascadingValue>
+                </div>
+            }
+            @if (GalleryMedias is not null && GalleryMedias.Any())
+            {
+                <div class="gallery-grid">
+                    @foreach (var media in GalleryMedias)
+                    {
+                        var iconName = media.Extension switch
+                        {
+                            GalleryExtension.Pdf => "picture_as_pdf",
+                            GalleryExtension.Word => "description",
+                            GalleryExtension.Zip => "folder_zip",
+                            GalleryExtension.Image => "image",
+                            _ => "insert_drive_file"
+                        };
+
+                        var iconColorClass = media.Extension switch
+                        {
+                            GalleryExtension.Pdf => "icon-pdf",
+                            GalleryExtension.Word => "icon-word",
+                            GalleryExtension.Zip => "icon-zip",
+                            GalleryExtension.Image => "icon-image",
+                            _ => "icon-default"
+                        };
+
+                        var jsonData = JsonDocument.Parse(media.Data);
+                        jsonData.RootElement.TryGetProperty("ActionTypeTitle", out var actionTypeTitle);
+
+                        <div class="gallery-item @(SelectedGalleryMedia.Id == media.Id ? "gallery-item-selected" : "")"
+                             @oncontextmenu:preventDefault="true"
+                             @oncontextmenu="async (e) => await OnGalleryMediaRightClick(e, media)"
+                             @onclick="async (e) => await OnGalleryMediaRightClick(media)">
+                            <div class="gallery-item-card">
+                                <div class="gallery-item-icon @iconColorClass">
+                                    <MaterialIcon IconName="@iconName"></MaterialIcon>
+                                </div>
+                                <div class="gallery-item-info">
+                                    <div class="gallery-item-name" title="@media.MediaName">
+                                        @media.MediaName
+                                    </div>
+                                    <div class="gallery-item-name" title="@actionTypeTitle">
+                                        @actionTypeTitle
+                                    </div>
+                                    <div class="gallery-item-date">
+                                        @(PersianCalendarTools.GregorianToPersian(media.UpldoadDateTime))
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (GalleryMedias.Count > 20)
+                {
+                    <div class="gallery-pagination-info">
+                        @GalleryMedias.Count فایل
+                    </div>
+                }
+            }
+            else if (!IsLoading)
+            {
+                <div class="gallery-empty">
+                    <MaterialIcon IconName="photo_library"></MaterialIcon>
+                    <p>@TextResources.APP_StringKeys_Validation_AnyData</p>
+                </div>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+@if (Readonly)
+{
+    <TelerikContextMenu Class="gallery-context"
+                        @ref="@ContextMenu"
+                        Data="@ContextMenuItems.Where(p=>p.Text!= @TextResources.APP_StringKeys_Delete)"
+                        OnClick="@((TelerikContextMenuItem item) => OnContextMenuItemClick(item))">
+    </TelerikContextMenu>
+}
+else
+{
+    <TelerikContextMenu Class="gallery-context"
+                        @ref="@ContextMenu"
+                        Data="@ContextMenuItems"
+                        OnClick="@((TelerikContextMenuItem item) => OnContextMenuItemClick(item))">
+    </TelerikContextMenu>
+}
+<TelerikTooltip TargetSelector=".gallery-item-card"
+                Position="@TooltipPosition.Top"
+                ShowOn="@TooltipShowEvent.Hover">
+</TelerikTooltip>

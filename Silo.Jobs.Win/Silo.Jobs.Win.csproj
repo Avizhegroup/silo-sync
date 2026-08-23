@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<UserSecretsId>4af2dcd3-9d7c-4856-8dbe-8da97ebf545a</UserSecretsId>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<Authors>Avizhe Group</Authors>
+		<Company>Avizhe Group</Company>
+		<Description>Store inventory system using RFID.</Description>
+		<Product>Silo Service</Product>
+		<Copyright>Avizhe Group</Copyright>
+		<WebPage>Avizhegroup.com</WebPage>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="DocumentFormat.OpenXml" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+		<PackageReference Include="Swashbuckle.AspNetCore" />
+		<PackageReference Include="Newtonsoft.Json" />
+		<PackageReference Include="System.Data.SqlClient" />
+		<PackageReference Include="System.Data.SQLite.Core" />
+		<PackageReference Include="System.Drawing.Common" />
+		<PackageReference Include="System.Text.Json" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" />
+		<PackageReference Include="Serilog" />
+		<PackageReference Include="Serilog.AspNetCore" />
+		<PackageReference Include="Serilog.Extensions.Logging" />
+		<PackageReference Include="Serilog.Sinks.File" />
+		<PackageReference Include="Serilog.Extensions.Hosting" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Silo.Application\Silo.Application.Shared.csproj" />
+	  <ProjectReference Include="..\Silo.Domains\Silo.Domains.csproj" />
+	  <ProjectReference Include="..\Silo.Infrastructure.Shared\Silo.Infrastructure.Shared.csproj" />
+	  <ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="System" />
+		<Using Include="System.Linq" />
+		<Using Include="System.Data" />
+		<Using Include="System.Collections" />
+		<Using Include="System.Threading.Tasks" />
+		<Using Include="System.Collections.Generic" />
+	</ItemGroup>
+
+</Project>

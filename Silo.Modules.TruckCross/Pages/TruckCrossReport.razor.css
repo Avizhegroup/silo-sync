@@ -1,0 +1,11 @@
+﻿.present-category {
+    background-color: rgba(31, 161, 204,0.1);
+}
+
+.enter-category {
+    background-color: rgba(31, 161, 204,0.2);
+}
+
+.exit-category {
+    background-color: rgba(31, 161, 204,0.3);
+}

@@ -1,0 +1,554 @@
+﻿@namespace Silo.Shared
+@using Silo.Components
+
+<header class="silo-header">
+    <nav class="silo-navbar">
+
+        @* ── Left cluster: logo + menu toggle ── *@
+        <div class="silo-nav-start">
+            <button class="nav-icon-btn" title="منو" @onclick="OnExpandMenuSpanClick">
+                <MaterialIcon IconName="@MaterialIconsHelper.Menu" />
+            </button>
+            <span class="nav-logo" @onclick="OnLogoClick" title="خانه">
+                <a href="/">
+                    <img src="/images/Utilities/app-nav.png" alt="logo" />
+                </a>
+            </span>
+        </div>
+
+        @* ── Breadcrumb ── *@
+        <div class="silo-nav-breadcrumb">
+            <NavBread Items="NavBreadItems"
+                      OnItemClick="OnBreadCrumbItemClick" />
+        </div>
+
+        @* ── Right cluster: actions ── *@
+        <div class="silo-nav-end">
+
+            @* Date & version pills *@
+            <div class="nav-pill nav-pill-date">
+                <MaterialIcon IconName="@MaterialIconsHelper.Today" />
+                <span>@CurrentDateTime</span>
+            </div>
+            @if (Version.HasValue())
+            {
+                <div class="nav-pill nav-pill-version">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Info" />
+                    <span>@TextResources.APP_StringKeys_Version @Version</span>
+                </div>
+            }
+
+            @* Theme toggle *@
+            <Toggle IconName="@(IsDarkMode ? MaterialIconsHelper.Dark_mode : MaterialIconsHelper.Light_mode)"
+                    @bind-Value="IsDarkMode"
+                    OnCheckedChanged="OnThemeToggleChanged"
+                    IsVisible="true" />
+
+            @* Page filter *@
+            @if (SiloContext.NavbarFilterClicked is not null)
+            {
+                <button class="nav-icon-btn @(IsSearchActive.HasValue() ? "nav-icon-btn--active" : "")"
+                        title="فیلتر"
+                        @onclick="OnFiltersSpanClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.FilterList" />
+                </button>
+            }
+
+            @* Search *@
+            <div class="nav-search-wrap @(IsSearchActive == "span-search-expand" ? "nav-search-wrap--open" : "")">
+                <button class="nav-icon-btn nav-search-trigger" title="جستجو" @onclick="OnSearchSpanClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Search" />
+                </button>
+                @if (IsSearchActive == "span-search-expand")
+                {
+                    <TelerikAutoComplete Data="@Pages"
+                                         Class="nav-search-input"
+                                         Placeholder="@TextResources.APP_StringKeys_Search"
+                                         ValueField="@(nameof(ChoosableKeyValue.Value))"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         MinLength="1"
+                                         ShowClearButton="false"
+                                         Width="260px"
+                                         OnChange="OnAutoCompleteChange" />
+                }
+            </div>
+
+            @* Profile *@
+            <div class="nav-profile-wrap" @onclick="OnProfileSpanClick">
+                <button class="nav-icon-btn nav-profile-btn @(IsProfileActive ? "nav-icon-btn--active" : "")" title="پروفایل">
+                    @if (Image.Equals("-1"))
+                    {
+                        <MaterialIcon IconName="@MaterialIconsHelper.AccountCircle" />
+                    }
+                    else
+                    {
+                        <img class="nav-avatar" src="/images/Users/@Image" alt="avatar" />
+                    }
+                </button>
+
+                @if (IsProfileActive)
+                {
+                    <div class="nav-profile-panel">
+                        <div class="nav-profile-avatar" @onclick="OnProfileClick">
+                            @if (Image.Equals("-1"))
+                            {
+                                <img src="/images/Utilities/user.png" alt="avatar" />
+                            }
+                            else
+                            {
+                                <img src="/images/Users/@Image" alt="avatar" />
+                            }
+                        </div>
+                        <div class="nav-profile-name">@UserName</div>
+                        <div class="nav-profile-role">کاربر</div>
+                        <hr class="nav-profile-divider" />
+                        <button class="nav-profile-logout" @onclick="OnLogoutClick">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Logout" />
+                            @TextResources.APP_StringKeys_Logout
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* ── Mega-menu drawer ── *@
+        @if (IsMenuActive)
+        {
+            <div class="silo-menu-drawer">
+                @if (!IsLoading)
+                {
+                    <div class="silo-menu-categories">
+                        @foreach (var item in MenuLinks.Where(p => p.Children.Any(p => p.Children.Any())))
+                        {
+                            <button class="menu-cat-btn @(SelectedAllTitle.Title == item.Title ? "menu-cat-btn--active" : "")"
+                                    @onclick="async () => await OnCategoryClick(item)">
+                                <MaterialIcon IconName="@item.IconName" />
+                                <span>@item.Title</span>
+                            </button>
+                        }
+                    </div>
+
+                    @if (SelectedAllTitle.Title.HasValue())
+                    {
+                        <div class="silo-menu-links">
+                            @foreach (var category in SelectedAllTitle.Children.Where(p => p.Children.Any()))
+                            {
+                                <div class="menu-link-group">
+                                    <div class="menu-link-group-title">@category.Title</div>
+                                    <div class="menu-link-group-items">
+                                        @foreach (var link in category.Children)
+                                        {
+                                            <span @oncontextmenu:preventDefault="true"
+                                                  @oncontextmenu="async (e) => await OnNavLinkRightClick(link, e)">
+                                                <NavLink class="menu-nav-link"
+                                                         href="@link.Url"
+                                                         @onclick="async () => await OnNavLinkClick(link.Url)"
+                                                         Match="NavLinkMatch.All">
+                                                    @link.Title
+                                                </NavLink>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="silo-menu-loading">
+                        @TextResources.APP_StringKeys_Loading
+                        <TelerikLoader Class="loader-indicator"
+                                       Type="@LoaderType.InfiniteSpinner"
+                                       Size="@(ThemeConstants.Loader.Size.Large)" />
+                    </div>
+                }
+            </div>
+        }
+
+    </nav>
+</header>
+
+<TelerikContextMenu @ref="NavContextMenuRef"
+                    Data="@NavContextMenuItems"
+                    TextField="@nameof(TelerikContextMenuItem.Text)"
+                    DisabledField="@nameof(TelerikContextMenuItem.Disabled)"
+                    SeparatorField="@nameof(TelerikContextMenuItem.Separator)"
+                    IconField="@nameof(TelerikContextMenuItem.Icon)">
+    <ItemTemplate>
+        @{
+            var ctxItem = context as TelerikContextMenuItem;
+            <div @onclick="async () => await OnNavContextMenuItemClick(ctxItem)">
+                @ctxItem.Text
+            </div>
+        }
+    </ItemTemplate>
+</TelerikContextMenu>
+
+@if (IsProfileActive || IsMenuActive)
+{
+    <div class="navbar-backdrop" @onclick="OnClickBackDrop"></div>
+}
+
+<style>
+    /* ─────────────────────────────────────────
+       SILO NAVBAR — design-system aligned
+    ───────────────────────────────────────── */
+    .silo-header {
+        position: sticky;
+        top: 0;
+        z-index: 1040;
+    }
+
+    .silo-navbar {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        height: 56px;
+        padding: 0 1rem;
+        background: #fff;
+        border-bottom: 1px solid #e8eaed;
+        box-shadow: 0 1px 6px rgba(0,0,0,.06);
+    }
+
+    /* ── Start ── */
+    .silo-nav-start {
+        display: flex;
+        align-items: center;
+        gap: .25rem;
+        flex-shrink: 0;
+    }
+
+    .nav-logo {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
+
+    .nav-logo img {
+        width: 38px;
+        height: 26px;
+        object-fit: contain;
+    }
+
+    /* ── Breadcrumb (fills remaining space) ── */
+    .silo-nav-breadcrumb {
+        flex: 1;
+        min-width: 0;
+        padding: 0 .5rem;
+        overflow: hidden;
+    }
+
+    /* ── End cluster ── */
+    .silo-nav-end {
+        display: flex;
+        align-items: center;
+        gap: .35rem;
+        flex-shrink: 0;
+    }
+
+    /* ── Generic icon button ── */
+    .nav-icon-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 50%;
+        background: transparent;
+        color: #5f6368;
+        font-size: 1.25rem;
+        cursor: pointer;
+        transition: background .15s, color .15s;
+    }
+
+    .nav-icon-btn:hover {
+        background: #f1f3f4;
+        color: #202124;
+    }
+
+    .nav-icon-btn--active {
+        background: #e8f0fe;
+        color: #1a73e8;
+    }
+
+    /* ── Date / version pills ── */
+    .nav-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        padding: .2rem .65rem;
+        border-radius: 20px;
+        font-size: .72rem;
+        font-weight: 600;
+        white-space: nowrap;
+        line-height: 1.4;
+    }
+
+    .nav-pill-date {
+        background: #e6f4ea;
+        color: #1e7e34;
+    }
+
+    .nav-pill-version {
+        background: #e8f0fe;
+        color: #1a73e8;
+    }
+
+    .nav-pill .material-icons,
+    .nav-pill .material-icons-round {
+        font-size: .9rem;
+    }
+
+    /* ── Search ── */
+    .nav-search-wrap {
+        display: flex;
+        align-items: center;
+        transition: width .2s;
+    }
+
+    .nav-search-wrap--open {
+        border: 2px solid #97DCE1;
+        border-radius: 20px;
+        padding: 0 .4rem;
+        background: #fff;
+    }
+
+    .nav-search-input input {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        font-size: .875rem;
+    }
+
+    /* ── Profile ── */
+    .nav-profile-wrap {
+        position: relative;
+    }
+
+    .nav-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .nav-profile-panel {
+        position: absolute;
+        left: 0;
+        top: calc(100% + .5rem);
+        width: 200px;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 8px 28px rgba(0,0,0,.14);
+        padding: 1.25rem 1rem 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: .4rem;
+        z-index: 1050;
+        animation: navFadeIn .15s ease;
+    }
+
+    .nav-profile-avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid #97DCE1;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .nav-profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .nav-profile-name {
+        font-size: .85rem;
+        font-weight: 600;
+        color: #202124;
+        text-align: center;
+    }
+
+    .nav-profile-role {
+        font-size: .72rem;
+        color: #80868b;
+    }
+
+    .nav-profile-divider {
+        width: 100%;
+        margin: .25rem 0;
+        border-color: #e8eaed;
+    }
+
+    .nav-profile-logout {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        padding: .35rem 1.1rem;
+        border-radius: 20px;
+        border: none;
+        background: #7E6CC0;
+        color: #fff;
+        font-size: .78rem;
+        cursor: pointer;
+        transition: background .15s;
+    }
+
+    .nav-profile-logout:hover {
+        background: #6a5aad;
+    }
+
+    /* ── Mega-menu drawer ── */
+    .silo-menu-drawer {
+        position: absolute;
+        top: 56px;
+        right: 0;
+        left: 0;
+        z-index: 1045;
+        display: flex;
+        gap: 0;
+        background: #fff;
+        border-top: 1px solid #e8eaed;
+        box-shadow: 0 6px 24px rgba(0,0,0,.10);
+        min-height: 160px;
+        max-height: 70vh;
+        overflow: hidden;
+        animation: navFadeIn .18s ease;
+    }
+
+    .silo-menu-categories {
+        display: flex;
+        flex-direction: column;
+        gap: .25rem;
+        padding: .75rem .5rem;
+        background: #f8f9fa;
+        border-left: 1px solid #e8eaed;
+        min-width: 160px;
+        overflow-y: auto;
+    }
+
+    .menu-cat-btn {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        padding: .5rem .75rem;
+        border: none;
+        border-radius: 8px;
+        background: transparent;
+        color: #3c4043;
+        font-size: .82rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: right;
+        transition: background .15s, color .15s;
+        white-space: nowrap;
+    }
+
+    .menu-cat-btn:hover {
+        background: #e8eaed;
+    }
+
+    .menu-cat-btn--active {
+        background: #e8f0fe;
+        color: #1a73e8;
+        font-weight: 600;
+    }
+
+    .menu-cat-btn .material-icons,
+    .menu-cat-btn .material-icons-round {
+        font-size: 1.1rem;
+        color: #97DCE1;
+    }
+
+    .menu-cat-btn--active .material-icons,
+    .menu-cat-btn--active .material-icons-round {
+        color: #1a73e8;
+    }
+
+    .silo-menu-links {
+        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: .75rem 1rem;
+        overflow-y: auto;
+        align-content: flex-start;
+    }
+
+    .menu-link-group {
+        min-width: 160px;
+    }
+
+    .menu-link-group-title {
+        font-size: .72rem;
+        font-weight: 700;
+        color: #80868b;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        margin-bottom: .4rem;
+        padding-bottom: .25rem;
+        border-bottom: 1px solid #e8eaed;
+    }
+
+    .menu-link-group-items {
+        display: flex;
+        flex-direction: column;
+        gap: .1rem;
+    }
+
+    .menu-nav-link {
+        display: block;
+        padding: .3rem .5rem;
+        border-radius: 6px;
+        color: #7E6CC0 !important;
+        font-size: .82rem;
+        text-decoration: none;
+        transition: background .12s;
+        white-space: nowrap;
+    }
+
+    .menu-nav-link:hover {
+        background: #f1f3f4;
+        color: #3c4043 !important;
+    }
+
+    .menu-nav-link.active {
+        background: #e8f0fe;
+        color: #1a73e8 !important;
+        font-weight: 600;
+    }
+
+    .silo-menu-loading {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        padding: 2rem;
+        color: #80868b;
+        font-size: .85rem;
+    }
+
+    /* ── Backdrop ── */
+    .navbar-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1039;
+        background: rgba(0,0,0,.35);
+        backdrop-filter: blur(2px);
+    }
+
+    /* ── Animation ── */
+    @@keyframes navFadeIn {
+        from { opacity: 0; transform: translateY(-6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+</style>

@@ -1,0 +1,140 @@
+@page "/product/subGroup"
+@inherits SiloBasePage
+@namespace Silo.Modules.Product.Pages
+@using Silo.Application.Features;
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Telerik.Blazor.Components
+@using Silo.Shared.Components
+
+<PageTitle>
+    @PageTitle
+</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center  form-search-span" style="margin-bottom:5px; padding:10px;">
+        <EditForm Model="SaveCommand"
+                  OnInvalidSubmit="OnInvalidSubmit"
+                  OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                <label>@TextResources.APP_StringKeys_Code</label>
+                <TelerikTextBox @bind-Value="SaveCommand.Code"
+                                Class="form-control input-search-span"></TelerikTextBox>
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_Field_Title</label>
+                <TelerikTextBox @bind-Value="SaveCommand.Title"
+                                Class="form-control input-search-span"></TelerikTextBox>
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_SubTitle</label>
+                <TelerikTextBox @bind-Value="SaveCommand.SubTitle"
+                                Class="form-control input-search-span"></TelerikTextBox>
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_Description</label>
+                <TelerikTextBox @bind-Value="SaveCommand.Description"
+                                Class="form-control input-search-span"></TelerikTextBox>
+                <label style="margin-right: 10px !important;">@TextResources.APP_StringKeys_ProductGroup :</label>
+                <TelerikDropDownList Data="Groups"
+                                     TextField="@nameof(GetAllProductGroupVm.Title)"
+                                     ValueField="@nameof(GetAllProductGroupVm.Code)"
+                                     @bind-Value="SaveCommand.ProductGroupCode"
+                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                     Filterable="true"
+                                     FilterOperator="StringFilterOperator.Contains"
+                                     Width="200px"
+                                     Class="drop-all">
+                    <DropDownListSettings>
+                        <DropDownListPopupSettings Class="text-align-right" />
+                    </DropDownListSettings>
+                </TelerikDropDownList>
+                <div style="left:5px; position:absolute;">
+                    <button type="button"
+                            class="btn btn-light"
+                            @onclick="OnOpenModalClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                    </button>
+                    <button type="button"
+                            class="btn btn-danger"
+                            @onclick="OnRemoveClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                    </button>
+                    <button type="button"
+                            class="btn btn-warning"
+                            @onclick="OnRefreshClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                    </button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       CloseBtnText="@TextResources.APP_StringKeys_Ignore"
+       @ref="ModalProductSubGroups"
+       Size="ModalSize.ExtraLarge">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @if (ProductSubGroups is not null)
+            {
+                <TelerikGrid Data="ProductSubGroups"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                    <RowTemplate Context="productSubGroup">
+                        <td class="td-style">@productSubGroup.Code</td>
+                        <td class="td-style">@productSubGroup.Title</td>
+                        <td class="td-style">@productSubGroup.ProductGroupTitle</td>
+                        <td class="td-style">@productSubGroup.SubTitle</td>
+                        <td class="td-style">@productSubGroup.Description</td>
+                        <td class="td-style">
+                            <button @onclick="async()=> await OnChooseProductClass(productSubGroup)" type="button" class="btn btn-success tr-buttom">@TextResources.APP_StringKeys_Choose</button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetAllProductSubGroupVm.Code)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductSubGroupVm.Title)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductSubGroupVm.ProductGroupTitle)"
+                                Title="@TextResources.APP_StringKeys_ProductGroup"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductSubGroupVm.SubTitle)"
+                                Title="@TextResources.APP_StringKeys_SubTitle"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductSubGroupVm.Description)"
+                                Title="@TextResources.APP_StringKeys_Description"></GridColumn>
+                        <GridColumn Width="60px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       OkBtnText="@TextResources.APP_StringKeys_Delete"
+       OkBtnClass="btn-danger"
+       OnOkModal="OnConfirmRemove"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       @ref="ModalDelete"
+       Size="ModalSize.Normal">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @TextResources.APP_StringKeys_Message_DeleteText_Part1
+            <b>
+                @SaveCommand.Title
+            </b>
+            @TextResources.APP_StringKeys_Message_DeleteText_Part2
+          <div class="bg-danger">
+                @TextResources.APP_StringKeys_DeleteModal_SubTitle
+          </div>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

@@ -1,0 +1,138 @@
+﻿@page "/PrintFormat/manage"
+@inherits SiloBasePage
+@using Silo.Application.Features
+@using Silo.Application.Dto
+
+<PageTitle>@PageTitle</PageTitle>
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; padding:10px;">
+        <EditForm Model="Request"
+                  OnInvalidSubmit="OnInvalidSubmit"
+                  OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            @if (Request.Id is not null)
+            {
+                <div class="d-flex flex-row align-items-center flex-wrap" style="margin-bottom:10px;">
+                    <label style="margin-right:10px;">@TextResources.APP_StringKeys_Code</label>
+                    <TelerikNumericTextBox @bind-Value="Request.Id"
+                                           Class="form-control input-search-span"
+                                           ReadOnly="true" />
+                </div>
+            }
+            <div class="d-flex flex-row align-items-center flex-wrap" style="margin-bottom:10px;">
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_Field_Title</label>
+                <TelerikTextBox @bind-Value="Request.Name"
+                                Class="form-control input-search-span" />
+                <label style="margin-right:10px;">آدرس فایل</label>
+                <TelerikTextBox @bind-Value="Request.Path"
+                                Class="form-control input-search-span" 
+                                Width="300px !important"/>
+               
+                <div style="left:5px; position:absolute;">
+                    <button type="button"
+                            class="btn btn-light"
+                            @onclick="OnOpenModalClick"
+                            style="margin-left:10px; ">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                    </button>
+                    <button type="button"
+                            class="btn btn-warning"
+                            @onclick="OnRefreshClick"
+                            style="margin-left:10px; ">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    @if (Request.Id is not null)
+                    {
+                        <button type="button"
+                                class="btn btn-danger"
+                                @onclick="OnRemoveClick"
+                                style="margin-left:10px; ">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                        </button>
+                    }
+                    <button type="submit"
+                            class="btn btn-primary"
+                            style="margin-left:10px; ">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                    </button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; padding:10px;">
+        @if (FlatLinks is not null)
+        {
+            <div class="d-flex flex-row align-items-center flex-wrap" style="margin-bottom:10px;">
+                <TelerikTextBox Value="@LinkFilter"
+                                ValueChanged="@((string v) => OnLinkFilterChanged(v))"
+                                PlaceHolder="@TextResources.APP_StringKeys_Search"
+                                Class="form-control input-search-span" />
+            </div>
+            <TelerikGrid Data="FilteredLinks"
+                         PageSize="15"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="link">
+                    <td class="td-style">
+                        <TelerikCheckBox Value="@SelectedPageTitles.Contains(link.Url.Replace("/", "-"))"
+                                         ValueChanged="@((bool v) => OnLinkCheckedChanged(link, v))" />
+                    </td>
+                    <td class="td-style">@link.Title</td>
+                    <td class="td-style">@link.Url</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Width="50px"></GridColumn>
+                    <GridColumn Field="@nameof(NavbarLink.Title)"
+                                Title="@TextResources.APP_StringKeys_Title"></GridColumn>
+                    <GridColumn Field="@nameof(NavbarLink.Url)"
+                                Title="@TextResources.APP_StringKeys_Url"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        }
+    </div>
+</div>
+<Modal Buttons="ModalButtons.Close"
+       @ref="ModalPrintFormats"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       CloseBtnText="@TextResources.APP_StringKeys_Ignore"
+       Size="ModalSize.ExtraLarge">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @if (PrintFormats is not null)
+            {
+                <TelerikGrid Data="PrintFormats"
+                             PageSize="10"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true">
+                    <RowTemplate Context="printFormat">
+                        <td class="td-style">@printFormat.Name</td>
+                        <td class="td-style">@string.Join(" | ", printFormat.PageTitle.Split('|').Select(p => p.Replace("-", "/")))</td>
+                        <td class="td-style">
+                            <button @onclick="async () => await OnChoosePrintFormat(printFormat)"
+                                    type="button"
+                                    class="btn btn-success tr-buttom">
+                                @TextResources.APP_StringKeys_Choose
+                            </button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetAllPrintFormatDto.Name)"
+                                    Title="@TextResources.APP_StringKeys_Field_Title"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllPrintFormatDto.PageTitle)"
+                                    Title="آدرس صفحه"></GridColumn>
+                        <GridColumn Width="60px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

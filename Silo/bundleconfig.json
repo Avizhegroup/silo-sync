@@ -1,0 +1,34 @@
+[
+  {
+    "outputFileName": "wwwroot/js/site.min.js",
+    "inputFiles": [
+      "wwwroot/js/site.js",
+      "wwwroot/js/MessageFadeout.min.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/MessageFadeout.min.js",
+    "inputFiles": [
+      "wwwroot/js/MessageFadeout.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/Pagination.min.js",
+    "inputFiles": [
+      "wwwroot/js/Pagination.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/Babylon-bundle.js",
+    "inputFiles": [
+      "wwwroot/js/babylon/babylon.js",
+      "wwwroot/js/babylon/babylonjs.loaders.min.js",
+      "wwwroot/js/babylon/babylonjs.materials.min.js",
+      "wwwroot/js/babylon/babylon.gui.min.js",
+      "wwwroot/js/babylon/warehouse3D.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  }
+]

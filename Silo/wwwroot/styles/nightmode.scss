@@ -1,0 +1,351 @@
+// ─────────────────────────────────────────────────────────────────
+// nightmode.scss — Dark / Night Mode overrides
+// Applied when <html data-bs-theme="dark"> is set via JS
+// Bootstrap 5 already handles its own components via data-bs-theme.
+// This file handles Silo-specific classes and Telerik/Kendo overrides.
+// ─────────────────────────────────────────────────────────────────
+
+[data-bs-theme="dark"] {
+
+    // ── Base surfaces ──────────────────────────────────────────────
+    body {
+        background: #1a1a2e !important;
+        color: #e8eaed !important;
+    }
+
+    // ── Cards ──────────────────────────────────────────────────────
+    .card {
+        background-color: #252536 !important;
+        border-color: #3a3a55 !important;
+        color: #e8eaed !important;
+    }
+
+    // ── Navbar / header ────────────────────────────────────────────
+    .silo-navbar {
+        background: #1e1e30 !important;
+        border-bottom-color: #3a3a55 !important;
+        box-shadow: 0 1px 6px rgba(0,0,0,.4) !important;
+    }
+
+    .nav-icon-btn {
+        color: #bdc1c6 !important;
+    }
+
+    .nav-icon-btn:hover {
+        background: #2d2d44 !important;
+        color: #e8eaed !important;
+    }
+
+    .nav-icon-btn--active {
+        background: #1a3050 !important;
+        color: #8ab4f8 !important;
+    }
+
+    .nav-pill-date {
+        background: #1a3020 !important;
+        color: #81c995 !important;
+    }
+
+    .nav-pill-version {
+        background: #1a3050 !important;
+        color: #8ab4f8 !important;
+    }
+
+    .nav-profile-panel {
+        background: #252536 !important;
+        box-shadow: 0 8px 28px rgba(0,0,0,.5) !important;
+    }
+
+    .nav-profile-name {
+        color: #e8eaed !important;
+    }
+
+    .nav-profile-divider {
+        border-color: #3a3a55 !important;
+    }
+
+    .nav-search-wrap--open {
+        background: #252536 !important;
+        border-color: #97DCE1 !important;
+    }
+
+    // ── Mega-menu drawer ───────────────────────────────────────────
+    .silo-menu-drawer {
+        background: #1e1e30 !important;
+        border-top-color: #3a3a55 !important;
+        box-shadow: 0 6px 24px rgba(0,0,0,.5) !important;
+    }
+
+    .silo-menu-categories {
+        background: #252536 !important;
+        border-left-color: #3a3a55 !important;
+    }
+
+    .menu-cat-btn {
+        color: #bdc1c6 !important;
+    }
+
+    .menu-cat-btn:hover {
+        background: #2d2d44 !important;
+        color: #e8eaed !important;
+    }
+
+    .menu-cat-btn--active {
+        background: #1a3050 !important;
+        color: #8ab4f8 !important;
+    }
+
+    .menu-link-group-title {
+        color: #9aa0a6 !important;
+        border-bottom-color: #3a3a55 !important;
+    }
+
+    .menu-nav-link {
+        color: #97DCE1 !important;
+    }
+
+    .menu-nav-link:hover {
+        background: #2d2d44 !important;
+        color: #e8eaed !important;
+    }
+
+    .menu-nav-link.active {
+        background: #1a3050 !important;
+        color: #8ab4f8 !important;
+    }
+
+    // ── Tables / grids ─────────────────────────────────────────────
+    .thead {
+        background-color: #1a3050 !important;
+        color: #e8eaed !important;
+    }
+
+    .tr-style {
+        background-color: #1e2535 !important;
+        color: #e8eaed !important;
+    }
+
+    .tr-buttom {
+        background-color: #1e2d45 !important;
+        color: #e8eaed !important;
+    }
+
+    // ── Telerik / Kendo overrides ──────────────────────────────────
+    .k-grid {
+        background-color: #1e1e30 !important;
+        color: #e8eaed !important;
+        border-color: #3a3a55 !important;
+    }
+
+    .k-grid .k-grid-header {
+        background-color: #1a3050 !important;
+        color: #e8eaed !important;
+        border-color: #3a3a55 !important;
+    }
+
+    .k-grid .k-grid-header .k-table-th {
+        background-color: #1a3050 !important;
+        color: #e8eaed !important;
+    }
+
+    .k-grid td, .k-grid .k-table-td {
+        background-color: #1e2535 !important;
+        color: #e8eaed !important;
+        border-color: #3a3a55 !important;
+    }
+
+    .k-grid tr:nth-child(even) td,
+    .k-grid tr:nth-child(even) .k-table-td {
+        background-color: #1a2030 !important;
+    }
+
+    .k-grid tr:hover td,
+    .k-grid tr:hover .k-table-td {
+        background-color: #243050 !important;
+    }
+
+    .k-grid .k-pager {
+        background-color: #1e1e30 !important;
+        color: #bdc1c6 !important;
+        border-top-color: #3a3a55 !important;
+    }
+
+    .k-listview-content {
+        background-color: #1e2535 !important;
+        color: #e8eaed !important;
+    }
+
+    .k-listview-header {
+        background-color: #1a3050 !important;
+        color: #e8eaed !important;
+    }
+
+    .k-window, .k-dialog {
+        background-color: #252536 !important;
+        color: #e8eaed !important;
+        border-color: #3a3a55 !important;
+    }
+
+    .k-window-titlebar, .k-dialog-titlebar {
+        background-color: #1a3050 !important;
+        color: #e8eaed !important;
+    }
+
+    .k-button:not(.k-primary):not(.nav-profile-logout) {
+        background-color: #2d2d44 !important;
+        border-color: #4a4a66 !important;
+        color: #e8eaed !important;
+    }
+
+    .k-input, .k-textbox, .k-combobox .k-input-inner,
+    .k-dropdownlist .k-input-inner, .k-autocomplete .k-input-inner,
+    .k-datepicker .k-input-inner {
+        background-color: #2d2d44 !important;
+        border-color: #4a4a66 !important;
+        color: #e8eaed !important;
+    }
+
+    .k-dropdown-wrap, .k-picker-wrap {
+        background-color: #2d2d44 !important;
+        border-color: #4a4a66 !important;
+        color: #e8eaed !important;
+    }
+
+    .k-popup, .k-list-container {
+        background-color: #252536 !important;
+        border-color: #3a3a55 !important;
+        color: #e8eaed !important;
+    }
+
+    .k-list .k-item:hover, .k-list-item:hover {
+        background-color: #2d2d44 !important;
+    }
+
+    .k-list .k-item.k-selected, .k-list-item.k-selected {
+        background-color: #1a3050 !important;
+        color: #8ab4f8 !important;
+    }
+
+    .k-notification {
+        background-color: #252536 !important;
+        color: #e8eaed !important;
+    }
+
+    .k-loader-canvas .k-arc {
+        stroke: #97DCE1 !important;
+    }
+
+    // ── Forms / Bootstrap inputs ───────────────────────────────────
+    .form-control, .form-select {
+        background-color: #2d2d44 !important;
+        border-color: #4a4a66 !important;
+        color: #e8eaed !important;
+    }
+
+    .form-control::placeholder {
+        color: #9aa0a6 !important;
+    }
+
+    .input-group-text {
+        background-color: #2d2d44 !important;
+        border-color: #4a4a66 !important;
+        color: #e8eaed !important;
+    }
+
+    // ── Modal ──────────────────────────────────────────────────────
+    .modal-content {
+        background-color: #252536 !important;
+        border-color: #3a3a55 !important;
+        color: #e8eaed !important;
+    }
+
+    .modal-header, .modal-footer {
+        border-color: #3a3a55 !important;
+    }
+
+    // ── Dividers / borders ─────────────────────────────────────────
+    hr {
+        border-color: #3a3a55 !important;
+    }
+
+    .border-top    { border-top-color:    #3a3a55 !important; }
+    .border-bottom { border-bottom-color: #3a3a55 !important; }
+
+    // ── Links ──────────────────────────────────────────────────────
+    a { color: #8ab4f8 !important; }
+
+    // ── Misc helpers ───────────────────────────────────────────────
+    .div-bar-save {
+        background-color: #1a3050 !important;
+    }
+
+    .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+        background-color: #1a3050 !important;
+        color: #8ab4f8 !important;
+    }
+
+    // ── Scrollbars ─────────────────────────────────────────────────
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #1a1a2e;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #3a3a55;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #4a4a66;
+    }
+
+    // ── AppErrorBoundary ──────────────────────────────────────────────────────
+
+    .eb-overlay {
+        background: #1a1a2e;
+    }
+
+    .eb-topbar {
+        background: #1e1e30;
+        border-bottom-color: #3a3a55;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, .4);
+        color: #e8eaed;
+
+        .material-icons {
+            color: #97DCE1;
+        }
+    }
+
+    .eb-icon {
+        background: rgba(176, 0, 32, .2);
+        color: #e06c75;
+    }
+
+    .eb-title {
+        color: #e8eaed;
+    }
+
+    .eb-subtitle {
+        color: #9aa0a6;
+    }
+
+    .eb-divider {
+        border-top-color: #3a3a55;
+    }
+
+    .eb-detail {
+        background: #0f1117;
+        border-color: #3a3a55;
+        color: #9aa0a6;
+    }
+
+    .eb-footer {
+        border-top-color: #3a3a55;
+        color: #5f6368;
+    }
+}
+

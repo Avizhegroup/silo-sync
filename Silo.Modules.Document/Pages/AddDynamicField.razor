@@ -1,0 +1,324 @@
+﻿@page "/document/AddDynamicField"
+@inherits SiloBasePage
+@namespace Silo.Modules.Document.Pages
+@using Silo.Application.Features;
+@using Silo.Identity.Client;
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Telerik.Blazor.Components
+@using Silo.Shared.Components
+
+<PageTitle>@PageTitle</PageTitle>
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+        <div class="form-search-span" style="margin-bottom:10px;">
+            <EditForm @ref="EditForm"
+                      Model="DynamicField"
+                      OnInvalidSubmit="OnInvalidSubmit"
+                      OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important; margin-top: 15px">
+                    <label style="margin-right: 60px !important;">@TextResources.APP_StringKeys_Field_Id :</label>
+                    <InputNumber @bind-Value="DynamicField.Id" class="form-control input-search-span-lg pointer"
+                                 readonly="readonly" style="width: 130px!important;" />
+                    <label style="margin-right: 17px !important;">@TextResources.APP_StringKeys_Title :</label>
+                    <TelerikTextBox @bind-Value="DynamicField.Title" Class="form-control input-search-span-lg pointer" Width="180px!important;"></TelerikTextBox>
+                    <label style="margin-right: 15px !important;">@TextResources.APP_StringKeys_ActionType :</label>
+                    <TelerikDropDownList Data="ActionTypes"
+                                         TextField="@nameof(GetAllActionTypesDto.Title)"
+                                         ValueField="@nameof(GetAllActionTypesDto.Code)"
+                                         @bind-Value="DynamicField.ActionType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         Width="180px"
+                                         Class="drop-all">
+                        <DropDownListSettings>
+                            <DropDownListPopupSettings Class="text-align-right" />
+                        </DropDownListSettings>
+                    </TelerikDropDownList>
+                    <label style="margin-right: 30px !important;">@TextResources.APP_StringKeys_Type :</label>
+                    <TelerikDropDownList Data="FieldTypes"
+                                         TItem="FieldTypeVm"
+                                         TValue="DynamicFieldType?"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="DynamicField.FieldType"
+                                         @bind-Value:after="OnFieldTypeChanged"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                        <DropDownListSettings>
+                            <DropDownListPopupSettings Class="text-align-right" />
+                        </DropDownListSettings>
+                    </TelerikDropDownList>
+                </div>
+                <div class="d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                    <label style="margin-right: 30px !important;">@TextResources.APP_StringKeys_RelatedTitles :</label>
+                    <InputText @bind-Value="DynamicField.RelatedTitle1" class="form-control input-search-span-lg pointer" />
+                    <InputText @bind-Value="DynamicField.RelatedTitle2" class="form-control input-search-span-lg pointer" />
+                    <InputText @bind-Value="DynamicField.RelatedTitle3" class="form-control input-search-span-lg pointer" />
+                    <label style="margin-right: 38px !important;">@TextResources.APP_StringKeys_Systematic_Element :</label>
+                    <InputCheckbox @bind-Value="DynamicField.IsSystematicField" style="margin-right: 5px;" />
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Header_Key :</label>
+                    <InputCheckbox @bind-Value="DynamicField.IsHeaderKey" style="margin-right: 5px;" />
+                    <label style="margin-right: 20px !important;"> @TextResources.APP_StringKeys_Required : </label>
+                    <InputCheckbox @bind-Value="DynamicField.IsRequired" style="margin-right: 5px;" />
+                    <label style="margin-right: 10px !important;">@TextResources.APP_StringKeys_ValueType :</label>
+                    <InputRadioGroup @bind-Value="DynamicField.ValueType">
+                        <label style="margin-right: 10px !important;"> @TextResources.APP_StringKeys_Textbox  </label>
+                        <InputRadio Value="DynamicFieldValueType.TextBox" />
+                        <label style="margin-right: 10px !important;"> @TextResources.APP_StringKeys_Dropdown  </label>
+                        <InputRadio Value="DynamicFieldValueType.DropDown" />
+                        <label style="margin-right: 10px !important;"> @TextResources.APP_StringKeys_Numeric  </label>
+                        <InputRadio Value="DynamicFieldValueType.Numeric" />
+                        <label style="margin-right: 10px !important;"> @TextResources.APP_StringKeys_RichTextEditor  </label>
+                        <InputRadio Value="DynamicFieldValueType.RichTextEditor" />
+                    </InputRadioGroup>
+                    <label style="margin-right: 20px !important;"> نمایش در جداول اطلاعاتی : </label>
+                    <InputCheckbox @bind-Value="DynamicField.FieldShowColumn" style="margin-right: 5px;" />
+                    <label style="margin-right: 20px !important;"> نمایش در جداول اطلاعاتی عملیاتی : </label>
+                    <InputCheckbox @bind-Value="DynamicField.FieldShowColumnForAction" style="margin-right: 5px;" />
+                    <label style="margin-right: 20px !important; margin-left: 5px;"> فقط خواندنی : </label>
+                    <TelerikCheckBox @bind-Value="DynamicField.IsReadOnly" />
+                </div>
+                <div class="d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important; margin-top: 4px;">
+                    <label style="margin-right: 28px !important;">@TextResources.APP_StringKeys_DisplayOrder :</label>
+                    <InputNumber @key="DynamicField.Id"
+                                 @bind-Value="DynamicField.Order"
+                                 TValue="int?"
+                                 Min="0"
+                                 Step="1"
+                                 class="form-control input-search-span-lg pointer"
+                                 style="width: 197px !important;" />
+                    <label style="margin-right: 174px !important;">
+                        @TextResources.APP_StringKeys_SectionId :
+                    </label>
+                    <TelerikDropDownList Data="@(Sections?.Where(s => DynamicField.FieldType.HasValue && s.DynamicFieldType == (int)DynamicField.FieldType.Value).ToList()
+                                                                                                                  ?? new List<GetAllDynamicFieldSectionsVm>())"
+                                         TextField="@nameof(GetAllDynamicFieldSectionsVm.Title)"
+                                         ValueField="@nameof(GetAllDynamicFieldSectionsVm.Id)"
+                                         @bind-Value="DynamicField.SectionId"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                        <DropDownListSettings>
+                            <DropDownListPopupSettings Class="text-align-right" />
+                        </DropDownListSettings>
+                    </TelerikDropDownList>
+                    <label style="margin-right: 15px !important;">
+                        @TextResources.APP_StringKeys_ParentField :
+                    </label>
+                    <TelerikDropDownList Data="ParentFields"
+                                         TextField="@nameof(GetAllDynamicFieldVm.Title)"
+                                         ValueField="@nameof(GetAllDynamicFieldVm.Id)"
+                                         @bind-Value="DynamicField.ParentId"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                        <DropDownListSettings>
+                            <DropDownListPopupSettings Class="text-align-right" />
+                        </DropDownListSettings>
+                    </TelerikDropDownList>
+                    <div class="d-flex flex-row align-items-center" style="margin-left: 20px;">
+                        <button id="btn-list" class="btn btn-light" type="button" style="margin-left: 2px; margin-right: 10px;" @onclick="OnModalDynamicFieldsClick">
+                            <MaterialIcon IconName="list"></MaterialIcon>
+                        </button>
+                        <button id="btn-clear" class="btn btn-warning" type="button" style="margin-left: 2px; margin-right: 2px;" @onclick="OnClearClick">
+                            <MaterialIcon IconName="refresh"></MaterialIcon>
+                        </button>
+                        <button class="btn btn-danger" type="button" style="margin-left: 2px; margin-right: 2px;" @onclick="OnRemoveModalClick">
+                            <MaterialIcon IconName="delete"></MaterialIcon>
+                        </button>
+                        <button id="btn-send" class="btn btn-primary" ButtonType="ButtonType.Submit" style="margin-left: 2px; margin-right: 2px;">
+                            <MaterialIcon IconName="save"></MaterialIcon>
+                        </button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+@if (DynamicField.ValueType == DynamicFieldValueType.DropDown)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+            <div class="form-search-span" style="margin-bottom:10px;">
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                    <div style="margin-top:-40px;">
+                        <label>@TextResources.APP_StringKeys_Title:</label>
+                        <TelerikTextBox @bind-Value="DynamicField.ValueOption" Class="form-control input-search-span">
+                        </TelerikTextBox>
+                        <button style="margin-right: 7px;" id="btn-contact" class="btn btn-primary"
+                                type="button" @onclick="OnAddOptionClick">
+                            <MaterialIcon IconName="add"></MaterialIcon>
+                        </button>
+                    </div>
+                    <div class=" d-flex flex-row align-items-center flex-wrap col-md-6 border"
+                         style="min-height: 90px;width: 430px!important;margin-right: 20px; margin-top:10px;">
+                        @foreach (string option in DynamicField.ValueOptionList)
+                        {
+                            <span class="list-item item-contact"
+                                  @onclick="async (e) => await OnRemoveOptionClick(option)">
+                                @option
+                            </span>
+                        }
+                    </div>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                    <div style="margin-top:-40px;">
+                        <label style="margin-right: 10px; margin-top:-10px;">@TextResources.APP_StringKeys_Default_value:</label>
+                        <TelerikDropDownList @ref="ValueOptionsDropDown"
+                                             Data="DynamicField.ValueOptionList"
+                                             TextField="."
+                                             ValueField="."
+                                             @bind-Value="DynamicField.DefaultValue"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Filterable="true"
+                                             FilterOperator="StringFilterOperator.Contains"
+                                             Width="180px"
+                                             Class="drop-all">
+                            <DropDownListSettings>
+                                <DropDownListPopupSettings Class="text-align-right" />
+                            </DropDownListSettings>
+                        </TelerikDropDownList>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Choose"
+       @ref="ModalDynamicFields"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                <TelerikGrid Data="DynamicFields"
+                             PageSize="10"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true">
+                    <RowTemplate Context="dynamicField">
+                        <td class="td-style td-dt">@dynamicField.Id</td>
+                        <td class="td-style td-dt">@dynamicField.Title</td>
+
+                        @switch (dynamicField.FieldType)
+                        {
+                            case DynamicFieldType.HeaderData:
+                                <td class="td-style td-dt">@TextResources.APP_StringKeys_Document_HeaderData</td>
+                                break;
+                            case DynamicFieldType.ItemData:
+                                <td class="td-style td-dt">@TextResources.APP_StringKeys_Document_ItemData</td>
+                                break;
+                            case DynamicFieldType.ProductField:
+                                <td class="td-style td-dt">@TextResources.APP_StringKeys_Product_Field</td>
+                                break;
+                            case DynamicFieldType.OperationInfo:
+                                <td class="td-style td-dt">@TextResources.APP_StringKeys_OperationInfo</td>
+                                break;
+                            case DynamicFieldType.TruckCrossPresent:
+                                <td class="td-style td-dt">@TextResources.APP_StringKeys_TruckCrossPresent</td>
+                                break;
+                            case DynamicFieldType.TruckCrossEnter:
+                                <td class="td-style td-dt">@TextResources.APP_StringKeys_TruckCrossEnter</td>
+                                break;
+                            case DynamicFieldType.TruckCrossExit:
+                                <td class="td-style td-dt">@TextResources.APP_StringKeys_TruckCrossExit</td>
+                                break;
+                            default:
+                                <td class="td-style td-dt"></td>
+                                break;
+                        }
+
+                        <td class="td-style td-dt">@(ActionTypes.FirstOrDefault(p => p.Code.Equals(dynamicField.ActionType))?.Title)</td>
+                        <td class="td-style td-dt">@dynamicField.UserName</td>
+                        <td class="td-style td-dt">
+                            @(PersianCalendarTools.GregorianToPersian(dynamicField.DateTime) + " " + dynamicField.DateTime.ToShortTimeString())
+                        </td>
+
+                        <td class="td-style td-dt" style="text-align:center;">
+                            <MaterialIcon IconName="@(dynamicField.IsSystematicField ? "done" : "Close")"></MaterialIcon>
+                        </td>
+                        <td class="td-style td-dt" style="text-align:center;">
+                            <MaterialIcon IconName="@(dynamicField.IsHeaderKey ? "done" : "Close")"></MaterialIcon>
+                        </td>
+                        <td class="td-style td-dt" style="text-align:center;">
+                            <MaterialIcon IconName="@(dynamicField.IsReadOnly == true ? "done" : "Close")"></MaterialIcon>
+                        </td>
+
+                        <td class="td-style td-dt">@(dynamicField.RelatedTitle1.Equals("fake") ? string.Empty : dynamicField.RelatedTitle1)</td>
+                        <td class="td-style td-dt">@(dynamicField.RelatedTitle2.Equals("fake") ? string.Empty : dynamicField.RelatedTitle2)</td>
+                        <td class="td-style td-dt">@(dynamicField.RelatedTitle3.Equals("fake") ? string.Empty : dynamicField.RelatedTitle3)</td>
+
+                        <td class="td-style td-dt">
+                            @switch (dynamicField.ValueType)
+                            {
+                                case DynamicFieldValueType.TextBox:
+                                    <text>Textbox</text>
+                                    break;
+                                case DynamicFieldValueType.DropDown:
+                                    <text>Dropdown</text>
+                                    break;
+                                case DynamicFieldValueType.Numeric:
+                                    <text>Numeric</text>
+                                    break;
+                                case DynamicFieldValueType.RichTextEditor:
+                                    <text>RichTextEditor</text>
+                                    break;
+                                default:
+                                    <text>Unknown</text>
+                                    break;
+                            }
+                        </td>
+                        <td class="td-style td-dt">
+                            <button @onclick="async () => await OnSelectDynamicField(dynamicField)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Choose
+                            </button>
+                        </td>
+                    </RowTemplate>
+
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetAllDynamicFieldVm.Id)" Title="@TextResources.APP_StringKeys_Field_Id" Width="60px" />
+                        <GridColumn Field="@nameof(GetAllDynamicFieldVm.Title)" Title="@TextResources.APP_StringKeys_Title" Width="150px" />
+                        <GridColumn Field="@nameof(GetAllDynamicFieldVm.FieldType)" Title="@TextResources.APP_StringKeys_FieldType" Width="120px" />
+                        <GridColumn Field="@nameof(GetAllDynamicFieldVm.ActionType)" Title="@TextResources.APP_StringKeys_ActionType" Width="120px" />
+                        <GridColumn Field="@nameof(GetAllDynamicFieldVm.UserName)" Title="@TextResources.APP_StringKeys_User" Width="80px" />
+                        <GridColumn Field="@nameof(GetAllDynamicFieldVm.DateTime)" Title="@TextResources.APP_StringKeys_DateTime" Width="120px" />
+                        <GridColumn Field="@nameof(GetAllDynamicFieldVm.IsSystematicField)" Title="@TextResources.APP_StringKeys_Systematic_Element" Width="110px" />
+                        <GridColumn Field="@nameof(GetAllDynamicFieldVm.IsHeaderKey)" Title="@TextResources.APP_StringKeys_Header_Key" Width="70px" />
+                        <GridColumn Field="@nameof(GetAllDynamicFieldVm.IsReadOnly)" Title="فقط خواندنی" Width="80px" />
+                        <GridColumn Field="@nameof(GetAllDynamicFieldVm.RelatedTitle1)" Title="@TextResources.APP_StringKeys_RelatedTitle">1</GridColumn>
+                        <GridColumn Field="@nameof(GetAllDynamicFieldVm.RelatedTitle2)" Title="@TextResources.APP_StringKeys_RelatedTitle">2</GridColumn>
+                        <GridColumn Field="@nameof(GetAllDynamicFieldVm.RelatedTitle3)" Title="@TextResources.APP_StringKeys_RelatedTitle">3</GridColumn>
+                        <GridColumn Field="@nameof(GetAllDynamicFieldVm.ValueType)" Title="@TextResources.APP_StringKeys_ValueType" />
+                        <GridColumn Width="60px" />
+                    </GridColumns>
+                </TelerikGrid>
+
+            </div>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_Attention"
+       @ref="ModalRemove"
+       Size="ModalSize.Normal"
+       CancelBtnText="@TextResources.APP_StringKeys_Close"
+       YesBtnText="@TextResources.APP_StringKeys_Remove"
+       OnYesModal="OnRemoveClick"
+       YesBtnClass="btn-danger">
+    <ModalBodyContentHtml>
+        <div class="text-align-center bg-danger text-light">
+            @TextResources.APP_StringKeys_Remove_CheckBeforeDelete
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

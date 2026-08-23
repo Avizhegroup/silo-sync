@@ -1,0 +1,11 @@
+﻿.report-filters-section {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px 10px;
+    padding-top: 5px;
+}
+
+.field-label {
+    margin-bottom: 5px;
+    text-align: right;
+}

@@ -1,0 +1,2478 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<StiSerializer version="1.02" type="Net" application="StiReport">
+  <Dictionary Ref="1" type="Dictionary" isKey="true">
+    <BusinessObjects isList="true" count="0" />
+    <Databases isList="true" count="0" />
+    <DataSources isList="true" count="2">
+      <GateProductPrintableVm Ref="2" type="Stimulsoft.Report.Dictionary.StiBusinessObjectSource" isKey="true">
+        <Alias>اطلاعات اقلام</Alias>
+        <Columns isList="true" count="4">
+          <value>ProductCode,کدکالا,System.String</value>
+          <value>ProductName,نام_x0020_کالا,System.String</value>
+          <value>RegCode,کدفنی,System.String</value>
+          <value>SumCount,جمع_x0020_مقدار,System.Decimal</value>
+        </Columns>
+        <Dictionary isRef="1" />
+        <Key>a2a803dd8e724dcd8cbe16986ed1d58a</Key>
+        <Name>GateProductPrintableVm</Name>
+        <NameInSource>GateProductPrintableVm</NameInSource>
+      </GateProductPrintableVm>
+      <TruckCrossHeaderPrintDto Ref="3" type="Stimulsoft.Report.Dictionary.StiBusinessObjectSource" isKey="true">
+        <Alias>اطلاعات تردد</Alias>
+        <Columns isList="true" count="48">
+          <value>ORIGINAL,Id,Id,کد_x0020_عملیات_x0020_تردد,System.Int32,_x0031_57e3837eb4e492da79a81dca9bac63f</value>
+          <value>ORIGINAL,PresentDateTime,PresentDateTime,تاریخ_x0020_و_x0020_ساعت_x0020_پذیرش,System.DateTime,_x0035_e7ad988c30148cb8a487a921837cc07</value>
+          <value>ORIGINAL,PresentUser,PresentUser,کاربر_x0020_پذیرش,System.String,d72471ad17ae493db499bd78dba55336</value>
+          <value>ORIGINAL,NationalCode,NationalCode,کد_x0020_ملی_x0020_راننده,System.String,_x0030_7f015af064f4408be200e6d629b1c79</value>
+          <value>ORIGINAL,DriverName,DriverName,نام_x0020_راننده,System.String,a611277d10e74494a7ee79a0b1ccf3bb</value>
+          <value>ORIGINAL,CompanyTitle,CompanyTitle,شرکت,System.String,_x0039_7082942b4c94559bbd5a291ceac43ae</value>
+          <value>ORIGINAL,PassportCode,PassportCode,شماره_x0020_پاسپورت,System.String,_x0038_c6448ce6c28474988f37ddd9d3a3d4d</value>
+          <value>ORIGINAL,DriverPhone,DriverPhone,شماره_x0020_راننده,System.String,d9325de878ed41ce835e41482fccb47e</value>
+          <value>ORIGINAL,LicenseCode,LicenseCode,گواهینامه,System.String,_x0031_70f6bde24364bf09ef31eb0837c51a7</value>
+          <value>ORIGINAL,Plaque,Plaque,پلاک,System.String,a0344fc393054174adab3357914529e4</value>
+          <value>ORIGINAL,InternationalPlaque,InternationalPlaque,پلاک_x0020_بین_x0020_المللی,System.String,b6eb08de39294b318bed784fc87ea037</value>
+          <value>ORIGINAL,TruckTypeTitle,TruckTypeTitle,نوع_x0020_ماشین,System.String,b09330dfa05b43f48046ee95253bbc31</value>
+          <value>ORIGINAL,TypeDesc,TypeDesc,شرح_x0020_ماشین,System.String,_x0032_c3de7952bbf420da6cb0226b26d86c3</value>
+          <value>ORIGINAL,PresentCauseTitle,PresentCauseTitle,علت_x0020_مراجعه,System.String,_x0037_baad1ac8be448498c12a7d88353a1f5</value>
+          <value>ORIGINAL,OperationTypeTitle,OperationTypeTitle,نوع_x0020_عملیات,System.String,_x0033_0878e1be01848e89e0904b6ce61a3f0</value>
+          <value>ORIGINAL,PresentShipmentTitle,PresentShipmentTitle,باربری,System.String,_x0030_b8dc88b408549d3ba0e8ff18ccd92fd</value>
+          <value>ORIGINAL,PresentShipmentNumber,PresentShipmentNumber,شماره_x0020_بارنامه,System.String,b34c3e0b68ff48da82307d4c7e035acd</value>
+          <value>ORIGINAL,PresentCustomerTitle,PresentCustomerTitle,فرستنده_x002F_گیرنده,System.String,_x0037_a7023c15db84fac8ce5fc16314523a2</value>
+          <value>ORIGINAL,OperationDestinationTitle,OperationDestinationTitle,مقصد_x0020_عملیات_x000A_,System.String,_x0032_1c0bfd79a824c45b4bd88936536d674</value>
+          <value>ORIGINAL,PresentDesc,PresentDesc,توضیحات_x0020_پذیرش_x000A_,System.String,_x0039_07d0103da4a407f8125bfc1d2171de2</value>
+          <value>ORIGINAL,PresentTurn,PresentTurn,نوبت_x0020_پذیرش_x000A_,System.Int32,f2ad445068404d9d84ed25f539cc841f</value>
+          <value>EnterDateTime,تاریخ_x0020_و_x0020_ساعت_x0020_ورود_x000A_,System.DateTime</value>
+          <value>EnterUser,کاربر_x0020_ورود_x000A_,System.String</value>
+          <value>EnterWeightTonage,وزن_x0020_ورود,System.Decimal</value>
+          <value>EnterAcceptor,شخص_x0020_مراجعه,System.String</value>
+          <value>AcceptPlaceTitle,محل_x0020_مراجعه_x000A_,System.String</value>
+          <value>ExitDateTime,تاریخ_x0020_و_x0020_ساعت_x0020_خروج,System.DateTime</value>
+          <value>ExitUser,کاربر_x0020_خروج,System.String</value>
+          <value>ExitWeightTonage,وزن_x0020_خروج_x000A_,System.Decimal</value>
+          <value>ExitPureWeightCargo,وزن_x0020_خالص,System.Decimal</value>
+          <value>ExitWeightbridgeReceiptNumber,شماره_x0020_قبض_x0020_باسکول_x000A_,System.String</value>
+          <value>ExitCargoOwnerName,نام_x0020_صاحب_x0020_بار,System.String</value>
+          <value>ExitDeliveryAddress,آدرس_x0020_تحویل,System.String</value>
+          <value>ExitCargoOwnerPhone,شماره_x0020_تماس_x0020_صاحب_x0020_بار_x000A_,System.String</value>
+          <value>ExitDesc,توضیحات_x0020_خروج,System.String</value>
+          <value>ExitPaymentTypeTitle,نوع_x0020_کرایه_x0020_حمل,System.String</value>
+          <value>ExitTotalCost,قیمت_x0020_نهایی_x0020_کرایه,System.String</value>
+          <value>ExitUnitPrice,مبلغ_x0020_واحد,System.String</value>
+          <value>ExitDistance,مسافت,System.String</value>
+          <value>GateOpCode,کد_x0020_عملیات_x0020_گیت,System.String</value>
+          <value>DocumentId,کد_x0020_سند,System.String</value>
+          <value>GateCode,کد_x0020_گیت,System.String</value>
+          <value>PresentDate,تاریخ_x0020_پذیرش,System.String</value>
+          <value>PresentTime,ساعت_x0020_پذیرش,System.String</value>
+          <value>EnterDate,تاریخ_x0020_ورود,System.String</value>
+          <value>EnterTime,ساعت_x0020_ورود,System.String</value>
+          <value>ExitDate,تاریخ_x0020_خروج,System.String</value>
+          <value>ExitTime,ساعت_x0020_خروج,System.String</value>
+        </Columns>
+        <Dictionary isRef="1" />
+        <Key>22eed410c492428780fc473e46410f94</Key>
+        <Name>TruckCrossHeaderPrintDto</Name>
+        <NameInSource>TruckCrossHeaderPrintDto</NameInSource>
+      </TruckCrossHeaderPrintDto>
+    </DataSources>
+    <Relations isList="true" count="0" />
+    <Report isRef="0" />
+    <Resources isList="true" count="0" />
+    <Variables isList="true" count="13">
+      <value>,DateString,تاریخ_x0020_و_x0020_ساعت_x0020_تولید_x0020_گزارش,,System.String,,False,False,False,False,,_x0033_2fc06d0e5e54c578c52f3a889d75ad5</value>
+      <value>,CompanyName,CompanyName,,System.String,,False,False,False,False,,_x0031_80cd4854d85468596dd6b575d540324</value>
+      <value>,DocumentKey,کلید_x0020_سند,,System.String,,False,False,False,False,,_x0035_faabc3bbab941bcb915d4544125832a</value>
+      <value>,DocumentType,نوع_x0020_سند,,System.String,,False,False,False,False,,_x0030_4d5af7bccd844efb8b1f4f6439903b4</value>
+      <value>,DateTimeString,تاریخ_x0020_و_x0020_ساعت_x0020_تجمیع,,System.String,,False,False,False,False,,_x0031_f8cf2b5987547849401485eb4f22a2f</value>
+      <value>,Description,توضیحات,,System.String,,False,False,False,False,,ddc8983153af4c87904de6e638f91ce4</value>
+      <value>,Status,وضعیت,,System.String,,False,False,False,False,,_x0038_9bcf69a1c2746099519b506db6af5ee</value>
+      <value>,HeaderData,مشخصات_x0020_سند,,System.String,,False,False,False,False,,_x0038_a0670545a64472ba56507d1c935f976</value>
+      <value>,کد_مجوز_فروش,کد_x0020_مجوز_x0020_فروش,,System.String,,False,False,False,False,,_x0032_7a348a9a9dc444986113c8ccc7c4438</value>
+      <value>,تاریخ_مجوز_فروش,تاریخ_مجوز_فروش,,System.String,,False,False,False,False,,_x0039_792e8c6e581454c8791b88be4837a44</value>
+      <value>,کد_مشتری_مجوز_فروش,کد_مشتری_مجوز_فروش,,System.String,,False,False,False,False,,fb08208ae91c4283a31c3ba1eb94d80a</value>
+      <value>,عنوان_مشتری_مجوز_فروش,عنوان_مشتری_مجوز_فروش,,System.String,,False,False,False,False,,fc732490a97d4bbe89e1d06e196f9ff2</value>
+      <value>,موبایل_مشتری_مجوز_فروش,موبایل_مشتری_مجوز_فروش,,System.String,,False,False,False,False,,e01443a496124fbfb1fca5e0c30bb01a</value>
+    </Variables>
+  </Dictionary>
+  <EngineVersion>EngineV2</EngineVersion>
+  <GlobalizationStrings isList="true" count="0" />
+  <Key>c594166eda35420a9c8e89ddb1a08f9c</Key>
+  <MetaTags isList="true" count="0" />
+  <Pages isList="true" count="1">
+    <Page1 Ref="4" type="Page" isKey="true">
+      <Border>None;Black;2;Solid;False;4;Black</Border>
+      <Brush>Transparent</Brush>
+      <Components isList="true" count="22">
+        <DataBand1 Ref="5" type="DataBand" isKey="true">
+          <Brush>Transparent</Brush>
+          <BusinessObjectGuid isNull="true" />
+          <ClientRectangle>0,0.2,7.49,11.4</ClientRectangle>
+          <Components isList="true" count="109">
+            <Image_Logo Ref="6" type="Image" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>6.3,0.1,0.9,0.9</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <IconColor>68, 114, 196</IconColor>
+              <ImageBytes>iVBORw0KGgoAAAANSUhEUgAAAGQAAAByCAYAAAClbXTSAAAACXBIWXMAAC4jAAAuIwF4pT92AAAF
+42lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0w
+TXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRh
+LyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNi4wLWMwMDIgNzkuMTY0NDYwLCAyMDIwLzA1LzEy
+LTE2OjA0OjE3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3Jn
+LzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0i
+IiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRw
+Oi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMu
+YWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNv
+bS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9z
+VHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjIu
+NSAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIxLTEyLTA1VDA5OjQ0OjU1KzAzOjMwIiB4
+bXA6TW9kaWZ5RGF0ZT0iMjAyMi0wNS0yMlQxMTo1ODo0Mi0wNzowMCIgeG1wOk1ldGFkYXRhRGF0
+ZT0iMjAyMi0wNS0yMlQxMTo1ODo0Mi0wNzowMCIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHBob3Rv
+c2hvcDpDb2xvck1vZGU9IjMiIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJzUkdCIElFQzYxOTY2LTIu
+MSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpkZGU1ODg2Yi05YTU2LTVhNDQtYmRmOS04ZDE0
+YjRhNDY4MTIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NjdiNDQxMjQtNGE3YS1hOTQ1LTg2
+ZjYtOTM4ZDg1NzliMjZjIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6NjdiNDQx
+MjQtNGE3YS1hOTQ1LTg2ZjYtOTM4ZDg1NzliMjZjIj4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2Vx
+PiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlp
+ZDo2N2I0NDEyNC00YTdhLWE5NDUtODZmNi05MzhkODU3OWIyNmMiIHN0RXZ0OndoZW49IjIwMjEt
+MTItMDVUMDk6NDQ6NTUrMDM6MzAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hv
+cCAyMi41IChXaW5kb3dzKSIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omlu
+c3RhbmNlSUQ9InhtcC5paWQ6ZGRlNTg4NmItOWE1Ni01YTQ0LWJkZjktOGQxNGI0YTQ2ODEyIiBz
+dEV2dDp3aGVuPSIyMDIyLTA1LTIyVDExOjU4OjQyLTA3OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50
+PSJBZG9iZSBQaG90b3Nob3AgMjEuMiAoV2luZG93cykiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPC9y
+ZGY6U2VxPiA8L3htcE1NOkhpc3Rvcnk+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwv
+eDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+B1edxgAABHNJREFUeJztm+uOqzAMhIejff9X
+5vyqRNNAbrZnEjLSSivaEuMviUkGjvM8saWjf+wAtr61gYhpAxHTBiKmDURMG4iY/tIDx3Ew4rBU
+eh8vfUHpsmO1EZJbVE210FoJyFPip4GyEpCSpoCyCpDaZMtDmR3IifYkS0OZGchIYmWhzAxkVJJQ
+ZgVilUw5KLMB6akZNeeU0UxAPBMnA2UmIN6SgDILkKhk0aGoA/GoGTVt0qQOhCUalA0kL9qWvSKQ
+6zTFSMynTcZ0KQckl4BIKLm2QqEoAUkvPHqkXNvIxRIiFSA15pInlCcYpeOmUgFSkieUGhi1nw+L
+DaSncFpCaYHR+r0uMYGMGEsWUHpg9H6/WiwgvRdkVehHYIz+7lEMIJYX0gPFAobV738UDcTDWGqB
+YgnD+jwA+EV9RK1QPGCYny8KiNc2RC0UTxim540A4n3vXir0ETDMzj/zlJUqByUShkk73kBYvsIB
+Dozh9jyBMGAoPf3e1e5KU9YS8gTCNJdKxyLU1e7PG1QDyt2CHoibMu5qxqeeRE5dV9cxPfYorxFi
+vRFYUk0Bjxopd+1UdQgrIKViyjSXIjvH8J3dKJDSCtw7GbUJiLCDTVzH6JW6irlkDcXMdRwB0jIk
+lcwlyzjS81C2Tno3Cq2gjCbAsnP0xnL73VYgloYO01yyqCkuWzNsx1DFXGqF4mYBtwCxXFgpmUst
+caTfo1m4K5tLLZ3DvWPUAIl6lYxpLtVACYnlCUjU0993yYj2M56geMXyc647IEqGTmQsuU4Y2jFy
+u71MQ4ft9F2VjpL9sLWQwjpGDoiCoeO9EdiqsDjuRkh0Ip6mKVYsJ75rSkgcT1MWw9A5b/5nm0u1
+nw+rVEPYho6KuRRhIQCoK+pMQyf9TMVccusctXdZTEMn/Y6KueQCpeW2l23oeCSj13V0K/St6xCW
+oZP7DTuW0Tiyv+tZGLINHQso1n6G2UjpXakzDJ2rRpLh9Upbr9n2pZGtE7ah05MML9fRrKaM7mWx
+DR0pc6kjjh9ZbC5SDR3UQYmIpTWOrKx2e6MMnTsxzKXWOKpkuf1+XP4+ijaXUjFiuaspVYBWfYNK
+wei6i+VRbzComK5js94AZCpZvkGV6kB877yaS0/HImNpkvcIiXT76ObSpZ3utiKmrIhEMMylUhxd
+iqohnonoMZc8PBWTc0YWdQ8oI7e2Fkk0h+tZ1HOyLPQ9rmPp+eHSudyn32gggA0Uz0Uf9Vkw1jpk
+5KJHYMgvEpkLwx4o7O0Qd7FX6r0um5UFLCc2EKAOyvIj4yMFIMAzlNfAAHSAAOVb0uVhAFpAgHtD
+xxqGLFzGOqSkloXaclIbIaleBQPQB/I6qQOhbmMwpA4E8N8lltIMQADhBFprFiDAS6DMBAR4AZTZ
+gAC2L+rIaUYggHhSRzQrEGBRKDMDAcbenpLU7ECACZLcohWAAO0ml6xWAQLUm1zSWgkIUPfclbRW
+AwJMBiDVcZ6vsxykteIImVobiJg2EDFtIGLaQMS0gYhpAxHTf9wwCfFqnCEaAAAAAElFTkSuQmCC</ImageBytes>
+              <Margins>0,0,0,0</Margins>
+              <Name>Image_Logo</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <Stretch>True</Stretch>
+            </Image_Logo>
+            <Text1 Ref="7" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>4.3,0.1,1.9,0.4</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),16</Font>
+              <HorAlignment>Right</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text1</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <Text>{CompanyName}</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+            </Text1>
+            <Text17 Ref="8" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>0.4,0.2,2.5,0.3</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10,Bold</Font>
+              <Guid>2c4b31ff71d74439b78f22ccf8e6b8f7</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text17</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>کد سند: {TruckCrossHeaderPrintDto.DocumentId}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text17>
+            <Text9 Ref="9" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>0.2,0.9,1.4,2.2</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <HorAlignment>Right</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text9</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <Text>{CompanyName}
+{TruckCrossHeaderPrintDto.ExitCargoOwnerName}
+{TruckCrossHeaderPrintDto.DriverName}
+{TruckCrossHeaderPrintDto.TruckTypeTitle}
+{TruckCrossHeaderPrintDto.Plaque}
+{TruckCrossHeaderPrintDto.DriverPhone}</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text9>
+            <Text8 Ref="10" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <ClientRectangle>6.3,1.1,0.9,0.5</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>c3c3c15b01e84d36a76457012b5e9e6e</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text8</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>عنوان</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text8>
+            <Text11 Ref="11" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>5.2,1.1,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>97fe2feddc0f4fc38f69ae1f27fa9857</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text11</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>تاریخ</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text11>
+            <Text12 Ref="12" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>4.3,1.1,0.9,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>1a2b16b7b9a54b64a81042ba144e59bb</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text12</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>ساعت</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text12>
+            <Text13 Ref="13" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3.2,1.1,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>e22f4269a70e452781cb06c00e16529f</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text13</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>وزن</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text13>
+            <Text14 Ref="14" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>6.3,1.6,0.9,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>845e7a82272e4a61aba6079c274c3d99</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text14</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>وزن پر</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text14>
+            <Text15 Ref="15" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>5.2,1.6,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>a0922024686141b2b53c346a1f5b4b82</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text15</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.ExitDate}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text15>
+            <Text16 Ref="16" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>4.3,1.6,0.9,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>f59fe881618e405b8a2f57f28bd6f4f5</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text16</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.ExitTime}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text16>
+            <Text18 Ref="17" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3.2,1.6,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>48dd42ec19b4402c802bcb43aa9944a0</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text18</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.ExitWeightTonage}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text18>
+            <Text19 Ref="18" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>6.3,2.1,0.9,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>fe94b9c3989f4e2aaa365f13ae8fbdff</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text19</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>وزن خالی</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text19>
+            <Text20 Ref="19" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>5.2,2.1,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>d48510feb12b450d9f2be4ca4243f1ea</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text20</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.EnterDate}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text20>
+            <Text21 Ref="20" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>4.3,2.1,0.9,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>d7ad731c15cb408382bfcb3b9d771058</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text21</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.EnterTime}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text21>
+            <Text22 Ref="21" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3.2,2.1,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>9f19bd5699ba4ae9810b43f465624ff2</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text22</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.EnterWeightTonage}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text22>
+            <Text23 Ref="22" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>5.4,2.6,0.8,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>dbac710d54164b078ea7177ae6e3cee6</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text23</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>نوع کالا</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text23>
+            <Text24 Ref="23" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3.2,2.6,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>c25ec2bf1d7647d6a057b3bde2b57132</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text24</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>وزن خالص:
+{TruckCrossHeaderPrintDto.ExitPureWeightCargo}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text24>
+            <Text25 Ref="24" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>1.6,0.9,1.4,2.2</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <HorAlignment>Right</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text25</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <Text>فروشنده: 
+خریدار: 
+راننده: 
+نوع خودرو: 
+پلاک خودرو: 
+شماره تماس راننده: </Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text25>
+            <Text2 Ref="25" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>0.2,3.3,7,0.3</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10,Bold</Font>
+              <Guid>a692e37e39224aa2a38dacb4a37bd5aa</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text2</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>آدرس: یزد میبد - کمربندی شرقی، کیلومتر 5  تلفن: 035-32374000 متصدی باسکول: {TruckCrossHeaderPrintDto.ExitUser}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text2>
+            <Text3 Ref="26" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3,0.2,1.2,0.3</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10,Bold</Font>
+              <Guid>7a69ef2c0aec4ec9a7d7810f25ca5d94</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text3</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>نسخه راننده</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text3>
+            <Text4 Ref="27" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>4.8,0.6,1.4,0.3</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10,Bold</Font>
+              <Guid>c10832c54c3d442b96ff0c9287b45805</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text4</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>شرکت کاشی و سرامیک</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text4>
+            <Image1 Ref="28" type="Image" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>6.3,3.9,0.9,0.9</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <IconColor>68, 114, 196</IconColor>
+              <ImageBytes>iVBORw0KGgoAAAANSUhEUgAAAGQAAAByCAYAAAClbXTSAAAACXBIWXMAAC4jAAAuIwF4pT92AAAF
+42lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0w
+TXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRh
+LyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNi4wLWMwMDIgNzkuMTY0NDYwLCAyMDIwLzA1LzEy
+LTE2OjA0OjE3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3Jn
+LzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0i
+IiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRw
+Oi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMu
+YWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNv
+bS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9z
+VHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjIu
+NSAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIxLTEyLTA1VDA5OjQ0OjU1KzAzOjMwIiB4
+bXA6TW9kaWZ5RGF0ZT0iMjAyMi0wNS0yMlQxMTo1ODo0Mi0wNzowMCIgeG1wOk1ldGFkYXRhRGF0
+ZT0iMjAyMi0wNS0yMlQxMTo1ODo0Mi0wNzowMCIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHBob3Rv
+c2hvcDpDb2xvck1vZGU9IjMiIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJzUkdCIElFQzYxOTY2LTIu
+MSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpkZGU1ODg2Yi05YTU2LTVhNDQtYmRmOS04ZDE0
+YjRhNDY4MTIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NjdiNDQxMjQtNGE3YS1hOTQ1LTg2
+ZjYtOTM4ZDg1NzliMjZjIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6NjdiNDQx
+MjQtNGE3YS1hOTQ1LTg2ZjYtOTM4ZDg1NzliMjZjIj4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2Vx
+PiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlp
+ZDo2N2I0NDEyNC00YTdhLWE5NDUtODZmNi05MzhkODU3OWIyNmMiIHN0RXZ0OndoZW49IjIwMjEt
+MTItMDVUMDk6NDQ6NTUrMDM6MzAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hv
+cCAyMi41IChXaW5kb3dzKSIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omlu
+c3RhbmNlSUQ9InhtcC5paWQ6ZGRlNTg4NmItOWE1Ni01YTQ0LWJkZjktOGQxNGI0YTQ2ODEyIiBz
+dEV2dDp3aGVuPSIyMDIyLTA1LTIyVDExOjU4OjQyLTA3OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50
+PSJBZG9iZSBQaG90b3Nob3AgMjEuMiAoV2luZG93cykiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPC9y
+ZGY6U2VxPiA8L3htcE1NOkhpc3Rvcnk+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwv
+eDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+B1edxgAABHNJREFUeJztm+uOqzAMhIejff9X
+5vyqRNNAbrZnEjLSSivaEuMviUkGjvM8saWjf+wAtr61gYhpAxHTBiKmDURMG4iY/tIDx3Ew4rBU
+eh8vfUHpsmO1EZJbVE210FoJyFPip4GyEpCSpoCyCpDaZMtDmR3IifYkS0OZGchIYmWhzAxkVJJQ
+ZgVilUw5KLMB6akZNeeU0UxAPBMnA2UmIN6SgDILkKhk0aGoA/GoGTVt0qQOhCUalA0kL9qWvSKQ
+6zTFSMynTcZ0KQckl4BIKLm2QqEoAUkvPHqkXNvIxRIiFSA15pInlCcYpeOmUgFSkieUGhi1nw+L
+DaSncFpCaYHR+r0uMYGMGEsWUHpg9H6/WiwgvRdkVehHYIz+7lEMIJYX0gPFAobV738UDcTDWGqB
+YgnD+jwA+EV9RK1QPGCYny8KiNc2RC0UTxim540A4n3vXir0ETDMzj/zlJUqByUShkk73kBYvsIB
+Dozh9jyBMGAoPf3e1e5KU9YS8gTCNJdKxyLU1e7PG1QDyt2CHoibMu5qxqeeRE5dV9cxPfYorxFi
+vRFYUk0Bjxopd+1UdQgrIKViyjSXIjvH8J3dKJDSCtw7GbUJiLCDTVzH6JW6irlkDcXMdRwB0jIk
+lcwlyzjS81C2Tno3Cq2gjCbAsnP0xnL73VYgloYO01yyqCkuWzNsx1DFXGqF4mYBtwCxXFgpmUst
+caTfo1m4K5tLLZ3DvWPUAIl6lYxpLtVACYnlCUjU0993yYj2M56geMXyc647IEqGTmQsuU4Y2jFy
+u71MQ4ft9F2VjpL9sLWQwjpGDoiCoeO9EdiqsDjuRkh0Ip6mKVYsJ75rSkgcT1MWw9A5b/5nm0u1
+nw+rVEPYho6KuRRhIQCoK+pMQyf9TMVccusctXdZTEMn/Y6KueQCpeW2l23oeCSj13V0K/St6xCW
+oZP7DTuW0Tiyv+tZGLINHQso1n6G2UjpXakzDJ2rRpLh9Upbr9n2pZGtE7ah05MML9fRrKaM7mWx
+DR0pc6kjjh9ZbC5SDR3UQYmIpTWOrKx2e6MMnTsxzKXWOKpkuf1+XP4+ijaXUjFiuaspVYBWfYNK
+wei6i+VRbzComK5js94AZCpZvkGV6kB877yaS0/HImNpkvcIiXT76ObSpZ3utiKmrIhEMMylUhxd
+iqohnonoMZc8PBWTc0YWdQ8oI7e2Fkk0h+tZ1HOyLPQ9rmPp+eHSudyn32gggA0Uz0Uf9Vkw1jpk
+5KJHYMgvEpkLwx4o7O0Qd7FX6r0um5UFLCc2EKAOyvIj4yMFIMAzlNfAAHSAAOVb0uVhAFpAgHtD
+xxqGLFzGOqSkloXaclIbIaleBQPQB/I6qQOhbmMwpA4E8N8lltIMQADhBFprFiDAS6DMBAR4AZTZ
+gAC2L+rIaUYggHhSRzQrEGBRKDMDAcbenpLU7ECACZLcohWAAO0ml6xWAQLUm1zSWgkIUPfclbRW
+AwJMBiDVcZ6vsxykteIImVobiJg2EDFtIGLaQMS0gYhpAxHTf9wwCfFqnCEaAAAAAElFTkSuQmCC</ImageBytes>
+              <Margins>0,0,0,0</Margins>
+              <Name>Image1</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <Stretch>True</Stretch>
+            </Image1>
+            <Text5 Ref="29" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>4.3,3.9,1.9,0.4</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),16</Font>
+              <HorAlignment>Right</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text5</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <Text>{CompanyName}</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+            </Text5>
+            <Text6 Ref="30" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>0.4,4,2.5,0.3</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10,Bold</Font>
+              <Guid>c1c2ec2e935d466d9dbeb108bb5a142f</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text6</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>کد سند: {TruckCrossHeaderPrintDto.DocumentId}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text6>
+            <Text7 Ref="31" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>0.2,4.7,1.4,2.2</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <HorAlignment>Right</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text7</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <Text>{CompanyName}
+{TruckCrossHeaderPrintDto.ExitCargoOwnerName}
+{TruckCrossHeaderPrintDto.DriverName}
+{TruckCrossHeaderPrintDto.TruckTypeTitle}
+{TruckCrossHeaderPrintDto.Plaque}
+{TruckCrossHeaderPrintDto.DriverPhone}</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text7>
+            <Text10 Ref="32" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <ClientRectangle>6.3,4.9,0.9,0.5</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>0f09eee87c7a42bdbff0fa5b8f3d1f1a</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text10</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>عنوان</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text10>
+            <Text26 Ref="33" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>5.2,4.9,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>086e3cd4493f452683a1e296b9d6dae5</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text26</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>تاریخ</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text26>
+            <Text27 Ref="34" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>4.3,4.9,0.9,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>f5d5018f10424cad83e1625b6be819cb</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text27</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>ساعت</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text27>
+            <Text28 Ref="35" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3.2,4.9,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>8e4a6eb00c7b4937901a6f2a5486ee16</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text28</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>وزن</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text28>
+            <Text29 Ref="36" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>6.3,5.4,0.9,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>1320d5387df0451ebe67e3107e8cba93</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text29</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>وزن پر</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text29>
+            <Text30 Ref="37" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>5.2,5.4,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>effbaa4a6efd45628b3dae67fccca6b7</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text30</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.ExitDate}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text30>
+            <Text31 Ref="38" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>4.3,5.4,0.9,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>52682135d7d34a91948f6273294412ad</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text31</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.ExitTime}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text31>
+            <Text32 Ref="39" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3.2,5.4,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>46fe781226f0456391921ca7b4754804</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text32</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.ExitWeightTonage}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text32>
+            <Text33 Ref="40" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>6.3,5.9,0.9,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>58a45abc61cc4cd585290fb6f0b6f26c</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text33</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>وزن خالی</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text33>
+            <Text34 Ref="41" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>5.2,5.9,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>76b345cd39b04e6d8e2a1cec55ca2b9e</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text34</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.EnterDate}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text34>
+            <Text35 Ref="42" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>4.3,5.9,0.9,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>434053624cba4e918973097286cbe9b7</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text35</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.EnterTime}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text35>
+            <Text36 Ref="43" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3.2,5.9,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>ffebe3b27f7649c38b987459bc0e5e38</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text36</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.EnterWeightTonage}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text36>
+            <Text37 Ref="44" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>5.4,6.4,0.8,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>0c0b05f85bd246b8ac64d967b3e97c84</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text37</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>نوع کالا</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text37>
+            <Text38 Ref="45" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3.2,6.4,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>94c4ace566204969b33fde3ae460a3c5</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text38</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>وزن خالص:
+{TruckCrossHeaderPrintDto.ExitPureWeightCargo}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text38>
+            <Text39 Ref="46" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>1.6,4.7,1.4,2.2</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <HorAlignment>Right</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text39</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <Text>فروشنده: 
+خریدار: 
+راننده: 
+نوع خودرو: 
+پلاک خودرو: 
+شماره تماس راننده: </Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text39>
+            <Text40 Ref="47" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>0.2,7.1,7,0.3</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10,Bold</Font>
+              <Guid>50d2587a0395420eb0abd9613df8d2d4</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text40</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>آدرس: یزد میبد - کمربندی شرقی، کیلومتر 5  تلفن: 035-32374000 متصدی باسکول: {TruckCrossHeaderPrintDto.ExitUser}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text40>
+            <Text41 Ref="48" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3,4,1.2,0.3</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10,Bold</Font>
+              <Guid>011aa42c42404cf68d38ed01bd6dbfb6</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text41</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>نسخه نگهبانی</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text41>
+            <Text42 Ref="49" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>4.8,4.4,1.4,0.3</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10,Bold</Font>
+              <Guid>190f07e9df904f29be20ceda31118a82</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text42</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>شرکت کاشی و سرامیک</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text42>
+            <Image2 Ref="50" type="Image" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>6.3,7.7,0.9,0.9</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <IconColor>68, 114, 196</IconColor>
+              <ImageBytes>iVBORw0KGgoAAAANSUhEUgAAAGQAAAByCAYAAAClbXTSAAAACXBIWXMAAC4jAAAuIwF4pT92AAAF
+42lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0w
+TXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRh
+LyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNi4wLWMwMDIgNzkuMTY0NDYwLCAyMDIwLzA1LzEy
+LTE2OjA0OjE3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3Jn
+LzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0i
+IiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRw
+Oi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMu
+YWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNv
+bS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9z
+VHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjIu
+NSAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIxLTEyLTA1VDA5OjQ0OjU1KzAzOjMwIiB4
+bXA6TW9kaWZ5RGF0ZT0iMjAyMi0wNS0yMlQxMTo1ODo0Mi0wNzowMCIgeG1wOk1ldGFkYXRhRGF0
+ZT0iMjAyMi0wNS0yMlQxMTo1ODo0Mi0wNzowMCIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHBob3Rv
+c2hvcDpDb2xvck1vZGU9IjMiIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJzUkdCIElFQzYxOTY2LTIu
+MSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpkZGU1ODg2Yi05YTU2LTVhNDQtYmRmOS04ZDE0
+YjRhNDY4MTIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NjdiNDQxMjQtNGE3YS1hOTQ1LTg2
+ZjYtOTM4ZDg1NzliMjZjIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6NjdiNDQx
+MjQtNGE3YS1hOTQ1LTg2ZjYtOTM4ZDg1NzliMjZjIj4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2Vx
+PiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlp
+ZDo2N2I0NDEyNC00YTdhLWE5NDUtODZmNi05MzhkODU3OWIyNmMiIHN0RXZ0OndoZW49IjIwMjEt
+MTItMDVUMDk6NDQ6NTUrMDM6MzAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hv
+cCAyMi41IChXaW5kb3dzKSIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omlu
+c3RhbmNlSUQ9InhtcC5paWQ6ZGRlNTg4NmItOWE1Ni01YTQ0LWJkZjktOGQxNGI0YTQ2ODEyIiBz
+dEV2dDp3aGVuPSIyMDIyLTA1LTIyVDExOjU4OjQyLTA3OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50
+PSJBZG9iZSBQaG90b3Nob3AgMjEuMiAoV2luZG93cykiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPC9y
+ZGY6U2VxPiA8L3htcE1NOkhpc3Rvcnk+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwv
+eDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+B1edxgAABHNJREFUeJztm+uOqzAMhIejff9X
+5vyqRNNAbrZnEjLSSivaEuMviUkGjvM8saWjf+wAtr61gYhpAxHTBiKmDURMG4iY/tIDx3Ew4rBU
+eh8vfUHpsmO1EZJbVE210FoJyFPip4GyEpCSpoCyCpDaZMtDmR3IifYkS0OZGchIYmWhzAxkVJJQ
+ZgVilUw5KLMB6akZNeeU0UxAPBMnA2UmIN6SgDILkKhk0aGoA/GoGTVt0qQOhCUalA0kL9qWvSKQ
+6zTFSMynTcZ0KQckl4BIKLm2QqEoAUkvPHqkXNvIxRIiFSA15pInlCcYpeOmUgFSkieUGhi1nw+L
+DaSncFpCaYHR+r0uMYGMGEsWUHpg9H6/WiwgvRdkVehHYIz+7lEMIJYX0gPFAobV738UDcTDWGqB
+YgnD+jwA+EV9RK1QPGCYny8KiNc2RC0UTxim540A4n3vXir0ETDMzj/zlJUqByUShkk73kBYvsIB
+Dozh9jyBMGAoPf3e1e5KU9YS8gTCNJdKxyLU1e7PG1QDyt2CHoibMu5qxqeeRE5dV9cxPfYorxFi
+vRFYUk0Bjxopd+1UdQgrIKViyjSXIjvH8J3dKJDSCtw7GbUJiLCDTVzH6JW6irlkDcXMdRwB0jIk
+lcwlyzjS81C2Tno3Cq2gjCbAsnP0xnL73VYgloYO01yyqCkuWzNsx1DFXGqF4mYBtwCxXFgpmUst
+caTfo1m4K5tLLZ3DvWPUAIl6lYxpLtVACYnlCUjU0993yYj2M56geMXyc647IEqGTmQsuU4Y2jFy
+u71MQ4ft9F2VjpL9sLWQwjpGDoiCoeO9EdiqsDjuRkh0Ip6mKVYsJ75rSkgcT1MWw9A5b/5nm0u1
+nw+rVEPYho6KuRRhIQCoK+pMQyf9TMVccusctXdZTEMn/Y6KueQCpeW2l23oeCSj13V0K/St6xCW
+oZP7DTuW0Tiyv+tZGLINHQso1n6G2UjpXakzDJ2rRpLh9Upbr9n2pZGtE7ah05MML9fRrKaM7mWx
+DR0pc6kjjh9ZbC5SDR3UQYmIpTWOrKx2e6MMnTsxzKXWOKpkuf1+XP4+ijaXUjFiuaspVYBWfYNK
+wei6i+VRbzComK5js94AZCpZvkGV6kB877yaS0/HImNpkvcIiXT76ObSpZ3utiKmrIhEMMylUhxd
+iqohnonoMZc8PBWTc0YWdQ8oI7e2Fkk0h+tZ1HOyLPQ9rmPp+eHSudyn32gggA0Uz0Uf9Vkw1jpk
+5KJHYMgvEpkLwx4o7O0Qd7FX6r0um5UFLCc2EKAOyvIj4yMFIMAzlNfAAHSAAOVb0uVhAFpAgHtD
+xxqGLFzGOqSkloXaclIbIaleBQPQB/I6qQOhbmMwpA4E8N8lltIMQADhBFprFiDAS6DMBAR4AZTZ
+gAC2L+rIaUYggHhSRzQrEGBRKDMDAcbenpLU7ECACZLcohWAAO0ml6xWAQLUm1zSWgkIUPfclbRW
+AwJMBiDVcZ6vsxykteIImVobiJg2EDFtIGLaQMS0gYhpAxHTf9wwCfFqnCEaAAAAAElFTkSuQmCC</ImageBytes>
+              <Margins>0,0,0,0</Margins>
+              <Name>Image2</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <Stretch>True</Stretch>
+            </Image2>
+            <Text43 Ref="51" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>4.3,7.7,1.9,0.4</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),16</Font>
+              <HorAlignment>Right</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text43</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <Text>{CompanyName}</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+            </Text43>
+            <Text44 Ref="52" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>0.4,7.8,2.5,0.3</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10,Bold</Font>
+              <Guid>e1706976f1324fd5b58e798e30992fc6</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text44</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>کد سند: {TruckCrossHeaderPrintDto.DocumentId}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text44>
+            <Text45 Ref="53" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>0.2,8.5,1.4,2.2</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <HorAlignment>Right</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text45</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <Text>{CompanyName}
+{TruckCrossHeaderPrintDto.ExitCargoOwnerName}
+{TruckCrossHeaderPrintDto.DriverName}
+{TruckCrossHeaderPrintDto.TruckTypeTitle}
+{TruckCrossHeaderPrintDto.Plaque}
+{TruckCrossHeaderPrintDto.DriverPhone}</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text45>
+            <Text46 Ref="54" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <ClientRectangle>6.3,8.7,0.9,0.5</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>70f9de874c3748c88ac0612803923177</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text46</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>عنوان</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text46>
+            <Text47 Ref="55" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>5.2,8.7,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>1a8ecedb93334d99a9a32f25632de956</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text47</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>تاریخ</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text47>
+            <Text48 Ref="56" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>4.3,8.7,0.9,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>267699302fe04d51aa7483146a8888c8</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text48</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>ساعت</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text48>
+            <Text49 Ref="57" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3.2,8.7,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>7bb67377926a4a8b9edba7786c79acd9</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text49</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>وزن</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text49>
+            <Text50 Ref="58" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>6.3,9.2,0.9,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>02baa3f9309b4529a48f06a0288fec00</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text50</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>وزن پر</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text50>
+            <Text51 Ref="59" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>5.2,9.2,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>ba8ca7bf21fe4535922faf3956e3e1a1</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text51</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.ExitDate}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text51>
+            <Text52 Ref="60" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>4.3,9.2,0.9,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>6979d6c77d3443f0b97c0925b4a386ad</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text52</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.ExitTime}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text52>
+            <Text53 Ref="61" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3.2,9.2,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>22eedf77a7f54360a41532c4936b0ffe</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text53</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.ExitWeightTonage}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text53>
+            <Text54 Ref="62" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>6.3,9.7,0.9,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>5cfb2bd3f2054ac6a050d56df33adef8</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text54</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>وزن خالی</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text54>
+            <Text55 Ref="63" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>5.2,9.7,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>1d74607daabd412d9115b8332fd344f0</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text55</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.EnterDate}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text55>
+            <Text56 Ref="64" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>4.3,9.7,0.9,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>932adc8aa7584a9da317193f8579bc7d</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text56</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.EnterTime}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text56>
+            <Text57 Ref="65" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3.2,9.7,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>64ce47d7436246f38b0b3e1ca42e1676</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text57</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>{TruckCrossHeaderPrintDto.EnterWeightTonage}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text57>
+            <Text58 Ref="66" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>5.4,10.2,0.8,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>70043f2ec07941f6a0fcb4bcdd6940e7</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text58</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>نوع کالا</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text58>
+            <Text59 Ref="67" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3.2,10.2,1.1,0.5</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <Guid>c98115fa09154b399d93f2e2459025d3</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text59</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>وزن خالص:
+{TruckCrossHeaderPrintDto.ExitPureWeightCargo}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text59>
+            <Text60 Ref="68" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>1.6,8.5,1.4,2.2</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <HorAlignment>Right</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text60</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <Text>فروشنده: 
+خریدار: 
+راننده: 
+نوع خودرو: 
+پلاک خودرو: 
+شماره تماس راننده: </Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text60>
+            <Text61 Ref="69" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>0.2,10.9,7,0.3</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10,Bold</Font>
+              <Guid>4e9985d08c7b4f38880b85fcfe976540</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text61</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>آدرس: یزد میبد - کمربندی شرقی، کیلومتر 5  تلفن: 035-32374000 متصدی باسکول: {TruckCrossHeaderPrintDto.ExitUser}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text61>
+            <Text62 Ref="70" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3,7.8,1.2,0.3</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10,Bold</Font>
+              <Guid>7d67c573536849c293ca886638d78e52</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text62</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>نسخه انبار</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text62>
+            <Text63 Ref="71" type="Text" isKey="true">
+              <Anchor>Top, Right</Anchor>
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>4.8,8.2,1.4,0.3</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10,Bold</Font>
+              <Guid>67b9c2720f814a728fa5c55b3358532d</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text63</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ShiftMode>None</ShiftMode>
+              <Text>شرکت کاشی و سرامیک</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text63>
+            <StartPointPrimitive8 Ref="72" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>0,2.8,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive8</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>6106e5e278134620aa3039448217a51a</ReferenceToGuid>
+            </StartPointPrimitive8>
+            <StartPointPrimitive1 Ref="73" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>0,0,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive1</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>c5c7d0d737e641c7b9ca9057366b569a</ReferenceToGuid>
+            </StartPointPrimitive1>
+            <StartPointPrimitive4 Ref="74" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>0.2,0.9,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive4</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>7ee2bc2491144196a4ed16bc17fa1bdc</ReferenceToGuid>
+            </StartPointPrimitive4>
+            <EndPointPrimitive4 Ref="75" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>3,3.1,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive4</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>7ee2bc2491144196a4ed16bc17fa1bdc</ReferenceToGuid>
+            </EndPointPrimitive4>
+            <StartPointPrimitive6 Ref="76" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>3.2,1.1,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive6</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>daf14db4465a469a8da50e92be2e4461</ReferenceToGuid>
+            </StartPointPrimitive6>
+            <EndPointPrimitive6 Ref="77" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>7.2,3.1,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive6</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>daf14db4465a469a8da50e92be2e4461</ReferenceToGuid>
+            </EndPointPrimitive6>
+            <StartPointPrimitive7 Ref="78" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>6.3,1.1,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive7</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>4ada752348684f53a3d70ac29b6c4fd9</ReferenceToGuid>
+            </StartPointPrimitive7>
+            <EndPointPrimitive7 Ref="79" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>6.3,2.6,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive7</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>4ada752348684f53a3d70ac29b6c4fd9</ReferenceToGuid>
+            </EndPointPrimitive7>
+            <StartPointPrimitive9 Ref="80" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>5.2,1.1,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive9</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>11bef83537be4e2f82dcbde6181581a9</ReferenceToGuid>
+            </StartPointPrimitive9>
+            <EndPointPrimitive8 Ref="81" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>5.2,2.6,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive8</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>11bef83537be4e2f82dcbde6181581a9</ReferenceToGuid>
+            </EndPointPrimitive8>
+            <StartPointPrimitive10 Ref="82" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>4.3,1.1,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive10</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>b0acde766a9b47fa88f256b78c0027e7</ReferenceToGuid>
+            </StartPointPrimitive10>
+            <EndPointPrimitive9 Ref="83" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>4.3,3.1,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive9</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>b0acde766a9b47fa88f256b78c0027e7</ReferenceToGuid>
+            </EndPointPrimitive9>
+            <HorizontalLinePrimitive1 Ref="84" type="HorizontalLinePrimitive" isKey="true">
+              <ClientRectangle>3.2,2.6,4,0.01</ClientRectangle>
+              <Color>Black</Color>
+              <Conditions isList="true" count="0" />
+              <EndCap Ref="85" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </EndCap>
+              <Expressions isList="true" count="0" />
+              <Name>HorizontalLinePrimitive1</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <StartCap Ref="86" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </StartCap>
+            </HorizontalLinePrimitive1>
+            <HorizontalLinePrimitive2 Ref="87" type="HorizontalLinePrimitive" isKey="true">
+              <ClientRectangle>3.2,2.1,4,0.01</ClientRectangle>
+              <Color>Black</Color>
+              <Conditions isList="true" count="0" />
+              <EndCap Ref="88" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </EndCap>
+              <Expressions isList="true" count="0" />
+              <Name>HorizontalLinePrimitive2</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <StartCap Ref="89" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </StartCap>
+            </HorizontalLinePrimitive2>
+            <HorizontalLinePrimitive3 Ref="90" type="HorizontalLinePrimitive" isKey="true">
+              <ClientRectangle>3.2,1.6,4,0.01</ClientRectangle>
+              <Color>Black</Color>
+              <Conditions isList="true" count="0" />
+              <EndCap Ref="91" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </EndCap>
+              <Expressions isList="true" count="0" />
+              <Name>HorizontalLinePrimitive3</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <StartCap Ref="92" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </StartCap>
+            </HorizontalLinePrimitive3>
+            <HorizontalLinePrimitive4 Ref="93" type="HorizontalLinePrimitive" isKey="true">
+              <ClientRectangle>3.2,6.4,4,0.01</ClientRectangle>
+              <Color>Black</Color>
+              <Conditions isList="true" count="0" />
+              <EndCap Ref="94" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </EndCap>
+              <Expressions isList="true" count="0" />
+              <Name>HorizontalLinePrimitive4</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <StartCap Ref="95" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </StartCap>
+            </HorizontalLinePrimitive4>
+            <HorizontalLinePrimitive5 Ref="96" type="HorizontalLinePrimitive" isKey="true">
+              <ClientRectangle>3.2,5.9,4,0.01</ClientRectangle>
+              <Color>Black</Color>
+              <Conditions isList="true" count="0" />
+              <EndCap Ref="97" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </EndCap>
+              <Expressions isList="true" count="0" />
+              <Name>HorizontalLinePrimitive5</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <StartCap Ref="98" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </StartCap>
+            </HorizontalLinePrimitive5>
+            <HorizontalLinePrimitive6 Ref="99" type="HorizontalLinePrimitive" isKey="true">
+              <ClientRectangle>3.2,5.4,4,0.01</ClientRectangle>
+              <Color>Black</Color>
+              <Conditions isList="true" count="0" />
+              <EndCap Ref="100" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </EndCap>
+              <Expressions isList="true" count="0" />
+              <Name>HorizontalLinePrimitive6</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <StartCap Ref="101" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </StartCap>
+            </HorizontalLinePrimitive6>
+            <HorizontalLinePrimitive7 Ref="102" type="HorizontalLinePrimitive" isKey="true">
+              <ClientRectangle>3.2,10.2,4,0.01</ClientRectangle>
+              <Color>Black</Color>
+              <Conditions isList="true" count="0" />
+              <EndCap Ref="103" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </EndCap>
+              <Expressions isList="true" count="0" />
+              <Name>HorizontalLinePrimitive7</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <StartCap Ref="104" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </StartCap>
+            </HorizontalLinePrimitive7>
+            <HorizontalLinePrimitive8 Ref="105" type="HorizontalLinePrimitive" isKey="true">
+              <ClientRectangle>3.2,9.7,4,0.01</ClientRectangle>
+              <Color>Black</Color>
+              <Conditions isList="true" count="0" />
+              <EndCap Ref="106" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </EndCap>
+              <Expressions isList="true" count="0" />
+              <Name>HorizontalLinePrimitive8</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <StartCap Ref="107" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </StartCap>
+            </HorizontalLinePrimitive8>
+            <HorizontalLinePrimitive9 Ref="108" type="HorizontalLinePrimitive" isKey="true">
+              <ClientRectangle>3.2,9.2,4,0.01</ClientRectangle>
+              <Color>Black</Color>
+              <Conditions isList="true" count="0" />
+              <EndCap Ref="109" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </EndCap>
+              <Expressions isList="true" count="0" />
+              <Name>HorizontalLinePrimitive9</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <StartCap Ref="110" type="Cap" isKey="true">
+                <Color>Black</Color>
+              </StartCap>
+            </HorizontalLinePrimitive9>
+            <StartPointPrimitive2 Ref="111" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>0,3.8,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive2</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>9450eb41077148519000c639f57b0498</ReferenceToGuid>
+            </StartPointPrimitive2>
+            <StartPointPrimitive3 Ref="112" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>0.2,4.7,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive3</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>80ec219deb1e412ca44518fcd18b95f7</ReferenceToGuid>
+            </StartPointPrimitive3>
+            <EndPointPrimitive3 Ref="113" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>3,6.9,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive3</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>80ec219deb1e412ca44518fcd18b95f7</ReferenceToGuid>
+            </EndPointPrimitive3>
+            <StartPointPrimitive5 Ref="114" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>3.2,4.9,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive5</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>545d6f5ca60748789eb31a211b7c7431</ReferenceToGuid>
+            </StartPointPrimitive5>
+            <EndPointPrimitive5 Ref="115" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>7.2,6.9,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive5</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>545d6f5ca60748789eb31a211b7c7431</ReferenceToGuid>
+            </EndPointPrimitive5>
+            <StartPointPrimitive11 Ref="116" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>6.3,4.9,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive11</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>afd5fc7df5e04d59a348016ef46f2cc3</ReferenceToGuid>
+            </StartPointPrimitive11>
+            <EndPointPrimitive10 Ref="117" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>6.3,6.4,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive10</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>afd5fc7df5e04d59a348016ef46f2cc3</ReferenceToGuid>
+            </EndPointPrimitive10>
+            <StartPointPrimitive12 Ref="118" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>5.2,4.9,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive12</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>bb64e01476b048f082bf571f8384cb72</ReferenceToGuid>
+            </StartPointPrimitive12>
+            <EndPointPrimitive11 Ref="119" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>5.2,6.4,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive11</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>bb64e01476b048f082bf571f8384cb72</ReferenceToGuid>
+            </EndPointPrimitive11>
+            <StartPointPrimitive13 Ref="120" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>4.3,4.9,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive13</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>6cd3b431e2bd45a08e758644b18095f2</ReferenceToGuid>
+            </StartPointPrimitive13>
+            <EndPointPrimitive12 Ref="121" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>4.3,6.9,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive12</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>6cd3b431e2bd45a08e758644b18095f2</ReferenceToGuid>
+            </EndPointPrimitive12>
+            <StartPointPrimitive14 Ref="122" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>0,7.6,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive14</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>7bf92cc837294abab1f7725ef300c80c</ReferenceToGuid>
+            </StartPointPrimitive14>
+            <StartPointPrimitive15 Ref="123" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>0.2,8.5,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive15</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>34bd4c2dc5b547aaa6894c6c68afd27a</ReferenceToGuid>
+            </StartPointPrimitive15>
+            <EndPointPrimitive14 Ref="124" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>3,10.7,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive14</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>34bd4c2dc5b547aaa6894c6c68afd27a</ReferenceToGuid>
+            </EndPointPrimitive14>
+            <StartPointPrimitive16 Ref="125" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>3.2,8.7,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive16</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>960b9574b2864c5f9bd6460518c49e36</ReferenceToGuid>
+            </StartPointPrimitive16>
+            <EndPointPrimitive15 Ref="126" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>7.2,10.7,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive15</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>960b9574b2864c5f9bd6460518c49e36</ReferenceToGuid>
+            </EndPointPrimitive15>
+            <StartPointPrimitive17 Ref="127" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>6.3,8.7,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive17</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>9ccd2f5569d342b78e8cf8d32275333b</ReferenceToGuid>
+            </StartPointPrimitive17>
+            <EndPointPrimitive16 Ref="128" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>6.3,10.2,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive16</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>9ccd2f5569d342b78e8cf8d32275333b</ReferenceToGuid>
+            </EndPointPrimitive16>
+            <StartPointPrimitive18 Ref="129" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>5.2,8.7,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive18</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>643189e4b7cc42e481a7b89f584036b2</ReferenceToGuid>
+            </StartPointPrimitive18>
+            <EndPointPrimitive17 Ref="130" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>5.2,10.2,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive17</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>643189e4b7cc42e481a7b89f584036b2</ReferenceToGuid>
+            </EndPointPrimitive17>
+            <StartPointPrimitive19 Ref="131" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>4.3,8.7,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive19</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>e6e40124ab6c4830956d4ba5166d8090</ReferenceToGuid>
+            </StartPointPrimitive19>
+            <EndPointPrimitive18 Ref="132" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>4.3,10.7,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive18</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>e6e40124ab6c4830956d4ba5166d8090</ReferenceToGuid>
+            </EndPointPrimitive18>
+          </Components>
+          <Conditions isList="true" count="0" />
+          <DataRelationName isNull="true" />
+          <DataSourceName>TruckCrossHeaderPrintDto</DataSourceName>
+          <Expressions isList="true" count="0" />
+          <Filters isList="true" count="0" />
+          <Name>DataBand1</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <Sort isList="true" count="0" />
+        </DataBand1>
+        <RoundedRectanglePrimitive1 Ref="133" type="Stimulsoft.Report.Components.StiRoundedRectanglePrimitive" isKey="true">
+          <ClientRectangle>0,0.2,7.5,3.7</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Guid>c5c7d0d737e641c7b9ca9057366b569a</Guid>
+          <Name>RoundedRectanglePrimitive1</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <Round>0.2</Round>
+        </RoundedRectanglePrimitive1>
+        <EndPointPrimitive1 Ref="134" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+          <ClientRectangle>7.5,3.9,0,0</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Name>EndPointPrimitive1</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <ReferenceToGuid>c5c7d0d737e641c7b9ca9057366b569a</ReferenceToGuid>
+        </EndPointPrimitive1>
+        <RoundedRectanglePrimitive4 Ref="135" type="Stimulsoft.Report.Components.StiRoundedRectanglePrimitive" isKey="true">
+          <ClientRectangle>0.2,1.1,2.8,2.2</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Guid>7ee2bc2491144196a4ed16bc17fa1bdc</Guid>
+          <Name>RoundedRectanglePrimitive4</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <Round>0.2</Round>
+        </RoundedRectanglePrimitive4>
+        <RoundedRectanglePrimitive6 Ref="136" type="Stimulsoft.Report.Components.StiRoundedRectanglePrimitive" isKey="true">
+          <ClientRectangle>3.2,1.3,4,2</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Guid>daf14db4465a469a8da50e92be2e4461</Guid>
+          <Name>RoundedRectanglePrimitive6</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <Round>0.2</Round>
+        </RoundedRectanglePrimitive6>
+        <VerticalLinePrimitive1 Ref="137" type="VerticalLinePrimitive" isKey="true">
+          <ClientRectangle>6.3,1.3,0.01,1.5</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <EndCap Ref="138" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </EndCap>
+          <Expressions isList="true" count="0" />
+          <Guid>4ada752348684f53a3d70ac29b6c4fd9</Guid>
+          <Name>VerticalLinePrimitive1</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <StartCap Ref="139" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </StartCap>
+        </VerticalLinePrimitive1>
+        <VerticalLinePrimitive2 Ref="140" type="VerticalLinePrimitive" isKey="true">
+          <ClientRectangle>5.2,1.3,0.01,1.5</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <EndCap Ref="141" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </EndCap>
+          <Expressions isList="true" count="0" />
+          <Guid>11bef83537be4e2f82dcbde6181581a9</Guid>
+          <Name>VerticalLinePrimitive2</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <StartCap Ref="142" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </StartCap>
+        </VerticalLinePrimitive2>
+        <VerticalLinePrimitive3 Ref="143" type="VerticalLinePrimitive" isKey="true">
+          <ClientRectangle>4.3,1.3,0.01,2</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <EndCap Ref="144" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </EndCap>
+          <Expressions isList="true" count="0" />
+          <Guid>b0acde766a9b47fa88f256b78c0027e7</Guid>
+          <Name>VerticalLinePrimitive3</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <StartCap Ref="145" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </StartCap>
+        </VerticalLinePrimitive3>
+        <RoundedRectanglePrimitive2 Ref="146" type="Stimulsoft.Report.Components.StiRoundedRectanglePrimitive" isKey="true">
+          <ClientRectangle>0,4,7.5,3.7</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Guid>9450eb41077148519000c639f57b0498</Guid>
+          <Name>RoundedRectanglePrimitive2</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <Round>0.2</Round>
+        </RoundedRectanglePrimitive2>
+        <RoundedRectanglePrimitive3 Ref="147" type="Stimulsoft.Report.Components.StiRoundedRectanglePrimitive" isKey="true">
+          <ClientRectangle>0.2,4.9,2.8,2.2</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Guid>80ec219deb1e412ca44518fcd18b95f7</Guid>
+          <Name>RoundedRectanglePrimitive3</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <Round>0.2</Round>
+        </RoundedRectanglePrimitive3>
+        <RoundedRectanglePrimitive5 Ref="148" type="Stimulsoft.Report.Components.StiRoundedRectanglePrimitive" isKey="true">
+          <ClientRectangle>3.2,5.1,4,2</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Guid>545d6f5ca60748789eb31a211b7c7431</Guid>
+          <Name>RoundedRectanglePrimitive5</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <Round>0.2</Round>
+        </RoundedRectanglePrimitive5>
+        <VerticalLinePrimitive4 Ref="149" type="VerticalLinePrimitive" isKey="true">
+          <ClientRectangle>6.3,5.1,0.01,1.5</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <EndCap Ref="150" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </EndCap>
+          <Expressions isList="true" count="0" />
+          <Guid>afd5fc7df5e04d59a348016ef46f2cc3</Guid>
+          <Name>VerticalLinePrimitive4</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <StartCap Ref="151" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </StartCap>
+        </VerticalLinePrimitive4>
+        <VerticalLinePrimitive5 Ref="152" type="VerticalLinePrimitive" isKey="true">
+          <ClientRectangle>5.2,5.1,0.01,1.5</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <EndCap Ref="153" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </EndCap>
+          <Expressions isList="true" count="0" />
+          <Guid>bb64e01476b048f082bf571f8384cb72</Guid>
+          <Name>VerticalLinePrimitive5</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <StartCap Ref="154" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </StartCap>
+        </VerticalLinePrimitive5>
+        <VerticalLinePrimitive6 Ref="155" type="VerticalLinePrimitive" isKey="true">
+          <ClientRectangle>4.3,5.1,0.01,2</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <EndCap Ref="156" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </EndCap>
+          <Expressions isList="true" count="0" />
+          <Guid>6cd3b431e2bd45a08e758644b18095f2</Guid>
+          <Name>VerticalLinePrimitive6</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <StartCap Ref="157" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </StartCap>
+        </VerticalLinePrimitive6>
+        <EndPointPrimitive2 Ref="158" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+          <ClientRectangle>7.5,7.7,0,0</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Name>EndPointPrimitive2</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <ReferenceToGuid>9450eb41077148519000c639f57b0498</ReferenceToGuid>
+        </EndPointPrimitive2>
+        <RoundedRectanglePrimitive7 Ref="159" type="Stimulsoft.Report.Components.StiRoundedRectanglePrimitive" isKey="true">
+          <ClientRectangle>0,7.8,7.5,3.7</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Guid>7bf92cc837294abab1f7725ef300c80c</Guid>
+          <Name>RoundedRectanglePrimitive7</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <Round>0.2</Round>
+        </RoundedRectanglePrimitive7>
+        <RoundedRectanglePrimitive8 Ref="160" type="Stimulsoft.Report.Components.StiRoundedRectanglePrimitive" isKey="true">
+          <ClientRectangle>0.2,8.7,2.8,2.2</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Guid>34bd4c2dc5b547aaa6894c6c68afd27a</Guid>
+          <Name>RoundedRectanglePrimitive8</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <Round>0.2</Round>
+        </RoundedRectanglePrimitive8>
+        <RoundedRectanglePrimitive9 Ref="161" type="Stimulsoft.Report.Components.StiRoundedRectanglePrimitive" isKey="true">
+          <ClientRectangle>3.2,8.9,4,2</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Guid>960b9574b2864c5f9bd6460518c49e36</Guid>
+          <Name>RoundedRectanglePrimitive9</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <Round>0.2</Round>
+        </RoundedRectanglePrimitive9>
+        <VerticalLinePrimitive7 Ref="162" type="VerticalLinePrimitive" isKey="true">
+          <ClientRectangle>6.3,8.9,0.01,1.5</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <EndCap Ref="163" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </EndCap>
+          <Expressions isList="true" count="0" />
+          <Guid>9ccd2f5569d342b78e8cf8d32275333b</Guid>
+          <Name>VerticalLinePrimitive7</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <StartCap Ref="164" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </StartCap>
+        </VerticalLinePrimitive7>
+        <VerticalLinePrimitive8 Ref="165" type="VerticalLinePrimitive" isKey="true">
+          <ClientRectangle>5.2,8.9,0.01,1.5</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <EndCap Ref="166" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </EndCap>
+          <Expressions isList="true" count="0" />
+          <Guid>643189e4b7cc42e481a7b89f584036b2</Guid>
+          <Name>VerticalLinePrimitive8</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <StartCap Ref="167" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </StartCap>
+        </VerticalLinePrimitive8>
+        <VerticalLinePrimitive9 Ref="168" type="VerticalLinePrimitive" isKey="true">
+          <ClientRectangle>4.3,8.9,0.01,2</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <EndCap Ref="169" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </EndCap>
+          <Expressions isList="true" count="0" />
+          <Guid>e6e40124ab6c4830956d4ba5166d8090</Guid>
+          <Name>VerticalLinePrimitive9</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <StartCap Ref="170" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </StartCap>
+        </VerticalLinePrimitive9>
+        <EndPointPrimitive13 Ref="171" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+          <ClientRectangle>7.5,11.5,0,0</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Name>EndPointPrimitive13</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <ReferenceToGuid>7bf92cc837294abab1f7725ef300c80c</ReferenceToGuid>
+        </EndPointPrimitive13>
+      </Components>
+      <Conditions isList="true" count="0" />
+      <Expressions isList="true" count="0" />
+      <Guid>d8f0745f1519452a916daf3a2d51d12f</Guid>
+      <Margins>0.39,0.39,0,0</Margins>
+      <Name>Page1</Name>
+      <PageHeight>11.69</PageHeight>
+      <PageWidth>8.27</PageWidth>
+      <PaperSize>A4</PaperSize>
+      <Report isRef="0" />
+    </Page1>
+  </Pages>
+  <ReferencedAssemblies isList="true" count="8">
+    <value>System.Dll</value>
+    <value>System.Drawing.Dll</value>
+    <value>System.Windows.Forms.Dll</value>
+    <value>System.Data.Dll</value>
+    <value>System.Xml.Dll</value>
+    <value>Stimulsoft.Controls.Dll</value>
+    <value>Stimulsoft.Base.Dll</value>
+    <value>Stimulsoft.Report.Dll</value>
+  </ReferencedAssemblies>
+  <ReportAlias>Report</ReportAlias>
+  <ReportChanged>11/1/2023 1:06:11 PM</ReportChanged>
+  <ReportCreated>5/22/2022 11:49:22 AM</ReportCreated>
+  <ReportFile>C:\Users\Avizhe_Software3\Desktop\ExitTruckCross.mrt</ReportFile>
+  <ReportGuid>f00b5eefc1c04fd38ffca1a0aae4d503</ReportGuid>
+  <ReportName>Report</ReportName>
+  <ReportUnit>Inches</ReportUnit>
+  <ReportVersion>2022.1.1.0</ReportVersion>
+  <Script>using System;
+using System.Drawing;
+using System.Windows.Forms;
+using System.Data;
+using Stimulsoft.Controls;
+using Stimulsoft.Base.Drawing;
+using Stimulsoft.Report;
+using Stimulsoft.Report.Dialogs;
+using Stimulsoft.Report.Components;
+
+namespace Reports
+{
+    public class Report : Stimulsoft.Report.StiReport
+    {
+        public Report()        {
+            this.InitializeComponent();
+        }
+
+        #region StiReport Designer generated code - do not modify
+		#endregion StiReport Designer generated code - do not modify
+    }
+}
+</Script>
+  <ScriptLanguage>CSharp</ScriptLanguage>
+  <Styles isList="true" count="0" />
+</StiSerializer>

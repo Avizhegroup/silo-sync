@@ -1,0 +1,40 @@
+@namespace Silo.Shared.Components.Print
+@using Silo.Application.Features
+
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_ReportFormat"
+       @ref="Modal"
+       Size="ModalSize.Normal">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                @if (PrintFormats is not null)
+                {
+                    <TelerikGrid Data="PrintFormats"
+                                 @ref="FileNameGridRef"
+                                 PageSize="10"
+                                 Navigable="true"
+                                 Pageable="true"
+                                 Sortable="true">
+                        <RowTemplate Context="format">
+                            <td class="td-style td-dt">
+                                @format.Name
+                            </td>
+                            <td class="td-style td-dt">
+                                <button @onclick="async()=> await OnSelectClick(format)"
+                                        class="btn-dt-1 btn-danger tr-buttom btn">
+                                    <MaterialIcon IconName="@MaterialIconsHelper.Print"></MaterialIcon>
+                                </button>
+                            </td>
+                        </RowTemplate>
+                        <GridColumns>
+                            <GridColumn Field="@nameof(GetPrintFormatsByPageTitleDto.Name)"
+                                        Title="@TextResources.APP_StringKeys_FileName"></GridColumn>
+                            <GridColumn Width="40px"></GridColumn>
+                        </GridColumns>
+                    </TelerikGrid>
+                }
+            </div>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>

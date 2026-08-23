@@ -1,0 +1,151 @@
+﻿@using Silo.Application.Features;
+@if (IsComponentShown)
+{
+    @if (ActiveSection == CustomerCheckGuaranteePageMode.Search)
+    {
+        <div class="row">
+            <EditForm Model="Command"
+              OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="col-md-6 k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+                    <ValidationSummary />
+                </div>
+                <div class="row g-3">
+                    <h5 class="mb-3">
+                        جستجوی مدل کالا
+                    </h5>
+                    <div class="col-md-4">
+                        <label for="group" class="form-label">گروه کالا</label>
+                        <TelerikDropDownList Data="Groups"
+                                     TextField="@nameof(GetAllProductGroupVm.Title)"
+                                     ValueField="@nameof(GetAllProductGroupVm.Code)"
+                                     @bind-Value="SearchProductModel.Group"
+                                     DefaultText="انتخاب نشده"
+                                     Filterable="true"
+                                     FilterOperator="StringFilterOperator.Contains"
+                                     Class="drop-all form-control"
+                                     Id="group"
+                                     OnChange="OnGroupChange">
+                            <DropDownListSettings>
+                                <DropDownListPopupSettings Class="text-align-right" />
+                            </DropDownListSettings>
+                        </TelerikDropDownList>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="subgroup" class="form-label">@TextResources.APP_StringKeys_Product_SubGroup</label>
+                        <TelerikDropDownList Data="SubGroups"
+                                     TextField="@nameof(GetAllProductSubGroupVm.Title)"
+                                     ValueField="@nameof(GetAllProductSubGroupVm.Code)"
+                                     @bind-Value="SearchProductModel.SubGroup"
+                                     DefaultText="انتخاب نشده"
+                                     Filterable="true"
+                                     FilterOperator="StringFilterOperator.Contains"
+                                     Id="subgroup"
+                                     Class="drop-all form-control"
+                                     OnChange="OnSubGroupChange">
+                            <DropDownListSettings>
+                                <DropDownListPopupSettings Class="text-align-right" />
+                            </DropDownListSettings>
+                        </TelerikDropDownList>
+                    </div>
+                    <h5 class="mb-3">
+                        افزودن ویژگی‌های محصول
+                    </h5>
+                    <div class="col-md-4">
+                        <label for="model" class="form-label">مدل محصول</label>
+                        <TelerikDropDownList Data="FilteredProductModels"
+                                     TextField="@nameof(GetProductModelsVm.TechnicalCode)"
+                                     ValueField="@nameof(GetProductModelsVm.TechnicalCode)"
+                                     @bind-Value="Command.RegCode"
+                                     DefaultText="انتخاب نشده"
+                                     Filterable="true"
+                                     FilterOperator="StringFilterOperator.Contains"
+                                     Id="city"
+                                     Class="drop-all form-control">
+                            <DropDownListSettings>
+                                <DropDownListPopupSettings Class="text-align-right" />
+                            </DropDownListSettings>
+                        </TelerikDropDownList>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="serial" class="form-label">سریال کالا</label>
+                        <TelerikTextBox @bind-Value="Command.DeviceIp"
+                                Class="form-control"
+                                Placeholder="سریال کالا"
+                                Id="serial">
+                        </TelerikTextBox>
+                    </div>
+                    <hr class="my-4">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">جستجو</button>
+                        <button type="button" class="btn btn-warning" @onclick="OnClearClick">پاک کردن</button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    }
+    else if (ActiveSection == CustomerCheckGuaranteePageMode.Exist)
+    {
+        @if (CustomerGuarantee is not null)
+        {
+            <div class="row bg-success pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden" style="min-height:100vh;">
+                <div class="my-3 p-3">
+                    <h2 class="display-5">اصالت محصول</h2>
+                    <h4>
+                        @string.Concat("عنوان محصول: ", CustomerGuarantee.ProductTitle)
+                    </h4>
+                </div>
+                <div class="bg-success shadow-sm mx-auto border border-3 border-dark" style="width: 80%; height: 300px; border-radius: 21px 21px 0 0;">
+                    <div class="my-3 py-3">
+                        <h2 class="display-5">گارانتی</h2>
+                        <p class="lead">
+                            @if (CustomerGuarantee.GuaranteeStatus == 1)
+                            {
+                                @string.Format("وضعیت گارانتی: {0} - {1} روز باقی مانده", CustomerGuarantee.GuaranteeStatusTitle, CustomerGuarantee.GuaranteeRemainingDays ?? 0)
+                            }
+                            else
+                            {
+                                @string.Format("وضعیت گارانتی: {0}", CustomerGuarantee.GuaranteeStatusTitle)
+                            }
+                        </p>
+                        <button type="button" class="btn btn-warning" @onclick="OnReturnToSearchClick">بازگشت</button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else if (ActiveSection == CustomerCheckGuaranteePageMode.ActivedNow)
+    {
+        @if (CustomerGuarantee is not null)
+        {
+            <div class="row bg-success pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden" style="min-height:100vh;">
+                <div class="my-3 p-3">
+                    <h2 class="display-5">اصالت محصول</h2>
+                    <h4>
+                        @string.Concat("عنوان محصول: ", CustomerGuarantee.ProductTitle)
+                    </h4>
+                </div>
+                <div class="bg-success shadow-sm mx-auto border border-3 border-dark" style="width: 80%; height: 300px; border-radius: 21px 21px 0 0;">
+                    <div class="my-3 py-3 text-white">
+                        <h2 class="display-5">گارانتی</h2>
+                        <p class="lead">
+                            @string.Format("وضعیت گارانتی: {0} - {1} روز باقی مانده", CustomerGuarantee.GuaranteeStatusTitle, CustomerGuarantee.GuaranteeRemainingDays ?? 0)
+                        </p>
+                        <button type="button" class="btn btn-warning" @onclick="OnReturnToSearchClick">بازگشت</button>
+                    </div>
+                </div>
+            </div>
+
+        }
+    }
+    else if (ActiveSection == CustomerCheckGuaranteePageMode.NotExist)
+    {
+        <div class="row bg-danger pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden" style="min-height:100vh;">
+            <div class="my-3 py-3">
+                <p class="lead">محصول مورد نظر یافت نشد</p>
+                <button type="button" class="btn btn-warning" @onclick="OnReturnToSearchClick">بازگشت</button>
+            </div>
+        </div>
+    }
+
+}

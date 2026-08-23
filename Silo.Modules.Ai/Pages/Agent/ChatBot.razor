@@ -1,0 +1,227 @@
+@page "/ai/chat"
+@page "/ai/chat/{Mode:int}"
+@namespace Silo.Modules.Ai.Pages.Agent
+@using Silo.Application.Features
+@using Microsoft.AspNetCore.Components
+@using Silo.Shared.Components.Ai;
+@inherits SiloBasePage
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="chat-layout" dir="rtl">
+    <div class="chat-main-container @(isSidebarExpanded ? "sidebar-visible" : "")">
+        <div class="chat-container">
+            <div class="card chat-card shadow-sm border-0">
+                <div class="card-header bg-transparent">
+                    <div class="chat-header-content">
+                        <TelerikButton OnClick="@ToggleSidebar"
+                                       Icon="@(isSidebarExpanded ? SvgIcon.ChevronRight : SvgIcon.ChevronLeft)"
+                                       FillMode="@ThemeConstants.Button.FillMode.Flat"
+                                       Title="@(isSidebarExpanded ? "بستن تاریخچه" : "نمایش تاریخچه")" />
+
+                        <div class="chat-header-center">
+                            <h3 class="chat-header">
+                                دستیار هوشمند سیلو
+                                <MaterialIcon Class="chat-header-icon" IconName="@MaterialIconsHelper.NetworkIntelligence" />
+                            </h3>
+                            @if (Mode is not null)
+                            {
+                                <div class="chat-mode-info">
+                                    <MaterialIcon Class="chat-mode-icon" IconName="@GetModeIcon(Mode.Value)" />
+                                    <span>حالت: @GetModeFriendlyName(Mode.Value)</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="chat-header-spacer"></div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="chat-messages" @ref="chatMessagesElement">
+                        @foreach (var message in chatMessages)
+                        {
+                            <div class="message @(message.IsUser ? "user-message" : "bot-message")">
+                                <div class="message-content">
+                                    <div class="message-header">
+                                        <div class="message-sender">
+                                            @if (message.IsUser)
+                                            {
+                                                <MaterialIcon IconName="@MaterialIconsHelper.Face" />
+                                                <span>شما</span>
+                                            }
+                                            else
+                                            {
+                                                <MaterialIcon IconName="@MaterialIconsHelper.SmartToy" />
+                                                <span>دستیار سیلو</span>
+                                            }
+                                        </div>
+                                        <span class="message-time">@message.Datetime.ToString("HH:mm")</span>
+                                    </div>
+                                    <div class="message-text">
+                                        @if (message.IsUser)
+                                        {
+                                            @message.Text
+                                        }
+                                        else
+                                        {
+                                            @((MarkupString)ConvertMarkdownToHtml(message.Text))
+
+                                            <AiResultGrid Data="@message.SqlCommandsResults" />
+                                                   
+                                        }
+                                       
+                                    </div>
+                                    @if (!message.IsUser)
+                                    {
+                                        <button class="btn-copy-message"
+                                                title="کپی متن"
+                                                @onclick="@(() => CopyMessageToClipboard(message.Text))"
+                                                @onclick:stopPropagation="true">
+                                            <MaterialIcon IconName="@MaterialIconsHelper.ContentCopy" />
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        @if (IsLoading)
+                        {
+                            <div class="message bot-message">
+                                <div class="message-content">
+                                    <div class="message-header">
+                                        <div class="message-sender">
+                                            <MaterialIcon IconName="@MaterialIconsHelper.SmartToy" />
+                                            <span>دستیار سیلو</span>
+                                        </div>
+                                    </div>
+                                    <div class="message-text loading">
+                                        <div class="typing-indicator">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="chat-input-wrapper">
+                        <div class="chat-input-container">
+                            <textarea @bind="currentMessage"
+                                      @bind:event="oninput"
+                                      @onkeydown="HandleKeyPress"
+                                      class="form-control chat-input"
+                                      placeholder="تایپ کنید..."
+                                      disabled="@IsLoading"
+                                      rows="3">
+                            </textarea>
+                            <button @onclick="OnSendClick"
+                                    class="btn btn-primary send-button"
+                                    disabled="@(IsLoading || currentMessage.HasNoValue())">
+                                <MaterialIcon IconName="@MaterialIconsHelper.Send" />
+                            </button>
+                        </div>
+                        <div class="keyboard-hint">
+                            <span>Enter: ارسال</span>
+                            <span class="hint-separator">•</span>
+                            <span>Shift + Enter: خط جدید</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-history-sidebar @(isSidebarExpanded ? "expanded" : "collapsed")">
+        <div class="sidebar-header">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <MaterialIcon IconName="@MaterialIconsHelper.History" />
+                <span class="fw-semibold">تاریخچه گفتگوها</span>
+            </div>
+            <TelerikButton OnClick="StartNewChat"
+                           Icon="@SvgIcon.Plus"
+                           ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
+                           Size="@ThemeConstants.Button.Size.Small"
+                           Title="گفتگوی جدید">
+                گفتگوی جدید
+            </TelerikButton>
+        </div>
+
+        <div class="sidebar-content">
+            @if (chatHistories.Any())
+            {
+                <div class="history-list">
+                    @foreach (var historyItem in chatHistories)
+                    {
+                        var isActive = historyItem.Id == currentChatId;
+                        <div class="history-item @(isActive ? "active" : "")"
+                             @onclick="@(() => LoadChatHistory(historyItem))">
+                            <div class="history-item-header">
+                                <MaterialIcon IconName="@MaterialIconsHelper.Chat" />
+                                <span class="history-item-title">@historyItem.Title</span>
+                                <button class="delete-btn"
+                                        @onclick="@(() => DeleteHistory(historyItem))"
+                                        @onclick:stopPropagation="true"
+                                        title="حذف چت">
+                                    <MaterialIcon IconName="@MaterialIconsHelper.Delete" />
+                                </button>
+                            </div>
+                            <div class="history-item-meta">
+                                <span class="history-item-date">
+                                    <MaterialIcon IconName="@MaterialIconsHelper.Schedule" />
+                                    @PersianCalendarTools.GregorianToPersian(historyItem.LastUpdated)
+                                    @historyItem.LastUpdated.ToString("HH:mm")
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-history">
+                    <MaterialIcon Class="empty-history-icon" IconName="@MaterialIconsHelper.ChatBubble" />
+                    <p>هنوز گفتگویی وجود ندارد</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<TelerikLoaderContainer Visible="IsInitialLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="در حال بارگذاری..." />
+
+<TelerikDialog @bind-Visible="@ShowModeSelectionDialog"
+               Title="انتخاب حالت چت"
+               Width="400px"
+               ShowCloseButton="false">
+    <DialogContent>
+        <div class="chat-mode-dialog-body">
+            <label class="chat-mode-label">
+                لطفاً حالت مورد نظر را انتخاب کنید:
+            </label>
+            <TelerikRadioGroup Data="@(Enum.GetValues<RagDocType>())"
+                               @bind-Value="@selectedMode"
+                               Layout="RadioGroupLayout.Horizontal">
+                <ItemTemplate Context="mode">
+                    <div class="py-1">
+                        @GetModeFriendlyName(mode)
+                    </div>
+                </ItemTemplate>
+            </TelerikRadioGroup>
+        </div>
+    </DialogContent>
+    <DialogButtons>
+        <TelerikButton OnClick="@OnModeSelected" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">
+            تأیید
+        </TelerikButton>
+    </DialogButtons>
+</TelerikDialog>
+
+<script src="_content/Silo.Modules.Ai/js/chat.js"></script>

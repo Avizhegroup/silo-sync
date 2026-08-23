@@ -1,0 +1,123 @@
+@page "/report/errorregister"
+@using Silo.Application.Features;
+@inherits SiloBasePage
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats text-align-center col-md-12" style="padding: 5px;">
+        <div class="card-title" style="margin-top: 10px;">
+            @TextResources.APP_StringKeys_Report_ErrorRegister_Title1
+        </div>
+        <div>
+            <TelerikGrid Data="Packings"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style">@product.ProductSerial</td>
+                    <td class="td-style">@product.ProductCode</td>
+                    <td class="td-style">@product.ProductName</td>
+                    <td class="td-style">@product.RegCode</td>
+                    <td class="td-style">@product.ProductCount</td>
+                    <td class="td-style">@product.Username</td>
+                    <td class="td-style">@product.FixDate</td>
+                </RowTemplate>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_View_Report_StoreReproduct" />
+                </GridExport>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllPackingTagsVm.ProductSerial)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllPackingTagsVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                                Width="150px">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllPackingTagsVm.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllPackingTagsVm.RegCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_Regcode">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllPackingTagsVm.ProductCount)"
+                                Title="@TextResources.APP_StringKeys_ProductCount">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllPackingTagsVm.Username)"
+                                Title="@TextResources.APP_StringKeys_Username">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllPackingTagsVm.FixDate)"
+                                Title="@TextResources.APP_StringKeys_Date">
+                    </GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </div>
+</div>
+
+<div class="row col-md-12">
+    <div class="card card-stats text-align-center col-md-12" style="padding: 5px;">
+        <div class="card-title" style="margin-top: 10px;">
+            @TextResources.APP_StringKeys_Report_ErrorRegister_Title2
+        </div>
+        <div>
+            <TelerikGrid Data="NoEpcs"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style">@product.ProductSerial</td>
+                    <td class="td-style">@product.ProductCode</td>
+                    <td class="td-style">@product.ProductName</td>
+                    <td class="td-style">@product.RegCode</td>
+                    <td class="td-style">@product.ProductCount</td>
+                    <td class="td-style">@product.Username</td>
+                </RowTemplate>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_View_Report_StoreReproduct" />
+                </GridExport>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllWithOutEpcTagsVm.ProductSerial)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllWithOutEpcTagsVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                                Width="150px">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllWithOutEpcTagsVm.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllWithOutEpcTagsVm.RegCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_Regcode">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllWithOutEpcTagsVm.ProductCount)"
+                                Title="@TextResources.APP_StringKeys_ProductCount">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllWithOutEpcTagsVm.Username)"
+                                Title="@TextResources.APP_StringKeys_Username">
+                    </GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </div>
+</div>
+
+@if (IsLoading)
+{
+    <TelerikLoaderContainer LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+    </TelerikLoaderContainer>
+}

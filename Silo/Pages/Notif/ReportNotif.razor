@@ -1,0 +1,198 @@
+@page "/notif/report"
+@inherits SiloBasePage
+@namespace Silo.Pages.Reports
+@using Silo.Application.Features;
+
+<PageTitle>@PageTitle</PageTitle>
+
+@if (IsFiltersShown)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center">
+            <EditForm Model="Request"
+                      OnInvalidSubmit="OnInvalidSubmit"
+                      OnValidSubmit="OnClickSubmit">
+                <DataAnnotationsValidator />
+                <div class="form-search-span">
+                <div class="tab-str-s col-md-10">
+                    <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:0px;margin-top: 5px;">
+                        <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Notification_Order_Type :</label>
+                        <input @bind-value="Request.OrderTitle" class="form-control input-search-span-lg pointer" readonly="readonly" />
+                        <button type="button"
+                                class="btn btn-light"
+                                @onclick="async (e)=> await ModalOrders.Open(e)">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                        </button>
+                        <label style="margin-right: 10px;">@TextResources.APP_StringKeys_FromDate :</label>
+                        <DatePicker InputClass=" input-search-span-lg pointer "
+                                    @bind-Value="Request.FromDate"></DatePicker>
+                        <label style="margin-right: 10px;">@TextResources.APP_StringKeys_ToDate :</label>
+                        <DatePicker InputClass=" input-search-span-lg pointer "
+                                    @bind-Value="Request.ToDate"></DatePicker>
+                    </div>
+                    <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:0px;">
+                        <label style="margin-right:9px;">@TextResources.APP_StringKeys_Notif_SendType:</label>
+                        <TelerikDropDownList Data="SendTypes"
+                                             TextField="@nameof(ChoosableKeyValue.Key)"
+                                             ValueField="@nameof(ChoosableKeyValue.Value)"
+                                             @bind-Value="Request.SendType"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="200px"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                        <label style="margin-right: 55px;">@TextResources.APP_StringKeys_FromTime :</label>
+                        <ClockPicker Class="form-control input-search-span-lg"
+                                     @bind-Value="Request.FromTime"></ClockPicker>
+                        <label style="margin-right: 9px;">@TextResources.APP_StringKeys_ToTime :</label>
+                        <ClockPicker Class="form-control input-search-span-lg"
+                                     @bind-Value="Request.ToTime"></ClockPicker>
+
+                    </div>
+                    <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:0px;">
+                        <label style="margin-right: 55px;">@TextResources.APP_StringKeys_Notif_Content :</label>
+                        <input @bind-value="Request.Content" class="form-control input-search-span-lg pointer" />
+                        <label style="margin-right: 30px;">@TextResources.APP_StringKeys_Notification_Send_Status :</label>
+                        <TelerikDropDownList Data="SendStatus"
+                                             TextField="@nameof(ChoosableKeyValue.Key)"
+                                             ValueField="@nameof(ChoosableKeyValue.Value)"
+                                             @bind-Value="Request.SendStatus"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="200px"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                        <label style="margin-right: 11px;">@TextResources.APP_StringKeys_Contact :</label>
+                        <input @bind-value="Request.SendContacts" class="form-control input-search-span-lg pointer" />
+                    </div>
+                </div>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap search-button-div"
+                     style="margin-top:unset; bottom:5px; margin-top:unset; top:unset;">
+                    <button class="btn btn-warning"
+                            type="button"
+                            title="@TextResources.APP_StringKeys_Clear"
+                            style="margin-left: 2px;"
+                            @onclick="OnClickClear">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    <button type="submit" id="btn-send"
+                            class="btn btn-primary"
+                            title="@TextResources.APP_StringKeys_Send">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@if (Queues is not null)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:10px;">
+            <TelerikGrid Data="Queues"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true"
+                         Resizable="true">
+                <RowTemplate Context="queue">
+                    <td class="td-style">@queue.SendDate</td>
+                    <td class="td-style">@queue.SendTime</td>
+                    <td class="td-style">@queue.SendType</td>
+                    <td class="td-style">@queue.OrderTitle</td>
+                    <td class="td-style">@queue.Contact</td>
+                    <td class="td-style">@queue.Text</td>
+                    <td class="td-style">@queue.Status</td>
+                </RowTemplate>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@PageTitle" />
+                </GridExport>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllNotificationQueueVm.SendDate)"
+                                Title="@TextResources.APP_StringKeys_Date"
+                                Width="90px">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllNotificationQueueVm.SendTime)"
+                                Title="@TextResources.APP_StringKeys_Time"
+                                Width="90px">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllNotificationQueueVm.SendType)"
+                                Title="@TextResources.APP_StringKeys_Notif_SendType"
+                                Width="90px">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllNotificationQueueVm.OrderTitle)"
+                                Title="@TextResources.APP_StringKeys_Notification_Order_Type"
+                                Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllNotificationQueueVm.Contact)"
+                                Title="@TextResources.APP_StringKeys_Contact"
+                                Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllNotificationQueueVm.Text)"
+                                Title="@TextResources.APP_StringKeys_Notif_Content"
+                                Width="400px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllNotificationQueueVm.Status)"
+                                Title="@TextResources.APP_StringKeys_Notification_Send_Status"
+                                Width="90px">
+                    </GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </div>
+}
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalOrders"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="Orders"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="order">
+                    <td class="td-style td-dt">@order.Id</td>
+                    <td class="td-style td-dt">@order.Title</td>
+                    <td class="td-style td-dt">@order.DateTimeShamsi</td>
+                    <td class="td-style td-dt">
+                        @SendTypes.FirstOrDefault(ps => ps.Value == order.SendType)?.Key
+                    </td>
+                    <td class="td-style td-dt">@order.Username</td>
+                    <td class="td-style td-dt">
+                        <button class="btn btn-success btn-details tr-buttom"
+                                @onclick="async()=> await OnChooseOrder(order)">
+                            @TextResources.APP_StringKeys_Choose
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllNotificationOrderVm.Id)"
+                                Title="@TextResources.APP_StringKeys_Code"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllNotificationOrderVm.Title)"
+                                Title="@TextResources.APP_StringKeys_Title"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllNotificationOrderVm.DateTimeShamsi)"
+                                Title="@TextResources.APP_StringKeys_DateTime"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllNotificationOrderVm.SendType)"
+                                Title="@TextResources.APP_StringKeys_Notif_SendType"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllNotificationOrderVm.Username)"
+                                Title="@TextResources.APP_StringKeys_Username"></GridColumn>
+                    <GridColumn></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

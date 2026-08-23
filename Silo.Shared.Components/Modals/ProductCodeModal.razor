@@ -1,0 +1,85 @@
+﻿@namespace Silo.Shared.Components.Modals
+
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_Search_Product"
+       @ref="Modal"
+       Size="ModalSize.ExtraLarge">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <form id="form-product" asp-action="SearchProduct" asp-controller="Position" method="post" role="form" class="form-search-span">
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <label>@TextResources.APP_StringKeys_ProductName</label>
+                    <input @bind-value="ProductTitle" class="form-control input-search-span-lg" />
+                    <label>@TextResources.APP_StringKeys_Chart_ProductCode</label>
+                    <input @bind-value="ProductCode" class="form-control input-search-span-lg" />
+                    <label>@TextResources.APP_StringKeys_Chart_Regcode</label>
+                    <input @bind-value="RegCode" class="form-control input-search-span-lg" />
+                    <label>@TextResources.APP_StringKeys_Product_Size</label>
+                    <TelerikDropDownList Data="Sizes"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="Size"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="120px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label>@TextResources.APP_StringKeys_Chart_Qc</label>
+                    <TelerikDropDownList Data="Qcs"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="Quality"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="120px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <button class="btn btn-primary" @onclick="OnSearchClick"
+                            type="button" title="@TextResources.APP_StringKeys_Search"
+                            style="margin-right:5px;">
+                        <MaterialIcon IconName="search"></MaterialIcon>
+                    </button>
+                </div>
+            </form>
+            <TelerikGrid @ref="GridProducts"
+                         Data="Products"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style">@product.ProductCode</td>
+                    <td class="td-style">@product.ProductName</td>
+                    <td class="td-style">@product.TechnicalCode</td>
+                    <td class="td-style">@product.ProductSize</td>
+                    <td class="td-style">@product.ProductStatusTitle</td>
+                    <td>
+                        <button @onclick="()=> OnChooseProductCode(product.ProductCode,product.ProductName,product)" type="button" class="btn btn-success tr-buttom">@TextResources.APP_StringKeys_Choose</button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(PositionProductResponse.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                                Width="150px"></GridColumn>
+                    <GridColumn Field="@nameof(PositionProductResponse.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                    <GridColumn Field="@nameof(PositionProductResponse.TechnicalCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(PositionProductResponse.ProductSize)"
+                                Title="@TextResources.APP_StringKeys_ProductCount"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(PositionProductResponse.ProductStatusTitle)"
+                                Title="@TextResources.APP_StringKeys_Chart_Qc"
+                                Width="100px"></GridColumn>
+                    <GridColumn Width="70px"></GridColumn>
+                </GridColumns>
+
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

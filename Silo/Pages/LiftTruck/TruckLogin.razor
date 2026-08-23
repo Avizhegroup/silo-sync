@@ -1,0 +1,33 @@
+﻿@page "/truck/truckLogin"
+@page "/truck/truckLogin/{TimeoutLogout}"
+@using Silo.Components.LiftTruck
+@namespace Silo.Pages.LiftTruck
+@attribute [AllowAnonymous]
+
+<PageTitle>@TextResources.APP_StringKeys_View_Account_Login</PageTitle>
+
+<div class="page-truck-login">
+    <div class="app-center">
+        <form class="form-horizontal">
+            <img class="app-logo" src="/images/Icons/app.png" />
+            <input required @bind-value="@Username" type="text"
+                   id="Username" name="Username" class="login-input"
+                   placeholder="@TextResources.APP_StringKeys_Username"
+                   style="margin-bottom: 7px;" />
+            <input required @bind-value="@Password" type="password" id="Password"
+                   name="Password" class="login-input"
+                   placeholder="@TextResources.APP_StringKeys_Password"
+                   style="margin-bottom: 15px;"
+                   @onkeydown="OnPasswordKeyDown" />
+            <button type="button" class="login-button" @onclick="OnSubmit"><b>@TextResources.APP_StringKeys_View_Account_Login</b></button>
+        </form>
+    </div>
+</div>
+
+@if (IsLoading)
+{
+    <TelerikLoaderContainer LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+    </TelerikLoaderContainer>
+}

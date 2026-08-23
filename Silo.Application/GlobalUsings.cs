@@ -1,0 +1,10 @@
+﻿global using MediatR;
+global using AutoMapper;
+global using Silo.Domains.Entities;
+global using Silo.Domains.Services;
+global using System.Text.Json;
+global using Newtonsoft.Json.Linq;
+global using Silo.Application.Dto;
+global using System.ComponentModel.DataAnnotations;
+global using Silo.Shared;
+global using System.ComponentModel.DataAnnotations.Schema;

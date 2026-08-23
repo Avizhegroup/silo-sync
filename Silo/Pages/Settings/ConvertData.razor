@@ -1,0 +1,276 @@
+@page "/settings/convert"
+@using Silo.Application.Features;
+@inherits SiloBasePage
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-4 text-align-center">
+        <h6>@TextResources.APP_StringKeys_Settings_ConvertJsonDocument</h6>
+        <div class="form-search-span" style="margin-top:5px !important;">
+            <div class="form-group form-inline" style="margin-bottom:5px!important;margin-top:15px;">
+                <label style="margin-right:20px">@TextResources.APP_StringKeys_Document_Type</label>
+                <TelerikTextBox @bind-Value="ConvertJsonDocumentType"
+                                Class="form-controlpointer" 
+                                Width="150px">
+                </TelerikTextBox>
+                <button type="button"
+                        class="btn btn-primary"
+                        style="margin-right:5px"
+                        @onclick="OnConvertJsonDocumentClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Sync"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card card-stats col-md-4 text-align-center">
+        <h6>@TextResources.APP_StringKeys_TruckCross_Set_Status</h6>
+        <div class="form-search-span" style="margin-top:5px !important;">
+            <div class="form-group form-inline" style="margin-bottom:5px!important;margin-top:15px;">
+                <button type="button"
+                        class="btn btn-primary"
+                        style="margin-right:5px"
+                        @onclick="OnConvertTruckCrossStatusClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Sync"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card card-stats col-md-4 text-align-center">
+        <h6>@TextResources.APP_StringKeys_Copy_Tags_To_ProductGuarantee</h6>
+        <div class="form-search-span" style="margin-top:5px !important;">
+            <div class="form-group form-inline" style="margin-bottom:5px!important;margin-top:15px;">
+                <button type="button"
+                        class="btn btn-primary"
+                        style="margin-right:5px"
+                        @onclick="OnCopyTagsToGuaranteeClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Sync"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card card-stats col-md-4 text-align-center">
+        <h6>@TextResources.APP_StringKeys_UploadExcel_SaleShop</h6>
+        <div class="form-search-span" style="margin-top:5px !important;">
+            <div class="form-group form-inline" style="margin-bottom:5px!important;margin-top:15px;">
+                <button type="button" id="btn-send" class="btn btn-success"
+                        title="@TextResources.APP_StringKeys_UploadExcel"
+                        @onclick="async ()=> await ModalSalesShopExcel.Open(new())">
+                    @TextResources.APP_StringKeys_UploadExcel
+                    <MaterialIcon IconName="Upload"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card card-stats col-md-4 text-align-center">
+        <h6>@TextResources.APP_StringKeys_UploadExcel_SalesInstaller</h6>
+        <div class="form-search-span" style="margin-top:5px !important;">
+            <div class="form-group form-inline" style="margin-bottom:5px!important;margin-top:15px;">
+                <button type="button" id="btn-send" class="btn btn-success"
+                        title="@TextResources.APP_StringKeys_UploadExcel"
+                        @onclick="async ()=> await ModalSalesInstallerExcel.Open(new())">
+                    @TextResources.APP_StringKeys_UploadExcel
+                    <MaterialIcon IconName="Upload"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card card-stats col-md-4 text-align-center">
+        <h6>@TextResources.APP_StringKeys_Convert_Create_UHFRearLogHeader</h6>
+        <div class="form-search-span" style="margin-top:5px !important;">
+            <div class="form-group form-inline" style="margin-bottom:5px!important;margin-top:15px;">
+                <button type="button"
+                        class="btn btn-primary"
+                        style="margin-right:5px"
+                        @onclick="OnCreateUHFReaderLogHeadersFromUHFReaderLogClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Sync"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card card-stats col-md-4 text-align-center">
+        <h6>@TextResources.APP_StringKeys_Fill_Uhf_ProductSerial</h6>
+        <div class="form-search-span" style="margin-top:5px !important;">
+            <div class="form-group form-inline" style="margin-bottom:5px!important;margin-top:15px;">
+                <button type="button"
+                        class="btn btn-primary"
+                        style="margin-right:5px"
+                        @onclick="OnFillUhfProductSerialClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Sync"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card card-stats col-md-4 text-align-center">
+        <h6>@TextResources.APP_StringKeys_Update_Uhf_Statuses</h6>
+        <div class="form-search-span" style="margin-top:5px !important;">
+            <div class="form-group form-inline" style="margin-bottom:5px!important;margin-top:15px;">
+                <button type="button"
+                        class="btn btn-primary"
+                        style="margin-right:5px"
+                        @onclick="OnUpdateUhfStatusesClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Sync"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_UploadExcel"
+       @ref="ModalSalesShopExcel"
+       Size="ModalSize.ExtraLarge"
+       CancelBtnText="@TextResources.APP_StringKeys_Close"
+       YesBtnText="@TextResources.APP_StringKeys_Upload"
+       OnYesModal="OnYesSalesShopModalClick">
+    <ModalBodyContentHtml>
+        <div class="text-align-right">
+            <button type="button" class="btn btn-success"
+                    @onclick="OnSampleSalesShopClick">
+                @TextResources.APP_StringKeys_DownloadSample
+                <img width="20" height="20" src="/images/Utilities/Excel.png">
+            </button>
+            <FileUpload AllowedExtensions=".xlsx"
+                        MaterialIconClass="@MaterialIconsHelper.Upload"
+                        ButtonClass="btn btn-success"
+                        ButtonText="@TextResources.APP_StringKeys_Product_AddProducts_UploadAndPreview"
+                        ShowFileName="false"
+                        UploadUrl="/Tools/UploadAccountingFile"
+                        OnCompleteUpload="OnCompleteUploadSalesShopExcelAdd"
+                        OnStartUpload="()=>IsLoading = true"></FileUpload>
+            <hr />
+            @if (ExcelSalesShops.Any())
+            {
+                <TelerikGrid Data="ExcelSalesShops"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true"
+                         @ref="ExcelSalesShopGridRef"
+                         OnRowRender="OnRowSalesShopRenderHandler">
+                    <RowTemplate Context="salesShop">
+                        <td class="td-style td-dt">@salesShop.Code</td>
+                        <td class="td-style td-dt">@salesShop.Title</td>
+                        <td class="td-style td-dt">@salesShop.ManagerName</td>
+                        <td class="td-style td-dt">
+                            @Cities.FirstOrDefault(p => p.Id.Equals(salesShop.CityId))?.Title
+                        </td>
+                        <td class="td-style td-dt">
+                            @Provinces.FirstOrDefault(p => p.Id.Equals(salesShop.ProvinceId))?.Title
+                        </td>
+                        <td class="td-style td-dt">@salesShop.Phone</td>
+                        <td class="td-style td-dt">@salesShop.Mobile</td>
+                        <td class="td-style td-dt">@salesShop.Address</td>
+                        <td class="td-style td-dt">@salesShop.Password</td>
+                        <td class="td-style td-dt">@salesShop.ErrorMessage</td>
+                        <td class="td-style td-dt">
+                            <button @onclick="()=> OnRemoveSalesShopClick(salesShop)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Delete
+                            </button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(SalesShopExcelDto.Code)"
+                                Title="@TextResources.APP_StringKeys_SalesShop_Code" Width="100px"></GridColumn>
+                        <GridColumn Field="@nameof(SalesShopExcelDto.Title)"
+                                Title="@TextResources.APP_StringKeys_SalesShop_Title" Width="100px"></GridColumn>
+                        <GridColumn Field="@nameof(SalesShopExcelDto.ManagerName)"
+                                Title="@TextResources.APP_StringKeys_Manager_Name"
+                                Width="100px"></GridColumn>
+                        <GridColumn Field="@nameof(SalesShopExcelDto.CityId)"
+                                Title="@TextResources.APP_StringKeys_City"
+                                Width="70px"></GridColumn>
+                        <GridColumn Field="@nameof(SalesShopExcelDto.ProvinceId)"
+                                Title="@TextResources.APP_StringKeys_Province"
+                                Width="70px"></GridColumn>
+                        <GridColumn Field="@nameof(SalesShopExcelDto.Phone)"
+                                Title="@TextResources.APP_StringKeys_Phone"
+                                Width="100px"></GridColumn>
+                        <GridColumn Field="@nameof(SalesShopExcelDto.Mobile)"
+                                Title="@TextResources.APP_StringKeys_Phone_Number"
+                                Width="100px"></GridColumn>
+                        <GridColumn Field="@nameof(SalesShopExcelDto.Address)"
+                                Title="@TextResources.APP_StringKeys_Address"
+                                Width="300px"></GridColumn>
+                        <GridColumn Field="@nameof(SalesShopExcelDto.Password)"
+                                Title="@TextResources.APP_StringKeys_Password"
+                                Width="70px"></GridColumn>
+                        <GridColumn Field="@nameof(SalesShopExcelDto.ErrorMessage)"
+                                Title="@TextResources.APP_StringKeys_Error"
+                                Width="180px"></GridColumn>
+                        <GridColumn Width="50px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_UploadExcel"
+       @ref="ModalSalesInstallerExcel"
+       Size="ModalSize.ExtraLarge"
+       CancelBtnText="@TextResources.APP_StringKeys_Close"
+       YesBtnText="@TextResources.APP_StringKeys_Upload"
+       OnYesModal="OnYesSalesInstallerModalClick">
+    <ModalBodyContentHtml>
+        <div class="text-align-right">
+            <button type="button" class="btn btn-success"
+                    @onclick="OnSampleSalesInstallerClick">
+                @TextResources.APP_StringKeys_DownloadSample
+                <img width="20" height="20" src="/images/Utilities/Excel.png">
+            </button>
+            <FileUpload AllowedExtensions=".xlsx"
+                        MaterialIconClass="@MaterialIconsHelper.Upload"
+                        ButtonClass="btn btn-success"
+                        ButtonText="@TextResources.APP_StringKeys_Product_AddProducts_UploadAndPreview"
+                        ShowFileName="false"
+                        UploadUrl="/Tools/UploadAccountingFile"
+                        OnCompleteUpload="OnCompleteUploadSalesInstallerExcelAdd"
+                        OnStartUpload="()=>IsLoading = true"></FileUpload>
+            <hr />
+            @if (ExcelSalesInstallers.Any())
+            {
+                <TelerikGrid Data="ExcelSalesInstallers"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true"
+                         @ref="ExcelSalesInstallerGridRef"
+                         OnRowRender="OnRowSalesInstallerRenderHandler">
+                    <RowTemplate Context="salesInstaller">
+                        <td class="td-style td-dt">@salesInstaller.Code</td>
+                        <td class="td-style td-dt">@salesInstaller.Name</td>
+                        <td class="td-style td-dt">@salesInstaller.Password</td>
+                        <td class="td-style td-dt">@salesInstaller.ErrorMessage</td>
+                        <td class="td-style td-dt">
+                            <button @onclick="()=> OnRemoveSalesInstallerClick(salesInstaller)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Delete
+                            </button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(SalesInstallerExcelDto.Code)"
+                                Title="@TextResources.APP_StringKeys_SalesShop_Code" Width="100px"></GridColumn>
+                        <GridColumn Field="@nameof(SalesInstallerExcelDto.Name)"
+                                Title="@TextResources.APP_StringKeys_Field_Name" Width="100px"></GridColumn>
+                        <GridColumn Field="@nameof(SalesInstallerExcelDto.Password)"
+                                Title="@TextResources.APP_StringKeys_Password"
+                                Width="70px"></GridColumn>
+                        <GridColumn Field="@nameof(SalesInstallerExcelDto.ErrorMessage)"
+                                Title="@TextResources.APP_StringKeys_Error"
+                                Width="180px"></GridColumn>
+                        <GridColumn Width="50px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

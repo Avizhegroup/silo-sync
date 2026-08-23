@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <ItemGroup>
+        <PackageReference Include="EFCore.BulkExtensions" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+        <PackageReference Include="Swashbuckle.AspNetCore" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+        <PackageReference Include="System.Data.SqlClient" />
+        <PackageReference Include="Newtonsoft.Json" />
+        <PackageReference Include="AutoMapper" />
+        <PackageReference Include="morelinq" />
+        <PackageReference Include="MediatR" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Silo.Application.Api\Silo.Application.Api.csproj" />
+        <ProjectReference Include="..\Silo.Application\Silo.Application.Shared.csproj" />
+        <ProjectReference Include="..\Silo.Domains\Silo.Domains.csproj" />
+        <ProjectReference Include="..\Silo.Identity.Server\Silo.Identity.Server.csproj" />
+        <ProjectReference Include="..\Silo.Infrastructure.Shared\Silo.Infrastructure.Shared.csproj" />
+        <ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
+        <ProjectReference Include="..\Silo.Domains.Android\Silo.Domains.Android.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Silo.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DocumentationFile>/bin/Silo.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Using Include="System.ComponentModel.DataAnnotations" />
+        <Using Include="System.ComponentModel.DataAnnotations.Schema" />
+        <Using Include="Silo.Application.Dto" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Files\Apks\" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Silo.Source Roslyn": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\Silo\\Silo.csproj"
+    }
+  }
+}

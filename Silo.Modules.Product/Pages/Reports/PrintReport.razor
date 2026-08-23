@@ -1,0 +1,150 @@
+﻿@page "/print/report"
+@inherits SiloBasePage
+@namespace Silo.Modules.Product.Pages.Reports
+@using Microsoft.AspNetCore.Components.Web
+@using Silo.Application.Dto
+@using Silo.Application.Features
+@using Silo.Shared.Components
+@using Silo.Shared.Components.Report
+@using Telerik.Blazor.Components
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    @if (IsFiltersShown)
+    {
+        <div class="card card-stats col-md-12 text-align-center" style="padding:10px; min-height:70px;">
+            <div style="margin-bottom:10px;">
+                <h6 class="form-title card-title" style="text-align: right !important;">
+                    @TextResources.APP_StringKeys_Filters
+                </h6>
+            </div>
+            @if (ApplyFilters.Any())
+            {
+                <div class="d-flex flex-row align-items-center flex-wrap col-md-12" style="margin-bottom:10px!important;">
+                    <FilterReportEditSection Filters="ApplyFilters">
+                    </FilterReportEditSection>
+                </div>
+            }
+            <div class="d-flex flex-row align-items-center flex-wrap search-button-div"
+                 style="margin-top: 2px!important; top: unset;">
+                <button class="btn btn-success" type="button" title="@TextResources.APP_StringKeys_Filters"
+                        style="margin-left: 2px;"
+                        @onclick="async (e) => await FiltersModal.Open(e)">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Filter_alt"></MaterialIcon>
+                </button>
+                <button id="btn-clear" class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                        style="margin-left: 2px; margin-right: 5px;"
+                        @onclick="OnClickClear">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                </button>
+                <button type="button" id="btn-send" class="btn btn-primary"
+                        title="@TextResources.APP_StringKeys_Send"
+                        @onclick="OnClickSearch">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    }
+
+    @if (Products is not null)
+    {
+        <div class="card card-stats text-align-center col-md-12" style="margin-top:5px;padding:5px;">
+            <TelerikGrid @ref="Grid"
+                         Data="Products"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true"
+                         Width="100%"
+                         ColumnVirtualization="true">
+                <RowTemplate Context="product">
+                    <td class="td-style">@product.ProductSerial</td>
+                    <td class="td-style">@product.ProductCode</td>
+                    <td class="td-style">@product.ProductName</td>
+                    <td class="td-style">@product.ProductCount</td>
+                    <td class="td-style">@product.ProductRegCode</td>
+                    <td class="td-style">@product.ProductPropertiesValue</td>
+                    <td class="td-style">@product.Date</td>
+                    <td class="td-style">@product.Time</td>
+                    <td class="td-style">@ResolveUserName(product.RegisterUser)</td>
+                    <td class="td-style">
+                        @if (product.RegisterFlag is not null 
+                        && product.RegisterFlag == 0)
+                        {
+                            <button class="btn btn-error btn-details tr-buttom"
+                                    type="button"
+                                    @onclick="async () => await OnRemovePrint(product)">
+                                <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                            </button>
+                        }
+                    </td>
+                </RowTemplate>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@PageTitle" />
+                </GridExport>
+                <GridColumns>
+                    <GridColumn Field="@nameof(PrintReportVm.ProductSerial)"
+                                Title="@TextResources.APP_StringKeys_ProductSerial"
+                                Width="120px" />
+                    <GridColumn Field="@nameof(PrintReportVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                                Width="140px" />
+                    <GridColumn Field="@nameof(PrintReportVm.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName"
+                                Width="170px" />
+                    <GridColumn Field="@nameof(PrintReportVm.ProductCount)"
+                                Title="@TextResources.APP_StringKeys_ProductCount"
+                                Width="120px" />
+                    <GridColumn Field="@nameof(PrintReportVm.ProductRegCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                                Width="120px" />
+                    <GridColumn Field="@nameof(PrintReportVm.ProductPropertiesValue)"
+                                Title="@TextResources.APP_StringKeys_Info"
+                                Width="300px" />
+                    <GridColumn Field="@nameof(PrintReportVm.Date)"
+                                Title="@TextResources.APP_StringKeys_Date"
+                                Width="60px" />
+                    <GridColumn Field="@nameof(PrintReportVm.Time)"
+                                Title="@TextResources.APP_StringKeys_Time"
+                                Width="60px"/>
+                    <GridColumn Field="@nameof(PrintReportVm.RegisterUser)"
+                                Title="@TextResources.APP_StringKeys_User"
+                                Width="80px" />
+                    <GridColumn Title=""
+                                Width="60px" />
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    }
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_Filters"
+       @ref="FiltersModal"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-right">
+            @if (FiltersModal.ModalClass.Equals("Show"))
+            {
+                <FilterReportSelectSection Filters="Filters"
+                                           OnSearchClick="@((List<ReportFilter> filters) => OnAddNewFilterClick(filters))"
+                                           OnRemoveClick="@((ReportFilter filter) => OnFilterRemoveClick(filter))">
+                </FilterReportSelectSection>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>

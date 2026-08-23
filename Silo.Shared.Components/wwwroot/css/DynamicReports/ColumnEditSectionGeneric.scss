@@ -1,0 +1,14 @@
+// Variables
+$dynamic-item-border-width: 1px;
+$dynamic-item-border-radius: 5px;
+$dynamic-item-margin: 5px;
+$dynamic-item-padding: 5px;
+$dynamic-item-font-size: smaller;
+
+.dynamic-item-box {
+    border: solid $dynamic-item-border-width;
+    border-radius: $dynamic-item-border-radius;
+    margin: $dynamic-item-margin;
+    padding: $dynamic-item-padding;
+    font-size: $dynamic-item-font-size;
+}

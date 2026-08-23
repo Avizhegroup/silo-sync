@@ -1,0 +1,7 @@
+﻿<button type="@(ButtonType == ButtonType.Submit?"submit":"button")"
+        id="@Id"
+        class="btn btn-truck @Class"
+        style="@Style"
+        @onclick="OnButtonClick">
+        @ChildContent
+</button>

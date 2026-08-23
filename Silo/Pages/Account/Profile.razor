@@ -1,0 +1,117 @@
+﻿@page "/account/profile"
+@inherits SiloBasePage
+
+<PageTitle>@TextResources.APP_StringKeys_Account_Profile</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-8 text-align-center" style="padding-top:5px;">
+        <EditForm Model="Request"
+                  OnInvalidSubmit="OnInvalidSubmit"
+                  OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-top:10px">
+                <label style="margin-right:98px">@TextResources.APP_StringKeys_Username:</label>
+                <TelerikTextBox @bind-Value="Request.Username"
+                                Class="form-control"
+                                Enabled="false"></TelerikTextBox>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-top:10px">
+                <label style="margin-right:98px">@TextResources.APP_StringKeys_Name:</label>
+                <TelerikTextBox @bind-Value="Request.PersianName"
+                                Class="form-control"
+                                Enabled="false"></TelerikTextBox>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-top:10px">
+                <label style="margin-right:93px">@TextResources.APP_StringKeys_Field_Role:</label>
+                <TelerikDropDownList Data="Roles"
+                                     TextField="NormalizedName"
+                                     ValueField="Name"
+                                     @bind-Value="Request.Role"
+                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                     Class="drop-all"
+                                     Enabled="false"
+                                     Width="177px">
+                </TelerikDropDownList>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-top:10px">
+                <label style="margin-right:98px">@TextResources.APP_StringKeys_Password:</label>
+                <TelerikTextBox @bind-Value="Request.Password"
+                                Password="IsPasswordHide"
+                                Class="form-control"></TelerikTextBox>
+                <button type="button"
+                        class="btn btn-primary"
+                        @onclick="()=> IsPasswordHide = !IsPasswordHide"
+                        style="margin-right: 5px;">
+                    <MaterialIcon IconName="@(IsPasswordHide?MaterialIconsHelper.Visibility:MaterialIconsHelper.Visibility_off)"></MaterialIcon>
+                </button>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-top:10px; margin-bottom:10px;">
+                <label style="margin-right: 59px">@TextResources.APP_StringKeys_Password_New:</label>
+                <TelerikTextBox @bind-Value="Request.PasswordNew"
+                                Password="IsNewPasswordHide"
+                                Class="form-control"></TelerikTextBox>
+                <button type="button"
+                        class="btn btn-primary"
+                        @onclick="()=> IsNewPasswordHide = !IsNewPasswordHide"
+                        style="margin-right: 5px;">
+                    <MaterialIcon IconName="@(IsNewPasswordHide ? MaterialIconsHelper.Visibility : MaterialIconsHelper.Visibility_off)"></MaterialIcon>
+                </button>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-top:10px">
+                <label style="margin-right:26px">@TextResources.APP_StringKeys_RePassword_New:</label>
+
+                <TelerikTextBox @bind-Value="Request.RePasswordNew"
+                                Password="IsReNewPasswordHide"
+                                Class="form-control"></TelerikTextBox>
+                <button type="button"
+                        class="btn btn-primary"
+                        @onclick="()=> IsReNewPasswordHide = !IsReNewPasswordHide"
+                        style="margin-right: 5px;">
+                    <MaterialIcon IconName="@(IsReNewPasswordHide ? MaterialIconsHelper.Visibility : MaterialIconsHelper.Visibility_off)"></MaterialIcon>
+                </button>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap search-button-div" style="margin-top:0px; top:unset;">
+                <button id="btn-clear" class="btn btn-warning" type="reset" title="@TextResources.APP_StringKeys_Clear"
+                        style="margin-left: 2px; margin-right: 5px; " @onclick="OnClearClick">
+                    <MaterialIcon IconName="refresh"></MaterialIcon>
+                </button>
+                <button type="submit"
+                        id="btn-send"
+                        class="btn btn-primary"
+                        title="@TextResources.APP_StringKeys_Save">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                </button>
+            </div>
+        </EditForm>
+    </div>
+    <div class="col-md-3 text-align-center" style="height: 103px;">
+        <div class="card card-stats">
+            <h6 class="form-title card-title" style="text-align: center !important;">
+                @TextResources.APP_StringKeys_User_Image
+            </h6>
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                @if (Request.Image.Equals("-1"))
+                {
+                    <img width="180" height="150" src="/images/Utilities/user.png" style="display: block;margin-left: auto;margin-right: auto;width: 50%;">
+                }
+                else
+                {
+                    <img width="180" height="150" src="/images/Users/@Request.Image" style="display: block;margin-left: auto;margin-right: auto;width: 50%;">
+                }
+            </div>
+            <div style="margin-top:30px;">
+                <FileUpload AllowedExtensions=".png"
+                            ButtonClass="btn btn-primary"
+                            ButtonTitle=""
+                            MaterialIconClass="@MaterialIconsHelper.Save"
+                            UploadUrl="/Tools/UploadUserImage"
+                            OnCompleteUpload="async(fileName)=> await OnUploadImageComplete(fileName)">
+                </FileUpload>
+                <button type="button" class="btn btn-danger"
+                        @onclick="async()=> Request.Image = (-1).ToString()">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

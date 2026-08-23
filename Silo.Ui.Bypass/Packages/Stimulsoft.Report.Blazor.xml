@@ -1,0 +1,1854 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Stimulsoft.Report.Blazor</name>
+    </assembly>
+    <members>
+        <member name="M:Stimulsoft.Report.Blazor.StiBlazorDesigner.GetRequestParams(System.String,System.String)">
+            <summary>
+            Get the all request parameters of the report designer.
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.Report.Blazor.StiBlazorDesigner.GetActionReportObject(Stimulsoft.Report.Web.StiRequestParams)">
+            <summary>
+            Get the current report template for the current action of the component.
+            Returns report template from the client for OpenReport action, new report template for CreateReport action, copy of the report template for PreviewReport action.
+            Otherwise returns report template from the cache. The specified request parameters will be used.
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.Report.Blazor.StiBlazorDesigner.GetReportObject(Stimulsoft.Report.Web.StiRequestParams)">
+            <summary>
+            Get the current report template from the cache. The specified request parameters will be used.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.CustomCss">
+            <summary>
+            Gets or sets a path to the custom css file for the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.DefaultUnit">
+            <summary>
+            Gets or sets a default value of the report unit in the designer.
+            </summary>
+        </member>
+        <member name="F:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.zoom">
+            <summary>
+            Gets or sets the report showing zoom. The default value is 100.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.ShowAnimation">
+            <summary>
+            Gets or sets a value which indicates that animation of the user interface is enabled.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.ShowTooltips">
+            <summary>
+            Gets or sets a value which indicates that show or hide tooltips.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.ShowTooltipsHelp">
+            <summary>
+            Gets or sets a value which indicates that show or hide the help link in tooltips.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.ShowDialogsHelp">
+            <summary>
+            Gets or sets a value which indicates that show or hide the help button in dialogs.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.ShowOpenDialog">
+            <summary>
+            Gets or sets a value which allows to display the open dialog, or to open with the open event.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.InterfaceType">
+            <summary>
+            Gets or sets the interface type of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.ChartRenderType">
+            <summary>
+            Gets or sets the type of the chart in the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.DatePickerFirstDayOfWeek">
+            <summary>
+            Gets or sets the first day of week in the date picker.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.DatePickerIncludeCurrentDayForRanges">
+            <summary>
+            Gets or sets a value, which indicates that the current day will be included in the ranges of the date picker.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.ParametersPanelDateFormat">
+            <summary>
+            Gets or sets a date format for datetime parameters in parameters panel. To use a server date format please set the StiDateFormatMode.FromServer or "FromServer" string value.
+            The default is the client browser date format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.ShowReportTree">
+            <summary>
+            Gets or sets a visibility of the report tree in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.ReportDisplayMode">
+            <summary>
+            Gets or sets a method how will show a report in the preview mode.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.CloseDesignerWithoutAsking">
+            <summary>
+            Gets or sets a value which indicates that the designer will be closed without asking.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.ShowSystemFonts">
+            <summary>
+            Gets or sets a visibility of the system fonts in the fonts list.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.WizardTypeRunningAfterLoad">
+            <summary>
+            Gets or sets a value of the wizard type which should be run after designer starts.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.AppearanceOptions.AllowWordWrapTextEditors">
+            <summary>
+            Gets or sets a value which indicates that allows word wrap in the text editors.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowReportTitleBand">
+            <summary>
+            Gets or sets a visibility of the ReportTitleBand item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowReportSummaryBand">
+            <summary>
+            Gets or sets a visibility of the ReportSummaryBand item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowPageHeaderBand">
+            <summary>
+            Gets or sets a visibility of the PageHeaderBand item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowPageFooterBand">
+            <summary>
+            Gets or sets a visibility of the PageFooterBand item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowGroupHeaderBand">
+            <summary>
+            Gets or sets a visibility of the GroupHeaderBand item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowGroupFooterBand">
+            <summary>
+            Gets or sets a visibility of the GroupFooterBand item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowHeaderBand">
+            <summary>
+            Gets or sets a visibility of the HeaderBand item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowFooterBand">
+            <summary>
+            Gets or sets a visibility of the FooterBand item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowColumnHeaderBand">
+            <summary>
+            Gets or sets a visibility of the ColumnHeaderBand item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowColumnFooterBand">
+            <summary>
+            Gets or sets a visibility of the ColumnFooterBand item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowDataBand">
+            <summary>
+            Gets or sets a visibility of the DataBand item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowHierarchicalBand">
+            <summary>
+            Gets or sets a visibility of the HierarchicalBand item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowChildBand">
+            <summary>
+            Gets or sets a visibility of the ChildBand item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowEmptyBand">
+            <summary>
+            Gets or sets a visibility of the EmptyBand item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowOverlayBand">
+            <summary>
+            Gets or sets a visibility of the OverlayBand item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BandsOptions.ShowTableOfContents">
+            <summary>
+            Gets or sets a visibility of the TableOfContents item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BehaviorOptions.UndoMaxLevel">
+            <summary>
+            Gets or sets a maximum level of undo actions with the report. A large number of actions consume more memory on the server side.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BehaviorOptions.ShowSaveDialog">
+            <summary>
+            Gets or sets the value that displays or hides the report file name dialog at saving.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BehaviorOptions.AllowChangeWindowTitle">
+            <summary>
+            Allow the designer to change the window title.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BehaviorOptions.SaveReportMode">
+            <summary>
+            Gets or sets the save report mode - Hidden (AJAX mode), Visible (POST mode) or New Window.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BehaviorOptions.SaveReportAsMode">
+            <summary>
+            Gets or sets the save report mode - Hidden (AJAX mode), Visible (POST mode) or New Window.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BehaviorOptions.CheckReportBeforePreview">
+            <summary>
+            Gets or sets the value that allows running the report checker before preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BehaviorOptions.FocusingX">
+            <summary>
+            Focusing on the X axis. Required if the lines are displayed double.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.BehaviorOptions.FocusingY">
+            <summary>
+            Focusing on the Y axis. Required if the lines are displayed double.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowText">
+            <summary>
+            Gets or sets a visibility of the Text item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowTextInCells">
+            <summary>
+            Gets or sets a visibility of the TextInCells item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowRichText">
+            <summary>
+            Gets or sets a visibility of the RichText item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowImage">
+            <summary>
+            Gets or sets a visibility of the Image item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowBarCode">
+            <summary>
+            Gets or sets a visibility of the BarCode item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowShape">
+            <summary>
+            Gets or sets a visibility of the Shape item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowHorizontalLinePrimitive">
+            <summary>
+            Gets or sets a visibility of the Horizontal Line Primitive item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowVerticalLinePrimitive">
+            <summary>
+            Gets or sets a visibility of the Vertical Line Primitive item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowRectanglePrimitive">
+            <summary>
+            Gets or sets a visibility of the Rectangle Primitive item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowRoundedRectanglePrimitive">
+            <summary>
+            Gets or sets a visibility of the Rounded Rectangle Primitive item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowPanel">
+            <summary>
+            Gets or sets a visibility of the Panel item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowClone">
+            <summary>
+            Gets or sets a visibility of the Clone item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowCheckBox">
+            <summary>
+            Gets or sets a visibility of the CheckBox item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowSubReport">
+            <summary>
+            Gets or sets a visibility of the SubReport item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowZipCode">
+            <summary>
+            Gets or sets a visibility of the ZipCode item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowChart">
+            <summary>
+            Gets or sets a visibility of the Chart item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowMap">
+            <summary>
+            Gets or sets a visibility of the Map item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowGauge">
+            <summary>
+            Gets or sets a visibility of the Gauge item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowCrossTab">
+            <summary>
+            Gets or sets a visibility of the CrossTab item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowTable">
+            <summary>
+            Gets or sets a visibility of the Table item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowSparkline">
+            <summary>
+            Gets or sets a visibility of the Sparkline item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowMathFormula">
+            <summary>
+            Gets or sets a visibility of the MathFormula item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowElectronicSignature">
+            <summary>
+            Gets or sets a visibility of the Electronic Signature item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ComponentsOptions.ShowPdfDigitalSignature">
+            <summary>
+            Gets or sets a visibility of the PdfDigitalSignature item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PagesOptions.ShowNewPageButton">
+            <summary>
+            Gets or sets a visibility of the new page button in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.CrossBandsOptions.ShowCrossGroupHeaderBand">
+            <summary>
+            Gets or sets a visibility of the CrossGroupHeaderBand item in the CrossBands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.CrossBandsOptions.ShowCrossGroupFooterBand">
+            <summary>
+            Gets or sets a visibility of the CrossGroupFooterBand item in the CrossBands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.CrossBandsOptions.ShowCrossHeaderBand">
+            <summary>
+            Gets or sets a visibility of the CrossHeaderBand item in the CrossBands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.CrossBandsOptions.ShowCrossFooterBand">
+            <summary>
+            Gets or sets a visibility of the CrossFooterBand item in the CrossBands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.CrossBandsOptions.ShowCrossDataBand">
+            <summary>
+            Gets or sets a visibility of the CrossDataBand item in the CrossBands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardsOptions.ShowNewDashboardButton">
+            <summary>
+            Gets or sets a visibility of the new dashboard button in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowTableElement">
+            <summary>
+            Gets or sets a visibility of the TableElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowChartElement">
+            <summary>
+            Gets or sets a visibility of the ChartElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowGaugeElement">
+            <summary>
+            Gets or sets a visibility of the GaugeElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowPivotTableElement">
+            <summary>
+            Gets or sets a visibility of the PivotTableElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowIndicatorElement">
+            <summary>
+            Gets or sets a visibility of the IndicatorElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowProgressElement">
+            <summary>
+            Gets or sets a visibility of the ProgressElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowRegionMapElement">
+            <summary>
+            Gets or sets a visibility of the RegionMapElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowOnlineMapElement">
+            <summary>
+            Gets or sets a visibility of the OnlineMapElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowImageElement">
+            <summary>
+            Gets or sets a visibility of the ImageElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowTextElement">
+            <summary>
+            Gets or sets a visibility of the TextElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowPanelElement">
+            <summary>
+            Gets or sets a visibility of the PanelElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowShapeElement">
+            <summary>
+            Gets or sets a visibility of the ShapeElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowListBoxElement">
+            <summary>
+            Gets or sets a visibility of the ListBoxElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowComboBoxElement">
+            <summary>
+            Gets or sets a visibility of the ComboBoxElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowTreeViewElement">
+            <summary>
+            Gets or sets a visibility of the TreeViewElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowTreeViewBoxElement">
+            <summary>
+            Gets or sets a visibility of the TreeViewBoxElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowDatePickerElement">
+            <summary>
+            Gets or sets a visibility of the DatePickerElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowCardsElement">
+            <summary>
+            Gets or sets a visibility of the CardsElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElementsOptions.ShowButtonElement">
+            <summary>
+            Gets or sets a visibility of the ButtonElement item in the Dashboard Elements menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DictionaryOptions.Visible">
+            <summary>
+            Gets or sets a visibility of the dictionary in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DictionaryOptions.UseAliases">
+            <summary>
+            Gets or sets a value which indicates that using aliases in the dictionary.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DictionaryOptions.NewReportDictionary">
+            <summary>
+            Gets or sets a value which indicates what to do with the dictionary when creating a new report in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DictionaryOptions.ShowDictionaryContextMenuProperties">
+            <summary>
+            Gets or sets a visibility of the Properties item in the dictionary context menu.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DictionaryOptions.PermissionDataSources">
+            <summary>
+            Gets or sets a value of permissions for datasources in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DictionaryOptions.PermissionDataConnections">
+            <summary>
+            Gets or sets a value of permissions for connections in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DictionaryOptions.PermissionDataColumns">
+            <summary>
+            Gets or sets a value of permissions for columns in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DictionaryOptions.PermissionDataRelations">
+            <summary>
+            Gets or sets a value of permissions for relations in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DictionaryOptions.PermissionBusinessObjects">
+            <summary>
+            Gets or sets a value of permissions for business objects in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DictionaryOptions.PermissionVariables">
+            <summary>
+            Gets or sets a value of permissions for variables in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DictionaryOptions.PermissionResources">
+            <summary>
+            Gets or sets a value of permissions for resources in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DictionaryOptions.PermissionSqlParameters">
+            <summary>
+            Gets or sets a value of permissions for sql parameters in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.EmailOptions.ShowEmailDialog">
+            <summary>
+            Gets or sets a value which allows to display the Email dialog, or send Email with the default settings.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.EmailOptions.ShowExportDialog">
+            <summary>
+            Gets or sets a value which allows to display the export dialog for Email, or export report for Email with the default settings.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.EmailOptions.DefaultEmailAddress">
+            <summary>
+            Gets or sets the default email address of the message created in the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.EmailOptions.DefaultEmailSubject">
+            <summary>
+            Gets or sets the default subject of the message created in the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.EmailOptions.DefaultEmailMessage">
+            <summary>
+            Gets or sets the default text of the message created in the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.EmailOptions.DefaultEmailReplyTo">
+            <summary>
+            Gets or sets the default replyTo of the message created in the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.DefaultSettings">
+            <summary>
+            A class which controls default settings of exports.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.StoreExportSettings">
+            <summary>
+            Gets or sets a value which allows store the export settings in the cookies.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportDialog">
+            <summary>
+            Gets or sets a value which allows to display the export dialog, or to export with the default settings.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToDocument">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the report document file.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToPdf">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the PDF format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToXps">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the XPS format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToPowerPoint">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the Power Point 2007-2010 format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToHtml">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the HTML format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToHtml5">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the HTML5 format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToMht">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the MHT (Web Archive) format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToText">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the TEXT format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToRtf">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the Rich Text format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToWord2007">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the Word 2007-2010 format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToOpenDocumentWriter">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the Open Document Text format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToExcel">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the Excel BIFF format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToExcelXml">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the Excel XML format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToExcel2007">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the Excel 2007-2010 format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToOpenDocumentCalc">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the Open Document Calc format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToCsv">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the CSV format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToDbf">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the DBF format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToXml">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the XML format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToDif">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the DIF format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToSylk">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the Sylk format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToJson">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the Json format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToImageBmp">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the BMP image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToImageGif">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the GIF image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToImageJpeg">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the JPEG image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToImagePcx">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the PCX image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToImagePng">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the PNG image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToImageTiff">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the TIFF image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToImageMetafile">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the Metafile image format.
+            Not supported in .NET Core
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToImageSvg">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the SVG image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowExportToImageSvgz">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the preview to the SVGZ image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.ShowOpenAfterExport">
+            <summary>
+            Gets or sets a value which allows to display the option Open After Export.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ExportOptions.OpenAfterExport">
+            <summary>
+            Gets or sets a value the option Open After Export.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.FileMenuOptions.Visible">
+            <summary>
+            Gets or sets a visibility of the file menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.FileMenuOptions.ShowNew">
+            <summary>
+            Gets or sets a visibility of the New item in the file menu.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.FileMenuOptions.ShowOpen">
+            <summary>
+            Gets or sets a visibility of the Open Report item in the file menu.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.FileMenuOptions.ShowSave">
+            <summary>
+            Gets or sets a visibility of the Save Report item in the file menu.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.FileMenuOptions.ShowSaveAs">
+            <summary>
+            Gets or sets a visibility of the Save Report As item in the file menu.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.FileMenuOptions.ShowClose">
+            <summary>
+            Gets or sets a visibility of the Close item in the file menu.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.FileMenuOptions.ShowExit">
+            <summary>
+            Gets or sets a visibility of the Exit item in the file menu.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.FileMenuOptions.ShowReportSetup">
+            <summary>
+            Gets or sets a visibility of the Report Setup item in the file menu.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.FileMenuOptions.ShowOptions">
+            <summary>
+            Gets or sets a visibility of the Options item in the file menu.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.FileMenuOptions.ShowInfo">
+            <summary>
+            Gets or sets a visibility of the Info item in the file menu.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.FileMenuOptions.ShowAbout">
+            <summary>
+            Gets or sets a visibility of the About item in the file menu.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.FileMenuOptions.ShowHelp">
+            <summary>
+            Gets or sets a visibility of the Help item in the file menu.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.FileMenuOptions.ShowFileMenuNewReport">
+            <summary>
+            Gets or sets a visibility of the new report button in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.FileMenuOptions.ShowFileMenuNewDashboard">
+            <summary>
+            Gets or sets a visibility of the new dashboard button in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.Visible">
+            <summary>
+            Gets or sets a value which indicates that toolbar will be shown in the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.DisplayMode">
+            <summary>
+            Gets or sets the display mode of the preview toolbar - simple or separated into upper and lower parts.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.BackgroundColor">
+            <summary>
+            Gets or sets a color of the preview toolbar background. The default value is the theme color.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.BorderColor">
+            <summary>
+            Gets or sets a color of the preview toolbar border. The default value is the theme color.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.FontColor">
+            <summary>
+            Gets or sets a color of the preview toolbar texts.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.FontFamily">
+            <summary>
+            Gets or sets a value which indicates which font family will be used for drawing texts in the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.Alignment">
+            <summary>
+            Gets or sets the alignment of the preview toolbar.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowButtonCaptions">
+            <summary>
+            Gets or sets a value which allows displaying or hiding preview toolbar buttons captions.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowPrintButton">
+            <summary>
+            Gets or sets a visibility of the Print button in the toolbar of the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowOpenButton">
+            <summary>
+            Gets or sets a visibility of the Open button in the toolbar of the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowSaveButton">
+            <summary>
+            Gets or sets a visibility of the Save button in the toolbar of the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowSendEmailButton">
+            <summary>
+            Gets or sets a visibility of the Send Email button in the toolbar of the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowFindButton">
+            <summary>
+            Gets or sets a visibility of the Find button in the toolbar of the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowBookmarksButton">
+            <summary>
+            Gets or sets a visibility of the Bookmarks button in the toolbar of the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowParametersButton">
+            <summary>
+            Gets or sets a visibility of the Parameters button in the toolbar of the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowEditorButton">
+            <summary>
+            Gets or sets a visibility of the Editor button in the toolbar of the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowFirstPageButton">
+            <summary>
+            Gets or sets a visibility of the First Page button in the toolbar of the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowPreviousPageButton">
+            <summary>
+            Gets or sets a visibility of the Prev Page button in the toolbar of the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowCurrentPageControl">
+            <summary>
+            Gets or sets a visibility of the current page control in the toolbar of the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowNextPageButton">
+            <summary>
+            Gets or sets a visibility of the Next Page button in the toolbar of the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowLastPageButton">
+            <summary>
+            Gets or sets a visibility of the Last Page button in the toolbar of the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowZoomButton">
+            <summary>
+            Gets or sets a visibility of the Zoom control in the toolbar of the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ShowViewModeButton">
+            <summary>
+            Gets or sets a visibility of the View Mode button in the toolbar of the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.PrintDestination">
+            <summary>
+            Gets or sets the default mode of the report print destination.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbarOptions.ViewMode">
+            <summary>
+            Gets or sets the mode of showing a report in the preview - Single Page, Continuous or Multiple Pages.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PropertiesGridOptions.Visible">
+            <summary>
+            Gets or sets a visibility of the properties grid in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PropertiesGridOptions.Width">
+            <summary>
+            Gets or sets a width of the properties grid in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PropertiesGridOptions.LabelWidth">
+            <summary>
+            Gets or sets a width of the property label in properties grid in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PropertiesGridOptions.PropertiesGridPosition">
+            <summary>
+            Gets or sets a position of the properties grid.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PropertiesGridOptions.ShowPropertiesWhichUsedFromStyles">
+            <summary>
+            Gets or sets a visibility of the properties which used from styles in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.Controller">
+            <summary>
+            Gets or sets the name of the query processing controller of the report designer. 
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.RouteTemplate">
+            <summary>
+            Gets or sets the URL pattern of the route of the report designer. The {action} parameter can be used for the component actions, for example: /Home/{action}
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.RequestTimeout">
+            <summary>
+            Gets or sets time which indicates how many seconds the client side will wait for the response from the server side. The default value is 30 seconds.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.CacheTimeout">
+            <summary>
+            Gets or sets time which indicates how many minutes the result of the report rendering will be stored in the server cache or session. The default value is 10 minutes.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.CacheMode">
+            <summary>
+            Gets or sets the mode of the report caching.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.CacheItemPriority">
+            <summary>
+            Specifies the relative priority of report, stored in the system cache.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.AllowAutoUpdateCache">
+            <summary>
+            Allows the designer to update the cache automatically. The cache will be updated about once every three minutes if there are no actions in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.UseRelativeUrls">
+            <summary>
+            Gets or sets a value which indicates that the designer will use relative or absolute URLs.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.PortNumber">
+            <summary>
+            Gets or sets a value which specifies the port number to use in the URL. A value of 0 defines automatic detection. A value of -1 removes the port number.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.PassQueryParametersForResources">
+            <summary>
+            Gets or sets a value which enables or disables the transfer of URL parameters when requesting the scripts and styles of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.PassFormValues">
+            <summary>
+            Gets or sets a value which enables or disables the transfer POST parameters of the form.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.ShowServerErrorPage">
+            <summary>
+            Gets or sets a value which enables or disables the display of the detailed server error in the preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.UseCompression">
+            <summary>
+            Gets or sets a value which enables or disables the GZip compression of requests to the server. This allows to reduce the volume of Internet traffic, but slightly slows down the designer actions.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.UseCacheForResources">
+            <summary>
+            Gets or sets a value which enables caching for designer scripts and styles.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.AllowAutoUpdateCookies">
+            <summary>
+            Allows the designer to update the cookies automatically on every request to the server. By default, cookies are set when creating the designer, if they are not specified in the report.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ServerOptions.AllowAntiforgeryToken">
+            <summary>
+            Allow the designer to automatically request and send the antiforgery token.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ToolbarOptions.ShowToolbar">
+            <summary>
+            Gets or sets a value which indicates that toolbar will be shown in the designer.
+            </summary>           
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ToolbarOptions.ShowSetupToolboxButton">
+            <summary>
+            Gets or sets a visibility of the setup toolbox button in the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ToolbarOptions.ShowInsertButton">
+            <summary>
+            Gets or sets a visibility of the insert button in the toolbar of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ToolbarOptions.ShowLayoutButton">
+            <summary>
+            Gets or sets a visibility of the layout button in the toolbar of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ToolbarOptions.ShowPageButton">
+            <summary>
+            Gets or sets a visibility of the page button in the toolbar of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ToolbarOptions.ShowPreviewButton">
+            <summary>
+            Gets or sets a visibility of the preview button in the toolbar of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ToolbarOptions.ShowSaveButton">
+            <summary>
+            Gets or sets a visibility of the save button in the toolbar of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.ToolbarOptions.ShowAboutButton">
+            <summary>
+            Gets or sets a visibility of the about button in the toolbar of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.Appearance">
+            <summary>
+            A class which controls settings of the designer appearance.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.Pages">
+            <summary>
+            A class which controls settings of the pages.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.Bands">
+            <summary>
+            A class which allows gets or sets a visibility of the specified item in the Bands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.Behavior">
+            <summary>
+            A class which controls settings of the designer behavior.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.Components">
+            <summary>
+            A class which allows gets or sets a visibility of the specified item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.CrossBands">
+            <summary>
+            A class which allows gets or sets a visibility of the specified item in the CrossBands menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.Dashboards">
+            <summary>
+            A class which controls settings of the dashboards.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.DashboardElements">
+            <summary>
+            A class which allows gets or sets a visibility of the specified item in the Components menu of the designer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.Dictionary">
+            <summary>
+            A class which controls settings of the designer dictionary.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.Email">
+            <summary>
+            A class which controls the email options.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.Exports">
+            <summary>
+            A class which controls the export options.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.FileMenu">
+            <summary>
+            A class which controls settings of the designer file menu.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PreviewToolbar">
+            <summary>
+            A class which controls settings of the preview toolbar.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.PropertiesGrid">
+            <summary>
+            A class which controls settings of the designer properties grid.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.Server">
+            <summary>
+            A class which controls the server options.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.Toolbar">
+            <summary>
+            A class which controls settings of the designer toolbar.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorDesignerOptions.LocalizationDirectory">
+            <summary>
+            Gets or sets a path to the localization directory for the designer.
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.Report.Blazor.StiBlazorViewer.GetRequestParams(System.String,System.String)">
+            <summary>
+            Get the all request parameters of the report viewer.
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.Report.Blazor.StiBlazorViewer.GetEmailOptions(Stimulsoft.Report.Web.StiRequestParams)">
+            <summary>
+            Get the Email options from the dialog, sent by the client. The specified request parameters will be used.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.CustomCss">
+            <summary>
+            Gets or sets a path to the custom css file for the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.BackgroundColor">
+            <summary>
+            Gets or sets the background color of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.PageBorderColor">
+            <summary>
+            Gets or sets a color of the report page border.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.RightToLeft">
+            <summary>
+            Gets or sets a value which controls of output objects in the right to left mode.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.FullScreenMode">
+            <summary>
+            Gets or sets a value which indicates which indicates that the viewer is displayed in full screen mode.
+            </summary>        
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.ScrollbarsMode">
+            <summary>
+            Gets or sets a value which indicates that the viewer will show the report area with scrollbars.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.OpenLinksWindow">
+            <summary>
+            Gets or sets a browser window to open links from the report.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.OpenExportedReportWindow">
+            <summary>
+            Gets or sets a browser window to open the exported report.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.DesignWindow">
+            <summary>
+            Gets or sets a browser window to open page at design action.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.ShowTooltips">
+            <summary>
+            Gets or sets a value which indicates that show or hide tooltips.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.ShowTooltipsHelp">
+            <summary>
+            Gets or sets a value which indicates that show or hide the help link in tooltips.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.ShowDialogsHelp">
+            <summary>
+            Gets or sets a value which indicates that show or hide the help button in dialogs.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.PageAlignment">
+            <summary>
+            Gets or sets the alignment of the viewer page.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.ShowPageShadow">
+            <summary>
+            Gets or sets a value which indicates that the shadow of the page will be displayed in the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.BookmarksPrint">
+            <summary>
+            Gets or sets a value which allows printing report bookmarks.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.BookmarksTreeWidth">
+            <summary>
+            Gets or sets a width of the bookmarks tree in the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.ParametersPanelPosition">
+            <summary>
+            Gets or sets a position of the parameters panel.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.ParametersPanelMaxHeight">
+            <summary>
+            Gets or sets a max height of parameters panel in the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.ParametersPanelColumnsCount">
+            <summary>
+            Gets or sets a count columns in parameters panel.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.ParametersPanelSortDataItems">
+            <summary>
+            Gets or sets a value which indicates that variable items will be sorted.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.ParametersPanelDateFormat">
+            <summary>
+            Gets or sets a date format for datetime parameters in parameters panel. To use a server date format please set the StiDateFormatMode.FromServer or "FromServer" string value.
+            The default is the client browser date format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.InterfaceType">
+            <summary>
+            Gets or sets the type of the viewer interface.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.AllowMobileMode">
+            <summary>
+            Gets or sets a value which indicates that allows mobile mode of the viewer interface.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.ChartRenderType">
+            <summary>
+            Gets or sets the type of the chart in the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.ReportDisplayMode">
+            <summary>
+            Gets or sets a method how the viewer will show a report.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.DatePickerFirstDayOfWeek">
+            <summary>
+            Gets or sets the first day of week in the date picker.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.DatePickerIncludeCurrentDayForRanges">
+            <summary>
+            Gets or sets a value, which indicates that the current day will be included in the ranges of the date picker.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.AllowTouchZoom">
+            <summary>
+            Gets or sets a value which allows touch zoom in the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.ShowReportIsNotSpecifiedMessage">
+            <summary>
+            Gets or sets a value which indicates that 'The report is not specified' message will be shown.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.ImagesQuality">
+            <summary>
+            Gets or sets the image quality that will be used on the viewer page.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.PrintToPdfMode">
+            <summary>
+            Gets or sets the PDF print mode - hidden or in a pop-up window.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.AppearanceOptions.CombineReportPages">
+            <summary>
+            Gets or sets a value which indicates that if a report contains several pages, then they will be combined in preview.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.EmailOptions.ShowEmailDialog">
+            <summary>
+            Gets or sets a value which allows to display the Email dialog, or send Email with the default settings.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.EmailOptions.ShowExportDialog">
+            <summary>
+            Gets or sets a value which allows to display the export dialog for Email, or export report for Email with the default settings.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.EmailOptions.DefaultEmailAddress">
+            <summary>
+            Gets or sets the default email address of the message created in the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.EmailOptions.DefaultEmailSubject">
+            <summary>
+            Gets or sets the default subject of the message created in the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.EmailOptions.DefaultEmailMessage">
+            <summary>
+            Gets or sets the default text of the message created in the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.EmailOptions.DefaultEmailReplyTo">
+            <summary>
+            Gets or sets the default text of the replyTo of the message created in the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.DefaultSettings">
+            <summary>
+            A class which controls default settings of exports.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.StoreExportSettings">
+            <summary>
+            Gets or sets a value which allows store the export settings in the cookies.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportDialog">
+            <summary>
+            Gets or sets a value which allows to display the export dialog, or to export with the default settings.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToDocument">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the report document file.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToPdf">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the PDF format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToXps">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the XPS format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToPowerPoint">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the Power Point 2007-2010 format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToHtml">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the HTML format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToHtml5">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the HTML5 format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToMht">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the MHT (Web Archive) format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToText">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the TEXT format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToRtf">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the Rich Text format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToWord2007">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the Word 2007-2010 format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToOpenDocumentWriter">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the Open Document Text format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToExcel">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the Excel BIFF format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToExcelXml">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the Excel XML format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToExcel2007">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the Excel 2007-2010 format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToOpenDocumentCalc">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the Open Document Calc format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToCsv">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the CSV format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToDbf">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the DBF format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToXml">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the XML format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToDif">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the DIF format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToSylk">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the Sylk format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToJson">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the Json format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToImageBmp">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the BMP image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToImageGif">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the GIF image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToImageJpeg">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the JPEG image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToImagePcx">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the PCX image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToImagePng">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the PNG image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToImageTiff">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the TIFF image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToImageMetafile">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the Metafile image format.
+            Not supported in .NET Core
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToImageSvg">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the SVG image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowExportToImageSvgz">
+            <summary>
+            Gets or sets a value which indicates that the user can save the report from the viewer to the SVGZ image format.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.ShowOpenAfterExport">
+            <summary>
+            Gets or sets a value which allows to display the option Open After Export.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ExportOptions.OpenAfterExport">
+            <summary>
+            Gets or sets a value the option Open After Export.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.Controller">
+            <summary>
+            Gets or sets the name of the query processing controller of the report viewer. 
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.RouteTemplate">
+            <summary>
+            Gets or sets the URL pattern of the route of the report viewer. The {action} parameter can be used for the component actions, for example: /Home/{action}
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.RequestTimeout">
+            <summary>
+            Gets or sets time which indicates how many seconds the client side will wait for the response from the server side. The default value is 30 seconds.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.CacheTimeout">
+            <summary>
+            Gets or sets time which indicates how many minutes the result of the report rendering will be stored in the server cache or session. The default value is 10 minutes.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.CacheMode">
+            <summary>
+            Gets or sets the mode of the report caching.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.CacheItemPriority">
+            <summary>
+            Specifies the relative priority of report, stored in the system cache.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.AllowAutoUpdateCache">
+            <summary>
+            Allows the viewer to update the cache automatically. The cache will be updated about once every three minutes if there are no actions in the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.UseRelativeUrls">
+            <summary>
+            Gets or sets a value which indicates that the viewer will use relative or absolute URLs.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.PortNumber">
+            <summary>
+            Gets or sets a value which specifies the port number to use in the URL. A value of 0 defines automatic detection. A value of -1 removes the port number.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.PassQueryParametersForResources">
+            <summary>
+            Gets or sets a value which enables or disables the transfer of URL parameters when requesting the scripts and styles of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.PassQueryParametersToReport">
+            <summary>
+            Gets or sets a value which enables or disables the use of URL parameters as report parameters.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.PassFormValues">
+            <summary>
+            Gets or sets a value which enables or disables the transfer POST parameters of the form.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.ShowServerErrorPage">
+            <summary>
+            Gets or sets a value which enables or disables the display of the detailed server error in the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.UseCompression">
+            <summary>
+            Gets or sets a value which enables or disables the GZip compression for the requests. This allows to reduce the volume of Internet traffic, but slightly slows down the viewer actions.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.UseCacheForResources">
+            <summary>
+            Gets or sets a value which enables caching for viewer scripts and styles.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.UseLocalizedCache">
+            <summary>
+            Gets or sets a value which enables the use of a different cache depending on the selected localization.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.AllowAutoUpdateCookies">
+            <summary>
+            Allows the viewer to update the cookies automatically on every request to the server. By default, cookies are set when creating the viewer, if they are not specified in the report.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ServerOptions.AllowAntiforgeryToken">
+            <summary>
+            Allow the viewer to automatically request and send the antiforgery token.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.Visible">
+            <summary>
+            Gets or sets a value which indicates that toolbar will be shown in the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.DisplayMode">
+            <summary>
+            Gets or sets the display mode of the toolbar - simple or separated into upper and lower parts.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.BackgroundColor">
+            <summary>
+            Gets or sets a color of the toolbar background. The default value is the theme color.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.BorderColor">
+            <summary>
+            Gets or sets a color of the toolbar border. The default value is the theme color.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.FontColor">
+            <summary>
+            Gets or sets a color of the toolbar texts.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.FontFamily">
+            <summary>
+            Gets or sets a value which indicates which font family will be used for drawing texts in the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.Alignment">
+            <summary>
+            Gets or sets the alignment of the viewer toolbar.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowButtonCaptions">
+            <summary>
+            Gets or sets a value which allows displaying or hiding toolbar buttons captions.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowPrintButton">
+            <summary>
+            Gets or sets a visibility of the Print button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowOpenButton">
+            <summary>
+            Gets or sets a visibility of the Open button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowSaveButton">
+            <summary>
+            Gets or sets a visibility of the Save button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowSendEmailButton">
+            <summary>
+            Gets or sets a visibility of the Send Email button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowFindButton">
+            <summary>
+            Gets or sets a visibility of the Find button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowBookmarksButton">
+            <summary>
+            Gets or sets a visibility of the Bookmarks button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowParametersButton">
+            <summary>
+            Gets or sets a visibility of the Parameters button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowResourcesButton">
+            <summary>
+            Gets or sets a visibility of the Resources button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowEditorButton">
+            <summary>
+            Gets or sets a visibility of the Editor button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowFullScreenButton">
+            <summary>
+            Gets or sets a visibility of the Full Screen button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowFirstPageButton">
+            <summary>
+            Gets or sets a visibility of the First Page button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowPreviousPageButton">
+            <summary>
+            Gets or sets a visibility of the Prev Page button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowCurrentPageControl">
+            <summary>
+            Gets or sets a visibility of the current page control in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowNextPageButton">
+            <summary>
+            Gets or sets a visibility of the Next Page button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowLastPageButton">
+            <summary>
+            Gets or sets a visibility of the Last Page button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowZoomButton">
+            <summary>
+            Gets or sets a visibility of the Zoom control in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowViewModeButton">
+            <summary>
+            Gets or sets a visibility of the View Mode button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowDesignButton">
+            <summary>
+            Gets or sets a visibility of the Design button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowAboutButton">
+            <summary>
+            Gets or sets a visibility of the About button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowRefreshButton">
+            <summary>
+            Gets or sets a visibility of the Refresh button in the toolbar of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowPinToolbarButton">
+            <summary>
+            Gets or sets a visibility of the Pin button in the toolbar of the viewer in mobile mode.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.PrintDestination">
+            <summary>
+            Gets or sets the default mode of the report print destination.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ViewMode">
+            <summary>
+            Gets or sets the mode of showing a report in the viewer - Single Page, Continuous or Multiple Pages.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.Zoom">
+            <summary>
+            Gets or sets the report showing zoom. The default value is 100.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.MenuAnimation">
+            <summary>
+            Gets or sets a value which indicates that menu animation is enabled.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.ShowMenuMode">
+            <summary>
+            Gets or sets the mode that shows menu of the viewer.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ToolbarOptions.AutoHide">
+            <summary>
+            Gets or sets a value which allows automatically hide the viewer toolbar in mobile mode.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.Appearance">
+            <summary>
+            A class which controls settings of the viewer appearance.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.Email">
+            <summary>
+            A class which controls the email options.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.Exports">
+            <summary>
+            A class which controls the export options.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.Server">
+            <summary>
+            A class which controls the server options.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.Toolbar">
+            <summary>
+            A class which controls settings of the viewer toolbar.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.Report.Blazor.StiBlazorViewerOptions.ReportDesignerMode">
+            <summary>
+            Gets or sets the current visual theme which is used for drawing visual elements of the viewer.
+            </summary>
+        </member>
+    </members>
+</doc>

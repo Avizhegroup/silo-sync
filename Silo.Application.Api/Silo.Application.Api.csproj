@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <ProjectReference Include="..\Silo.Domains\Silo.Domains.csproj" />
+        <ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
+        <ProjectReference Include="..\Silo.Application\Silo.Application.Shared.csproj" />
+        <ProjectReference Include="..\Silo.Identity.Server\Silo.Identity.Server.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" />
+        <PackageReference Include="MediatR" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Features\Sharif\Queries\" />
+    </ItemGroup>
+    
+</Project>

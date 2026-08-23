@@ -1,0 +1,26 @@
+﻿@namespace Silo.Shared.Components.Modals
+
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_Barcode_Reader"
+       @ref="Modal"
+       Size="ModalSize.Large">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                <label style="margin-right: 97px;">@TextResources.APP_StringKeys_Barcode</label>
+                <input @bind-value="Barcode" class="form-control input-search-span-lg" @onkeyup="OnBarcodeKeyUp" @ref="RefBarcode" />
+                <button id="btn-lsend" class="btn btn-primary" style="margin-right: 10px;"
+                        type="button" title="@TextResources.APP_StringKeys_Search"
+                @onclick="OnAddClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Add"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

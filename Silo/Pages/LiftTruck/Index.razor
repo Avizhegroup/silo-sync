@@ -1,0 +1,117 @@
+﻿@page "/truck/index"
+@using Silo.Components.LiftTruck
+@using Microsoft.AspNetCore.SignalR.Client
+@inherits SiloBasePage
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="page-truck-index @MainDivClass">
+
+    <div class="nav-truck">
+        <span class="span-logo" @onclick="OnLogoClick">
+            <img src="/images/Utilities/app-nav.png" />
+        </span>
+        @if (HubConnection is not null)
+        {
+            @if (HubConnectionState == HubConnectionState.Connected)
+            {
+                <span class="btn span-num btn-signalr connected">
+                    <span>
+                        <MaterialIcon IconName="wifi"></MaterialIcon>
+                    </span>
+                </span>
+            }
+            else
+            {
+                <span class="btn span-num btn-signalr disconnected"
+              @onclick="OnReconnectClick">
+                    <span>
+                        @if (HubConnectionState == HubConnectionState.Reconnecting)
+                        {
+                            <MaterialIcon IconName="autorenew"></MaterialIcon>
+                        }
+                        else
+                        {
+                            <MaterialIcon IconName="wifi_off"></MaterialIcon>
+                        }
+                    </span>
+                </span>
+            }
+        }
+
+        <span class="btn span-num">
+            <span>
+                <b>
+                    24
+                </b>
+            </span>
+        </span>
+
+        <span class="btn span-num">
+            <span>
+                <b>
+                    12
+                </b>
+            </span>
+        </span>
+
+        @if (TruckNumber.HasValue())
+        {
+            <span class="btn span-date">
+                <span>
+                    <b>
+                        @TextResources.APP_StringKeys_Number_Truck @TruckNumber
+                    </b>
+                </span>
+            </span>
+        }
+
+        <span class="btn span-date">
+            <span>
+                <b>
+                    @CurrentDateTime
+                </b>
+            </span>
+        </span>
+
+        <button type="button"
+                class="btn btn-logout"
+                @onclick="OnLogoutClick">
+            <MaterialIcon IconName="logout"></MaterialIcon>
+        </button>
+    </div>
+
+    <CascadingValue Value="Notification">
+        <CascadingValue Value="LoadingContainer">
+            <CascadingValue Value="Api">
+                <TruckDefault @ref="TruckDefault"
+                              OnVerifyClick="OnVerifyClick"
+                              OnChangeModeClick="OnPageModeChange"></TruckDefault>
+
+                <TruckSettings @ref="TruckSetting"
+                               OnSettingsSave="OnSettingsSave">
+                </TruckSettings>
+
+                <TruckProductCode @ref="TruckProductCode"
+                                  OnProductCodeSave="OnGetProductDetails"
+                                  OnCloseClicked="()=> OnChangePageActiveModeClick(TruckIndexMode.Default)">
+                </TruckProductCode>
+
+                <TruckConfirm @ref="Confirm"
+                              OnChangeConfirmMode="OnConfirmChange">
+                </TruckConfirm>
+
+                <TruckError @ref="TruckError"
+                            OnCloseClick="()=> OnChangePageActiveModeClick(TruckIndexMode.Default)">
+                </TruckError>
+            </CascadingValue>
+        </CascadingValue>
+    </CascadingValue>
+</div>
+
+<TelerikLoaderContainer @ref="LoadingContainer"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading"
+                        Visible="IsLoading">
+</TelerikLoaderContainer>

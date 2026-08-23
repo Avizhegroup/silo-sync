@@ -1,0 +1,9 @@
+﻿global using Silo.Application.Features;
+global using Telerik.Blazor;
+global using Telerik.Blazor.Components;
+global using Silo.Shared;
+global using Silo.Identity.Client;
+global using Microsoft.AspNetCore.Components;
+global using Microsoft.AspNetCore.Components.Forms;
+global using Microsoft.AspNetCore.Components.Web;
+global using Silo.Infrastructure.Web;

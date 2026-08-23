@@ -1,0 +1,174 @@
+@page "/truckcross/feeconfigs"
+@inherits SiloBasePage
+@namespace Silo.Modules.TruckCross.Pages
+@using Silo.Application.Features
+@using Silo.Identity.Client;
+
+<PageTitle>
+    @TextResources.APP_StringKeys_TruckCross_FeeConfig
+</PageTitle>
+
+<div class="container-fluid px-3 py-3">
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+            <EditForm Model="Command"
+                      OnInvalidSubmit="OnInvalidSubmit"
+                      OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="d-flex flex-row-reverse align-items-center flex-wrap gap-2 mb-2">
+                    <label>@TextResources.APP_StringKeys_Field_Id</label>
+                    <TelerikNumericTextBox @bind-Value="Command.Id"
+                                           Width="160px"
+                                           Class="form-control input-search-span"
+                                           Enabled="false" />
+                    <label>@TextResources.APP_StringKeys_Company</label>
+                    <TelerikDropDownList Data="Companies"
+                                         TextField="@nameof(GetAllTruckCrossProductTypeVm.Title)"
+                                         ValueField="@nameof(GetAllTruckCrossProductTypeVm.Id)"
+                                         @bind-Value="Command.CompanyId"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="180px"
+                                         TabIndex="1"
+                                         Class="drop-all" />
+                    <label>@TextResources.APP_StringKeys_Field_ProductType</label>
+                    <TelerikDropDownList Data="ProductTypes"
+                                         TextField="@nameof(GetAllTruckCrossProductTypeVm.Title)"
+                                         ValueField="@nameof(GetAllTruckCrossProductTypeVm.Id)"
+                                         @bind-Value="Command.ProductTypeId"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="180px"
+                                         TabIndex="2"
+                                         Class="drop-all" />
+                    <label>@TextResources.APP_StringKeys_TruckCross_Customer</label>
+                    <TelerikDropDownList Data="Customers"
+                                         TextField="@nameof(GetAllTruckCrossProductTypeVm.Title)"
+                                         ValueField="@nameof(GetAllTruckCrossProductTypeVm.Id)"
+                                         @bind-Value="Command.CustomerId"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="180px"
+                                         TabIndex="3"
+                                         Class="drop-all" />
+                    <span class="badge @(Command.FeeStatus ? "bg-success" : "bg-danger") d-flex align-items-center gap-1 px-2 py-1">
+                        <label class="mb-0">@TextResources.APP_StringKeys_ActivationStatus</label>
+                        <InputCheckbox @bind-Value="Command.FeeStatus" />
+                    </span>
+                </div>
+                <div class="d-flex flex-row-reverse align-items-center flex-wrap gap-2 mb-2">
+                    <label>@TextResources.APP_StringKeys_TruckCross_Exit_Distance</label>
+                    <TelerikNumericTextBox @bind-Value="Command.FeeDistance"
+                                           Width="160px"
+                                           Class="form-control input-search-span" />
+                    <label>@TextResources.APP_StringKeys_Weight</label>
+                    <TelerikNumericTextBox @bind-Value="Command.FeeWeight"
+                                           Width="160px"
+                                           Class="form-control input-search-span" />
+                    <label>@TextResources.APP_StringKeys_Value</label>
+                    <TelerikNumericTextBox @bind-Value="Command.FeeAmount"
+                                           Width="160px"
+                                           Class="form-control input-search-span" />
+                    <label>@TextResources.APP_StringKeys_TruckCross_Shipment</label>
+                    <TelerikDropDownList Data="Shipments"
+                                         TextField="@nameof(GetAllTruckCrossProductTypeVm.Title)"
+                                         ValueField="@nameof(GetAllTruckCrossProductTypeVm.Id)"
+                                         @bind-Value="Command.ShipmentId"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="180px"
+                                         TabIndex="4"
+                                         Class="drop-all" />
+                </div>
+                <div class="tc-action-bar">
+                    <button type="button" class="btn btn-light" @onclick="OnOpenModalClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl" />
+                    </button>
+                    <button type="button" class="btn btn-danger" @onclick="OnRemoveClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Delete" />
+                    </button>
+                    <button type="button" class="btn btn-warning" @onclick="OnRefreshClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh" />
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Save" />
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       CloseBtnText="@TextResources.APP_StringKeys_Ignore"
+       @ref="ModalFees"
+       Size="ModalSize.ExtraLarge">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @if (Fees is not null)
+            {
+                <TelerikGrid Data="Fees"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                    <RowTemplate Context="fee">
+                        <td class="td-style">@fee.Id</td>
+                        <td class="td-style">@(Companies.FirstOrDefault(p => p.Id == fee.CompanyId)?.Title)</td>
+                        <td class="td-style">@(ProductTypes.FirstOrDefault(p => p.Id == fee.ProductTypeId)?.Title)</td>
+                        <td class="td-style">@(Customers.FirstOrDefault(p => p.Id == fee.CustomerId)?.Title)</td>
+                        <td class="td-style">@(Shipments.FirstOrDefault(p => p.Id == fee.ShipmentId)?.Title)</td>
+                        <td class="td-style">@fee.FromDate</td>
+                        <td class="td-style">@fee.ToDate</td>
+                        <td class="td-style">@fee.FeeDistance</td>
+                        <td class="td-style">@fee.FeeWeight</td>
+                        <td class="td-style">@fee.FeeAmount</td>
+                        <td class="td-style">@(fee.FeeStatus ? TextResources.APP_StringKeys_Active : TextResources.APP_StringKeys_Deactive)</td>
+                        <td class="td-style">
+                            <button @onclick="async()=> await OnChooseFee(fee)" type="button" class="btn btn-success tr-buttom">@TextResources.APP_StringKeys_Choose</button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetAllTruckCrossShipmentFeeVm.Id)" Width="60px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllTruckCrossShipmentFeeVm.CompanyId)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllTruckCrossShipmentFeeVm.ProductTypeId)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllTruckCrossShipmentFeeVm.CustomerId)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllTruckCrossShipmentFeeVm.ShipmentId)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllTruckCrossShipmentFeeVm.FromDate)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllTruckCrossShipmentFeeVm.ToDate)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllTruckCrossShipmentFeeVm.FeeDistance)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllTruckCrossShipmentFeeVm.FeeWeight)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllTruckCrossShipmentFeeVm.FeeAmount)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllTruckCrossShipmentFeeVm.FeeStatus)" Width="130px"></GridColumn>
+                        <GridColumn Width="60px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       OkBtnText="@TextResources.APP_StringKeys_Delete"
+       OkBtnClass="btn-danger"
+       OnOkModal="OnConfirmRemove"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       @ref="ModalDelete"
+       Size="ModalSize.Normal">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @TextResources.APP_StringKeys_Message_DeleteText_Part1
+            <b>
+            </b>
+            @TextResources.APP_StringKeys_Message_DeleteText_Part2
+            <div class="alert alert-danger mb-0">
+                @TextResources.APP_StringKeys_DeleteModal_SubTitle
+            </div>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

@@ -1,0 +1,201 @@
+@page "/location/locate"
+@using Newtonsoft.Json.Linq;
+@using Silo.Application.Features;
+@using Silo.Components.Filter
+@using Silo.Shared.Components.Report
+@inherits SiloBasePage
+
+<PageTitle>@TextResources.APP_StringKeys_Location_Locate</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-right" style="margin-bottom:5px;min-height:70px;padding-top:5px;">
+        <h6>@TextResources.APP_StringKeys_Filters</h6>
+        <div class=" d-flex flex-row align-items-center flex-wrap  search-button-div" style="margin-top:-145px !important;width:480px;">
+            <button class="btn btn-success" type="button" title="@TextResources.APP_StringKeys_Filters"
+                    style="margin-left: 2px;" @onclick="OnFilterModalClick">
+                <MaterialIcon IconName="@MaterialIconsHelper.Filter_alt"></MaterialIcon>
+            </button>
+            <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                    style="margin-left: 2px;" @onclick="OnClearClick">
+                <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+            </button>
+            <button class="btn btn-primary" type="button"
+                    title="@TextResources.APP_StringKeys_Send"
+                    @onclick="OnSearchButtonClick">
+                <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+            </button>
+        </div>
+        @if (ApplyFilters.Any())
+        {
+            <div class=" d-flex flex-row align-items-center flex-wrap col-md-10" style="margin-bottom:10px!important;">
+                <FilterReportEditSection Filters="ApplyFilters">
+                </FilterReportEditSection>
+            </div>
+        }
+    </div>
+</div>
+
+@if (Products is not null)
+{
+    <div class="row col-md-12" style="margin-top: -10px;">
+        <div class="card card-stats col-md-12 text-align-center">
+            <TelerikGrid Data="Products"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true"
+                         Width="100%"
+                         ScrollMode="@GridScrollMode.Scrollable">
+                <RowTemplate Context="product">
+                    <td class="td-style td-style-full">
+                        <TelerikCheckBox @bind-Value="product.IsSelected"
+                                         OnChange="OnToggleSelectChange">
+                        </TelerikCheckBox>
+                    </td>
+                    <td class="td-style td-style-full">@product.ProductCode</td>
+                    <td class="td-style td-style-full">@product.ProductSerial</td>
+                    <td class="td-style td-style-full">@product.ProductName</td>
+                    <td class="td-style td-style-full">@product.ProductType</td>
+                    <td class="td-style td-style-full">@product.Size</td>
+                    <td class="td-style td-style-full">@product.TechnicalCode</td>
+                    <td class="td-style td-style-full">@product.StoreTitle</td>
+                    <td class="td-style td-style-full">@product.ZoneTitle</td>
+                    <td class="td-style td-style-full">@product.Qc</td>
+                    <td class="td-style td-style-full">@product.ProductGroup</td>
+                    <td class="td-style td-style-full">@product.ProductBrand</td>
+                    <td class="td-style td-style-full">@product.Line</td>
+                    <td class="td-style td-style-full">@product.Shift</td>
+                    <td class="td-style td-style-full">@product.Count</td>
+                    @if (product.TechnicalInfoData is not null)
+                    {
+                        @foreach (var field in TechnicalFilterColumns)
+                        {
+                            <td class="td-style">@JToken.Parse(product.TechnicalInfoData.Split("-,-").First())[$"{field}"]</td>
+                        }
+                    }
+                </RowTemplate>
+                <GridColumns>
+                    <GridCheckboxColumn Visible="true" Width="30px" HeaderClass="header-select-all">
+                        <HeaderTemplate>
+                            @{
+                                <TelerikCheckBox @bind-Value="@IsAllSelected"
+                                                 TabIndex="-1"
+                                                 OnChange="OnToggleSelectAll" />
+                            }
+                        </HeaderTemplate>
+                    </GridCheckboxColumn>
+                    <GridColumn Field="@nameof(GetLocateProductVm.ProductCode)"
+                                Width="120px">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetLocateProductVm.ProductSerial)"
+                                Width="80px">
+                        <FooterTemplate>
+                            تعداد: @context.Count
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetLocateProductVm.ProductName)">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetLocateProductVm.ProductType)">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetLocateProductVm.Size)">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetLocateProductVm.TechnicalCode)">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetLocateProductVm.StoreTitle)">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetLocateProductVm.ZoneTitle)">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetLocateProductVm.Qc)">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetLocateProductVm.ProductGroup)">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetLocateProductVm.ProductBrand)">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetLocateProductVm.Line)">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetLocateProductVm.Shift)">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.Count)"
+                                Title="@TextResources.APP_StringKeys_Value"
+                                Width="80px">
+                        <FooterTemplate>
+                            جمع مقدار: @context.Sum
+                        </FooterTemplate>
+                    </GridColumn>
+                    @foreach (var column in TechnicalFilterColumns)
+                    {
+                        <GridColumn Field="" Title="@column" Width="100px"></GridColumn>
+                    }
+                </GridColumns>
+                <GridAggregates>
+                    <GridAggregate Field=@nameof(GetEnterActionDetailsFullVm.Count) Aggregate="@GridAggregateType.Sum" />
+                    <GridAggregate Field=@nameof(GetEnterActionDetailsFullVm.ProductSerial) Aggregate="@GridAggregateType.Count" />
+                </GridAggregates>
+            </TelerikGrid>
+        </div>
+    </div>
+
+    <div class="row col-md-12" style="padding: 10px;">
+        <div class="card card-stats col-md-12 text-align-center">
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-top:5px;margin-bottom:5px;">
+                <label>@TextResources.APP_StringKeys_Zone</label>
+                @if (NewTagZone is not null)
+                {
+                    <TelerikTextBox Class="input-search-span-lg" @bind-Value="NewTagZone.Title" Enabled="false">
+                    </TelerikTextBox>
+                }
+                <button type="button"
+                        class="btn btn-success"
+                        @onclick="async ()=> await LocationModal.Show()">
+                    @TextResources.APP_StringKeys_Zone_Search
+                    <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                </button>
+                <button type="button"
+                        class="btn btn-warning"
+                        @onclick="OnClearClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                </button>
+                <button type="button"
+                        class="btn btn-primary"
+                        @onclick="OnSaveClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_Filters"
+       @ref="FiltersModal"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-right">
+            @if (FiltersModal.ModalClass.Equals("Show"))
+            {
+                <FilterReportSelectSection Filters="Filters" 
+                                           OnSearchClick="OnAddNewFilterClick"
+                                           OnAddClick="OnAddNewFilterInComponentClick">
+                </FilterReportSelectSection>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<LocationModal @ref="LocationModal"
+               OnClickLocationWithZone="OnChooseNewTagZone">
+</LocationModal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<style type="text/css">
+    .btn {
+        margin-right: 5px;
+    }
+</style>                

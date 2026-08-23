@@ -1,0 +1,84 @@
+﻿@page "/account/add"
+@inherits SiloBasePage
+
+<PageTitle>@PageTitle</PageTitle>
+<div class="row">
+    <div class="col-md-7 card card-stats text-align-right ">
+        <div class=" ">
+            <EditForm Model="User"
+                      OnInvalidSubmit="OnInvalidSubmit"
+                      OnValidSubmit="OnSubmit">
+                <DataAnnotationsValidator />
+                <div class="">
+                    <label class="col-md-2 control-label">
+                        @TextResources.APP_StringKeys_Username
+                    </label>
+                    <div class="col-md-10">
+                        <input @bind-value="User.UserName" class="form-control" />
+                    </div>
+                </div>
+                <div class="">
+                    <label class="col-md-2 control-label">
+                        @TextResources.APP_StringKeys_Name
+                    </label>
+                    <div class="col-md-10">
+                        <input @bind-value="User.Name" class="form-control" />
+                    </div>
+                </div>
+                <div class="">
+                    <label class="col-md-2 control-label">
+                        @TextResources.APP_StringKeys_Role
+                    </label>
+                    <div class="col-md-10">
+                        <TelerikDropDownList Data="Roles"
+                                             TextField="NormalizedName"
+                                             ValueField="Id"
+                                             @bind-Value="User.Role"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                    </div>
+                </div>
+                <div class="">
+                    <label class="col-md-2 control-label">
+                        @TextResources.APP_StringKeys_Password
+                    </label>
+                    <div class="col-md-10">
+                        <input type="password" @bind-value="User.Password" class="form-control" />
+                    </div>
+                </div>
+                <div class="">
+                    <label class="col-md-2 control-label">
+                        @TextResources.APP_StringKeys_RePassword
+                    </label>
+                    <div class="col-md-10">
+                        <input type="password" 
+                               @bind-value="User.ConfirmPassword" 
+                               class="form-control" />
+                    </div>
+                </div>
+                <br />
+                <br />
+                <div class="">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button class="btn btn-primary" 
+                                type="submit">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                        </button>
+                        <button class="btn btn-warning" 
+                                type="button"
+                                @onclick="OnSubmit">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                        </button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

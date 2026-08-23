@@ -1,0 +1,60 @@
+@namespace Silo.Components.DynamicField
+@using Silo.Application.Features
+@using Silo.Shared.Components
+
+<div class="report-filters-section"
+     style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px 24px; padding-top:5px; align-items:start;">
+    @{
+        int indexCount = 1;
+        @foreach (var field in DynamicFieldsDto.OrderBy(p => p.Order))
+        {
+            <div style="display:flex; flex-direction:column; gap:4px; @(field.IsReadOnly ? "background-color:#f0eded; padding:4px 6px; border-radius:4px;" : "")">
+                <label class="field-label" style="margin-bottom:2px;">@field.Title</label>
+                @if (field.ValueType == DynamicFieldValueType.TextBox)
+                {
+                    <TelerikTextBox @bind-Value="field.EffectiveValue"
+                                    Class="form-control input-search-span-lg pointer"
+                                    Width="300px"
+                                    TabIndex="indexCount"
+                                    ReadOnly="field.IsReadOnly">
+                    </TelerikTextBox>
+                }
+                else if (field.ValueType == DynamicFieldValueType.DropDown)
+                {
+                    <TelerikDropDownList Data="field.ValueOptions"
+                                         TextField="."
+                                         ValueField="."
+                                         @bind-Value="field.EffectiveValue"
+                                         Width="300px"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Class="drop-all"
+                                         ReadOnly="field.IsReadOnly"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains">
+                    </TelerikDropDownList>
+                }
+                else if (field.ValueType == DynamicFieldValueType.RichTextEditor)
+                {
+                    <TelerikTextArea @bind-Value="field.EffectiveValue"
+                                     Width="300px"
+                                     Class="drop-all"
+                                     ReadOnly="field.IsReadOnly">
+                    </TelerikTextArea>
+                }
+                else if (field.ValueType == DynamicFieldValueType.Numeric)
+                {
+                    <TelerikNumericTextBox @bind-Value="field.NumericValue"
+                                           Width="300px"
+                                           Class="drop-all"
+                                           ReadOnly="@field.IsReadOnly">
+                    </TelerikNumericTextBox>
+                }
+                @if (field.IsReadOnly)
+                {
+                    <MaterialIcon IconName="@MaterialIconsHelper.Block" />
+                }
+            </div>
+            indexCount++;
+        }
+    }
+</div>

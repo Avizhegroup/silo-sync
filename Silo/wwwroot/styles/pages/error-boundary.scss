@@ -1,0 +1,158 @@
+// ─── AppErrorBoundary ─────────────────────────────────────────────────────────
+// Layout: fixed full-viewport column → topbar (56px) / body (flex-grow) / footer (48px)
+// Card follows KPI-card spec: border-0, shadow-sm, border-radius 12px, 52px icon circle
+
+// ── Root overlay ──────────────────────────────────────────────────────────────
+
+.eb-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: $surface-page;
+    display: flex;
+    flex-direction: column;
+}
+
+// ── Topbar — mirrors navbar spec exactly ──────────────────────────────────────
+
+.eb-topbar {
+    height: $navbar-height;
+    flex-shrink: 0;
+    background: $surface-card;
+    border-bottom: 1px solid $border-color;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, .06);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: 0 1.5rem;
+    font-size: .95rem;
+    font-weight: 600;
+    color: $text-primary;
+
+    .material-icons {
+        font-size: 1.4rem;
+        color: $color-teal;
+    }
+}
+
+// ── Body — vertically / horizontally centers the card ─────────────────────────
+
+.eb-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    overflow-y: auto;
+}
+
+// ── Card — KPI-card spec: border-0, shadow-sm, radius 12px ───────────────────
+
+.eb-card {
+    width: 100%;
+    max-width: 520px;
+    border-radius: 12px !important;
+    transition: box-shadow .2s;
+
+    &:hover {
+        box-shadow: 0 4px 18px rgba(0, 0, 0, .12) !important;
+    }
+}
+
+.eb-card-body {
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+// ── Error icon — 52px circle, matches KPI icon spec ──────────────────────────
+
+.eb-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba($color-red, .1);
+    color: $color-red;
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+// ── Typography ────────────────────────────────────────────────────────────────
+
+.eb-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin-bottom: .375rem;
+}
+
+.eb-subtitle {
+    font-size: .875rem;
+    color: $text-secondary;
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+// ── Divider ───────────────────────────────────────────────────────────────────
+
+.eb-divider {
+    width: 100%;
+    border: 0;
+    border-top: 1px solid $border-color;
+    margin: 1.5rem 0;
+}
+
+// ── Action buttons ────────────────────────────────────────────────────────────
+
+.eb-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: .625rem;
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .375rem;
+        font-size: .875rem;
+        padding: .5rem 1.25rem;
+        border-radius: 8px;
+    }
+}
+
+// ── Exception detail — debug only ─────────────────────────────────────────────
+
+.eb-detail {
+    width: 100%;
+    font-size: .78rem;
+    color: $text-secondary;
+    background: $color-grey-100;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: start;
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin-top: 1.25rem;
+}
+
+// ── Footer ────────────────────────────────────────────────────────────────────
+
+.eb-footer {
+    flex-shrink: 0;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .78rem;
+    color: $text-muted;
+    border-top: 1px solid $border-color;
+}

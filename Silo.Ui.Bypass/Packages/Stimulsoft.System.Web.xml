@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Stimulsoft.System.Web</name>
+    </assembly>
+    <members>
+        <member name="P:Stimulsoft.System.Web.HttpRequest.Cookies">
+            <summary>
+            Gets a collection of cookies sent by the client.
+            </summary>
+        </member>
+        <member name="P:Stimulsoft.System.Web.HttpRequest.Url">
+            <summary>
+            Gets information about the URL of the current request.
+            </summary>
+        </member>
+    </members>
+</doc>

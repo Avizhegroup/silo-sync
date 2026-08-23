@@ -1,0 +1,138 @@
+@using Silo.Application.Features
+
+@using Silo.Shared
+
+@namespace Silo.Modules.TruckCross.Components
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; padding-bottom: 10px;">
+        <div class="form-search-span" style="padding-top:10px;">
+            @if(CrossRequest.PresentCause is not null)
+            {
+                <div class=" d-flex flex-row align-items-center flex-wrap" style=" margin-top:5px;">
+                    <div class="form-search-span" style=" margin-top: -40px !important; ">
+                        <div style="margin-bottom: 50px!important;">
+                            <h6 class="form-title card-title">
+                            </h6>
+                        </div>
+                        <label style="margin-right: 10px !important;">@TextResources.APP_StringKeys_Station:</label>
+                        <TelerikDropDownList Data="Stations"
+                                             TextField="Name"
+                                             ValueField="Code"
+                                             @bind-Value="Operation.Gate"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="200px!important"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                        @{
+                            
+
+                            <a href="@Url" class="btn btn-success" target="_blank" style="margin-right: 4px;"
+                               title="@TextResources.APP_StringKeys_MovementAction_Submit_Form">
+                                <MaterialIcon IconName="@MaterialIconsHelper.Open_in_new"></MaterialIcon>
+                            </a>
+                            <button id="btn-modal"
+                                    type="button"
+                                    class="btn btn-primary"
+                                    style="margin-right: 4px;"
+                                    title="@TextResources.APP_StringKeys_Update_Datas"
+                                    @onclick="OnGetMovementActionDataClick">
+                                <MaterialIcon IconName="@MaterialIconsHelper.Sync"></MaterialIcon>
+                            </button>
+                        }
+                    </div>
+                    @if (Products is not null)
+                    {
+                        <TelerikGrid Data="Products"
+                                     PageSize="10"
+                                     Navigable="true"
+                                     Pageable="true"
+                                     Sortable="true">
+                            <RowTemplate Context="product">
+                                <td class="td-style">@product.DocumentCode</td>
+                                <td class="td-style">@product.ProductCode</td>
+                                <td class="td-style">@product.ProductName</td>
+                                <td class="td-style">@product.ProductCount</td>
+                                <td class="td-style">@product.SumCount</td>
+                                <td class="td-style">
+                                    <button @onclick="async () => await OnProductDetailsClick(product)"
+                                            type="button"
+                                            class="btn-dt-1 btn-success tr-buttom btn">
+                                        @TextResources.APP_StringKeys_Details
+                                    </button>
+                                </td>
+                            </RowTemplate>
+                            <GridColumns>
+                                <GridColumn Field="@nameof(GetPlaceByTruckCrossIdDto.DocumentCode)"
+                                            Title="@TextResources.APP_StringKeys_DocCode"></GridColumn>
+                                <GridColumn Field="@nameof(GetPlaceByTruckCrossIdDto.ProductCode)"
+                                            Title="@TextResources.APP_StringKeys_Chart_ProductCode">
+                                    <FooterTemplate>
+                                        تعداد کد کالا: @context.Count
+                                    </FooterTemplate>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(GetPlaceByTruckCrossIdDto.ProductName)"
+                                            Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                                <GridColumn Field="@nameof(GetPlaceByTruckCrossIdDto.ProductCount)"
+                                            Title="@TextResources.APP_StringKeys_Count">
+                                    <FooterTemplate>
+                                        جمع : @context.Sum
+                                    </FooterTemplate>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(GetPlaceByTruckCrossIdDto.SumCount)"
+                                            Title="@TextResources.APP_StringKeys_SumValue">
+                                    <FooterTemplate>
+                                        جمع : @context.Sum
+                                    </FooterTemplate>
+                                </GridColumn>
+                                <GridColumn Width="60px"></GridColumn>
+                            </GridColumns>
+                            <GridAggregates>
+                                <GridAggregate Field=@nameof(GetPlaceByTruckCrossIdDto.ProductCode) Aggregate="@GridAggregateType.Count" />
+                                <GridAggregate Field=@nameof(GetPlaceByTruckCrossIdDto.ProductCount) Aggregate="@GridAggregateType.Sum" />
+                                <GridAggregate Field=@nameof(GetPlaceByTruckCrossIdDto.SumCount) Aggregate="@GridAggregateType.Sum" />
+                            </GridAggregates>
+                        </TelerikGrid>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalDetails"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="ProductDetails"
+                         Sortable="true"
+                         Height="400px"
+                         Width="100%"
+                         ScrollMode="@GridScrollMode.Scrollable">
+                <RowTemplate Context="product">
+                    <td class="td-style">@product.ProductCode</td>
+                    <td class="td-style">@product.ProductSerial</td>
+                    <td class="td-style">@product.ProductCount</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetPlaceProductDetailsByCrossIdDto.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"></GridColumn>
+                    <GridColumn Field="@nameof(GetPlaceProductDetailsByCrossIdDto.ProductSerial)"
+                                Title="@TextResources.APP_StringKeys_ProductSerial"></GridColumn>
+                    <GridColumn Field="@nameof(GetPlaceProductDetailsByCrossIdDto.ProductCount)"
+                                Title="@TextResources.APP_StringKeys_Value"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+@if (IsLoading)
+{
+    <TelerikLoaderContainer LoaderPosition="@LoaderPosition.End"
+                            LoaderType="LoaderType.InfiniteSpinner"
+                            Text="@TextResources.APP_StringKeys_Loading">
+    </TelerikLoaderContainer>
+}

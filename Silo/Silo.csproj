@@ -1,0 +1,116 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<UserSecretsId>4af2dcd3-9d7c-4856-8dbe-8da97ebf545a</UserSecretsId>
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" />
+        <PackageReference Include="BuildBundlerMinifier2022">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="ClosedXML" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" />
+		<PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" />
+		<PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces" />
+		<PackageReference Include="BuildWebCompiler2022">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="System.Text.Json" />
+		<PackageReference Include="Telerik.UI.for.Blazor" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Common" />
+		<PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
+	</ItemGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		<DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="Components\Format\**" />
+		<Compile Remove="Templates\**" />
+		<Compile Remove="Views\**" />
+		<Compile Remove="wwwroot\Data\**" />
+		<Compile Remove="wwwroot\images\Products\**" />
+		<Compile Remove="wwwroot\temp\**" />
+		<Content Remove="Components\Format\**" />
+		<Content Remove="Templates\**" />
+		<Content Remove="Views\**" />
+		<Content Remove="wwwroot\Data\**" />
+		<Content Remove="wwwroot\images\Products\**" />
+		<Content Remove="wwwroot\temp\**" />
+		<EmbeddedResource Remove="Components\Format\**" />
+		<EmbeddedResource Remove="Templates\**" />
+		<EmbeddedResource Remove="Views\**" />
+		<EmbeddedResource Remove="wwwroot\Data\**" />
+		<EmbeddedResource Remove="wwwroot\images\Products\**" />
+		<EmbeddedResource Remove="wwwroot\temp\**" />
+		<None Remove="Components\Format\**" />
+		<None Remove="Templates\**" />
+		<None Remove="Views\**" />
+		<None Remove="wwwroot\Data\**" />
+		<None Remove="wwwroot\images\Products\**" />
+		<None Remove="wwwroot\temp\**" />
+		<Content Remove="wwwroot\Temp\" />
+		<None Remove="System.IO.Packaging" />
+		<Using Include="System.ComponentModel.DataAnnotations" />
+		<Using Include="System.Text.Json.Serialization" />
+		<Using Include="Silo.Components" />
+		<Using Include="Silo.Infrastructure.Shared" />
+        <Using Include="Silo.Infrastructure.Web" />
+		<Using Include="Silo.Tools" />
+        <Using Include="Silo.Shared" />
+        <Using Include="Silo.Identity.Client" />
+        <Using Include="Silo.Application.Dto" />
+        <Using Include="Silo.Identity.Client" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Remove="bundleconfig.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<_ContentIncludedByDefault Remove="bundleconfig.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="bundleconfig.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Silo.Application\Silo.Application.Shared.csproj" />
+		<ProjectReference Include="..\Silo.Infrastructure.Shared\Silo.Infrastructure.Shared.csproj" />
+		<ProjectReference Include="..\Silo.Infrastructure.Web\Silo.Infrastructure.Web.csproj" />
+		<ProjectReference Include="..\Silo.Modules.Ai\Silo.Modules.Ai.csproj" />
+		<ProjectReference Include="..\Silo.Modules.Guarantee\Silo.Modules.Guarantee.csproj" />
+		<ProjectReference Include="..\Silo.Modules.Inspect\Silo.Modules.Inspect.csproj" />
+		<ProjectReference Include="..\Silo.Modules.Product\Silo.Modules.Product.csproj" />
+		<ProjectReference Include="..\Silo.Modules.TruckCross\Silo.Modules.TruckCross.csproj" />
+        <ProjectReference Include="..\Silo.Modules.Document\Silo.Modules.Document.csproj" />
+		<ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
+		<ProjectReference Include="..\Silo.Shared.Components\Silo.Shared.Components.csproj" />
+		<ProjectReference Include="..\Silo.Identity.Client\Silo.Identity.Client.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Silo.Source\Silo.Source.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" SetTargetFramework="TargetFramework=netstandard2.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\gallery\" />
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="xcopy /y &quot;$(ProjectDir)Packages\*.*&quot; &quot;$(ProjectDir)$(OutDir)&quot;" />
+	</Target>
+
+</Project>

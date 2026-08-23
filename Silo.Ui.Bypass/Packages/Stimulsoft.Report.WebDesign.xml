@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Stimulsoft.Report.WebDesign</name>
+    </assembly>
+    <members>
+        <member name="M:Stimulsoft.Report.Web.StiWebDesigner.IsPackedFile(System.IO.Stream)">
+            <summary>
+            Returns true if specified stream contains packed report.
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.Report.Web.StiWebDesigner.IsEncryptedFile(System.IO.Stream)">
+            <summary>
+            Returns true if specified stream contains encrypted report.
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.Report.Web.StiWebDesigner.IsJsonFile(System.IO.Stream)">
+            <summary>
+            Returns true if specified stream contains packed report.
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.Report.Web.StiWebDesigner.GetImageUrl(Stimulsoft.Report.Web.StiRequestParams,System.String)">
+            <summary>
+            Get the URL to load the images of the report designer.
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.Report.Web.HtmlLexicalAnalyzer.SkipWhiteSpace">
+            <summary>
+            skips whitespace in the input string
+            leaves the first non-whitespace character available in the NextCharacter property
+            this may be the end-of-file character, it performs no checking 
+            </summary>
+        </member>
+        <member name="T:Stimulsoft.Report.Web.JSON">
+             <summary>
+             This class encodes and decodes JSON strings.
+             http://www.json.org/
+            
+             JSON uses Arrays and Objects. These correspond here to the datatypes ArrayList and Hashtable.
+             All numbers are parsed to doubles.
+             </summary>
+        </member>
+        <member name="M:Stimulsoft.Report.Web.JSON.Decode(System.String)">
+            <summary>
+            Parses the string json into a value
+            </summary>
+            <param name="json">A JSON string.</param>
+            <returns>An ArrayList, a Hashtable, a double, a string, null, true, or false</returns>
+        </member>
+        <member name="M:Stimulsoft.Report.Web.JSON.Decode(System.String,System.Boolean@)">
+            <summary>
+            Parses the string json into a value; and fills 'success' with the successfullness of the parse.
+            </summary>
+            <param name="json">A JSON string.</param>
+            <param name="success">Successful parse?</param>
+            <returns>An ArrayList, a Hashtable, a double, a string, null, true, or false</returns>
+        </member>
+        <member name="M:Stimulsoft.Report.Web.JSON.Encode(System.Object)">
+            <summary>
+            Converts a Hashtable / ArrayList object into a JSON string
+            </summary>
+            <param name="json">A Hashtable / ArrayList</param>
+            <returns>A JSON encoded string, or null if object 'json' is not serializable</returns>
+        </member>
+        <member name="M:Stimulsoft.Report.Web.StiDesignerResourcesHelper.GetBitmap(Stimulsoft.Report.Web.StiRequestParams,System.String)">
+            <summary>
+            Get Bitmap image for Visual Studio design mode
+            </summary>
+        </member>
+        <member name="T:Stimulsoft.Report.Web.StiGroup">
+            <summary>
+            This class describes groups of components.
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.Report.Web.StiGroup.Clone">
+            <summary>
+            Creates a new object that is a copy of the current instance.
+            </summary>
+            <returns>A new object that is a copy of this instance.</returns>
+        </member>
+        <member name="T:Stimulsoft.Report.Web.StiInsertionComponents">
+            <summary>
+            This class helps with insertion components to current report page.
+            </summary>
+        </member>
+    </members>
+</doc>

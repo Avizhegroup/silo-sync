@@ -1,0 +1,19 @@
+﻿@using Silo.Ui.Customer.Components
+@using Telerik.Blazor.Components
+@inherits LayoutComponentBase
+
+<PageTitle>@Title</PageTitle>
+
+<TelerikRootComponent EnableRtl="true">
+    <CascadingValue Value="Notification">
+        <div class="container-fluid">
+            <AppErrorBoundary>
+                @Body
+            </AppErrorBoundary>
+        </div>
+        <TelerikNotification @ref="Notification"
+                             HorizontalPosition="@NotificationHorizontalPosition.Right"
+                             VerticalPosition="@NotificationVerticalPosition.Bottom">
+        </TelerikNotification>
+    </CascadingValue>
+</TelerikRootComponent>

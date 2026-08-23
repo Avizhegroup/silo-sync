@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Logging" />
+        <PackageReference Include="DocumentFormat.OpenXml" />
+        <PackageReference Include="Serilog" />
+        <PackageReference Include="Serilog.AspNetCore" />
+        <PackageReference Include="Serilog.Extensions.Logging" />
+        <PackageReference Include="Serilog.Sinks.File" />
+        <PackageReference Include="Serilog.Sinks.Seq" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Silo.Application\Silo.Application.Shared.csproj" />
+      <ProjectReference Include="..\Silo.Domains\Silo.Domains.csproj" />
+      <ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

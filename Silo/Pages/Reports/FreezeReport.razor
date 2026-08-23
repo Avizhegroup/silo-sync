@@ -1,0 +1,181 @@
+@page "/report/freeze"
+@inherits SiloBasePage
+@using Microsoft.AspNetCore.Mvc.Rendering;
+@using Silo.Application.Features;
+@namespace Silo.Pages.Reports
+
+<PageTitle>@PageTitle</PageTitle>
+
+@if (IsFiltersShown)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center" style="padding:5px;">
+            <EditForm Model="Search"
+                      OnInvalidSubmit="OnInvalidSubmit"
+                      OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="form-search-span" style="margin-top:-10px !important;">
+                    <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:5px!important;margin-top:15px;">
+                        <label style="margin-right: 25px;">@TextResources.APP_StringKeys_User :</label>
+                    <TelerikDropDownList Data="Users"
+                                         TextField="Name"
+                                         ValueField="Id"
+                                         @bind-Value="Search.UserId"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 65px;">@TextResources.APP_StringKeys_FromDate:</label>
+                    <DatePicker InputClass=" input-search-span-lg pointer "
+                                @bind-Value="Search.FromDate"></DatePicker>
+                    <label style="margin-right: 25px;">@TextResources.APP_StringKeys_ToDate:</label>
+                    <DatePicker InputClass=" input-search-span-lg pointer "
+                                @bind-Value="Search.ToDate"></DatePicker>
+                    <label style="margin-right: 18px;">@TextResources.APP_StringKeys_Chart_Regcode:</label>
+                    <TelerikTextBox @bind-Value="Search.TechnicalCode" Class="form-control input-search-span-lg pointer"
+                                    Width="200px !important"></TelerikTextBox>
+                    <label style="margin-right: -50px; z-index:1;">@TextResources.APP_StringKeys_Like:</label>
+                    <TelerikCheckBox @bind-Value="Search.TechnicalCodeLike">
+                    </TelerikCheckBox>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <label style="margin-right: 19px;">@TextResources.APP_StringKeys_ProductCode:</label>
+                    <TelerikTextBox @bind-Value="Search.ProductCode" Class="form-control input-search-span-lg pointer"
+                                    Width="200px !important"></TelerikTextBox>
+                    <button type="button" class="btn btn-light" @onclick="async ()=> await ProductCodeModal.Show()">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                    </button>
+                    <label style="margin-right: 26px;">@TextResources.APP_StringKeys_ProductSerial:</label>
+                    <TelerikTextBox @bind-Value="Search.ProductSerial" Class="form-control input-search-span-lg pointer"
+                                    Width="200px !important"></TelerikTextBox>
+                    <button type="button" class="btn btn-light" @onclick="async ()=> await ProductModal.Open()">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                    </button>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap search-button-div" style="top: 115px;">
+                    <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                            style="margin-left: 2px;" @onclick="OnClickClear">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    <button type="submit" id="btn-send" class="btn btn-primary" title="@TextResources.APP_StringKeys_Send">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                    </button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+}
+
+@if (FreezeHeaders is not null)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center">
+            <br />
+            <TelerikGrid Data="FreezeHeaders"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="freeze">
+                    <td class="td-style">@freeze.HeaderId</td>
+                    <td class="td-style">@freeze.FreezeStatus</td>
+                    <td class="td-style">@PersianCalendarTools.GregorianToPersian(freeze.DateTime) @freeze.DateTime.ToShortTimeString()</td>
+                    <td class="td-style">@freeze.UserName</td>
+                    <td class="td-style">@freeze.Count</td>
+                    <td class="td-style">
+                        <button @onclick="async ()=> await OnClickRowDetails(freeze.HeaderId)"
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                            @TextResources.APP_StringKeys_Details
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@PageTitle" />
+                </GridExport>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllFreezeHeaderVm.HeaderId)"
+                                Title="@TextResources.APP_StringKeys_OperationCode"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllFreezeHeaderVm.FreezeStatus)"
+                                Title="@TextResources.APP_StringKeys_OperationType"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllFreezeHeaderVm.DateTime)"
+                                Title="@TextResources.APP_StringKeys_DateTime"
+                                Width="150px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllFreezeHeaderVm.UserName)"
+                                Title="@TextResources.APP_StringKeys_User"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllFreezeHeaderVm.Count)"
+                                Title="@TextResources.APP_StringKeys_Count"
+                                Width="90px"></GridColumn>
+                    <GridColumn Width="60px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </div>
+}
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalDetails"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="FreezeItems"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="freeze">
+                    <td class="td-style td-dt">@freeze.ProductSerial</td>
+                    <td class="td-style td-dt">@freeze.ProductCode</td>
+                    <td class="td-style td-dt">@freeze.TechnicalCode</td>
+                    <td class="td-style td-dt">@freeze.ProductName</td>
+                    <td class="td-style td-dt">@freeze.Count</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllFreezeItemVm.ProductSerial)"
+                                Title="@TextResources.APP_StringKeys_ProductSerial" Width="55px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllFreezeItemVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode" Width="120px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllFreezeItemVm.TechnicalCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_Regcode" Width="60px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllFreezeItemVm.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllFreezeItemVm.Count)"
+                                Title="@TextResources.APP_StringKeys_ProductCount" Width="50px"></GridColumn>
+                </GridColumns>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Details" />
+                </GridExport>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<ProductCodeModal @ref="ProductCodeModal"
+                  OnClickProductCode="OnClickProductCode">
+
+</ProductCodeModal>
+
+<ProductSerialModal @ref="ProductModal"
+                    MultiSelect="false"
+                    OnSelectSerials="OnSelectSerials"></ProductSerialModal>

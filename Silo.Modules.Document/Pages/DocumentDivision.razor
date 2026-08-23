@@ -1,0 +1,332 @@
+@page "/document/division"
+@page "/document/division/{RedirectedDocumentCode}/{RedirectedDocumentType}"
+@inherits SiloBasePage
+
+@using Silo.Application.Features;
+@using Silo.Identity.Client;
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Silo.Modules.Document.Components
+@using Telerik.Blazor.Components
+@using Silo.Shared.Components
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12" style="margin-bottom:5px;">
+        <div class="form-search-span" style="padding-top:10px; padding-bottom: 10px;">
+            <EditForm Model="SearchDividableDoc"
+                      OnInvalidSubmit="OnInvalidSubmit"
+                      OnValidSubmit="OnSearchValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="form-group form-inline" style="margin-right:15px;">
+                    @if (SaveDivision.NewDivisionDocItems.Any())
+                    {
+                        <label style="margin-right:10px;">@TextResources.APP_StringKeys_DocKey</label>
+                        <TelerikTextBox @bind-Value="SearchDividableDoc.DocumentKey"
+                                    Class="form-control input-search-span  text-dir-left text-align-right" Enabled="false"></TelerikTextBox>
+                        <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Document_Type :</label>
+                        <TelerikDropDownList Data="DocumentTypes"
+                                         TextField="@nameof(GetAllDocumentTypesVm.Title)"
+                                         ValueField="@nameof(GetAllDocumentTypesVm.Code)"
+                                         @bind-Value="SearchDividableDoc.DocumentType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         Width="180px"
+                                         Class="drop-all"
+                                         Enabled="false">
+                            <DropDownListSettings>
+                                <DropDownListPopupSettings Class="text-align-right" />
+                            </DropDownListSettings>
+                        </TelerikDropDownList>
+                    }
+                    else
+                    {
+                        <label style="margin-right:10px;">@TextResources.APP_StringKeys_DocKey</label>
+                        <TelerikTextBox @bind-Value="SearchDividableDoc.DocumentKey"
+                                    Class="form-control input-search-span"></TelerikTextBox>
+                        <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Document_Type :</label>
+                        <TelerikDropDownList Data="DocumentTypes"
+                                         TextField="@nameof(GetAllDocumentTypesVm.Title)"
+                                         ValueField="@nameof(GetAllDocumentTypesVm.Code)"
+                                         @bind-Value="SearchDividableDoc.DocumentType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         Width="180px"
+                                         Class="drop-all">
+                            <DropDownListSettings>
+                                <DropDownListPopupSettings Class="text-align-right" />
+                            </DropDownListSettings>
+                        </TelerikDropDownList>
+                    }
+                    <button type="button" class="btn btn-success" style="margin-right:20px;"
+                            @onclick="OnGetSuggestClick">
+                        @TextResources.APP_StringKeys_Document_Division_Suggest
+                    </button>
+                    @if (RemainDividableItems.Any(p => p.Count > 0))
+                    {
+                        if (DividedDocuments.Count > 0)
+                        {
+                            var remainDocumentKey = SearchDividableDoc.DocumentKey + "_0";
+
+                            <button id="btn-clear" class="btn btn-light" type="button"
+                                    title="@TextResources.APP_StringKeys_Print"
+                                    style="margin-left: 2px; margin-right: 5px; "
+                            @onclick="async ()=>await OnPrintDocumentClick(remainDocumentKey,SearchDividableDoc.DocumentType)">
+                                @TextResources.APP_StringKeys_Remain_Document
+                                <MaterialIcon IconName="@MaterialIconsHelper.Print"></MaterialIcon>
+                            </button>
+                        }
+                        else
+                        {
+                            <button id="btn-clear" class="btn btn-light" type="button"
+                                    title="@TextResources.APP_StringKeys_Print"
+                                    style="margin-left: 2px; margin-right: 5px; "
+                            @onclick="OnPreventPrintDocumentClick">
+                                @TextResources.APP_StringKeys_Remain_Document
+                                <MaterialIcon IconName="@MaterialIconsHelper.Print"></MaterialIcon>
+                            </button>
+                        }
+                    }
+                    <button type="submit" class="btn btn-primary" style="margin-right:5px;"
+                            title="@TextResources.APP_StringKeys_Search">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                    </button>
+                    <button type="button" class="btn btn-warning" style="margin-right:5px;"
+                            title="@TextResources.APP_StringKeys_Clear"
+                            @onclick="OnClearClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+    @if (RemainDividableItems.Any())
+    {
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+            <div class="form-search-span">
+                <div>
+                    <h6 class="form-title card-title" style="text-align: center !important;">
+                        @TextResources.APP_StringKeys_Remain_Document
+                    </h6>
+                </div>
+                <TelerikGrid Data="RemainDividableItems.Where(p=>p.Count>0)"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                    <RowTemplate Context="item">
+                        <td class="td-style">@item.ProductCode</td>
+                        <td class="td-style">@item.ProductTitle</td>
+                        <td class="td-style">@item.ProductUnit</td>
+                        <td class="td-style">@item.Count</td>
+                        <td class="td-style">
+                            <TelerikNumericTextBox @bind-Value="@item.DivisionCount"
+                                               Class="form-control input-search-span"
+                                               Width="100px !important"></TelerikNumericTextBox>
+                            <button @onclick="async ()=> await OnAddNewItemClick(item)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Add
+                            </button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetRemainDividableDocumentItemsVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                                Width="250px"></GridColumn>
+                        <GridColumn Field="@nameof(GetRemainDividableDocumentItemsVm.ProductTitle)"
+                                Title="@TextResources.APP_StringKeys_ProductTitle"></GridColumn>
+                        <GridColumn Field="@nameof(GetRemainDividableDocumentItemsVm.ProductUnit)"
+                                Title="@TextResources.APP_StringKeys_ProductUnit"
+                                Width="100px"></GridColumn>
+                        <GridColumn Field="@nameof(GetRemainDividableDocumentItemsVm.Count)"
+                                Title="@TextResources.APP_StringKeys_Item_Sum"
+                                Width="100px"></GridColumn>
+                        <GridColumn Width="160px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            </div>
+        </div>
+    }
+    @if (SaveDivision.NewDivisionDocItems.Any())
+    {
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+            <div class="form-search-span">
+                <div>
+                    <h6 class="form-title card-title" style="text-align: center !important;">
+                        @TextResources.APP_StringKeys_New_Document_Division
+                    </h6>
+                </div>
+                <TelerikGrid Data="SaveDivision.NewDivisionDocItems"
+                         @ref="GridNewDivisionItems"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                    <RowTemplate Context="divItem">
+                        <td class="td-style">@divItem.ProductCode</td>
+                        <td class="td-style">@divItem.ProductTitle</td>
+                        <td class="td-style">@divItem.ProductUnit</td>
+                        <td class="td-style">@divItem.Count</td>
+                        <td class="td-style">
+                            <button @onclick="async ()=> await OnDividedItemRemove(divItem)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Delete
+                            </button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetRemainDividableDocumentItemsVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                                Width="250px"></GridColumn>
+                        <GridColumn Field="@nameof(GetRemainDividableDocumentItemsVm.ProductTitle)"
+                                Title="@TextResources.APP_StringKeys_ProductTitle"></GridColumn>
+                        <GridColumn Field="@nameof(GetRemainDividableDocumentItemsVm.ProductUnit)"
+                                Title="@TextResources.APP_StringKeys_ProductUnit"
+                                Width="100px"></GridColumn>
+                        <GridColumn Field="@nameof(GetRemainDividableDocumentItemsVm.Count)"
+                                Title="@TextResources.APP_StringKeys_Item_Sum"
+                                Width="100px"></GridColumn>
+                        <GridColumn Width="160px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            </div>
+        </div>
+        <div class="card card-stats col-md-12 " style="margin-bottom:5px;">
+            <div class="form-search-span" style="padding-top:10px;padding-bottom:10px;">
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:10px;margin-top:10px;">
+                    <label style="margin-right: 30px !important;">@TextResources.APP_StringKeys_Description :</label>
+                    <TelerikTextBox @bind-Value="DivideDescription"
+                                Class="form-control input-search-span-lg pointer" Width="400px !important">
+                    </TelerikTextBox>
+                </div>
+                <div class="form-group form-inline" style="margin-top:-45px !important;direction:ltr;">
+                    <button type="button" class="btn btn-warning" style="margin-right:5px;"
+                            title="@TextResources.APP_StringKeys_Clear"
+                        @onclick="OnClearClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    <button type="button" class="btn btn-primary" style="margin-right:20px;"
+                            title="@TextResources.APP_StringKeys_Save"
+                        @onclick="OnApproveDivisionClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+    @if (DividedDocuments.Any())
+    {
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+            <div class="form-search-span">
+                <div>
+                    <h6 class="form-title card-title" style="text-align: center !important;">
+                        @TextResources.APP_StringKeys_Divided_Documents
+                    </h6>
+                </div>
+                <TelerikGrid Data="DividedDocuments"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true"
+                         OnRowRender="OnRowDocRenderHandler">
+                    <RowTemplate Context="doc">
+                        <td class="td-style  text-dir-left text-align-right">@doc.Key</td>
+                        <td class="td-style">
+                            @(DocumentTypes.FirstOrDefault(p => p.Code.ToString().Equals(doc.DocumentType))?.Title)
+                        </td>
+                        <td class="td-style">@doc.ItemCount</td>
+                        <td class="td-style">
+                            <button @onclick="async ()=> await OnDividedDocDetailsClick(doc)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Details
+                            </button>
+                            <button class="btn btn-success btn-details tr-buttom"
+                                @onclick="async ()=>await OnPrintDocumentClick(doc.Key,doc.DocumentType)">
+                                @TextResources.APP_StringKeys_Print
+                            </button>
+                            <button @onclick="async ()=> await OnRevokeModalClick(doc)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Revoke_Word
+                            </button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetAllDividedDocumentHeaderVM.Key)"
+                                Title="@TextResources.APP_StringKeys_DocKey"
+                                Width="200px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllDividedDocumentHeaderVM.DocumentType)"
+                                Title="@TextResources.APP_StringKeys_Document_Type"
+                                Width="250px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllDividedDocumentHeaderVM.ItemCount)"
+                                Title="@TextResources.APP_StringKeys_Item_Count"
+                                Width="80px"></GridColumn>
+                        <GridColumn Width="100px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            </div>
+        </div>
+    }
+</div>
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="DetailsModal"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="DividedDocumentDetails"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="item">
+                    <td class="td-style td-dt">@item.ProductCode</td>
+                    <td class="td-style td-dt">@item.ProductTitle</td>
+                    <td class="td-style td-dt">@item.ProductUnit</td>
+                    <td class="td-style td-dt">@item.Count</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllDividedDocumentItemVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_ProductCode"
+                                Width="150px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDividedDocumentItemVm.ProductTitle)"
+                                Title="@TextResources.APP_StringKeys_ProductTitle"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDividedDocumentItemVm.ProductUnit)"
+                                Title="@TextResources.APP_StringKeys_ProductUnit"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDividedDocumentItemVm.Count)"
+                                Title="@TextResources.APP_StringKeys_ProductValue"
+                                Width="100px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Check_Before_Revoke_Division"
+       @ref="RevokeModal"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Disconfirm"
+       OkBtnText="@TextResources.APP_StringKeys_Approve"
+       OnOkModal="OnRevokeDivisionClick">
+    <ModalBodyContentHtml>
+        <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:10px;margin-top:10px;">
+            <label style="margin-right: 30px !important;">@TextResources.APP_StringKeys_Description :</label>
+            <TelerikTextBox @bind-Value="DivideDescription"
+                            Class="form-control input-search-span-lg pointer" Width="400px !important">
+            </TelerikTextBox>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

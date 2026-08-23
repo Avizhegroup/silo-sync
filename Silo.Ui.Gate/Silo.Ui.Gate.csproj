@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>.net9-windows</TargetFramework>
+        <OutputType>WinExe</OutputType>
+        <Nullable>enable</Nullable>
+        <UseWindowsForms>true</UseWindowsForms>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <PlatformTarget>x86</PlatformTarget>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" />
+        <PackageReference Include="System.IO.Ports" />
+        <PackageReference Include="System.Management" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Silo.Ui.Gate.Tools" />
+        <Using Include="Silo.Ui.Gate" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="CheckBoxComboBox">
+            <HintPath>CheckBoxComboBox.dll</HintPath>
+        </Reference>
+        <Reference Include="TimaxDev">
+            <HintPath>TimaxDev.dll</HintPath>
+        </Reference>
+        <Reference Include="MR6100Api">
+            <HintPath>MR6100Api.dll</HintPath>
+        </Reference>
+        <Reference Include="UHFAPI">
+            <HintPath>UHFAPI.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <Target Name="PostBuildGen" AfterTargets="PostBuildEvent">
+        <Exec Command="xcopy /y &quot;$(ProjectDir)Libs\libs-gen\*.*&quot; &quot;$(ProjectDir)$(OutDir)&quot;" />
+    </Target>
+
+    <ItemGroup>
+        <Compile Update="Properties\Settings.Designer.cs">
+            <DesignTimeSharedInput>True</DesignTimeSharedInput>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Settings.settings</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Properties\Settings.settings">
+            <Generator>SettingsSingleFileGenerator</Generator>
+            <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+        </None>
+    </ItemGroup>
+
+</Project>

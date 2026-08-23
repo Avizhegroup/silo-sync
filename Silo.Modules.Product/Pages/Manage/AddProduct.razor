@@ -1,0 +1,671 @@
+@page "/product/add"
+@inherits SiloBasePage
+@namespace Silo.Modules.Product.Pages
+@using Newtonsoft.Json.Linq
+@using Silo.Application.Features
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Telerik.Blazor.Components
+@using Silo.Shared.Components
+@using Telerik.FontIcons;
+@using Silo.Shared.Components.Modals
+
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center">
+        <EditForm Model="Product"
+                  OnInvalidSubmit="OnInvalidSubmit"
+                  OnValidSubmit="OnSubmitClick">
+            <DataAnnotationsValidator />
+            <div class="col-md-3 text-align-center" style="margin-right: 76% !important;height: 237px !important;">
+                <div>
+                    <h6 class="form-title card-title" style="text-align: center !important;">
+                        @TextResources.APP_StringKeys_Product_Add_Image
+                    </h6>
+                    <div class=" d-flex flex-row align-items-center flex-wrap">
+                        @if (Product.ProductGalleryId.NotEquals(0) && ImageBase64 is not null)
+                        {
+                            <img width="180" height="180" style="margin-right: 20%;" src="@ImageBase64">
+                        }
+                        else
+                        {
+                            <img width="180" height="180" src="/images/Utilities/Product_pic_2.png" style="margin-right: 20%;">
+                        }
+                    </div>
+                    <div style="margin-top:30px;">
+                        @if (Product.ProductCode.HasValue())
+                        {
+                            <button class="btn btn-success"
+                                    type="button"
+                                    @onclick="OnOpenGallery">
+                                <MaterialIcon IconName="cloud_upload"></MaterialIcon>
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="card card-stats col-md-9 text-align-center" style="margin-top: -237px;">
+                <div>
+                    <h6 class="form-title card-title" style="text-align: center !important;">
+                        @TextResources.APP_StringKeys_Product_Add_Properties
+                    </h6>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                    <label style="margin-right: 31px !important;">@TextResources.APP_StringKeys_ProductCode :</label>
+                    <TelerikTextBox Class="form-control input-search-span-lg"
+                                    Enabled="EnabilityChecker.ProductCode"
+                                    @bind-Value="Product.ProductCode"></TelerikTextBox>
+                    <label style="margin-right: 90px !important;">@TextResources.APP_StringKeys_Chart_Regcode :</label>
+                    <TelerikTextBox Class="form-control input-search-span-lg"
+                                    @bind-Value="Product.ProductTechnicalCode"
+                                    Enabled="EnabilityChecker.ProductTechnicalCode"></TelerikTextBox>
+                    <label style="margin-right: 40px !important;">@TextResources.APP_StringKeys_ProductType :</label>
+                    <TelerikDropDownList Data="Types"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="Product.ProductType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="195px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         Enabled="EnabilityChecker.ProductType">
+                    </TelerikDropDownList>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap " style="margin-bottom: 2px !important;">
+                    <label style="    margin-right: 12px !important;">@TextResources.APP_StringKeys_ProductTitle :</label>
+                    <TelerikTextBox Enabled="EnabilityChecker.ProductTitle"
+                                    @bind-Value="Product.ProductTitle"
+                                    Width="797px"></TelerikTextBox>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                    <label>@TextResources.APP_StringKeys_ProductENTitle :</label>
+                    <TelerikTextBox Enabled="EnabilityChecker.ProductENTitle"
+                                    @bind-Value="Product.ProductENTitle"
+                                    Width="797px"></TelerikTextBox>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 5px !important;">
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Product_Size :</label>
+                    <TelerikDropDownList Data="Sizes"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="Product.ProductSize"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="195px"
+                                         Class="drop-all"
+                                         OnChange="OnChangeSize"
+                                         Enabled="EnabilityChecker.ProductSize"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 40px !important;">@TextResources.APP_StringKeys_Chart_Qc :</label>
+                    <TelerikDropDownList Data="Qcs"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="Product.ProductStatus"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="180px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         Enabled="EnabilityChecker.ProductStatus"
+                                         FilterOperator="StringFilterOperator.Contains">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 51px;">@TextResources.APP_StringKeys_ProductUnit :</label>
+                    <TelerikTextBox Enabled="EnabilityChecker.ProductUnit"
+                                    Class="form-control input-search-span-lg"
+                                    @bind-Value="Product.ProductUnit"
+                                    Width="195px"></TelerikTextBox>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 5px !important;">
+                    <label style="margin-right: 22px;">@TextResources.APP_StringKeys_ProductBrand :</label>
+                    <TelerikDropDownList Data="ProductBrands"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="Product.ProductBrand"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="195px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         Enabled="EnabilityChecker.ProductBrand">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 66px;">@TextResources.APP_StringKeys_ProductGroup :</label>
+                    <TelerikDropDownList Data="ProductGroups"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="Product.ProductGroup"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="180px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         Enabled="EnabilityChecker.ProductGroup"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         OnChange="OnChangeProductGroup">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 39px;">@TextResources.APP_StringKeys_Product_SubGroup :</label>
+                    <TelerikDropDownList Data="FilteredProductSubGroups"
+                                         TextField="@nameof(GetAllProductSubGroupVm.Title)"
+                                         ValueField="@nameof(GetAllProductSubGroupVm.Code)"
+                                         @bind-Value="Product.ProductSubGroup"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="178px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         Enabled="EnabilityChecker.ProductSubGroup"
+                                         FilterOperator="StringFilterOperator.Contains">
+                    </TelerikDropDownList>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 20px !important;">
+                    <label style="margin-right:15px;">@TextResources.APP_StringKeys_ProductClass :</label>
+                    <TelerikDropDownList Data="ProductClasses"
+                                         TextField="@nameof(GetAllProductSubGroupVm.Title)"
+                                         ValueField="@nameof(GetAllProductSubGroupVm.Code)"
+                                         @bind-Value="Product.ProductClass"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="195px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         Enabled="EnabilityChecker.ProductClass"
+                                         FilterOperator="StringFilterOperator.Contains">
+                    </TelerikDropDownList>
+                    <span style="margin-right: 130px; background-color: @(Product.IsActive? "unset" : "#fc493d")">
+                        <label>@TextResources.APP_StringKeys_ActivationStatus:</label>
+                        <TelerikCheckBox @bind-Value="Product.IsActive"
+                                         Enabled="EnabilityChecker.IsActive">
+                        </TelerikCheckBox>
+                    </span>
+                </div>
+            </div>
+            <div class="card card-stats col-md-9 text-align-center" style="margin-top:5px;">
+                <div>
+                    <h6 class="form-title card-title" style="text-align: center !important;">
+                        @TextResources.APP_StringKeys_Product_Add_Tags_Properties
+                    </h6>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                    <label style="margin-right: 16px;">@TextResources.APP_StringKeys_ProductSumCountInPack :</label>
+                    <TelerikNumericTextBox Class="form-control input-search-span"
+                                           @bind-Value="Product.ProductValue"
+                                           Enabled="EnabilityChecker.ProductValue"
+                                           OnChange="OnChangePackValue"></TelerikNumericTextBox>
+                    <label style="margin-right: 20px!important;">@TextResources.APP_StringKeys_SeconValueInPack :</label>
+                    <TelerikNumericTextBox Class="form-control input-search-span"
+                                           @bind-Value="Product.ProductCountInPack"
+                                           Enabled="EnabilityChecker.ProductCountInPack"
+                                           OnChange="OnChangePackValue"></TelerikNumericTextBox>
+                    <label style="margin-right: 22px;">@TextResources.APP_StringKeys_PackValue :</label>
+                    <TelerikNumericTextBox Class="form-control input-search-span"
+                                           @bind-Value="Product.ProductPackValue"
+                                           Enabled="EnabilityChecker.ProductPackValue"></TelerikNumericTextBox>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 20px !important;">
+                    <label style="margin-right: 37px;">@TextResources.APP_StringKeys_ProductPackWeight :</label>
+                    <TelerikNumericTextBox Class="form-control input-search-span"
+                                           @bind-Value="Product.ProductPackWeight"
+                                           Enabled="EnabilityChecker.ProductPackWeight"></TelerikNumericTextBox>
+                    <label style="margin-right: 106px;">@TextResources.APP_StringKeys_ProductPackVolume :</label>
+                    <TelerikNumericTextBox Class="form-control input-search-span"
+                                           @bind-Value="Product.ProductPackVolume"
+                                           Enabled="EnabilityChecker.ProductPackVolume"></TelerikNumericTextBox>
+                </div>
+            </div>
+            @if (TechnicalDataItems is not null && TechnicalDataItems.Any())
+            {
+                <div class="card card-stats col-md-12 text-align-center" style="margin-top:5px;">
+                    <div>
+                        <h6 class="form-title card-title" style="text-align: center !important;">
+                            @TextResources.APP_StringKeys_Product_Add_TechnicalInfo
+                        </h6>
+                    </div>
+
+                    <div class="d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                        @foreach (var item in TechnicalDataItems)
+                        {
+                            <span class="tech-item" style="margin-left:10px">
+                                <label>@item.Key</label>
+                                <input type="text"
+                                       class="form-control input-search-span"
+                                       @bind="item.Value" />
+                            </span>
+                        }
+                    </div>
+                </div>
+            }
+
+
+            <div class=" d-flex flex-row align-items-center flex-wrap save-button-div" style="margin-top: 10px;margin-bottom: 10px;">
+                @if (bool.Parse(Configuration.GetSection("Settings")["AddByQc"]))
+                {
+                    <button type="button"
+                            class="btn btn-primary"
+                            title="" @onclick="OnQcBatchSubmitClick"
+                            style="margin-left:5px;">
+                        <MaterialIcon IconName="@MaterialIconsHelper.File_copy"></MaterialIcon>
+                    </button>
+                }
+                <button type="button"
+                        class="btn btn-info"
+                        title="@TextResources.APP_StringKeys_Retrieving_technical_information"
+                        style="margin-left: 2px;margin-right: 2px;"
+                        @onclick="OpenProductCodeModal">
+                    @TextResources.APP_StringKeys_Retrieving_technical_information
+                    <MaterialIcon IconName="search"></MaterialIcon>
+                </button>
+
+                <button type="button" id="btn-search" class="btn btn-primary" data-toggle="modal" data-target="#modal-details" title="@TextResources.APP_StringKeys_Search"
+                        @onclick="async ()=> await ModalProducts.Open(new())">
+                    @TextResources.APP_StringKeys_Search_InLocal
+                    <MaterialIcon IconName="search"></MaterialIcon>
+                </button>
+                <button type="button" id="btn-search-WMS" class="btn btn-primary" data-toggle="modal" data-target="#modal-WMS" title="@TextResources.APP_StringKeys_Search_Product_Cus"
+                        @onclick="async ()=> await ModalCusProducts.Open(new())">
+                    @TextResources.APP_StringKeys_Search_Accounting
+                    <MaterialIcon IconName="search"></MaterialIcon>
+                </button>
+                <FileUpload AllowedExtensions=".xlsx"
+                            OnStartUpload="()=>IsLoading = true"
+                            ButtonClass="btn btn-success"
+                            ButtonText="@TextResources.APP_StringKeys_Product_Add_TechnicalInfoUpload"
+                            UploadUrl="/Tools/UploadAccountingFile"
+                            MaterialIconClass="Upload"
+                            OnCompleteUpload="OnCompleteUploadExcelTechnicalData">
+                </FileUpload>
+                <button type="button" id="btn-send" class="btn btn-success"
+                        title="@TextResources.APP_StringKeys_UploadExcel"
+                        @onclick="async ()=> await ModalExcel.Open(new())">
+                    @TextResources.APP_StringKeys_Product_Add_AddProductUpload
+                    <MaterialIcon IconName="Upload"></MaterialIcon>
+                </button>
+                <button id="btn-clear" class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                        style="margin-left: 2px;margin-right: 2px;"
+                        @onclick="OnClearClick">
+                    <MaterialIcon IconName="refresh"></MaterialIcon>
+                </button>
+                <button class="btn btn-danger" type="button" title="@TextResources.APP_StringKeys_Remove"
+                        style="margin-left: 2px;margin-right: 2px;"
+                        @onclick="OnRemoveClick">
+                    <MaterialIcon IconName="delete"></MaterialIcon>
+                </button>
+                <button type="submit"
+                        title="@TextResources.APP_StringKeys_Send"
+                        class="btn btn-primary">
+                    <MaterialIcon IconName="save"></MaterialIcon>
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<Gallery @ref="Gallery" 
+         OnCompleteUpload="OnCompleteUpload"></Gallery>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Search_InLocal"
+       @ref="ModalProducts"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <form id="form-product" asp-action="SearchProduct" asp-controller="Position" method="post" role="form" class="form-search-span">
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <label style="margin-right: 10px!important;">@TextResources.APP_StringKeys_ProductName :</label>
+                    <input @bind-value="SearchRequest.MProductTitle" style="width: 150px !important;" name="MProductTitle" class="form-control input-search-span" />
+                    <label>@TextResources.APP_StringKeys_Chart_ProductCode :</label>
+                    <input @bind-value="SearchRequest.MProductCode" style="width: 149px !important;" name="MProductCode" class="form-control input-search-span" />
+                    <label>@TextResources.APP_StringKeys_Chart_Regcode :</label>
+                    <input @bind-value="SearchRequest.MTechCode" name="MTechCode" style="width: 150px !important;" class="form-control input-search-span" />
+                    <label>@TextResources.APP_StringKeys_ProductClass :</label>
+                    <TelerikDropDownList Data="ProductClasses"
+                                         TextField="@nameof(GetAllProductSubGroupVm.Title)"
+                                         ValueField="@nameof(GetAllProductSubGroupVm.Code)"
+                                         @bind-Value="SearchRequest.Class"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="150px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains">
+                    </TelerikDropDownList>
+                    <span style="margin-right: 10px;">
+                        <label>@TextResources.APP_StringKeys_ActivationStatus:</label>
+                        <TelerikCheckBox @bind-Value="SearchRequest.IsActive">
+                        </TelerikCheckBox>
+                    </span>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <label style="margin-right: 28px;">@TextResources.APP_StringKeys_Product_Size :</label>
+                    <TelerikDropDownList Data="Sizes"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="SearchRequest.MSize"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="150px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains">
+                    </TelerikDropDownList>
+                    <label>@TextResources.APP_StringKeys_Chart_Qc :</label>
+                    <TelerikDropDownList Data="Qcs"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="SearchRequest.MQuality"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="150px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 20px;">@TextResources.APP_StringKeys_Brand :</label>
+                    <TelerikDropDownList Data="ProductBrands"
+                                         TextField="@nameof(GetAllProductBrandVm.Title)"
+                                         ValueField="@nameof(GetAllProductBrandVm.Code)"
+                                         @bind-Value="SearchRequest.Brand"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="150px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 22px;">@TextResources.APP_StringKeys_Group :</label>
+                    <TelerikDropDownList Data="ProductGroups"
+                                         TextField="@nameof(GetAllProductGroupVm.Title)"
+                                         ValueField="@nameof(GetAllProductGroupVm.Code)"
+                                         @bind-Value="SearchRequest.Group"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="150px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 10px;">@TextResources.APP_StringKeys_SubGroup :</label>
+                    <TelerikDropDownList Data="ProductSubGroups"
+                                         TextField="@nameof(GetAllProductSubGroupVm.Title)"
+                                         ValueField="@nameof(GetAllProductSubGroupVm.Code)"
+                                         @bind-Value="SearchRequest.SubGroup"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="150px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains">
+                    </TelerikDropDownList>
+                    <button id="btn-psend"
+                            class="btn btn-warning"
+                            type="button"
+                            title="@TextResources.APP_StringKeys_Clear"
+                            @onclick="OnRefreshSearchProduct"
+                            style="margin-right:5px;">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    <button id="btn-psend"
+                            class="btn btn-primary"
+                            type="button"
+                            title="@TextResources.APP_StringKeys_Send"
+                            @onclick="OnSearchProduct"
+                            style="margin-right:5px;">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                    </button>
+                </div>
+            </form>
+            <hr />
+            <TelerikGrid Data="Products"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style td-dt">@product.ProductCode</td>
+                    <td class="td-style td-dt">@product.ProductName</td>
+                    <td class="td-style td-dt">@product.TechnicalCode</td>
+                    <td class="td-style td-dt">@product.ProductStatus</td>
+                    <td class="td-style td-dt">@product.ProductType</td>
+                    <td class="td-style td-dt">@product.ProductSize</td>
+                    <td class="td-style td-dt">@product.ProductClassTitle</td>
+                    <td class="td-style td-dt">@product.ProductPackValue</td>
+                    <td class="td-style td-dt">
+                        <button @onclick="async ()=> await OnSelectProduct(product)"
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                            @TextResources.APP_StringKeys_Choose
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllProductVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode" Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllProductVm.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName"
+                                Width="240px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllProductVm.TechnicalCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllProductVm.ProductStatus)"
+                                Title="@TextResources.APP_StringKeys_Chart_Qc"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllProductVm.ProductType)"
+                                Title="@TextResources.APP_StringKeys_ProductType"
+                                Width="60px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllProductVm.ProductSize)"
+                                Title="@TextResources.APP_StringKeys_Product_Size"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllProductVm.ProductClassTitle)"
+                                Title="@TextResources.APP_StringKeys_ProductClass"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllProductVm.ProductPackValue)"
+                                Title="@TextResources.APP_StringKeys_Count"
+                                Width="60px"></GridColumn>
+                    <GridColumn Width="50px"></GridColumn>
+                </GridColumns>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="export.xlsx" />
+                </GridExport>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Search_Accounting"
+       @ref="ModalCusProducts"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <form id="form-product" asp-action="SearchProduct" asp-controller="Position" method="post" role="form" class="form-search-span">
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <label style="margin-right: 10px!important;">@TextResources.APP_StringKeys_ProductName :</label>
+                    <input @bind-value="SearchAccounting" style="width: 150px !important;" name="MProductTitle" class="form-control input-search-span" />
+                    <button id="btn-psend" class="btn btn-primary"
+                            type="button" title="@TextResources.APP_StringKeys_Send"
+                            @onclick="OnSearchAccounting"
+                            style="margin-right:5px;">
+                        <img width="20" height="20" src="/images/Utilities/search.png" asp-append-version="true">
+                    </button>
+                </div>
+            </form>
+            <hr />
+            <TelerikGrid Data="CusProducts"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style td-dt">@product.ProductCode</td>
+                    <td class="td-style td-dt">@product.ProductTitle</td>
+                    <td class="td-style td-dt">
+                        <button @onclick="async ()=> await OnSelectProductAccounting(product)"
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                            @TextResources.APP_StringKeys_Choose
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetCusProductBySearchTextVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode" Width="120px"></GridColumn>
+                    <GridColumn Field="@nameof(GetCusProductBySearchTextVm.ProductTitle)"
+                                Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                    <GridColumn Width="50px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_Attention"
+       @ref="ModalRemove"
+       Size="ModalSize.ExtraLarge"
+       CancelBtnText="@TextResources.APP_StringKeys_Close"
+       YesBtnText="@TextResources.APP_StringKeys_Remove"
+       OnYesModal="OnRemoveModalClick">
+    <ModalBodyContentHtml>
+        <div class="text-align-center bg-danger text-light">
+            @TextResources.APP_StringKeys_Remove_CheckBeforeDelete
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_UploadExcel"
+       @ref="ModalExcel"
+       Size="ModalSize.ExtraLarge"
+       CancelBtnText="@TextResources.APP_StringKeys_Close"
+       YesBtnText="@TextResources.APP_StringKeys_Upload"
+       OnYesModal="OnYesModal">
+    <ModalBodyContentHtml>
+        <div class="text-align-right">
+            <button type="button" class="btn btn-success"
+                    @onclick="OnSampleClick">
+                @TextResources.APP_StringKeys_DownloadSample
+                <img width="20" height="20" src="/images/Utilities/Excel.png">
+            </button>
+            <FileUpload AllowedExtensions=".xlsx"
+                        MaterialIconClass="@MaterialIconsHelper.Upload"
+                        ButtonClass="btn btn-success"
+                        ButtonText="@TextResources.APP_StringKeys_Product_AddProducts_UploadAndPreview"
+                        ShowFileName="false"
+                        UploadUrl="/Tools/UploadAccountingFile"
+                        OnCompleteUpload="OnCompleteUploadExcelAdd"
+                        OnStartUpload="()=>IsLoading = true"></FileUpload>
+            <hr />
+            @if (ExcelProducts.Any())
+            {
+                <TelerikGrid Data="ExcelProducts"
+                             PageSize="10"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true"
+                             @ref="ExcelProductGridRef">
+                    <RowTemplate Context="product">
+                        <td class="td-style td-dt">@product.ProductCode</td>
+                        <td class="td-style td-dt">@product.ProductTitle</td>
+                        <td class="td-style td-dt">@product.ProductTechnicalCode</td>
+                        <td class="td-style td-dt">@product.ProductStatus</td>
+                        <td class="td-style td-dt">@product.ProductType</td>
+                        <td class="td-style td-dt">@product.ProductGroup</td>
+                        <td class="td-style td-dt">@product.ProductBrand</td>
+                        <td class="td-style td-dt">@product.ProductSize</td>
+                        <td class="td-style td-dt">@product.ProductPackValue</td>
+                        <td class="td-style td-dt">
+                            <button @onclick="()=> OnRemoveExcelZoneClick(product)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Delete
+                            </button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(ExcelProductDto.ProductCode)"
+                                    Title="@TextResources.APP_StringKeys_Chart_ProductCode" Width="100px"></GridColumn>
+                        <GridColumn Field="@nameof(ExcelProductDto.ProductTitle)"
+                                    Title="@TextResources.APP_StringKeys_ProductName" Width="300px"></GridColumn>
+                        <GridColumn Field="@nameof(ExcelProductDto.ProductTechnicalCode)"
+                                    Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                                    Width="70px"></GridColumn>
+                        <GridColumn Field="@nameof(ExcelProductDto.ProductStatus)"
+                                    Title="@TextResources.APP_StringKeys_Chart_Qc"
+                                    Width="70px"></GridColumn>
+                        <GridColumn Field="@nameof(ExcelProductDto.ProductType)"
+                                    Title="@TextResources.APP_StringKeys_ProductType"
+                                    Width="70px"></GridColumn>
+                        <GridColumn Field="@nameof(ExcelProductDto.ProductGroup)"
+                                    Title="@TextResources.APP_StringKeys_Product_Group"
+                                    Width="70px"></GridColumn>
+                        <GridColumn Field="@nameof(ExcelProductDto.ProductBrand)"
+                                    Title="@TextResources.APP_StringKeys_Product_Brand"
+                                    Width="70px"></GridColumn>
+                        <GridColumn Field="@nameof(ExcelProductDto.ProductSize)"
+                                    Title="@TextResources.APP_StringKeys_Product_Size"
+                                    Width="70px"></GridColumn>
+                        <GridColumn Field="@nameof(ExcelProductDto.ProductPackValue)"
+                                    Title="@TextResources.APP_StringKeys_Count"
+                                    Width="70px"></GridColumn>
+                        <GridColumn Width="50px"></GridColumn>
+                    </GridColumns>
+                    <DetailTemplate>
+                        @{
+                            ExcelProductDto casted = context as ExcelProductDto;
+
+                            <h6>
+                                @TextResources.APP_StringKeys_Product_Add_Properties
+                            </h6>
+                            <div>
+                                <label>@TextResources.APP_StringKeys_ProductCode :</label>
+                                <label>@casted.ProductCode |</label>
+                                <label style="margin-right: 5px !important;">@TextResources.APP_StringKeys_Chart_Regcode :</label>
+                                <label>@casted.ProductTechnicalCode |</label>
+                                <label style="margin-right: 5px !important;">@TextResources.APP_StringKeys_ProductType :</label>
+                                <label>@casted.ProductTechnicalCode |</label>
+                                <label style="margin-right: 5px !important;">@TextResources.APP_StringKeys_Product_Group :</label>
+                                <label>@casted.ProductGroup |</label>
+                                <label style="margin-right: 5px !important;">@TextResources.APP_StringKeys_Product_Brand :</label>
+                                <label>@casted.ProductBrand |</label>
+                                <label style="margin-right: 5px !important;">@TextResources.APP_StringKeys_Product_Size :</label>
+                                <label>@casted.ProductSize |</label>
+                                <label style="margin-right: 5px !important;">@TextResources.APP_StringKeys_Chart_Qc :</label>
+                                <label>@casted.ProductStatus |</label>
+                                <label style="margin-right: 5px !important;">@TextResources.APP_StringKeys_ProductUnit :</label>
+                                <label>@casted.ProductUnit |</label>
+                                <div>
+                                    <label style="margin-right: 5px !important;">@TextResources.APP_StringKeys_ProductTitle :</label>
+                                    <label>@casted.ProductTitle |</label>
+                                    <label style="margin-right: 5px !important;">@TextResources.APP_StringKeys_ProductENTitle :</label>
+                                    <label>@casted.ProductENTitle |</label>
+                                </div>
+                            </div>
+                            <h6>
+                                @TextResources.APP_StringKeys_Product_Add_Tags_Properties
+                            </h6>
+                            <div>
+                                <label style="margin-right: 5px !important;">@TextResources.APP_StringKeys_ProductCount :</label>
+                                <label>@casted.ProductPackValue |</label>
+                                <label style="margin-right: 5px !important;">@TextResources.APP_StringKeys_ProductValue :</label>
+                                <label>@casted.ProductValue |</label>
+                                <label style="margin-right: 5px !important;">@TextResources.APP_StringKeys_ProductSumCountInPack :</label>
+                                <label>@casted.ProductCountInPack |</label>
+                                <label style="margin-right: 5px !important;">@TextResources.APP_StringKeys_ProductPackWeight :</label>
+                                <label>@casted.ProductPackWeight |</label>
+                                <label style="margin-right: 5px !important;">@TextResources.APP_StringKeys_ProductPackVolume :</label>
+                                <label>@casted.ProductPackVolume </label>
+                            </div>
+                        }
+                    </DetailTemplate>
+                </TelerikGrid>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<ProductCodeModal @ref="ProductCodeModalRef"
+                  OnClickProduct="OnProductSelected" />

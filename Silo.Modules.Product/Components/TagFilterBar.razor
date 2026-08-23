@@ -1,0 +1,47 @@
+@namespace Silo.Modules.Product.Components
+@using Microsoft.AspNetCore.Components.Web
+@using Silo.Shared.Components
+@using Silo.Shared.Components.Modals
+
+<div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+    <div class="form-search-span" style="padding-top:10px;">
+        <div class=" d-flex flex-row align-items-center flex-wrap" style=" margin-top:5px; margin-right:15px; margin-bottom:10px;">
+            <label>@TextResources.APP_StringKeys_ProductSerial</label>
+            <input @bind-value="NewProductSerial" type="text" class="form-control input-search-span-lg pointer"
+                   @onkeyup="OnSerialKeyUp" />
+            <button type="button"
+                    class="btn btn-primary"
+                    style="margin-left:5px;"
+                    @onclick="OnSearchClick">
+                <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+            </button>
+            <button type="button" class="btn btn-light" @onclick="async () => await ProductModal.Open()">
+                <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+            </button>
+            <button type="button"
+                    class="btn btn-primary"
+                    style="margin-left:5px; margin-right:5px; padding-left:9px;padding-right:9px;"
+                    @onclick="OnLastReadedByHandHeldClick">
+                <img src="/images/Utilities/handheld-logo.png" width="28px" />
+            </button>
+            <button type="button"
+                    class="btn btn-primary"
+                    style="margin-left:5px;"
+                    @onclick="async () => await BarcodeModal.Show()">
+                <MaterialIcon IconName="barcode_scanner"></MaterialIcon>
+            </button>
+            <button type="button"
+                    class="btn btn-warning"
+                    @onclick="OnClearClick">
+                <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+            </button>
+        </div>
+    </div>
+</div>
+<ProductSerialModal @ref="ProductModal"
+                    MultiSelect="false"
+                    OnSelectSerials="OnSerialsSelected">
+</ProductSerialModal>
+<BarcodeModal @ref="BarcodeModal"
+              OnBarcodeClick="OnBarcodeSelected">
+</BarcodeModal>

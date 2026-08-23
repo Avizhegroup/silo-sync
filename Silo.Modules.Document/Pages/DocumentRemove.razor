@@ -1,0 +1,288 @@
+@page "/document/remove"
+@inherits SiloBasePage
+@namespace Silo.Modules.Document.Pages
+@using Newtonsoft.Json.Linq;
+@using Silo.Application.Features;
+@using Silo.Identity.Client;
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Telerik.Blazor.Components
+@using Silo.Shared.Components
+@using Silo.Shared.Components.Modals
+
+
+<PageTitle>@CartableTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+        <div>
+            <h5 class="form-title card-title" style="text-align: center !important;">
+                @CartableTitle
+            </h5>
+        </div>
+    </div>
+    <div class="card card-stats col-md-12 text-align-center">
+        <div class="form-search-span" id="form-main" style="margin-top:5px !important;">
+            <EditForm class="form-search-span"
+                      style="margin-top:10px !important;"
+                      Model="Request"
+                      OnInvalidSubmit="OnInvalidSubmit"
+                      OnValidSubmit="OnSearchValidSubmit">
+
+                <DataAnnotationsValidator />
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:5px!important;">
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Document_Type :</label>
+                    <TelerikDropDownList Data="DocumentTypes"
+                                         TextField="@nameof(GetAllDocumentTypesVm.Title)"
+                                         ValueField="@nameof(GetAllDocumentTypesVm.Code)"
+                                         @bind-Value="Request.DocumentType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         Width="200px"
+                                         Class="drop-all">
+                        <DropDownListSettings>
+                            <DropDownListPopupSettings Class="text-align-right" />
+                        </DropDownListSettings>
+                    </TelerikDropDownList>
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_DocCode :</label>
+                    <TelerikTextBox @bind-Value="Request.DocumentKey"
+                                    Class="form-control input-search-span-lg pointer" Width="200px !important">
+                    </TelerikTextBox>
+                    <label style="margin-right: 12px;">
+                        @TextResources.APP_StringKeys_Status:
+                    </label>
+                    <TelerikDropDownList Data="DocumentStatuses"
+                                         TextField="Title"
+                                         ValueField="Id"
+                                         @bind-Value="Request.Status"
+                                         Width="200px"
+                                         Class="drop-all"
+                                         Enabled="true">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 19px;">@TextResources.APP_StringKeys_ProductCode:</label>
+                    <TelerikTextBox @bind-Value="Request.ProductCode" Class="form-control input-search-span-lg"></TelerikTextBox>
+                    <button type="button" class="btn btn-light" @onclick="async()=>await ProductCodeModal.Show()">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                    </button>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:5px!important;">
+                    <label style="margin-right: 24px;  ">@TextResources.APP_StringKeys_FromDate:</label>
+                    <DatePicker InputClass=" input-search-span-lg pointer "
+                                @bind-Value="Request.FromDate"
+                                Style="width: 200px !important;"></DatePicker>
+                    <label style="margin-right: 36px;  ">@TextResources.APP_StringKeys_ToDate:</label>
+                    <DatePicker InputClass=" input-search-span-lg pointer "
+                                @bind-Value="Request.ToDate" Style="width: 200px !important;"></DatePicker>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-top:-40px !important; direction:ltr!important; margin-bottom:5px;">
+                    <button type="submit" class="btn btn-primary"
+                            title="@TextResources.APP_StringKeys_Send">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                    </button>
+                    <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                            style="margin-left: 5px;" @onclick="OnClearClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+@if (Documents.Any())
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:10px;">
+            <TelerikGrid @ref="GridDocuments"
+                     Data="Documents"
+                     PageSize="10"
+                     Navigable="true"
+                     Pageable="true"
+                     Sortable="true">
+                <RowTemplate Context="doc">
+                    <td class="td-style text-align-center">
+                        <InputCheckbox @bind-Value="@doc.IsChoosed" @onchange="OnToggleSelectAll"></InputCheckbox>
+                    </td>
+                    <td class="td-style text-dir-left text-align-right">@doc.DocumentKey</td>
+                    <td class="td-style">
+                        @(DocumentTypes.FirstOrDefault(p => p.Code.ToString().Equals(doc.DocumentType))?.Title)
+                    </td>
+                    <td class="td-style">
+                        @(PersianCalendarTools.GregorianToPersian(doc.DateTime))
+                    </td>
+                    @foreach (string column in DynamicFieldColumns)
+                    {
+                        if (JToken.Parse(doc.HeaderData)[column] is not null)
+                        {
+                            <td class="td-style">@JToken.Parse(doc.HeaderData)[column]</td>
+                        }
+                        else
+                        {
+                            <td class="td-style"></td>
+                        }
+                    }
+                    <td class="td-style">@doc.ItemSum</td>
+                    <td class="td-style">@doc.ItemCount</td>
+                    <td class="td-style">@(DocumentStatuses.FirstOrDefault(p => p.Id == doc.Status)?.Title)</td>
+                    <td class="td-style">
+                        <button class="btn btn-success btn-details tr-buttom"
+                            @onclick="async ()=>await OnDocumentDetailsClick(doc.DocumentKey,doc.DocumentType,doc.Status)">
+                            @TextResources.APP_StringKeys_Details
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridCheckboxColumn Visible="true" Width="30px" HeaderClass="header-select-all">
+                        <HeaderTemplate>
+                            <TelerikCheckBox @bind-Value="@IsAllSelected"
+                                         TabIndex="-1"
+                                         OnChange="OnToggleSelectAll" />
+                        </HeaderTemplate>
+                    </GridCheckboxColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentByStatusVm.DocumentKey)"
+                            Title="@TextResources.APP_StringKeys_DocCode"
+                            Width="200px">
+                        <FooterTemplate>
+                            @TextResources.APP_StringKeys_Count_All_Documents: @context.Count
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentByStatusVm.DocumentType)"
+                            Title="@TextResources.APP_StringKeys_Document_Type"
+                            Width="120px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentByStatusVm.DateTime)"
+                            Title="@TextResources.APP_StringKeys_Date"
+                            Width="120px"></GridColumn>
+                    @foreach (string column in DynamicFieldColumns)
+                    {
+                        <GridColumn Title="@column" Width="120px"></GridColumn>
+                    }
+                    <GridColumn Field="@nameof(GetAllDocumentByStatusVm.ItemSum)"
+                            Title="@TextResources.APP_StringKeys_Item_Sum"
+                            Width="120px">
+                        <FooterTemplate>
+                            @TextResources.APP_StringKeys_SumValue_Items: @context.Sum
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentByStatusVm.ItemCount)"
+                            Title="@TextResources.APP_StringKeys_Item_Variety"
+                            Width="120px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentByStatusVm.Status)"
+                            Title="@TextResources.APP_StringKeys_Status"></GridColumn>
+                    <GridColumn Field="" Title="" Width="60px;"></GridColumn>
+                </GridColumns>
+                <GridAggregates>
+                    <GridAggregate Field=@nameof(GetAllDocumentByStatusVm.DocumentKey) Aggregate="@GridAggregateType.Count" />
+                    <GridAggregate Field=@nameof(GetAllDocumentByStatusVm.ItemSum) Aggregate="@GridAggregateType.Sum" />
+                </GridAggregates>
+
+            </TelerikGrid>
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-top:5px !important; direction:ltr; margin-bottom:5px;">
+                <button type="button" class="btn btn-danger"
+                        title="@TextResources.APP_StringKeys_Remove"
+                    @onclick="OnRemoveButtonClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </div>
+}
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="DetailsModal"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+            <div>
+                <h6 class="form-title card-title " style="text-align: center !important; font-size: small;">
+                    @DetailModalHeaderData
+                </h6>
+            </div>
+        </div>
+        <div class="text-align-center">
+            <TelerikGrid Data="DocumentDetails"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="detils">
+                    <td class="td-style td-dt text-dir-left text-align-right">@detils.DocumentKey</td>
+                    <td class="td-style td-dt">@detils.ProductCode</td>
+                    <td class="td-style td-dt">@detils.ProductTitle</td>
+                    <td class="td-style td-dt">@detils.Count</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllDocumentItemByStatusVm.DocumentKey)" Title="@TextResources.APP_StringKeys_DocCode"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentItemByStatusVm.ProductCode)" Title="@TextResources.APP_StringKeys_ProductCode"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentItemByStatusVm.ProductTitle)" Title="@TextResources.APP_StringKeys_ProductTitle"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentItemByStatusVm.Count)" Title="@TextResources.APP_StringKeys_Value"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Check_Before_Remove"
+       @ref="ApproveModal"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Disconfirm"
+       OkBtnText="@TextResources.APP_StringKeys_Approve"
+       OnOkModal="OnApproveClick">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:10px;">
+                <label style="margin-right: 30px !important;">@TextResources.APP_StringKeys_Description :</label>
+                <TelerikTextBox @bind-Value="RemoveDocumentDescription"
+                                Class="form-control input-search-span-lg pointer" Width="400px !important">
+                </TelerikTextBox>
+            </div>
+            <TelerikGrid Data="Documents.Where(p=>p.IsChoosed).ToList()"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="doc">
+                    <td class="td-style text-dir-left text-align-right">@doc.DocumentKey</td>
+                    <td class="td-style">
+                        @(PersianCalendarTools.GregorianToPersian(doc.DateTime))
+                    </td>
+                    <td class="td-style">@doc.ItemSum</td>
+                    <td class="td-style">@doc.ItemCount</td>
+                    <td class="td-style">@(DocumentStatuses.FirstOrDefault(p => p.Id == doc.Status)?.Title)</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllDocumentByStatusVm.DocumentKey)"
+                                Title="@TextResources.APP_StringKeys_DocCode"
+                                Width="230px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentByStatusVm.DateTime)"
+                                Title="@TextResources.APP_StringKeys_Date"
+                                Width="120px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentByStatusVm.ItemSum)"
+                                Title="@TextResources.APP_StringKeys_Item_Sum"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentByStatusVm.ItemCount)"
+                                Title="@TextResources.APP_StringKeys_Item_Variety"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentByStatusVm.Status)"
+                                Title="@TextResources.APP_StringKeys_Status"
+                                Width="120px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<ProductCodeModal @ref="ProductCodeModal"
+                  OnClickProductCode="OnClickProductCode">
+</ProductCodeModal>
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<style type="text/css">
+    .td-style-full {
+        font-size: 75%;
+    }
+</style>

@@ -1,0 +1,45 @@
+﻿<div class="expand-sidebar
+            card
+            card-stats
+            @(IsExpanded?"col-md-2":"")
+            text-align-center"
+     style="@Style">
+    <div>
+        @if (!IsExpanded)
+        {
+            <button type="button"
+                class="btn btn-expand"
+                @onclick="OnExpandClick">
+                @if (Direction == ExpandableSidebarDirection.RightToLeft)
+                {
+                    <MaterialIcon IconName="keyboard_double_arrow_left">
+                    </MaterialIcon>
+                }
+                else
+                {
+                    <MaterialIcon IconName="double_arrow">
+                    </MaterialIcon>
+                }
+            </button>
+        }
+        else
+        {
+            @ChildContent
+
+            <button type="button"
+                class="btn btn-expand"
+                @onclick="OnExpandClick">
+                @if (Direction == ExpandableSidebarDirection.RightToLeft)
+                {
+                    <MaterialIcon IconName="double_arrow">
+                    </MaterialIcon>
+                }
+                else
+                {
+                    <MaterialIcon IconName="keyboard_double_arrow_left">
+                    </MaterialIcon>
+                }
+            </button>
+        }
+    </div>
+</div>

@@ -1,0 +1,83 @@
+@page "/product/update"
+@inherits SiloBasePage
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Silo.Application.Features;
+@using Silo.Shared.Components
+@using Telerik.Blazor.Components
+@using Telerik.Blazor.Components.Common.Dropdowns
+@using Silo.Shared.Components.Modals
+
+@namespace Silo.Modules.Product.Pages
+
+<PageTitle>@PageTitle</PageTitle>
+
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center">
+            <EditForm Model="Request"
+                      OnInvalidSubmit="OnInvalidSubmit"
+                      OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="form-search-span" style="margin:10px !important;">
+                    <div class=" d-flex flex-row align-items-center flex-wrap">
+                        <label style="margin-right: 21px;">@TextResources.APP_StringKeys_Current_ProductCode:</label>
+                    <TelerikTextBox @bind-Value="Request.FromProductCode" Class="form-control input-search-span-lg pointer"
+                                    Width="200px!important"></TelerikTextBox>
+                    <button type="button" class="btn btn-light" @onclick="async ()=> await OnOpenModalProductCode(true)">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                    </button>
+                    <label style="margin-right: 21px;">@TextResources.APP_StringKeys_New_ProductCode:</label>
+                    <TelerikTextBox @bind-Value="Request.ToProductCode" Class="form-control input-search-span-lg pointer"
+                                    Width="200px!important"></TelerikTextBox>
+                    <button type="button" class="btn btn-light" @onclick="async ()=> await OnOpenModalProductCode(false)">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                    </button>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap search-button-div" style="top: 70px;">
+                    <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                            style="margin-left: 2px;" @onclick="OnClickClear">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    <button type="submit" id="btn-send" class="btn btn-primary" title="@TextResources.APP_StringKeys_Send">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                    </button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Check_Before_UpdateProductCode"
+       @ref="ApproveModal"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Disconfirm"
+       OkBtnText="@TextResources.APP_StringKeys_Approve"
+       OnOkModal="ApproveUpdateProductCode">
+    <ModalBodyContentHtml>
+        <div class=" d-flex flex-row align-items-center flex-wrap ">
+            <div class="bg-warning">
+                @TextResources.APP_StringKeys_Check_Before_UpdateProductCode
+            </div>
+            <div>
+                <label style="margin-right: 21px;">@TextResources.APP_StringKeys_Current_ProductCode:</label>
+                <label>@Request.FromProductCode</label>
+                <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Current_ProductCode_Count:</label>
+                <label>@Request.FromProductCodeCount</label>
+                <label style="margin-right: 21px;">@TextResources.APP_StringKeys_New_ProductCode:</label>
+                <label>@Request.ToProductCode</label>
+            </div>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<ProductCodeModal @ref="ProductCodeModal"
+                  OnClickProductCode="OnClickFromProductCode">
+
+</ProductCodeModal>

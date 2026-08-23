@@ -1,0 +1,52 @@
+﻿@page "/dashboard"
+@using Silo.Application.Features;
+@using Silo.Identity.Client;
+@using Silo.Ui.Customer.Components.Dashboard
+
+<div class="row">
+    <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">@Company</a>
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <input class="form-control form-control-dark w-100" type="text" placeholder="جستجو" aria-label="جستجو">
+        <div class="navbar-nav">
+            <div class="nav-item text-nowrap">
+                <button class="nav-link btn px-3" @onclick="OnLogoutClick">خروج</button>
+            </div>
+        </div>
+    </header>
+    <div class="col-md-3 col-lg-2">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 col-sm-12 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <button class="btn nav-link @(ActiveSection == CustomerDashboardPageSection.Main ? "active":"")" aria-current="page" @onclick="() => ActiveSection  = CustomerDashboardPageSection.Main">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Dashboard"></MaterialIcon>
+                            داشبورد
+                        </button>
+                        <button class="btn nav-link @(ActiveSection == CustomerDashboardPageSection.CheckProductGuarantee ? "active":"")" aria-current="page" @onclick="() => ActiveSection  = CustomerDashboardPageSection.CheckProductGuarantee">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Verified"></MaterialIcon>
+                            بررسی اصالت محصول
+                        </button>
+                        <button class="btn nav-link @(ActiveSection == CustomerDashboardPageSection.Profile ? "active":"")" aria-current="page" @onclick="() => ActiveSection  = CustomerDashboardPageSection.Profile">
+                            <MaterialIcon IconName="@(MaterialIconsHelper.ManageAccounts)"></MaterialIcon>
+                            پروفایل حساب کاربری
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <div class="col-md-9 col-lg-10">
+        <Main IsComponentShown="@(ActiveSection == CustomerDashboardPageSection.Main)"></Main>
+        <CheckProductGuarantee IsComponentShown="@(ActiveSection == CustomerDashboardPageSection.CheckProductGuarantee)"></CheckProductGuarantee>
+        <Profile IsComponentShown="@(ActiveSection == CustomerDashboardPageSection.Profile)"></Profile>
+    </div>
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="درحال بارگزاری">
+</TelerikLoaderContainer>

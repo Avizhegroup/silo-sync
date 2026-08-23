@@ -1,0 +1,849 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Stimulsoft.System</name>
+    </assembly>
+    <members>
+        <member name="T:Stimulsoft.System.Data.EnumerableRowCollection2">
+            <summary>
+            Provides an entry point so that Cast operator call can be intercepted within an extension method.
+            </summary>
+        </member>
+        <member name="T:Stimulsoft.System.Data.EnumerableRowCollection2`1">
+            <summary>
+            This class provides a wrapper for DataTables to allow for querying via LINQ.
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.System.Data.EnumerableRowCollection2`1.#ctor(System.Collections.Generic.IEnumerable{`0},System.Boolean,System.Data.DataTable)">
+            <summary>
+            This constructor is used when Select operator is called with output Type other than input row Type.
+            Basically fail on GetLDV(), but other LINQ operators must work.
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.System.Data.EnumerableRowCollection2`1.#ctor(System.Data.DataTable)">
+            <summary>
+            Basic Constructor
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.System.Data.EnumerableRowCollection2`1.#ctor(Stimulsoft.System.Data.EnumerableRowCollection2{`0},System.Collections.Generic.IEnumerable{`0},System.Func{`0,`0})">
+            <summary>
+            Copy Constructor that sets the input IEnumerable as enumerableRows
+            Used to maintain IEnumerable that has linq operators executed in the same order as the user
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.System.Data.EnumerableRowCollection2`1.GetEnumerator">
+            <summary>
+             This method returns an strongly typed iterator
+             for the underlying DataRow collection.
+            </summary>
+            <returns>
+              A strongly typed iterator.
+            </returns>
+        </member>
+        <member name="M:Stimulsoft.System.Data.EnumerableRowCollection2`1.AddPredicate(System.Func{`0,System.Boolean})">
+            <summary>
+            Used to add a filter predicate.
+            A conjunction of all predicates are evaluated in LinqDataView
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.System.Data.EnumerableRowCollection2`1.AddSortExpression``1(System.Func{`0,``0},System.Boolean,System.Boolean)">
+            <summary>
+            Adds a sort expression when Keyselector is provided but not Comparer
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.System.Data.EnumerableRowCollection2`1.AddSortExpression``1(System.Func{`0,``0},System.Collections.Generic.IComparer{``0},System.Boolean,System.Boolean)">
+            <summary>
+            Adds a sort expression when Keyselector and Comparer are provided.
+            </summary>
+        </member>
+        <member name="T:Stimulsoft.System.Data.SortExpressionBuilder`1">
+            <summary>
+            This class represents a combined sort expression build using mutiple sort expressions.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="F:Stimulsoft.System.Data.SortExpressionBuilder`1._selectors">
+              This class ensures multiple orderby/thenbys are handled correctly. Its semantics is as follows:
+              
+             Query 1:
+             orderby a
+             thenby  b
+             orderby c
+             orderby d
+             thenby  e
+             
+             is equivalent to:
+             
+             Query 2:
+             orderby d
+             thenby  e
+             thenby  c
+             thenby  a
+             thenby  b
+             
+            
+        </member>
+        <member name="M:Stimulsoft.System.Data.SortExpressionBuilder`1.Add(System.Func{`0,System.Object},System.Comparison{System.Object},System.Boolean)">
+            <summary>
+            Adds a sorting selector/comparer in the correct order
+            </summary>
+        </member>
+        <member name="M:Stimulsoft.System.Data.SortExpressionBuilder`1.Select(`0)">
+            <summary>
+            Represents a Combined selector of all selectors added thusfar.
+            </summary>
+            <returns>List of 'objects returned by each selector'. This list is the combined-selector</returns>
+        </member>
+        <member name="M:Stimulsoft.System.Data.SortExpressionBuilder`1.Compare(System.Collections.Generic.List{System.Object},System.Collections.Generic.List{System.Object})">
+            <summary>
+            Represents a Comparer (of IComparer) that compares two combined-selectors using
+            provided comparers for each individual selector.
+            Note: Comparison is done in the order it was Added.
+            </summary>
+            <returns>Comparison result of the combined Sort comparer expression</returns>
+        </member>
+        <member name="M:Stimulsoft.System.Data.SortExpressionBuilder`1.Clone">
+            <summary>
+            Clones the SortexpressionBuilder and returns a new object 
+            that points to same comparer and selectors (in the same order).
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Stimulsoft.System.Data.SortExpressionBuilder`1.CloneCast``1">
+            <summary>
+            Clones the SortExpressinBuilder and casts to type TResult.
+            </summary>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.ContainerControl">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.ContainerControl&quot;]/*" />
+            <devdoc>
+                Indicates whether the control is a container-like control.
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.UserPaint">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.UserPaint&quot;]/*" />
+            <devdoc>
+               <para>
+                  The control paints itself; WM_PAINT and WM_ERASEBKGND messages are not passed 
+                  on to the underlying NativeWindow.
+               </para>
+               <para>
+                  This style only applies to subclasses of Control.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.Opaque">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.Opaque&quot;]/*" />
+            <devdoc>
+               <para>
+                  If specified, a PaintBackground event will not be raised, OnPaintBackground will not be called,
+                  and Invalidate() will not invalidate the background of the HWND.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.ResizeRedraw">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.ResizeRedraw&quot;]/*" />
+            <devdoc>
+               <para>
+                  The control is completely redrawn when it is resized.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.FixedWidth">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.FixedWidth&quot;]/*" />
+            <devdoc>
+               <para>
+                  The control has a fixed width.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.FixedHeight">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.FixedHeight&quot;]/*" />
+            <devdoc>
+               <para>
+                  The control has a fixed height.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.StandardClick">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.StandardClick&quot;]/*" />
+            <devdoc>
+               <para>
+                   If set, windows forms calls OnClick and raises the Click event when the control is clicked
+                   (unless it's the second click of a double-click and StandardDoubleClick is specified).
+                   Regardless of this style, the control may call OnClick directly.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.Selectable">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.Selectable&quot;]/*" />
+            <devdoc>
+               <para>
+                  The control can get the focus.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.UserMouse">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.UserMouse&quot;]/*" />
+            <devdoc>
+               <para>
+                  The control does its own mouse processing; WM_MOUSEDOWN, WM_MOUSEMOVE, and WM_MOUSEUP messages are not passed 
+                  on to the underlying NativeWindow.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.SupportsTransparentBackColor">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.SupportsTransparentBackColor&quot;]/*" />
+            <devdoc>
+               <para>
+                  If the BackColor is set to a color whose alpha component is
+                  less than 255 (i.e., BackColor.A &lt; 255), OnPaintBackground will simulate transparency
+                  by asking its parent control to paint our background.  This is not true transparency --
+                  if there is another control between us and our parent, we will not show the control in the middle.
+               </para>
+               <para>
+                  This style only applies to subclasses of Control.  It only works if UserPaint is set,
+                  and the parent control is a Control.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.StandardDoubleClick">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.StandardDoubleClick&quot;]/*" />
+            <devdoc>
+               <para>
+                   If set, windows forms calls OnDoubleClick and raises the DoubleClick event when the control is double clicked.
+                   Regardless of whether it is set, the control may call OnDoubleClick directly.
+                   This style is ignored if StandardClick is not set.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.AllPaintingInWmPaint">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.AllPaintingInWmPaint&quot;]/*" />
+            <devdoc>
+               <para>
+                   If true, WM_ERASEBKGND is ignored, and both OnPaintBackground and OnPaint are called directly from
+                   WM_PAINT.  This generally reduces flicker, but can cause problems if other controls
+                   send WM_ERASEBKGND messages to us.  (This is sometimes done to achieve a pseudo-transparent effect similar to
+                   ControlStyles.SupportsTransparentBackColor; for instance, ToolBar with flat appearance does this).
+                   This style only makes sense if UserPaint is true.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.CacheText">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.CacheText&quot;]/*" />
+            <devdoc>
+               <para>
+                    If true, the control keeps a copy of the text rather than going to the hWnd for the
+                    text every time. This improves performance but makes it difficult to keep the control
+                    and hWnd's text synchronized. 
+                    This style defaults to false.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.EnableNotifyMessage">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.EnableNotifyMessage&quot;]/*" />
+            <devdoc>
+               <para>
+                    If true, the OnNotifyMessage method will be called for every message sent to 
+                    the control's WndProc. 
+                    This style defaults to false.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.DoubleBuffer">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.DoubleBuffer&quot;]/*" />
+            <devdoc>
+               <para>
+                    If set, all control painting will be double buffered. You must also
+                    set the UserPaint and AllPaintingInWmPaint style.  Note: This is obsolete, please 
+                    use OptimizedDoubleBuffer instead.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.OptimizedDoubleBuffer&quot;]/*" />
+            <devdoc>
+               <para>
+                    If set, all control painting will be double buffered.
+               </para>
+            </devdoc>
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.ControlStyles.UseTextForAccessibility">
+             <!-- Failed to insert some or all of included XML --><include file="doc\ControlStyles.uex" path="docs/doc[@for=&quot;ControlStyles.UseTextForAccessibility&quot;]/*" />
+             <devdoc>
+                <para>
+                     If this style is set, and there is a value in the control's Text property, that value will be
+                     used to determine the control's default Active Accessibility name and shortcut key. Otherwise,
+                     the text of the preceding Label control will be used instead.
+            
+                     This style is set by default. Certain built-in control types such as TextBox and ComboBox
+                     un-set this style, so that their current text will not be used by Active Accessibility.
+                </para>
+             </devdoc>
+        </member>
+        <member name="M:Stimulsoft.System.Windows.Forms.ImageList.ImageCollection.Add(Stimulsoft.Drawing.Image)">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ImageList.uex" path="docs/doc[@for=&quot;ImageList.ImageCollection.Add1&quot;]/*" />
+            <devdoc>
+                Add the given image to the ImageList.
+            </devdoc>
+        </member>
+        <member name="M:Stimulsoft.System.Windows.Forms.ImageList.ImageCollection.System#Collections#IList#Remove(System.Object)">
+            <!-- Failed to insert some or all of included XML --><include file="doc\ImageList.uex" path="docs/doc[@for=&quot;ImageCollection.IList.Remove&quot;]/*" />
+            <internalonly />
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.D4">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.D4&quot;]/*" />
+                  The 4 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.D5">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.D5&quot;]/*" />
+                  The 5 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.D6">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.D6&quot;]/*" />
+                  The 6 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.D7">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.D7&quot;]/*" />
+                  The 7 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.D8">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.D8&quot;]/*" />
+                  The 8 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.D9">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.D9&quot;]/*" />
+                  The 9 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.A">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.A&quot;]/*" />
+                  The A key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.B">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.B&quot;]/*" />
+                  The B key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.C">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.C&quot;]/*" />
+                  The C key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.D">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.D&quot;]/*" />
+                  The D key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.E">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.E&quot;]/*" />
+                  The E key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F&quot;]/*" />
+                  The F key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.G">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.G&quot;]/*" />
+                  The G key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.H">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.H&quot;]/*" />
+                  The H key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.I">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.I&quot;]/*" />
+                  The I key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.J">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.J&quot;]/*" />
+                  The J key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.K">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.K&quot;]/*" />
+                  The K key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.L">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.L&quot;]/*" />
+                  The L key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.M">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.M&quot;]/*" />
+                  The M key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.N">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.N&quot;]/*" />
+                  The N key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.O">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.O&quot;]/*" />
+                  The O key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.P">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.P&quot;]/*" />
+                  The P key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Q">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Q&quot;]/*" />
+                  The Q key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.R">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.R&quot;]/*" />
+                  The R key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.S">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.S&quot;]/*" />
+                  The S key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.T">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.T&quot;]/*" />
+                  The T key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.U">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.U&quot;]/*" />
+                  The U key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.V">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.V&quot;]/*" />
+                  The V key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.W">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.W&quot;]/*" />
+                  The W key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.X">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.X&quot;]/*" />
+                  The X key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Y">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Y&quot;]/*" />
+                  The Y key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Z">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Z&quot;]/*" />
+                  The Z key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.LWin">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.LWin&quot;]/*" />
+                  The left Windows logo key (Microsoft Natural Keyboard).
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.RWin">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.RWin&quot;]/*" />
+                  The right Windows logo key (Microsoft Natural Keyboard).
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Apps">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Apps&quot;]/*" />
+                  The Application key (Microsoft Natural Keyboard).
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Sleep">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Sleep&quot;]/*" />
+                  The Computer Sleep key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.NumPad0">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.NumPad0&quot;]/*" />
+                  The 0 key on the numeric keypad.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.NumPad1">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.NumPad1&quot;]/*" />
+                  The 1 key on the numeric keypad.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.NumPad2">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.NumPad2&quot;]/*" />
+                  The 2 key on the numeric keypad.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.NumPad3">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.NumPad3&quot;]/*" />
+                  The 3 key on the numeric keypad.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.NumPad4">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.NumPad4&quot;]/*" />
+                  The 4 key on the numeric keypad.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.NumPad5">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.NumPad5&quot;]/*" />
+                  The 5 key on the numeric keypad.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.NumPad6">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.NumPad6&quot;]/*" />
+                  The 6 key on the numeric keypad.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.NumPad7">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.NumPad7&quot;]/*" />
+                  The 7 key on the numeric keypad.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.NumPad8">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.NumPad8&quot;]/*" />
+                  The 8 key on the numeric keypad.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.NumPad9">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.NumPad9&quot;]/*" />
+                  The 9 key on the numeric keypad.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Multiply">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Multiply&quot;]/*" />
+                  The Multiply key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Add">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Add&quot;]/*" />
+                  The Add key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Separator">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Separator&quot;]/*" />
+                  The Separator key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Subtract">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Subtract&quot;]/*" />
+                  The Subtract key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Decimal">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Decimal&quot;]/*" />
+                  The Decimal key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Divide">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Divide&quot;]/*" />
+                  The Divide key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F1">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F1&quot;]/*" />
+                  The F1 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F2">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F2&quot;]/*" />
+                  The F2 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F3">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F3&quot;]/*" />
+                  The F3 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F4">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F4&quot;]/*" />
+                  The F4 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F5">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F5&quot;]/*" />
+                  The F5 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F6">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F6&quot;]/*" />
+                  The F6 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F7">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F7&quot;]/*" />
+                  The F7 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F8">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F8&quot;]/*" />
+                  The F8 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F9">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F9&quot;]/*" />
+                  The F9 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F10">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F10&quot;]/*" />
+                  The F10 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F11">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F11&quot;]/*" />
+                  The F11 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F12">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F12&quot;]/*" />
+                  The F12 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F13">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F13&quot;]/*" />
+                  The F13 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F14">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F14&quot;]/*" />
+                  The F14 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F15">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F15&quot;]/*" />
+                  The F15 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F16">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F16&quot;]/*" />
+                  The F16 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F17">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F17&quot;]/*" />
+                  The F17 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F18">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F18&quot;]/*" />
+                  The F18 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F19">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F19&quot;]/*" />
+                  The F19 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F20">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F20&quot;]/*" />
+                  The F20 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F21">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F21&quot;]/*" />
+                  The F21 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F22">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F22&quot;]/*" />
+                  The F22 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F23">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F23&quot;]/*" />
+                  The F23 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.F24">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.F24&quot;]/*" />
+                  The F24 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.NumLock">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.NumLock&quot;]/*" />
+                  The NUM LOCK key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Scroll">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Scroll&quot;]/*" />
+                  The SCROLL LOCK key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.LShiftKey">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.LShiftKey&quot;]/*" />
+                  The left SHIFT key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.RShiftKey">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.RShiftKey&quot;]/*" />
+                  The right SHIFT key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.LControlKey">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.LControlKey&quot;]/*" />
+                  The left CTRL key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.RControlKey">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.RControlKey&quot;]/*" />
+                  The right CTRL key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.LMenu">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.LMenu&quot;]/*" />
+                  The left ALT key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.RMenu">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.RMenu&quot;]/*" />
+                  The right ALT key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.BrowserBack">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.BrowserBack&quot;]/*" />
+                  The Browser Back key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.BrowserForward">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.BrowserForward&quot;]/*" />
+                  The Browser Forward key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.BrowserRefresh">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.BrowserRefresh&quot;]/*" />
+                  The Browser Refresh key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.BrowserStop">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.BrowserStop&quot;]/*" />
+                  The Browser Stop key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.BrowserSearch">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.BrowserSearch&quot;]/*" />
+                  The Browser Search key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.BrowserFavorites">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.BrowserFavorites&quot;]/*" />
+                  The Browser Favorites key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.BrowserHome">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.BrowserHome&quot;]/*" />
+                  The Browser Home key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.VolumeMute">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.VolumeMute&quot;]/*" />
+                  The Volume Mute key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.VolumeDown">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.VolumeDown&quot;]/*" />
+                  The Volume Down key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.VolumeUp">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.VolumeUp&quot;]/*" />
+                  The Volume Up key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.MediaNextTrack">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.MediaNextTrack&quot;]/*" />
+                  The Media Next Track key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.MediaPreviousTrack">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.MediaPreviousTrack&quot;]/*" />
+                  The Media Previous Track key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.MediaStop">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.MediaStop&quot;]/*" />
+                  The Media Stop key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.MediaPlayPause">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.MediaPlayPause&quot;]/*" />
+                  The Media Play Pause key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.LaunchMail">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.LaunchMail&quot;]/*" />
+                  The Launch Mail key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.SelectMedia">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.SelectMedia&quot;]/*" />
+                  The Select Media key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.LaunchApplication1">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.LaunchApplication1&quot;]/*" />
+                  The Launch Application1 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.LaunchApplication2">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.LaunchApplication2&quot;]/*" />
+                  The Launch Application2 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.OemSemicolon">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.OemSemicolon&quot;]/*" />
+                  The Oem Semicolon key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Oem1">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Oem1&quot;]/*" />
+                  The Oem 1 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Oemplus">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Oemplus&quot;]/*" />
+                  The Oem plus key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Oemcomma">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Oemcomma&quot;]/*" />
+                  The Oem comma key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.OemMinus">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.OemMinus&quot;]/*" />
+                  The Oem Minus key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.OemPeriod">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.OemPeriod&quot;]/*" />
+                  The Oem Period key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.OemQuestion">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.OemQuestion&quot;]/*" />
+                  The Oem Question key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Oem2">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Oem2&quot;]/*" />
+                  The Oem 2 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Oemtilde">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Oemtilde&quot;]/*" />
+                  The Oem tilde key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Oem3">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Oem3&quot;]/*" />
+                  The Oem 3 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.OemOpenBrackets">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.OemOpenBrackets&quot;]/*" />
+                  The Oem Open Brackets key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Oem4">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Oem4&quot;]/*" />
+                  The Oem 4 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.OemPipe">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.OemPipe&quot;]/*" />
+                  The Oem Pipe key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Oem5">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Oem5&quot;]/*" />
+                  The Oem 5 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.OemCloseBrackets">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.OemCloseBrackets&quot;]/*" />
+                  The Oem Close Brackets key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Oem6">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Oem6&quot;]/*" />
+                  The Oem 6 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.OemQuotes">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.OemQuotes&quot;]/*" />
+                  The Oem Quotes key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Oem7">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Oem7&quot;]/*" />
+                  The Oem 7 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Oem8">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Oem8&quot;]/*" />
+                  The Oem8 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.OemBackslash">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.OemBackslash&quot;]/*" />
+                  The Oem Backslash key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Oem102">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Oem102&quot;]/*" />
+                  The Oem 102 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.ProcessKey">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.ProcessKey&quot;]/*" />
+                  The PROCESS KEY key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Packet">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Packet&quot;]/*" />
+                  The Packet KEY key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Attn">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Attn&quot;]/*" />
+                  The ATTN key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Crsel">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Crsel&quot;]/*" />
+                  The CRSEL key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Exsel">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Exsel&quot;]/*" />
+                  The EXSEL key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.EraseEof">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.EraseEof&quot;]/*" />
+                  The ERASE EOF key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Play">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Play&quot;]/*" />
+                  The PLAY key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Zoom">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Zoom&quot;]/*" />
+                  The ZOOM key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.NoName">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.NoName&quot;]/*" />
+                  A constant reserved for future use.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Pa1">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Pa1&quot;]/*" />
+                  The PA1 key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.OemClear">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.OemClear&quot;]/*" />
+                  The CLEAR key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Shift">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Shift&quot;]/*" />
+                  The SHIFT modifier key.
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Control">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Control&quot;]/*" />
+                   The
+                   CTRL modifier key.
+            
+        </member>
+        <member name="F:Stimulsoft.System.Windows.Forms.Keys.Alt">
+            <!-- Failed to insert some or all of included XML --><include file="doc\Keys.uex" path="docs/doc[@for=&quot;Keys.Alt&quot;]/*" />
+                   The ALT modifier key.
+            
+        </member>
+        <member name="M:Stimulsoft.System.Windows.Forms.PaintEventArgs.Dispose(System.Boolean)">
+            <!-- Failed to insert some or all of included XML --><include file="doc\PaintEvent.uex" path="docs/doc[@for=&quot;PaintEventArgs.Dispose2&quot;]/*" />
+        </member>
+    </members>
+</doc>

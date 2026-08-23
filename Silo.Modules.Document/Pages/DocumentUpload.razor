@@ -1,0 +1,197 @@
+@page "/document/Upload"
+@inherits SiloBasePage
+@namespace Silo.Modules.Document.Pages
+@using Newtonsoft.Json.Linq
+@using Silo.Application.Dto
+@using Silo.Application.Features;
+@using Silo.Identity.Client;
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Telerik.Blazor.Components
+@using Silo.Shared.Components
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+        <div class="form-search-span">
+            <EditForm Model="DocumentRequest"
+                      OnInvalidSubmit="OnInvalidSubmit"
+                      OnValidSubmit="OnValidSubmit">
+
+                <DataAnnotationsValidator />
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 10px !important;margin-top: 10px;">
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Header_Key :</label>
+                    <TelerikTextBox @bind-Value="DocumentRequest.DocumentKey"
+                                    Class="form-control input-search-span-lg pointer text-dir-left text-align-right">
+                    </TelerikTextBox>
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Document_Type :</label>
+                    <TelerikDropDownList Data="DocumentTypeItems"
+                                         TextField="@nameof(TelerikDropDownItemGeneric<int>.Name)"
+                                         ValueField="@nameof(TelerikDropDownItemGeneric<int>.Value)"
+                                         @bind-Value="DocumentRequest.DocumentType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         Width="180px"
+                                         Class="drop-all">
+                        <DropDownListSettings>
+                            <DropDownListPopupSettings Class="text-align-right" />
+                        </DropDownListSettings>
+                    </TelerikDropDownList>
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Document_Check_Type :</label>
+                    <TelerikDropDownList Data="DocumentCheckTypes"
+                                         TextField="@nameof(TelerikDropDownItemGeneric<int>.Name)"
+                                         ValueField="@nameof(TelerikDropDownItemGeneric<int>.Value)"
+                                         @bind-Value="DocumentRequest.DocumentCheckType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         Width="250px"
+                                         Class="drop-all">
+                        <DropDownListSettings>
+                            <DropDownListPopupSettings Class="text-align-right" />
+                        </DropDownListSettings>
+                    </TelerikDropDownList>
+
+                    <button class="btn btn-primary" type="submit" title="@TextResources.APP_StringKeys_Search"
+                            style="margin-right: 20px !important;">
+                        <MaterialIcon IconName="search"></MaterialIcon>
+                    </button>
+                    <button id="btn-clear" class="btn btn-light" type="button" title="@TextResources.APP_StringKeys_Print"
+                            style="margin-left: 2px; margin-right: 5px; " @onclick="OnPrintDocumentClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Print"></MaterialIcon>
+                    </button>
+                    <button id="btn-clear" class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                            style="margin-left: 2px; margin-right: 5px; " @onclick="OnClearClick">
+                        <MaterialIcon IconName="refresh"></MaterialIcon>
+                    </button>
+
+                    @if (DocumentRequest.DocumentType.HasNoValue())
+                    {
+                        <button id="btn-clear" class="btn btn-success" type="button"
+                            style="margin-left: 2px; margin-right: 5px; " @onclick="OnInvalidExcelUploadClick">
+                            @TextResources.APP_StringKeys_UploadExcel<MaterialIcon IconName="@MaterialIconsHelper.Upload"></MaterialIcon>
+                        </button>
+                    }
+                    else
+                    {
+                        <FileUpload AllowedExtensions=".xlsx"
+                                OnStartUpload="()=>IsLoading = true"
+                                ButtonClass="btn btn-success"
+                                UploadUrl="/Tools/UploadDynamicExcel"
+                                MaterialIconClass="Upload"
+                                OnCompleteUpload="OnCompleteUploadExcel"
+                                ButtonText="@TextResources.APP_StringKeys_UploadExcel">
+                        </FileUpload>
+                    }
+                </div>
+            </EditForm>
+        </div>
+    </div>
+    @if (HeaderDatas is not null)
+    {
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+            <div class="form-search-span">
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 10px !important;margin-top: 10px;">
+
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Status</label>
+                    <input value="@DocumentStatus" class="form-control input-search-span" readonly style="margin-left: 15px;width:@(DocumentStatus.Length+3)*8)px !important" />
+
+                    @foreach (var field in DynamicFieldColumns)
+                    {
+                        if (HeaderDatas[field] is not null)
+                        {
+                            <label style="margin-right: 20px !important;">@field</label>
+                            <input value="@HeaderDatas[field]" class="form-control input-search-span" readonly style="margin-left: 15px;width:@((HeaderDatas[field].ToString().Length+3)*8)px !important" />
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+        <div class="form-search-span" style="padding-top:10px;">
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-right:15px;">
+                <TelerikGrid Data="DocumentItems"
+                             PageSize="10"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true"
+                             Resizable="true"
+                             ColumnVirtualization="true"
+                             Width="100%">
+                    <RowTemplate Context="documentItem">
+                        <td class="td-style">@documentItem.ProductCode</td>
+                        <td class="td-style">@documentItem.ProductTitle</td>
+                        <td class="td-style">@documentItem.Count</td>
+                        <td class="td-style">@(documentItem.ItemData.Equals("[]") ? string.Empty : documentItem.ItemData)</td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Width="200px" Field="" Title="@TextResources.APP_StringKeys_ProductCode"></GridColumn>
+                        <GridColumn Width="300px" Field="" Title="@TextResources.APP_StringKeys_ProductTitle"></GridColumn>
+                        <GridColumn Width="100px" Field="" Title="@TextResources.APP_StringKeys_Value"></GridColumn>
+                        <GridColumn Width="400px" Field="" Title="@TextResources.APP_StringKeys_Item_Properties"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            </div>
+        </div>
+    </div>
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<style type="text/css">
+    .btn-range {
+        font-size: 140%;
+    }
+
+    .k-listview-header,
+    .k-listview-content {
+        padding: 20px;
+    }
+
+    .k-listview-footer {
+        border-width: 0;
+        padding: 10px 20px;
+    }
+
+    .k-listview-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 180px);
+        gap: 20px 10px;
+    }
+
+    .k-card {
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .k-card-body {
+        padding: 10px 0;
+    }
+
+    .k-card .k-card-title {
+        padding: 0;
+        font-size: 1em;
+        font-weight: bold;
+        line-height: normal;
+    }
+
+    .k-card-subtitle {
+        font-size: 0.85em;
+    }
+
+    .k-card {
+        cursor: pointer;
+    }
+
+    .k-card-choosed {
+        background-color: #789aff !important;
+    }
+</style>

@@ -1,0 +1,122 @@
+@page "/report/revoke"
+@inherits SiloBasePage
+@namespace Silo.Pages.Reports
+@using Silo.Application.Features;
+
+<PageTitle>@PageTitle</PageTitle>
+
+@if(IsFiltersShown)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center" style="padding: 10px;">
+            <form role="form" class="form-search-span" id="form-main">
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:0px!important;margin-top:5px;">
+                <label style="margin-right: 0px;">@TextResources.APP_StringKeys_FromDate:</label>
+                <DatePicker InputClass=" input-search-span-lg pointer "
+                            @bind-Value="Request.FromDate"></DatePicker>
+                <label style="margin-right: 72px;">@TextResources.APP_StringKeys_ToDate:</label>
+                <DatePicker InputClass=" input-search-span-lg pointer "
+                            @bind-Value="Request.ToDate"></DatePicker>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                <label style="margin-right: 7px;">@TextResources.APP_StringKeys_ProductSerial:</label>
+                <input @bind-value="Request.ProductSerial" class="form-control input-search-span-lg pointer" />
+
+                <label style="margin-right:57px; margin-left:5px">@TextResources.APP_StringKeys_UserRevoke:</label>
+                <TelerikDropDownList Data="Users"
+                                     TextField="@nameof(AddAccountCommand.Name)"
+                                     ValueField="@nameof(AddAccountCommand.Id)"
+                                     @bind-Value="Request.User"
+                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                     Width="200px"
+                                     Class="drop-all">
+                </TelerikDropDownList>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap search-button-div" style="top: 70px;">
+                <button class="btn btn-warning" 
+                        type="button" 
+                        title="@TextResources.APP_StringKeys_Clear"
+                        style="margin-left: 2px;" 
+                        @onclick="OnClickClear">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                </button>
+                <button type="button" 
+                        id="btn-send" 
+                        class="btn btn-primary" 
+                        title="@TextResources.APP_StringKeys_Send" 
+                        @onclick="OnClickSubmit">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                </button>
+            </div>
+        </form>
+        </div>
+    </div>
+}
+@if (Products is not null)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center">
+            <br />
+            <TelerikGrid Data="Products"
+                     PageSize="10"
+                     Navigable="true"
+                     Pageable="true"
+                     Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style">@product.ProductSerial</td>
+                    <td class="td-style">@product.ProductCode</td>
+                    <td class="td-style">@product.ProductRegCode</td>
+                    <td class="td-style">@product.ProductName</td>
+                    <td class="td-style">@product.ProductCount</td>
+                    <td class="td-style">@product.RegisterUser</td>
+                    <td class="td-style">@product.RegisterDate.ToNormalPersianDate()</td>
+                    <td class="td-style">@product.SoftDeleteUser</td>
+                    <td class="td-style">@product.SoftDeleteDate</td>
+                </RowTemplate>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_View_Report_Revoke" />
+                </GridExport>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllRevokeBySerialVm.ProductSerial)"
+                            Title="@TextResources.APP_StringKeys_ProductSerial"
+                            Width="50px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllRevokeBySerialVm.ProductCode)"
+                            Title="@TextResources.APP_StringKeys_ProductCode"
+                            Width="150px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllRevokeBySerialVm.ProductRegCode)"
+                            Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                            Width="70px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllRevokeBySerialVm.ProductName)"
+                            Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllRevokeBySerialVm.ProductCount)"
+                            Title="@TextResources.APP_StringKeys_ProductCount"
+                            Width="50px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllRevokeBySerialVm.RegisterUser)"
+                            Title="@TextResources.APP_StringKeys_RegUser"
+                            Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllRevokeBySerialVm.RegisterDate)"
+                            Title="@TextResources.APP_StringKeys_ProductRegDateTime"
+                            Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllRevokeBySerialVm.SoftDeleteUser)"
+                            Title="@TextResources.APP_StringKeys_UserRevoke"
+                            Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllRevokeBySerialVm.SoftDeleteDate)"
+                            Title="@TextResources.APP_StringKeys_ProductRevokeDateTime"
+                            Width="90px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </div>
+}
+@if (IsLoading)
+{
+    <TelerikLoaderContainer LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+    </TelerikLoaderContainer>
+}

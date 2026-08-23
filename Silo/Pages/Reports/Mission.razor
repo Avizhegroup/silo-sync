@@ -1,0 +1,195 @@
+@page "/report/mission"
+@inherits SiloBasePage
+@namespace Silo.Pages.Reports
+@using Silo.Application.Features;
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats text-align-center col-md-12">
+        <h5 class="form-title card-title">
+            @PageTitle
+        </h5>
+        <div class="form-search-span" style="margin-top: -35px;">
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:0px !important;">
+                <label style="margin-right:2px">@TextResources.APP_StringKeys_Chart_ProductCode:</label>
+                <input class="form-control input-search-span-lg pointer" @bind-value="Request.ProductCode" />
+                <button type="button" class="btn btn-light" @onclick="async ()=> await ProductCodeModal.Show()">
+                    <img width="20" height="20" src="/images/Utilities/grid.png" />
+                </button>
+                <label style="margin-right: 5px;">@TextResources.APP_StringKeys_FromDate:</label>
+                <DatePicker InputClass=" input-search-span-lg pointer "
+                            Style="width:150px !important;" @bind-Value="Request.FromDate">
+                </DatePicker>
+                <label style="margin-right: 5px;">@TextResources.APP_StringKeys_ToDate:</label>
+                <DatePicker InputClass=" input-search-span-lg pointer "
+                            Style="width:150px !important;" @bind-Value="Request.ToDate">
+                </DatePicker>
+                <label style="margin-right:5px">@TextResources.APP_StringKeys_Field_MissionStatus:</label>
+                <TelerikDropDownList Data="MissionStatuses"
+                                     TextField="Name"
+                                     ValueField="Value"
+                                     @bind-Value="Request.MissionStatus"
+                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                     Width="120px"
+                                     Class="drop-all">
+                </TelerikDropDownList>
+                <label style="margin-right:5px">@TextResources.APP_StringKeys_TagStatus:</label>
+                <TelerikDropDownList Data="ProductStatuses"
+                                     TextField="Name"
+                                     ValueField="Value"
+                                     @bind-Value="Request.ProductStatus"
+                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                     Width="120px"
+                                     Class="drop-all">
+                </TelerikDropDownList>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:0px!important;">
+                <label style="margin-right: 2px;">@TextResources.APP_StringKeys_DriverName:</label>
+                <TelerikDropDownList Data="Drivers"
+                                     TextField="Name"
+                                     ValueField="Id"
+                                     @bind-Value="Request.Driver"
+                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                     Width="150px"
+                                     Class="drop-all">
+                </TelerikDropDownList>
+                <label style="margin-right:5px">@TextResources.APP_StringKeys_Chart_Regcode:</label>
+                <input class="form-control input-search-span pointer" @bind-value="Request.TechnicalCode" />
+                <label style="margin-right: -50px;">@TextResources.APP_StringKeys_Like:</label>
+                <input type="checkbox" @bind-value="Request.TechnicalCodeLike" class="form-control" />
+                <label style="margin-right:5px">@TextResources.APP_StringKeys_ProductSerial:</label>
+                <input class="form-control input-search-span pointer" @bind-value="Request.ProductSerial" />
+                <label style="margin-right:5px">@TextResources.APP_StringKeys_FromZone:</label>
+                <input class="form-control input-search-span pointer" @bind-value="Request.FromZone" />
+                <button type="button" class="btn btn-light" @onclick="async ()=> await OnClickChooseLocation(true)">
+                    <img width="20" height="20" src="/images/Utilities/grid.png" />
+                </button>
+                <label style="margin-right:5px">@TextResources.APP_StringKeys_ToZone:</label>
+                <input class="form-control input-search-span pointer" @bind-value="Request.ToZone" />
+                <button type="button" class="btn btn-light" @onclick="async ()=> await OnClickChooseLocation(false)">
+                    <img width="20" height="20" src="/images/Utilities/grid.png" />
+                </button>
+                <label style="margin-right:5px">@TextResources.APP_StringKeys_Field_MissionCode:</label>
+                <input class="form-control input-search-span pointer" @bind-value="Request.MissionCode" />
+                <label style="margin-right:5px">@TextResources.APP_StringKeys_Field_MissionType:</label>
+                <TelerikDropDownList Data="MissionTypes"
+                                     TextField="Name"
+                                     ValueField="Value"
+                                     @bind-Value="Request.MissionType"
+                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                     Width="120px"
+                                     Class="drop-all">
+                </TelerikDropDownList>
+            </div>
+        </div>
+        <div class=" d-flex flex-row align-items-center flex-wrap search-button-div" style="top: 120px;">
+            <button id="btn-clear" class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                    style="margin-left: 2px; margin-right: 5px; "
+                    @onclick="OnClickClear">
+                <img width="20" height="20" src="/images/Utilities/Clear.png">
+            </button>
+            <button type="button" id="btn-send" class="btn btn-primary"
+                    title="@TextResources.APP_StringKeys_Send"
+                    @onclick="OnClickSearch">
+                <img width="20" height="20" src="/images/Utilities/send.png">
+            </button>
+        </div>
+    </div>
+    @if (Missions is not null)
+    {
+        <div class="card card-stats text-align-center col-md-12" style="margin-top:5px;">
+            <TelerikGrid Data="Missions"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style">@product.ProductCode</td>
+                    <td class="td-style">@product.ProductSerial</td>
+                    <td class="td-style">@product.ProductName</td>
+                    <td class="td-style">@product.TechnicalCode</td>
+                    <td class="td-style">@product.MissionType</td>
+                    <td class="td-style">@product.FromZone</td>
+                    <td class="td-style">@product.ToZone</td>
+                    <td class="td-style">@product.RegisterUsername</td>
+                    <td class="td-style">@product.RegisterDate</td>
+                    <td class="td-style">@product.Driver</td>
+                    <td class="td-style">@product.MissionDate</td>
+                    <td class="td-style">@product.MissionCode</td>
+                    <td class="td-style">@product.ProductStatus</td>
+                    <td class="td-style">@product.MissionStatus</td>
+                    <td class="td-style">@product.Truck</td>
+                </RowTemplate>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@PageTitle" />
+                </GridExport>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetMissionVM.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                                Width="120px"></GridColumn>
+                    <GridColumn Field="@nameof(GetMissionVM.ProductSerial)"
+                                Title="@TextResources.APP_StringKeys_ProductSerial"
+                                Width="60px"></GridColumn>
+                    <GridColumn Field="@nameof(GetMissionVM.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                    <GridColumn Field="@nameof(GetMissionVM.TechnicalCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                                Width="70px"></GridColumn>
+                    <GridColumn Field="@nameof(GetMissionVM.MissionType)"
+                                Title="@TextResources.APP_StringKeys_Field_MissionType"
+                                Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetMissionVM.FromZone)"
+                                Title="@TextResources.APP_StringKeys_From"
+                                Width="70px"></GridColumn>
+                    <GridColumn Field="@nameof(GetMissionVM.ToZone)"
+                                Title="@TextResources.APP_StringKeys_ToZone"
+                                Width="70px"></GridColumn>
+                    <GridColumn Field="@nameof(GetMissionVM.RegisterUsername)"
+                                Title="@TextResources.APP_StringKeys_RegUser"
+                                Width="70px"></GridColumn>
+                    <GridColumn Field="@nameof(GetMissionVM.RegisterDate)"
+                                Title="@TextResources.APP_StringKeys_ProductRegDateTime"></GridColumn>
+                    <GridColumn Field="@nameof(GetMissionVM.Driver)"
+                                Title="@TextResources.APP_StringKeys_DriverName"></GridColumn>
+                    <GridColumn Field="@nameof(GetMissionVM.MissionDate)"
+                                Title="@TextResources.APP_StringKeys_Field_MissionDate"></GridColumn>
+                    <GridColumn Field="@nameof(GetMissionVM.MissionCode)"
+                                Title="@TextResources.APP_StringKeys_Field_MissionCode"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetMissionVM.ProductStatus)"
+                                Title="@TextResources.APP_StringKeys_TagStatus"></GridColumn>
+                    <GridColumn Field="@nameof(GetMissionVM.MissionStatus)"
+                                Title="@TextResources.APP_StringKeys_Field_MissionStatus"></GridColumn>
+                    <GridColumn Field="@nameof(GetMissionVM.Truck)"
+                                Title="@TextResources.APP_StringKeys_Truck_TruckNumber"
+                                Width="70px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    }
+</div>
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<ProductCodeModal @ref="ProductCodeModal"
+                  OnClickProductCode="async (code)=> await Task.Run(()=> Request.ProductCode = code)">
+
+</ProductCodeModal>
+
+<LocationModal @ref="LocationModal"
+               OnClickLocation="OnClickLocation"></LocationModal>
+
+<style type="text/css">
+    .td-style {
+        font-size: 70%;
+    }
+</style>

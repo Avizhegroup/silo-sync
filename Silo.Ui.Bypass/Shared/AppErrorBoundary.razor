@@ -1,0 +1,31 @@
+﻿@namespace Silo.Ui.Bypass.Shared
+@inherits ErrorBoundaryBase
+
+@if (CurrentException is null)
+{
+    @ChildContent
+}
+else if (ErrorContent is null)
+{
+    <div class="main">
+        <div class="header">
+            <button type="button"
+                    class="btn btn-warning"
+                @onclick="Recover">
+            </button>
+            <button type="button"
+                    class="btn btn-primary" 
+                    @onclick="GoHome">
+            </button>
+        </div>
+        <h1 class="title">APP_StringKeys_Alert_Fail</h1>
+        @if (ShowException)
+        {
+            <div class="exception">@CurrentException?.ToString()</div>
+        }
+    </div>
+}
+else
+{
+    @ErrorContent(CurrentException)
+}

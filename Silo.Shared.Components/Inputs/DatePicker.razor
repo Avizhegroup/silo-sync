@@ -1,0 +1,89 @@
+﻿@namespace Silo.Shared.Components
+
+<div class="date-picker-container @Class"
+     id="bdate-@Id.ToString()"
+     style="@Style">
+    <input type="text" 
+           class="date-picker-input @InputClass" 
+           value="@Value" 
+           @onclick="@OnInputClick" 
+           readonly
+           style="@(Width.HasValue() ? $"width: {Width} !important;" :"")" />
+    @if (IsDatePickerShown)
+    {
+        <div class="date-picker">
+            <div class="header">
+                <button type="button" @onclick="OnPreviousMonthClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Arrow_forward_ios"></MaterialIcon>
+                </button>
+                <span>
+                    <span class="date year-month-title" @onclick="OnMonthTitleClick">
+                        @(PersianMonthNames[month - 1] + " ")
+                    </span>
+                    <span class="date year-month-title" @onclick="OnYearTitleClick">
+                        @year
+                    </span>
+                </span>
+                <button type="button" @onclick="OnNextMonthClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Arrow_back_ios"></MaterialIcon>
+                </button>
+            </div>
+            @if (Mode == DatePickerMode.Daily)
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            @foreach (var day in PersianWeekDays)
+                            {
+                                <th>@day</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var week in DisplayedWeeks)
+                        {
+                            <tr>
+                                @foreach (var day in week)
+                                {
+                                    <td class="date @DayClass(day)" @onclick="async () => await SelectDate(day)">@pc.GetDayOfMonth(day)</td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else if (Mode == DatePickerMode.Month)
+            {
+                <table>
+                    <tbody>
+                        @foreach (var monthChunk in PersianMonthNames.Chunk(3))
+                        {
+                            <tr>
+                                @foreach (var month in monthChunk)
+                                {
+                                    <td class="date" @onclick="async () => await OnMonthClick(month)">@month</td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else if (Mode == DatePickerMode.Yearly)
+            {
+                <table>
+                    <tbody>
+                        @foreach (var yearChunk in Years.Chunk(3))
+                        {
+                            <tr>
+                                @foreach (var year in yearChunk)
+                                {
+                                    <td class="date" @onclick="async () => await OnYearClick(year)">@year</td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    }
+</div>

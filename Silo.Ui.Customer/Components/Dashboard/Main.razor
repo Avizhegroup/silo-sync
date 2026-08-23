@@ -1,0 +1,18 @@
+﻿@using Silo.Application.Features;
+@if (IsComponentShown)
+{
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">داشبورد</h1>
+    </div>
+    @if (SalesShop is not null)
+    {
+        <h3>کد فروشگاه: @SalesShop?.Code</h3>
+        <h4>عنوان فروشگاه: @SalesShop?.Title</h4>
+        <h5>نام مدیر: @SalesShop?.ManagerName</h5>
+    }
+    @if (SalesInstaller is not null)
+    {
+        <h3>کد نصاب: @SalesInstaller?.Code</h3>
+        <h4>نام نصاب: @SalesInstaller?.Name</h4>
+    }
+}

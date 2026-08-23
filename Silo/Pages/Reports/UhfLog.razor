@@ -1,0 +1,244 @@
+@page "/report/uhfLog"
+@inherits SiloBasePage
+@namespace Silo.Pages.Reports
+@using Silo.Application.Features;
+@using Silo.Shared.Components.Report
+
+<PageTitle>@PageTitle</PageTitle>
+
+@if (IsFiltersShown)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; min-height: 70px;padding-top:5px;">
+            <div>
+                <h6 class="form-title card-title" style="text-align: right !important;">
+                    @TextResources.APP_StringKeys_Filters
+                </h6>
+            </div>
+            @if (ApplyFilters.Any())
+            {
+                <div class="d-flex flex-row align-items-center flex-wrap col-md-10" style="margin-bottom:10px!important;">
+                    <FilterReportEditSection Filters="ApplyFilters">
+                    </FilterReportEditSection>
+                </div>
+            }
+            <div class="d-flex flex-row align-items-center flex-wrap  search-button-div" style="margin-top:-145px !important;width:480px;">
+                <button class="btn btn-success" type="button" title="@TextResources.APP_StringKeys_Filters"
+                        style="margin-left: 2px;" @onclick="OnFilterModalClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Filter_alt"></MaterialIcon>
+                </button>
+                <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                        style="margin-left: 2px;" @onclick="OnClickClear">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                </button>
+                <button class="btn btn-primary" type="button"
+                        title="@TextResources.APP_StringKeys_Send"
+                        @onclick="OnSearchClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </div>
+}
+@if (UhfLogs is not null)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center">
+            <br />
+            <TelerikGrid Data="UhfLogs"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="uhfLog">
+                    <td class="td-style">@uhfLog.InventoryId</td>
+                    <td class="td-style">@uhfLog.ReaderGateName</td>
+                    <td class="td-style">@uhfLog.Username</td>
+                    <td class="td-style">
+                        @if (uhfLog.DateTime.HasValue() && uhfLog.DateTime.Length == 14)
+                        {
+                            @(DateTimeTools.ToNormalPersianDateTime(uhfLog.DateTime))
+                        }
+                    </td>
+                    <td class="td-style">@uhfLog.ActionDesc</td>
+                    <td class="td-style">@uhfLog.CountTag</td>
+                    <td class="td-style">@uhfLog.CountTagOk</td>
+                    <td class="td-style">@uhfLog.SumValue</td>
+                    <td class="td-style">
+                        <button @onclick="async ()=> await OnClickRowSerials(uhfLog)"
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                            @TextResources.APP_StringKeys_Serials
+                        </button>
+                        <button @onclick="async ()=> await OnClickRowProducts(uhfLog)"
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                            @TextResources.APP_StringKeys_Report_Exit_SumOnProductCode
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_UHFLog_Report" />
+                </GridExport>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetUhfLogReportVm.InventoryId)"
+                                Title="@TextResources.APP_StringKeys_OperationCode">
+                        <FooterTemplate>
+                            تعداد کل عملیات ها: @context.Count
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetUhfLogReportVm.ReaderGateName)"
+                                Title="@TextResources.APP_StringKeys_Device_Name">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetUhfLogReportVm.Username)"
+                                Title="@TextResources.APP_StringKeys_RegUser">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetUhfLogReportVm.DateTime)"
+                                Title="@TextResources.APP_StringKeys_DateTime">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetUhfLogReportVm.ActionDesc)"
+                                Title="@TextResources.APP_StringKeys_Description">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetUhfLogReportVm.CountTag)"
+                                Title="@TextResources.APP_StringKeys_Count">
+                        <FooterTemplate>
+                            تعداد کل: @context.Sum
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetUhfLogReportVm.CountTagOk)"
+                                Title="تعداد قابل قبول">
+                        <FooterTemplate>
+                            تعداد کل: @context.Sum
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetUhfLogReportVm.SumValue)"
+                                Title="@TextResources.APP_StringKeys_SumValue">
+                        <FooterTemplate>
+                            جمع  کل مقادیر: @context.Sum
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Width="200px"></GridColumn>
+                </GridColumns>
+                <GridAggregates>
+                    <GridAggregate Field=@nameof(GetUhfLogReportVm.CountTag) Aggregate="@GridAggregateType.Sum" />
+                    <GridAggregate Field=@nameof(GetUhfLogReportVm.SumValue) Aggregate="@GridAggregateType.Sum" />
+                    <GridAggregate Field=@nameof(GetUhfLogReportVm.InventoryId) Aggregate="@GridAggregateType.Count" />
+                </GridAggregates>
+            </TelerikGrid>
+        </div>
+    </div>
+}
+
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_Filters"
+       @ref="FiltersModal"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-right">
+            @if (FiltersModal.ModalClass.Equals("Show"))
+            {
+                <FilterReportSelectSection Filters="Filters" OnSearchClick="OnAddNewFilterClick">
+                </FilterReportSelectSection>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalDetailSerials"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="DetailSerials"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="serial">
+                    <td class="td-style td-dt">@serial.ProductSerial</td>
+                    <td class="td-style td-dt">@serial.ProductCode</td>
+                    <td class="td-style td-dt">@serial.RegCode</td>
+                    <td class="td-style td-dt">@serial.ProductTitle</td>
+                    <td class="td-style td-dt">@serial.ActionStatusTitle</td>
+                    <td class="td-style td-dt">@serial.ProductCount</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetUhfLogReportSerialsVm.ProductSerial)"
+                                Title="@TextResources.APP_StringKeys_ProductSerial"></GridColumn>
+                    <GridColumn Field="@nameof(GetUhfLogReportSerialsVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"></GridColumn>
+                    <GridColumn Field="@nameof(GetUhfLogReportSerialsVm.RegCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_Regcode"></GridColumn>
+                    <GridColumn Field="@nameof(GetUhfLogReportSerialsVm.ProductTitle)"
+                                Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                    <GridColumn Field="@nameof(GetUhfLogReportSerialsVm.ActionStatusTitle)"
+                                Title="وضعیت عملیاتی"></GridColumn>
+                    <GridColumn Field="@nameof(GetUhfLogReportSerialsVm.ProductCount)"
+                                Title="@TextResources.APP_StringKeys_ProductValue"></GridColumn>
+                </GridColumns>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@(TextResources.APP_StringKeys_UHFLog_Report + " - " + TextResources.APP_StringKeys_Serials)" />
+                </GridExport>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalDetailProducts"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="DetailProducts"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style td-dt">@product.ProductCode</td>
+                    <td class="td-style td-dt">@product.RegCode</td>
+                    <td class="td-style td-dt">@product.ProductTitle</td>
+                    <td class="td-style td-dt">@product.Count</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetUhfLogReportProductsVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"></GridColumn>
+                    <GridColumn Field="@nameof(GetUhfLogReportProductsVm.RegCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_Regcode"></GridColumn>
+                    <GridColumn Field="@nameof(GetUhfLogReportProductsVm.ProductTitle)"
+                                Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                    <GridColumn Field="@nameof(GetUhfLogReportProductsVm.Count)"
+                                Title="@TextResources.APP_StringKeys_Count"></GridColumn>
+                </GridColumns>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@(TextResources.APP_StringKeys_UHFLog_Report + " - " + TextResources.APP_StringKeys_Report_Exit_SumOnProductCode)" />
+                </GridExport>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

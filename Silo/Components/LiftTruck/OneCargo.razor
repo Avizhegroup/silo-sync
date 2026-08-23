@@ -1,0 +1,54 @@
+﻿
+<div class="div-product div-one-product col-md-@WidthCols @Class"
+     @onpointerup="OnPointerUp"
+     @onpointerdown="OnPointerDown">
+    <div>
+        <div class="text-align-right">
+            <label class="label-gray">
+                @TextResources.APP_StringKeys_ProductSerial :
+            </label>
+        </div>
+        <div class="text-align-left">
+            <label>
+                @Product.ProductSerial
+            </label>
+        </div>
+    </div>
+    <div>
+        <div class="text-align-right">
+            <label class="label-gray">
+                @TextResources.APP_StringKeys_Chart_ProductCode :
+            </label>
+        </div>
+        <div class="text-align-left">
+            <label>
+                @Product.ProductCode
+            </label>
+        </div>
+    </div>
+    <div>
+        <div class="text-align-right">
+            <label class="label-gray text-align-right">
+                @TextResources.APP_StringKeys_Chart_Regcode :
+            </label>
+        </div>
+        <div class="text-align-left">
+            <label>
+                @Product.Regcode
+            </label>
+        </div>
+    </div>
+    <div>
+        <div class="text-align-right">
+            <label class="label-gray">
+                @TextResources.APP_StringKeys_ProductName :
+            </label>
+        </div>
+        <div class="text-align-left">
+            <label>
+                @Product.ProductName
+            </label>
+        </div>
+    </div>
+</div>
+

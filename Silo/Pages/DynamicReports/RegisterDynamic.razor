@@ -1,0 +1,134 @@
+@page "/dynamicreport/register"
+@page "/dynamicreport/register/{FormatId:int?}"
+@inherits SiloBasePage
+@namespace Silo.Pages.DynamicReports
+@using Silo.Application.Features;
+@using Silo.Shared
+@using System.Text.Json;
+@using Silo.Shared.Components.Report
+
+<PageTitle>@PageTitle</PageTitle>
+
+@if (IsFiltersShown)
+{
+    @if (IsInitPageFinished)
+    {
+        <CascadingValue Value="Api">
+            <CascadingValue Value="Notification">
+                <CascadingValue Value="IsLoading">
+                    <ReportAllSection TFilter="RegisterReportDynamicFilterType"
+                                      TColumn="RegisterReportDynamicColumnsType"
+                                      Filters="Filters.Where(p=>p.IsFilterShown).ToList()"
+                                      AddedFilters="ApplyFilters"
+                                      DataColumns="DataColumns.Where(p=>p.IsColumnShown).ToList()"
+                                      AddedDataColumns="AddedDataColumns"
+                                      CalculatingColumns="CalculatingColumns"
+                                      AddedCalculatingColumns="AddedCalculatingColumns"
+                                      PivotColumns="PivotColumns"
+                                      AddedPivotColumn="AddedPivotColumn"
+                                      DataMiningElementColumns="DataMiningElementColumns"
+                                      AddedDataMiningElementColumns="AddedDataMiningElementColumns"
+                                      OnDataMiningElementColumnAddClick="OnDataMiningElementColumnAdd"
+                                      OnDataMiningElementColumnRemoveClick="OnDataMiningElementColumnRemove"
+                                      OnDataColumnAddClick="OnDataColumnAdd"
+                                      OnCalculatingColumnAddClick="OnCalculatingColumnAdd"
+                                      OnPivotColumnAddClick="OnPivotColumnAdd"
+                                      OnDataColumnRemoveClick="OnDataColumnRemove"
+                                      OnCalculatingColumnRemoveClick="OnCalculatingColumnRemove"
+                                      OnPivotColumnRemoveClick="OnPivotColumnRemove"
+                                      OnSearchClick="OnSearchClick"
+                                      OnAddNewFilterClick="OnAddNewFilter"
+                                      OnFilterRemoveClick="OnFilterRemoveClick"
+                                      IsColumnsEditable="FormatId is null">
+                    </ReportAllSection>
+                </CascadingValue>
+            </CascadingValue>
+        </CascadingValue>
+    }
+}
+
+@if (Results.Any() && !IsLoading)
+{
+    <TelerikGrid Data="Results"
+                 PageSize="10"
+                 Navigable="true"
+                 Pageable="true"
+                 Sortable="true"
+                 ScrollMode="GridScrollMode.Scrollable"
+                 Resizable="true"
+                 Width="100%">
+        <RowTemplate Context="product">
+            @{
+                var data = (JsonElement)product;
+                decimal rowCount = 0;
+            }
+            @foreach (var item in GridColumns)
+            {
+                @if (data.TryGetProperty(item, out JsonElement element))
+                {
+                    string valueString = element.ToString().Replace("{}", "0");
+
+                    if (valueString.HasNoValue())
+                    {
+                        valueString = "0";
+                    }
+
+                    <td class="td-style">@valueString</td>
+                    @if (ColumnAgg.ContainsKey(item))
+                    {
+                        rowCount += decimal.Parse(valueString);
+                    }
+                }
+            }
+            @if (AddedPivotColumn is not null)
+            {
+                <td class="td-style">@rowCount</td>
+            }
+        </RowTemplate>
+        <GridColumns>
+            @foreach (var item in GridColumns)
+            {
+                <GridColumn Title="@item"
+                            Width="120px">
+                    <FooterTemplate>
+                        @if (ColumnAgg.ContainsKey(item))
+                        {
+                            <span>@ColumnAgg[item]</span>
+                        }
+                    </FooterTemplate>
+                </GridColumn>
+            }
+            @if (AddedPivotColumn is not null)
+            {
+                <GridColumn Title="@TextResources.APP_StringKeys_SumValue">
+                    <FooterTemplate>
+                        @TotalSum
+                    </FooterTemplate>
+                </GridColumn>
+            }
+        </GridColumns>
+        <GridToolBarTemplate>
+            <TelerikButton Icon="@FontIcon.FileExcel" OnClick="@OnExcelExportClick" Class="green-excel">
+                @TextResources.APP_StringKeys_ExportExcel
+            </TelerikButton>
+        </GridToolBarTemplate>
+    </TelerikGrid>
+
+    <DynamicChart Results="Results"
+                  AddedDataColumns="AddedDataColumns.Select(p=> p.Title).ToList()"
+                  AddedCalculatingColumns="AddedCalculatingColumns.Select(p=> p.Title).ToList()"
+                  PivotColumns="PivotColumnTitles">
+    </DynamicChart>
+}
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<style type="text/css">
+    .td-dt {
+        font-size: 80%;
+    }
+</style>

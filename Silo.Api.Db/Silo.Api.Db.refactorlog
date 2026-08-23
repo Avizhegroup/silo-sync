@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="80e325a3-262b-4afe-be7c-c691d147d2d6" ChangeDateTime="09/10/2023 20:41:06">
+    <Property Name="ElementName" Value="[dbo].[tbl_TagsMovement].[ RMovementActionDocumentId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[tbl_TagsMovement]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RMovementActionDocumentId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9a22711a-61de-448c-a11f-22af2a449819" ChangeDateTime="09/10/2023 20:48:00">
+    <Property Name="ElementName" Value="[dbo].[tbl_DocumentStatus].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[tbl_DocumentStatus]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="fld_DocumentStatusId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="cd9cee1e-8790-43d0-a508-bee6d2df5234" ChangeDateTime="07/14/2024 00:26:01">
+    <Property Name="ElementName" Value="[dbo].[tbl_Station].[fld_StationActionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[tbl_Station]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="fld_StationActionType" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9c7f7051-ce56-4dcd-a60b-987566b4caaf" ChangeDateTime="09/29/2024 13:17:17">
+    <Property Name="ElementName" Value="[dbo].[tbl_Station].[nvarchar(50)]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[tbl_Station]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="fld_StationMacAddress" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6900a35e-131e-498e-b2c3-c6dcabf01094" ChangeDateTime="11/24/2024 11:29:08">
+    <Property Name="ElementName" Value="[dbo].[tbl_Products].[ProductImageName]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[tbl_Products]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ProductGalleryId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="eb3e1c39-4eeb-42c3-bbff-b1fc7c9ca91a" ChangeDateTime="08/20/2025 08:14:24">
+    <Property Name="ElementName" Value="[dbo].[tbl_TruckCrossCause].[fld_TruckCrossCauseActionTypeId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[tbl_TruckCrossCause]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="fld_TruckCrossCauseEnterActionTypeId" />
+  </Operation>
+</Operations>

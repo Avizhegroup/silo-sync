@@ -1,0 +1,331 @@
+@page "/report/enter"
+@inherits SiloBasePage
+@using Silo.Application.Features;
+@using Telerik.Blazor.Components.Common.Dropdowns
+@namespace Silo.Pages.Product
+
+<PageTitle>@PageTitle</PageTitle>
+
+@if (IsFiltersShown)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center">
+            <EditForm Model="Request"
+                      OnInvalidSubmit="OnInvalidSubmit"
+                      OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="form-search-span" style="margin-top:-10px !important;">
+                    <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:5px!important;margin-top:15px;">
+                        <label style="margin-right: -2px !important;">@TextResources.APP_StringKeys_ActionType :</label>
+                        <TelerikDropDownList Data="ActionTypes"
+                                             TextField="@nameof(GetAllActionTypesDto.Title)"
+                                             ValueField="@nameof(GetAllActionTypesDto.Code)"
+                                             @bind-Value="Request.ActionType"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="200px"
+                                             Class="drop-all"
+                                             OnChange="OnActionTypeChange">
+                            <DropDownListSettings>
+                                <DropDownListPopupSettings Class="text-align-right" />
+                            </DropDownListSettings>
+                        </TelerikDropDownList>
+                        <label style="margin-right: 85px;">
+                            @TextResources.APP_StringKeys_Warehouse:
+                        </label>
+                        <TelerikDropDownList @ref="WarehousesDrop"
+                                             Data="SearchWarehouses"
+                                             TextField="DestinationTitle"
+                                             ValueField="DestinationCode"
+                                             @bind-Value="Request.DestinationCode"
+                                             Width="200px"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                        <label style="margin-right: 33px;">@TextResources.APP_StringKeys_FromDate:</label>
+                        <DatePicker InputClass=" pointer "
+                                    Width="100px"
+                                    @bind-Value="Request.FromDate"></DatePicker>
+                        <label style="margin-right: 4px;">@TextResources.APP_StringKeys_ToDate:</label>
+                        <DatePicker InputClass=" pointer "
+                                    Width="100px"
+                                    @bind-Value="Request.ToDate"></DatePicker>
+                        <label style="margin-right: 18px;">@TextResources.APP_StringKeys_Chart_Regcode:</label>
+                        <TelerikTextBox @bind-Value="Request.TechnicalCode" Class="form-controlpointer" Width="200px"></TelerikTextBox>
+                        <label style="margin-right: -50px; z-index:1;">@TextResources.APP_StringKeys_Like:</label>
+                        <TelerikCheckBox @bind-Value="Request.TechnicalCodeLike">
+                        </TelerikCheckBox>
+                    </div>
+                    <div class=" d-flex flex-row align-items-center flex-wrap">
+                        <label style="margin-right: 21px;">@TextResources.APP_StringKeys_ProductCode:</label>
+                        <TelerikTextBox @bind-Value="Request.ProductCode" Class="form-control input-search-span-lg pointer"
+                                        Width="200px!important"></TelerikTextBox>
+                        <button type="button" class="btn btn-light" @onclick="async ()=> await ProductCodeModal.Show()">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                        </button>
+                        <label style="margin-right: 30px;">@TextResources.APP_StringKeys_ProductSerial:</label>
+                        <TelerikTextBox @bind-Value="Request.ProductSerial" Class="form-control input-search-span-lg pointer"
+                                        Width="200px!important"></TelerikTextBox>
+                        <label style="margin-right: 11px;">@TextResources.APP_StringKeys_Chart_Qc:</label>
+                        <TelerikDropDownList Data="Qcs"
+                                             TextField="Title"
+                                             ValueField="Code"
+                                             @bind-Value="Request.Qc"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="200px"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                        <label style="margin-right: 53px;">@TextResources.APP_StringKeys_Product_Size:</label>
+                        <TelerikDropDownList Data="Sizes"
+                                             TextField="Title"
+                                             ValueField="Code"
+                                             @bind-Value="Request.Size"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="200px"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                    </div>
+                    <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:10px!important;">
+                        <label style="margin-right: 14px;">
+                            @TextResources.APP_StringKeys_ProductGroup:
+                        </label>
+                        <TelerikDropDownList Data="Groups"
+                                             TextField="Title"
+                                             ValueField="Code"
+                                             @bind-Value="Request.ProductGroup"
+                                             Width="200px"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                        <label style="margin-right: 66px;">@TextResources.APP_StringKeys_ProductBrand:</label>
+                        <TelerikDropDownList Data="Brands"
+                                             TextField="Title"
+                                             ValueField="Code"
+                                             @bind-Value="Request.ProductBrand"
+                                             Width="200px"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                        <label style="margin-right: 33px;">@TextResources.APP_StringKeys_Field_ProductType:</label>
+                        <TelerikDropDownList Data="ProductTypes"
+                                             TextField="Title"
+                                             ValueField="Code"
+                                             @bind-Value="Request.ProductType"
+                                             Width="200px"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                        <label style="margin-right: 16px;">@TextResources.APP_StringKeys_Station:</label>
+                        <TelerikDropDownList Data="Stations"
+                                             TextField="Name"
+                                             ValueField="Code"
+                                             @bind-Value="Request.GateCode"
+                                             Width="200px"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                    </div>
+
+                    <div class=" d-flex flex-row align-items-center flex-wrap search-button-div" style="top: 140px;">
+                        <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                                style="margin-left: 2px;" @onclick="OnClickClear">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                        </button>
+                        <button type="submit" id="btn-send" class="btn btn-primary" title="@TextResources.APP_StringKeys_Send">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                        </button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@if (Products is not null)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center">
+            <br />
+            <TelerikGrid Data="Products"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style">@product.ProductCode</td>
+                    <td class="td-style">@product.ProductName</td>
+                    <td class="td-style">@product.RegCode</td>
+                    <td class="td-style">@product.Size</td>
+                    <td class="td-style">@product.Qc</td>
+                    <td class="td-style">@product.ProductBrand</td>
+                    <td class="td-style">@product.ProductGroup</td>
+                    <td class="td-style">@product.ProductType</td>
+                    <td class="td-style">@product.ActionTypeTitle)</td>
+                    <td class="td-style">@product.StoreTitle</td>
+                    <td class="td-style">@product.Count</td>
+                    <td class="td-style">@product.SumCount</td>
+                    <td class="td-style">
+                        <button @onclick="async ()=> await OnClickRowDetails(product)"
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                            @TextResources.APP_StringKeys_Details
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridToolBarTemplate>
+                    <TelerikButton OnClick="@OnMasterExcelExportClick" Class="green-excel" Title="@TextResources.APP_StringKeys_ExportExcel">
+                        <MaterialIcon IconName="@MaterialIconsHelper.DataTable" />
+                    </TelerikButton>
+                    <TelerikButton OnClick="@OnMasterExportToPdfClick" Class="orange-pdf" Title="@TextResources.APP_StringKeys_Print">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Print" />
+                    </TelerikButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true"
+                                     FileName="@TextResources.APP_StringKeys_View_Report_Enter" />
+                </GridExport>
+                <GridSettings>
+                </GridSettings>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllEnterProductVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                                Width="150px">
+                        <FooterTemplate>
+                            تعداد کد کالا: @context.Count
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductVm.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductVm.RegCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductVm.Size)"
+                                Title="@TextResources.APP_StringKeys_Product_Size"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductVm.Qc)"
+                                Title="@TextResources.APP_StringKeys_Chart_Qc"
+                                Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductVm.ProductBrand)"
+                                Title="@TextResources.APP_StringKeys_ProductBrand"
+                                Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductVm.ProductGroup)"
+                                Title="@TextResources.APP_StringKeys_ProductGroup"
+                                Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductVm.ProductType)"
+                                Title="@TextResources.APP_StringKeys_Field_ProductType"
+                                Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductVm.ActionType)"
+                                Title="@TextResources.APP_StringKeys_ActionType"
+                                Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductVm.DestinationCode)"
+                                Title="@TextResources.APP_StringKeys_Warehouse"
+                                Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductVm.Count)"
+                                Title="@TextResources.APP_StringKeys_Count"
+                                Width="80px">
+                        <FooterTemplate>
+                            تعداد کل: @context.Sum
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductVm.SumCount)"
+                                Title="@TextResources.APP_StringKeys_Summery_SumCount"
+                                Width="100px">
+                        <FooterTemplate>
+                            جمع مقدار: @context.Sum
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Width="60px"></GridColumn>
+                </GridColumns>
+                <GridAggregates>
+                    <GridAggregate Field=@nameof(GetAllEnterProductVm.SumCount) Aggregate="@GridAggregateType.Sum" />
+                    <GridAggregate Field=@nameof(GetAllEnterProductVm.Count) Aggregate="@GridAggregateType.Sum" />
+                    <GridAggregate Field=@nameof(GetAllEnterProductVm.ProductCode) Aggregate="@GridAggregateType.Count" />
+                </GridAggregates>
+            </TelerikGrid>
+        </div>
+    </div>
+}
+
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalDetails"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="Details"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style td-dt">@product.ProductCode</td>
+                    <td class="td-style td-dt">@product.ProductSerial</td>
+                    <td class="td-style td-dt">@product.ProductName</td>
+                    <td class="td-style td-dt">@product.Size</td>
+                    <td class="td-style td-dt">@product.TechnicalCode</td>
+                    <td class="td-style td-dt">@product.Qc</td>
+                    <td class="td-style td-dt">@product.ProductBrand</td>
+                    <td class="td-style td-dt">@product.ProductGroup</td>
+                    <td class="td-style td-dt">@product.ProductType</td>
+                    <td class="td-style td-dt">@product.ProductCount</td>
+                    <td class="td-style td-dt">@product.StationName</td>
+                    <td class="td-style td-dt">@product.Line</td>
+                    <td class="td-style td-dt">@product.Shift</td>
+                    <td class="td-style td-dt">@product.ExitDateTime.ToNormalPersianDateTime()</td>
+                    <td class="td-style td-dt">@product.EnterDateTime</td>
+                    <td class="td-style td-dt">@product.TagStatus</td>
+                    <td class="td-style td-dt">@product.Username</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode" Width="120px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.ProductSerial)"
+                                Title="@TextResources.APP_StringKeys_ProductSerial" Width="55px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName"
+                                Width="150px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.Size)"
+                                Title="@TextResources.APP_StringKeys_Product_Size" Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.TechnicalCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_Regcode" Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.Qc)"
+                                Title="@TextResources.APP_StringKeys_QC" Width="60px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.ProductBrand)"
+                                Title="@TextResources.APP_StringKeys_ProductBrand" Width="70px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.ProductGroup)"
+                                Title="@TextResources.APP_StringKeys_ProductGroup" Width="70px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.ProductType)"
+                                Title="@TextResources.APP_StringKeys_Field_ProductType" Width="70px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.ProductCount)"
+                                Title="@TextResources.APP_StringKeys_ProductCount" Width="50px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.StationName)"
+                                Title="@TextResources.APP_StringKeys_Station" Width="110px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.Line)"
+                                Title="@TextResources.APP_StringKeys_Line" Width="70px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.Shift)"
+                                Title="@TextResources.APP_StringKeys_Chart_Shift" Width="60px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.ExitDateTime)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductDate" Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.EnterDateTime)"
+                                Title="@TextResources.APP_StringKeys_EnterDate" Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.TagStatus)"
+                                Title="@TextResources.APP_StringKeys_Field_Status" Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllEnterProductDetailsVm.Username)"
+                                Title="@TextResources.APP_StringKeys_User" Width="80px"></GridColumn>
+                </GridColumns>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel" Title="@TextResources.APP_StringKeys_ExportExcel">
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Details" />
+                </GridExport>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<ProductCodeModal @ref="ProductCodeModal"
+                  OnClickProductCode="OnClickProductCode">
+</ProductCodeModal>

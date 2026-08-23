@@ -1,0 +1,548 @@
+@page "/document/aggregate"
+@page "/document/aggregate/{RedirectedDocumentCode}/{RedirectedDocumentType}"
+
+@inherits SiloBasePage
+@namespace Silo.Modules.Document.Pages
+@using Silo.Application.Features;
+@using Silo.Identity.Client;
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Silo.Modules.Document.Components
+@using Telerik.Blazor.Components
+@using Silo.Shared.Components
+
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+        <div class="form-search-span" style="padding-top:10px;padding-bottom:10px;">
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-right:15px;">
+                @if (GetSuggest == false)
+                {
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Document_Type :</label>
+                    <TelerikDropDownList Data="DocumentTypes"
+                                     TextField="@nameof(GetAllDocumentTypesVm.Title)"
+                                     ValueField="@nameof(GetAllDocumentTypesVm.Code)"
+                                     @bind-Value="CurrentAggregate.CurrentAggType"
+                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                     Filterable="true"
+                                     FilterOperator="StringFilterOperator.Contains"
+                                     Width="180px"
+                                     Class="drop-all">
+                        <DropDownListSettings>
+                            <DropDownListPopupSettings Class="text-align-right" />
+                        </DropDownListSettings>
+                    </TelerikDropDownList>
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_DocumentStatus :</label>
+                    <TelerikDropDownList Data="DocumentStatuses"
+                                     TextField="Title"
+                                     ValueField="Id"
+                                     @bind-Value="CurrentAggregate.CurrentAggStatus"
+                                     Filterable="true"
+                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                     FilterOperator="StringFilterOperator.Contains"
+                                     Width="180px"
+                                     Class="drop-all">
+                        <DropDownListSettings>
+                            <DropDownListPopupSettings Class="text-align-right" />
+                        </DropDownListSettings>
+                    </TelerikDropDownList>
+                }
+                else
+                {
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Document_Type :</label>
+                    <TelerikDropDownList Data="DocumentTypes"
+                                     TextField="@nameof(GetAllDocumentTypesVm.Title)"
+                                     ValueField="@nameof(GetAllDocumentTypesVm.Code)"
+                                     @bind-Value="CurrentAggregate.CurrentAggType"
+                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                     Filterable="true"
+                                     FilterOperator="StringFilterOperator.Contains"
+                                     Width="180px"
+                                     Enabled="false"
+                                     Class="drop-all">
+                        <DropDownListSettings>
+                            <DropDownListPopupSettings Class="text-align-right" />
+                        </DropDownListSettings>
+                    </TelerikDropDownList>
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_DocumentStatus :</label>
+                    <TelerikDropDownList Data="DocumentStatuses"
+                                     TextField="Title"
+                                     ValueField="Id"
+                                     @bind-Value="CurrentAggregate.CurrentAggStatus"
+                                     Filterable="true"
+                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                     FilterOperator="StringFilterOperator.Contains"
+                                     Width="180px"
+                                     Enabled="false"
+                                     Class="drop-all">
+                        <DropDownListSettings>
+                            <DropDownListPopupSettings Class="text-align-right" />
+                        </DropDownListSettings>
+                    </TelerikDropDownList>
+                }
+                <button type="button" class="btn btn-success" style="margin-right:20px;"
+                        title="@TextResources.APP_StringKeys_Search"
+                        @onclick="OnGetSuggestButtonClick">
+                    @TextResources.APP_StringKeys_Get_Aggregate_Suggests
+                </button>
+                <button type="button" class="btn btn-primary" style="margin-right:20px;"
+                        title="@TextResources.APP_StringKeys_Search"
+                        @onclick="OnAddNewAggSuggestClick">
+                    @TextResources.APP_StringKeys_Add_Document_Aggregate
+                </button>
+                <button type="button" class="btn btn-secondary" style="margin-right:20px;"
+                        title="@TextResources.APP_StringKeys_Search"
+                        @onclick="OnGetAggregatedButtonClick">
+                    @TextResources.APP_StringKeys_Get_Aggregated_Documents
+                </button>
+                <button type="button" class="btn btn-warning" style="margin-right:20px;"
+                        title="@TextResources.APP_StringKeys_Clear"
+                        @onclick="OnClearCkick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </div>
+    @if (AggregateSuggests is not null)
+    {
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+            <div class="form-search-span">
+                <div>
+                    <h6 class="form-title card-title" style="text-align: center !important;">
+                        @TextResources.APP_StringKeys_Aggregate_Suggests
+                    </h6>
+                </div>
+                <TelerikGrid Data="AggregateSuggests"
+                         @ref="GridAggregateSuggests"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                    <RowTemplate Context="suggest">
+                        <td class="td-style">@suggest.DocAggCode</td>
+                        <td class="td-style">@(DocumentTypes.FirstOrDefault(p => p.Code.Equals(suggest.DocumentType))?.Title)</td>
+                        <td class="td-style">@suggest.DocumentCount</td>
+                        <td class="td-style">@suggest.ItemSum</td>
+                        <td class="td-style">@suggest.GroupDataValue1</td>
+                        <td class="td-style">@suggest.GroupDataValue2</td>
+                        <td class="td-style">@suggest.GroupDataValue3</td>
+                        <td class="td-style">
+                            <button @onclick="async ()=> await OnAggSuggestDetailsModalClick(suggest.DocAggCode)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Details
+                            </button>
+                            <button @onclick="async ()=> await OnApproveModalClick(suggest.DocAggCode)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Approve_Aggregate_Docs
+                            </button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetAllDocAggSuggestVm.DocAggCode)"
+                                Title="@TextResources.APP_StringKeys_DocKey"
+                                Width="450px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllDocAggSuggestVm.DocumentType)"
+                                Title="@TextResources.APP_StringKeys_Document_Type"
+                                Width="120px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllDocAggSuggestVm.DocumentCount)"
+                                Title="@TextResources.APP_StringKeys_Document_Count"
+                                Width="80px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllDocAggSuggestVm.ItemSum)"
+                                Title="@TextResources.APP_StringKeys_Item_Sum"
+                                Width="80px"></GridColumn>
+                        <GridColumn Field=""
+                                Title="@(DocumentGroupFields?.FirstOrDefault())"></GridColumn>
+                        <GridColumn Field=""
+                                Title="@(DocumentGroupFields?.Skip(1).FirstOrDefault())"></GridColumn>
+                        <GridColumn Field=""
+                                Title="@(DocumentGroupFields?.Skip(2).FirstOrDefault())"></GridColumn>
+                        <GridColumn Width="200px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            </div>
+        </div>
+
+    }
+    @if (AggregatedDocuments.Any())
+    {
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+            <div class="form-search-span">
+                <div>
+                    <h6 class="form-title card-title" style="text-align: center !important;">
+                        @TextResources.APP_StringKeys_Aggregated
+                    </h6>
+                </div>
+                <TelerikGrid Data="AggregatedDocuments"
+                         @ref="GridAggregatedDocs"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true"
+                         OnRowRender="OnRowDocRenderHandler">
+                    <RowTemplate Context="aggregated">
+                        <td class="td-style">@aggregated.Key</td>
+                        <td class="td-style">@(DocumentTypes.FirstOrDefault(p => p.Code.Equals(aggregated.DocumentType))?.Title)</td>
+                        <td class="td-style">
+                            <button @onclick="async ()=> await OnAggregatedDetailsModalClick(aggregated.Key,aggregated.DocumentType,aggregated.DocumentStatusId)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Details
+                            </button>
+                            <button @onclick="async ()=> await OnRevokeButtonClick(aggregated)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Revoke_Word
+                            </button>
+                            <button @onclick="async ()=> await OnSingleDocPrintClick(aggregated)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Print
+                            </button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetAllDocumentHeaderVm.Key)"
+                                Title="@TextResources.APP_StringKeys_DocKey"
+                                Width="450px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllDocumentHeaderVm.DocumentType)"
+                                Title="@TextResources.APP_StringKeys_Document_Type"
+                                Width="120px"></GridColumn>
+                        <GridColumn Width="100px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            </div>
+        </div>
+    }
+</div>
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalSuggestDetails"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="form-search-span" style="padding-top:10px;">
+            <EditForm Model="CrudDocKey"
+                      OnValidSubmit="OnAggregatableDocValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="bg-danger text-align-right">
+                    <ValidationSummary />
+                    @if (AddDocError.HasValue())
+                    {
+                        <ul>
+                            <li>
+                                @AddDocError
+                            </li>
+                        </ul>
+                    }
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-right:15px;">
+                    <label style="margin-right:15px;">@TextResources.APP_StringKeys_DocKey</label>
+                    <TelerikTextBox Class="form-control input-search-span-lg pointer"
+                                    @bind-Value="CrudDocKey.AddDocKey"></TelerikTextBox>
+                    <button type="submit" class="btn btn-primary" style="margin-left: 5px;" title="@TextResources.APP_StringKeys_Add">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Add"></MaterialIcon>
+                    </button>
+                    <button type="button" class="btn btn-light" title="@TextResources.APP_StringKeys_Search_Doc"
+                            @onclick="OnAggDocModalClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.List"></MaterialIcon>
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+        <div class="text-align-center">
+            <TelerikGrid @ref="GridSuggestDetails"
+                         Data="AggregateSuggestDetails"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <DetailTemplate>
+                    @{
+                        var details = context as GetAllDocAggSuggestDetailVm;
+
+                        <DocumentItemGridHierarchy DocumentKey="@details.DocumentKey" DocumentType="@details.DocumentType"></DocumentItemGridHierarchy>
+                    }
+                </DetailTemplate>
+                <RowTemplate Context="element">
+                    <td class="td-style td-dt">@element.DocumentKey</td>
+                    <td class="td-style">@(DocumentTypes.FirstOrDefault(p => p.Code.Equals(element.DocumentType))?.Title)</td>
+                    <td class="td-style td-dt">@element.ImportDateTime</td>
+                    <td class="td-style td-dt">@element.ItemSum</td>
+                    <td class="td-style td-dt">@element.DocumentData</td>
+                    <td class="td-style td-dt">
+                        <button @onclick="()=> OnRemoveModalClick(element.DocumentKey)"
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                            @TextResources.APP_StringKeys_Delete
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.DocumentKey)"
+                                Title="@TextResources.APP_StringKeys_Doc"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.DocumentType)"
+                                Title="@TextResources.APP_StringKeys_Document_Type"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.ImportDateTime)"
+                                Title="@TextResources.APP_StringKeys_DateTime"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.ItemSum)"
+                                Title="@TextResources.APP_StringKeys_Item_Sum"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.DocumentData)"
+                                Title="@TextResources.APP_StringKeys_Document_Properties"
+                                Width="500px"></GridColumn>
+                    <GridColumn Width="50px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Search_Doc"
+       @ref="ModalAggDoc"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok"
+       OnCloseModal="async()=>await ModalSuggestDetails.Open(new())">
+    <ModalBodyContentHtml>
+        <div class="form-search-span" style="padding-top:10px;">
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-right:15px;">
+                <label style="margin-right:15px;">@TextResources.APP_StringKeys_Document_Properties</label>
+                <input @bind-value="SearchDocText" class="form-control input-search-span-lg pointer" />
+                <button type="button" class="btn btn-warning" style="margin-left: 5px;"
+                        @onclick="OnAggDocRefreshClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                </button>
+                <button type="button" class="btn btn-primary" style="margin-left: 5px;"
+                        @onclick="OnAggDocSearchClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+        <div class="text-align-center">
+            <TelerikGrid Data="AggregatableDocsSearch"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <DetailTemplate>
+                    @{
+                        var details = context as GetAllAggDocVm;
+
+                        <DocumentItemGridHierarchy DocumentKey="@details.DocumentKey" DocumentType="@details.DocumentType"></DocumentItemGridHierarchy>
+                    }
+                </DetailTemplate>
+                <RowTemplate Context="element">
+                    <td class="td-style td-dt">@element.DocumentKey</td>
+                    <td class="td-style">@(DocumentTypes.FirstOrDefault(p => p.Code.Equals(element.DocumentType))?.Title)</td>
+                    <td class="td-style td-dt">@element.ImportDateTime</td>
+                    <td class="td-style td-dt">@element.ItemSum</td>
+                    <td class="td-style td-dt">@element.DocumentData</td>
+                    <td class="td-style td-dt">
+                        <button @onclick="async ()=>await OnAggregatableDocSelectClick(element.DocumentKey)"
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                            @TextResources.APP_StringKeys_Add
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.DocumentKey)"
+                                Title="@TextResources.APP_StringKeys_Doc"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.DocumentType)"
+                                Title="@TextResources.APP_StringKeys_Document_Type"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.ImportDateTime)"
+                                Title="@TextResources.APP_StringKeys_DateTime"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.ItemSum)"
+                                Title="@TextResources.APP_StringKeys_Item_Sum"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.DocumentData)"
+                                Title="@TextResources.APP_StringKeys_Document_Properties"
+                                Width="450px"></GridColumn>
+                    <GridColumn Width="50px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalAggregateDetails"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="AggregateDetails"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <DetailTemplate>
+                    @{
+                        var details = context as GetAllDocAggSuggestDetailVm;
+
+                        <DocumentItemGridHierarchy DocumentKey="@details.DocumentKey" DocumentType="@details.DocumentType"></DocumentItemGridHierarchy>
+                    }
+                </DetailTemplate>
+                <RowTemplate Context="element">
+                    <td class="td-style td-dt">@element.DocumentKey</td>
+                    <td class="td-style">@(DocumentTypes.FirstOrDefault(p => p.Code.Equals(element.DocumentType))?.Title)</td>
+                    <td class="td-style td-dt">@element.ImportDateTime</td>
+                    <td class="td-style td-dt">@element.ItemSum</td>
+                    <td class="td-style td-dt">@element.DocumentData</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.DocumentKey)"
+                                Title="@TextResources.APP_StringKeys_Doc"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.DocumentType)"
+                                Title="@TextResources.APP_StringKeys_Document_Type"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.ImportDateTime)"
+                                Title="@TextResources.APP_StringKeys_DateTime"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.ItemSum)"
+                                Title="@TextResources.APP_StringKeys_Item_Sum"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.DocumentData)"
+                                Title="@TextResources.APP_StringKeys_Document_Properties"
+                                Width="500px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalAggregatedDetails"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="AggregatedDetails"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <DetailTemplate>
+                    @{
+                        var details = context as GetAggregatedDocDetailsVm;
+
+                        <DocumentItemGridHierarchy DocumentKey="@details.DocumentKey" DocumentType="@details.DocumentType"></DocumentItemGridHierarchy>
+                    }
+                </DetailTemplate>
+                <RowTemplate Context="element">
+                    <td class="td-style td-dt">@element.DocumentKey</td>
+                    <td class="td-style">@(DocumentTypes.FirstOrDefault(p => p.Code.Equals(element.DocumentType))?.Title)</td>
+                    <td class="td-style td-dt">@element.ImportDateTime</td>
+                    <td class="td-style td-dt">@element.ItemSum</td>
+                    <td class="td-style td-dt">@element.DocumentData</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.DocumentKey)"
+                                Title="@TextResources.APP_StringKeys_Doc"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.DocumentType)"
+                                Title="@TextResources.APP_StringKeys_Document_Type"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.ImportDateTime)"
+                                Title="@TextResources.APP_StringKeys_DateTime"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.ItemSum)"
+                                Title="@TextResources.APP_StringKeys_Item_Sum"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocAggSuggestDetailVm.DocumentData)"
+                                Title="@TextResources.APP_StringKeys_Document_Properties"
+                                Width="500px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_Aggregate_CheckBeforeApprove"
+       @ref="ModalApprove"
+       Size="ModalSize.Large"
+       CancelBtnText="@TextResources.APP_StringKeys_Close"
+       YesBtnText="@TextResources.APP_StringKeys_Approve_Aggregate_Docs"
+       OnYesModal="OnApproveAggregateClick"
+       YesBtnClass="btn-danger">
+    <ModalBodyContentHtml>
+        <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:10px;">
+            <label style="margin-right: 30px !important;">@TextResources.APP_StringKeys_Description :</label>
+            <TelerikTextBox @bind-Value="CurrentAggregate.Description"
+                            Class="form-control input-search-span-lg pointer" Width="400px !important">
+            </TelerikTextBox>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Check_Before_Revoke_Aggregate"
+       @ref="RevokeModal"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Disconfirm"
+       OkBtnText="@TextResources.APP_StringKeys_Approve"
+       OnOkModal="OnRevokeClick">
+    <ModalBodyContentHtml>
+        <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:10px;">
+            <label style="margin-right: 30px !important;">@TextResources.APP_StringKeys_Description :</label>
+            <TelerikTextBox @bind-Value="RevokeAggregateDescription"
+                            Class="form-control input-search-span-lg pointer" Width="400px !important">
+            </TelerikTextBox>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_Attention"
+       @ref="ModalPrint"
+       Size="ModalSize.Large"
+       CancelBtnText="@TextResources.APP_StringKeys_Close"
+       YesBtnText="@TextResources.APP_StringKeys_Print"
+       OnYesModal="OnApprovePrintClick"
+       YesBtnClass="btn-danger">
+    <ModalBodyContentHtml>
+        <div class="text-align-center bg-success text-light">
+            @TextResources.APP_StringKeys_Message_Success .
+            @TextResources.APP_StringKeys_Print_Aggregated_Document
+        </div>
+        <br />
+        <div class="text-align-center">
+            @CurrentAggregate.CurrentAggCode?.Replace('+', '-')
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_Attention"
+       @ref="ModalRemove"
+       Size="ModalSize.Large"
+       CancelBtnText="@TextResources.APP_StringKeys_Close"
+       YesBtnText="@TextResources.APP_StringKeys_Remove"
+       OnYesModal="OnSuggestDocRemoveClick"
+       OnCancelModal="async ()=>await ModalSuggestDetails.Open(new())"
+       YesBtnClass="btn-danger">
+    <ModalBodyContentHtml>
+        <div class="text-align-center bg-danger text-light">
+            @TextResources.APP_StringKeys_Remove_CheckBeforeDelete
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

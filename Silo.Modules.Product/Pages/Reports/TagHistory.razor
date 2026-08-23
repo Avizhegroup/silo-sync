@@ -1,0 +1,1021 @@
+@page "/report/taghistory"
+@page "/report/taghistory/{productserial?}"
+@inherits SiloBasePage
+@namespace Silo.Modules.Product.Pages
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components.Web
+@using Newtonsoft.Json.Linq;
+@using Silo.Application.Features;
+@using Silo.Modules.Product.Components
+@using Silo.Shared.Components
+@using Silo.Shared.Components.Print
+@using Telerik.Blazor.Components
+
+<PageTitle>@PageTitle</PageTitle>
+<div class="row col-md-12">
+    @if (IsFiltersShown)
+    {
+        <TagFilterBar OnSerialSelected="OnSerialSelected"
+                      OnClear="OnFilterClear" />
+    }
+    @if (TimeLine.Any())
+    {
+        <div class="card card-stats col-md-4 text-align-center" style="margin-top: 5px; flex-direction:row; padding:20px; margin-right:0px;margin-left:0px;">
+            <div>
+                <TelerikStepper Linear="false" Orientation="@StepperOrientation.Vertical" StepType="@StepperStepType.Steps" @bind-Value="ActiveStepperIndex">
+                    <StepperSteps>
+                        @foreach (var tagEvent in TimeLine)
+                        {
+                            <StepperStep Class="telerik-stepper-label">
+                                <Template>
+                                    <button class="btn @tagEvent.Color" @onclick="async () => await OnStepperChanged(tagEvent.TagEventType)">
+                                        <MaterialIcon IconName="@tagEvent.Icon"></MaterialIcon>
+                                    </button>
+                                    <div style="margin-right:5px; flex-direction:column; display:flex;" @onclick="async () => await OnStepperChanged(tagEvent.TagEventType)">
+                                        <span style="margin-bottom: 4px;">
+                                            <b>
+                                                @tagEvent.TagEventDescription
+                                            </b>
+                                        </span>
+                                        <span class="btn @tagEvent.Color badge" style="float:right; width: fit-content; direction:ltr;">
+                                            @if (tagEvent.TagEventType == TagEventType.Revoke)
+                                            {
+                                                @tagEvent.TagEventDateTimeShamsi
+                                            }
+                                            else
+                                            {
+                                                @(PersianCalendarTools.GregorianToPersian(tagEvent.TagEventDateTime) + " " +
+                                                                                    tagEvent.TagEventDateTime.ToShortTimeString())
+                                            }
+                                        </span>
+                                    </div>
+                                </Template>
+                            </StepperStep>
+                        }
+                        <StepperStep Class="telerik-stepper-label">
+                            <Template>
+                                <button class="btn btn-info">
+                                    <MaterialIcon IconName="@MaterialIconsHelper.Start"></MaterialIcon>
+                                </button>
+                                <div style="margin-right:5px; flex-direction:column; display:flex;">
+                                    <span style="margin-bottom: 4px;">
+                                        <b>
+                                            شروع
+                                        </b>
+                                    </span>
+                                </div>
+                            </Template>
+                        </StepperStep>
+
+                    </StepperSteps>
+                </TelerikStepper>
+            </div>
+        </div>
+        <div class="card card-stats col-md-8 text-align-center" style="margin-top: 5px; margin-right:0px;margin-left:0px;">
+            <TelerikTabStrip ActiveTabIndex="@ActiveTabIndex" 
+                             ActiveTabIndexChanged="@OnTabChanged">
+                <TabStripTab Title="@TextResources.APP_StringKeys_Tag_Cargo">
+                    @if (ProductInfos.Any())
+                    {
+                        <div class="card card-stats text-align-center" style="margin-top: 5px; flex-flow:wrap;">
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right:65px !important;">@TextResources.APP_StringKeys_ProductSerial :</label>
+                                <input readonly="readonly" type="text" @bind-value="ProductInfos[0].ProductSerial" style=" width: 140px !important; font-size: 50%;" class="form-control input-search-span-lg pointer" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right:34px !important;">سریال قبلی :</label>
+                                <input readonly="readonly" type="text" @bind-value="ProductInfos[0].OldProductSerial" style="width: 140px !important; font-size: 50%;" class="form-control input-search-span-lg pointer" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right:27px !important;">@TextResources.APP_StringKeys_TagEPC :</label>
+                                <input readonly="readonly" type="text" @bind-value="ProductInfos[0].TagEpc" style="width: 140px !important; font-size: 50%;" class="form-control input-search-span-lg pointer" />
+                            </div>
+
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 8px !important;">@TextResources.APP_StringKeys_TagStatus :</label>
+                                <input readonly="readonly" type="text"
+                                       @bind-value="ProductInfos[0].TagStatusTitle"
+                                       style="width: 140px !important;" class="form-control input-search-span-lg pointer" />
+                            </div>
+                            @if (ProductInfos[0].TagStatus.Equals("1"))
+                            {
+                                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                    <label style="margin-right: 75px!important;">@TextResources.APP_StringKeys_Warehouse :</label>
+                                    <input readonly="readonly" type="text" @bind-value="ProductInfos[0].Warehouse" class="form-control input-search-span-lg" style="    width: 140px !important;" />
+                                </div>
+                                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                    <label style="margin-right: 55px!important;">@TextResources.APP_StringKeys_Zone :</label>
+                                    <input readonly="readonly" type="text" @bind-value="ProductInfos[0].TagZone" class="form-control input-search-span-lg" style="    width: 140px !important;" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                    <label style="margin-right: 75px!important;">@TextResources.APP_StringKeys_Warehouse :</label>
+                                    <input readonly="readonly" type="text" class="form-control input-search-span-lg" style="    width: 140px !important;" />
+                                </div>
+                                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                    <label style="margin-right: 55px!important;">@TextResources.APP_StringKeys_Zone :</label>
+                                    <input readonly="readonly" type="text" class="form-control input-search-span-lg" style="    width: 140px !important;" />
+                                </div>
+                            }
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 69px!important;">@TextResources.APP_StringKeys_ProductCount :</label>
+                                <input readonly="readonly" type="text" @bind-value="ProductInfos[0].ProductCount" class="form-control input-search-span-lg" style="    width: 140px !important;" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 46px;">@TextResources.APP_StringKeys_ProductValue :</label>
+                                <input readonly="readonly" type="text" @bind-value="ProductInfos[0].ProductValue" style="    width: 140px !important;" class="form-control input-search-span-lg" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 13px;">@TextResources.APP_StringKeys_ProductSumCountInPack :</label>
+                                <input readonly="readonly" type="text" @bind-value="@ProductInfos[0].ProductCountInPack" class="form-control input-search-span-lg" style="    width: 140px !important;" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 30px;">@TextResources.APP_StringKeys_ProductPackWeight :</label>
+                                <input readonly="readonly" type="text" @bind-value="ProductInfos[0].ProductPackWeight" class="form-control input-search-span-lg" style="    width: 140px !important;" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 26px;">@TextResources.APP_StringKeys_ProductPackVolume :</label>
+                                <input readonly="readonly" type="text" @bind-value="ProductInfos[0].ProductPackVolume" class="form-control input-search-span-lg" style="    width: 140px !important;" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 31px;">@TextResources.APP_StringKeys_TagAge :</label>
+                                <input readonly="readonly" type="text" @bind-value="ProductInfos[0].ProductAge" class="form-control input-search-span-lg" style="    width: 140px !important;" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 41px;">@TextResources.APP_StringKeys_TagAgeAnalyse :</label>
+                                <input readonly="readonly" type="text" @bind-value="ProductInfos[0].ProductAgeAnalysis" class="form-control input-search-span-lg" style="    width: 140px !important;" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 21px;">@TextResources.APP_StringKeys_Inspect_LastResult :</label>
+                                <input readonly="readonly" type="text" @bind-value="ProductInfos[0].LastInspectResult" class="form-control input-search-span-lg" style="    width: 140px !important;" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 29px;">@TextResources.APP_StringKeys_Freeze_Status :</label>
+                                <input readonly="readonly" type="text" @bind-value="ProductInfos[0].FreezeStatus" class="form-control input-search-span-lg" style="    width: 140px !important;" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 73px;">@TextResources.APP_StringKeys_User :</label>
+                                <input readonly="readonly" type="text" @bind-value="ProductInfos[0].RegisterUserName" class="form-control input-search-span-lg" style="    width: 140px !important;" />
+                            </div>
+                            <div class="d-flex flex-row" style="margin-right: 5px;">
+                                <button class="btn btn-secondary" @onclick="async () => await OnOpenGallery()">
+                                    <MaterialIcon IconName="photo_library"></MaterialIcon>
+                                </button>
+                            </div>
+                            <div class="d-flex flex-row" style="margin-right: 5px;">
+                                <button type="button"
+                                        class="btn btn-success"
+                                        @onclick="async e => await SelectPrintFormatRef.ShowPrintFormatsAsync(e)">
+                                    <MaterialIcon IconName="print"></MaterialIcon>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card card-stats text-align-center" style="margin-top: 5px; flex-flow:wrap;">
+                            <h6 class="form-title card-title" style="text-align: center !important;">
+                                @TextResources.APP_StringKeys_OtherInformation
+                            </h6>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                @if (ProductProperties is not null)
+                                {
+                                    @foreach (JProperty item in ProductProperties)
+                                    {
+                                        <span class="tech-item" style="margin-left:10px">
+                                            <label>@item.Name</label>
+                                            <input type="text" readonly class="form-control input-search-span" value="@item.Value" style="width:200px!important;" />
+                                        </span>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
+                    @if (RelatedTags.Any())
+                    {
+                        <div class="card card-stats text-align-center" style="margin-top: 5px; flex-flow:wrap;">
+                            <h6 class="form-title card-title" style="text-align: center !important;">
+                                تگ‌های مرتبط (والد و فرزند)
+                            </h6>
+                            <div class="text-align-center">
+                                <TelerikGrid Data="RelatedTags"
+                                             PageSize="10"
+                                             Navigable="true"
+                                             Pageable="true"
+                                             Sortable="true">
+                                    <RowTemplate Context="related">
+                                        <td class="td-style td-dt">@related.RelationType</td>
+                                        <td class="td-style td-dt">@related.ProductSerial</td>
+                                        <td class="td-style td-dt">@related.TagEpc</td>
+                                        <td class="td-style td-dt">@related.ProductName</td>
+                                        <td class="td-style td-dt">@related.ProductCode</td>
+                                        <td class="td-style td-dt">@related.ProductCount</td>
+                                        <td class="td-style td-dt">@related.TagStatusTitle</td>
+                                        <td class="td-style td-dt">@related.RegisterDate</td>
+                                    </RowTemplate>
+                                    <GridColumns>
+                                        <GridColumn Field="@nameof(GetTagRelatedTagsVm.RelationType)"
+                                                    Title="نوع رابطه"
+                                                    Width="70px"></GridColumn>
+                                        <GridColumn Field="@nameof(GetTagRelatedTagsVm.ProductSerial)"
+                                                    Title="@TextResources.APP_StringKeys_ProductSerial"
+                                                    Width="120px"></GridColumn>
+                                        <GridColumn Field="@nameof(GetTagRelatedTagsVm.TagEpc)"
+                                                    Title="@TextResources.APP_StringKeys_TagEPC"
+                                                    Width="120px"></GridColumn>
+                                        <GridColumn Field="@nameof(GetTagRelatedTagsVm.ProductName)"
+                                                    Title="@TextResources.APP_StringKeys_ProductTitle"
+                                                    Width="150px"></GridColumn>
+                                        <GridColumn Field="@nameof(GetTagRelatedTagsVm.ProductCode)"
+                                                    Title="@TextResources.APP_StringKeys_ProductCode"
+                                                    Width="100px"></GridColumn>
+                                        <GridColumn Field="@nameof(GetTagRelatedTagsVm.ProductCount)"
+                                                    Title="@TextResources.APP_StringKeys_ProductCount"
+                                                    Width="80px"></GridColumn>
+                                        <GridColumn Field="@nameof(GetTagRelatedTagsVm.TagStatusTitle)"
+                                                    Title="@TextResources.APP_StringKeys_TagStatus"
+                                                    Width="100px"></GridColumn>
+                                        <GridColumn Field="@nameof(GetTagRelatedTagsVm.RegisterDate)"
+                                                    Title="@TextResources.APP_StringKeys_Date"
+                                                    Width="100px"></GridColumn>
+                                    </GridColumns>
+                                </TelerikGrid>
+                            </div>
+                        </div>
+                    }
+                </TabStripTab>
+                <TabStripTab Title="@TextResources.APP_StringKeys_Product_Add_Properties">
+                    @if (ProductInfos.Any())
+                    {
+                        <div class="card card-stats text-align-center" style="height:235px;">
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 31px !important;">@TextResources.APP_StringKeys_ProductCode :</label>
+                                <input readonly="readonly" id="ProductCode" type="text" name="ProductCode" @bind-value="ProductInfos[0].ProductCode" style="    width: 150px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 35px !important;">@TextResources.APP_StringKeys_Chart_Regcode :</label>
+                                <input readonly="readonly" id="ProductTechnicalCode" type="text" name="ProductTechnicalCode" @bind-value="ProductInfos[0].RegCode" style="width: 110px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 17px !important;">@TextResources.APP_StringKeys_ProductType :</label>
+                                <input readonly="readonly" id="ProductType" type="text" name="ProductType" @bind-value="ProductInfos[0].ProductTypeTitle" style="width: 135px !important;" class="form-control input-search-span-lg pointer" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap " style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 12px !important;">@TextResources.APP_StringKeys_ProductTitle :</label>
+                                <input readonly="readonly" id="ProductTitle" type="text" name="ProductTitle" @bind-value="ProductInfos[0].ProductName" class="form-control input-search-span-xxslg pointer" style="    width: 563px !important;" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label>@TextResources.APP_StringKeys_ProductENTitle :</label>
+                                <input readonly="readonly" id="ProductENTitle" type="text" name="ProductENTitle" @bind-value="ProductInfos[0].ProductENTitle" class="form-control input-search-span-xxslg pointer" style="width:563px !important;" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Product_Size :</label>
+                                <input readonly="readonly" id="ProductSize" type="text" name="ProductSize" @bind-value="ProductInfos[0].ProductSize" style="width: 150px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 4px !important;">@TextResources.APP_StringKeys_Chart_Qc :</label>
+                                <input readonly="readonly" id="ProductStatus" type="text" name="ProductStatus" @bind-value="ProductInfos[0].ProductStatusTitle" style="width: 108px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 17px;">@TextResources.APP_StringKeys_ProductUnit :</label>
+                                <input readonly="readonly" id="ProductUnit" type="text" name="ProductUnit" @bind-value="ProductInfos[0].ProductUnit" class="form-control input-search-span-lg" style="width: 135px !important;" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: unset;">
+                                <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_ProductGroup :</label>
+                                <input readonly="readonly" id="ProductSize" type="text" name="ProductSize" @bind-value=" ProductInfos[0].ProductGroup" style="width: 150px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 13px !important;">@TextResources.APP_StringKeys_Product_SubGroup :</label>
+                                <input readonly="readonly" id="ProductSize" type="text" name="ProductSize" @bind-value=" ProductInfos[0].ProductSubGroup" style="width: 108px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 23px !important;">@TextResources.APP_StringKeys_ProductBrand :</label>
+                                <input readonly="readonly" id="ProductStatus" type="text" name="ProductStatus" @bind-value="ProductInfos[0].ProductBrand" style="width: 134px !important;" class="form-control input-search-span-lg pointer" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-right: 680px;margin-top: -196px;">
+                                @if (ProductInfos[0].ProductGalleryId == 0)
+                                {
+                                    <img id="img-product" width="180" height="180" src="/images/Utilities/Product_pic_2.png" style="margin-right:-40px;margin-top: -30px;">
+                                }
+                                else
+                                {
+                                    <img id="img-product" width="180" height="180" src="@ProductInfos[0].ImageBase64" style="margin-right:-40px;margin-top: -30px;">
+                                }
+                            </div>
+                        </div>
+                        <div class="card card-stats text-align-center">
+                            <h6 class="form-title card-title" style="text-align: center !important;">
+                                @TextResources.APP_StringKeys_Product_Add_TechnicalInfo
+                            </h6>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 20px !important;">
+                                @if (TechnicalData is not null)
+                                {
+                                    @foreach (JProperty item in TechnicalData)
+                                    {
+                                        <span class="tech-item" style="margin-left:10px">
+                                            <label>@item.Name</label>
+                                            <input type="text" readonly class="form-control input-search-span" value="@item.Value" style="width:200px!important;" />
+                                        </span>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
+                </TabStripTab>
+                <TabStripTab Title="@TextResources.APP_StringKeys_Product">
+                    @if (ProductInfos.Any())
+                    {
+                        <div class="card card-stats text-align-center">
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 35px !important;">@TextResources.APP_StringKeys_Date :</label>
+                                @if (!string.IsNullOrEmpty(ProductInfos[0].TagRegisterShamsiUnixDate))
+                                {
+                                    <input readonly="readonly" id="ProductDate" type="text" name="ProductDate" @bind-value="ProductInfos[0].TagRegisterShamsiUnixDate.ToNormalPersianDateTime().Split(' ')[0]" style="width: 90px !important;" class="form-control input-search-span-lg pointer" />
+                                    <input readonly="readonly" id="ProductTime" type="text" name="ProductTime" @bind-value="ProductInfos[0].TagRegisterShamsiUnixDate.ToNormalPersianDateTime().Split(' ')[1]" style="width: 55px !important;" class="form-control input-search-span-lg pointer" />
+                                }
+                                else
+                                {
+                                    <input readonly="readonly" id="ProductDate" type="text" name="ProductDate" style="width: 90px !important;" class="form-control input-search-span-lg pointer" />
+                                    <input readonly="readonly" id="ProductTime" type="text" name="ProductTime" style="width: 55px !important;" class="form-control input-search-span-lg pointer" />
+                                }
+                                <label style="margin-right: 10px !important;">تاریخ عملیاتی :</label>
+                                <input readonly="readonly" id="ProductActionDate" type="text" name="ProductActionDate" @bind-value="ProductInfos[0].RegisterActionDate" style="width: 90px !important;" class="form-control input-search-span-lg pointer" />
+
+                                <label style="margin-right: 8px !important;">@TextResources.APP_StringKeys_ProductPropertyA :</label>
+                                <input readonly="readonly" id="ProductLine" type="text" name="ProductLine" @bind-value="ProductInfos[0].fld_ProductPropertyATitle" style="width: 95px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 8px !important;">@TextResources.APP_StringKeys_ProductPropertyB :</label>
+                                <input readonly="readonly" id="ProductShift" type="text" name="Shift" @bind-value="ProductInfos[0].fld_ProductPropertyBTitle" style="width: 95px !important;" class="form-control input-search-span-lg pointer" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 14px !important;">@TextResources.APP_StringKeys_RegUser :</label>
+                                <input readonly="readonly" id="Username" type="text" name="Username" @bind-value="ProductInfos[0].Username" style="width: 95px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right:87px !important;">سند تولید :</label>
+                                <input readonly="readonly" type="text" @bind-value="ProductInfos[0].DocumentCode" style="width: 140px !important; font-size: 50%;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 111px;">@TextResources.APP_StringKeys_RegisterDevice :</label>
+                                <input readonly="readonly" type="text" @bind-value="ProductInfos[0].RegisterDevice" class="form-control input-search-span-lg" style="    width: 140px !important;" />
+                            </div>
+                        </div>
+                    }
+
+                </TabStripTab>
+                <TabStripTab Title="@TextResources.APP_StringKeys_Sales">
+                    @if (Sales.Any())
+                    {
+                        <div class="card card-stats text-align-center">
+                            <h6 class="form-title card-title" style="text-align: center !important;">
+                                @TextResources.APP_StringKeys_Sales_Info
+                            </h6>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 35px !important;">@TextResources.APP_StringKeys_Date :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].Date" style="width: 90px !important;" class="form-control input-search-span-lg pointer" />
+                                <input readonly="readonly" @bind-value="Sales[0].Time" style="width: 55px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 19px !important;">@TextResources.APP_StringKeys_OperationCode :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].MovementActionId" style="width: 70px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 8px !important;">@TextResources.APP_StringKeys_GateOpCode :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].GateOpCode" style="width: 70px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 8px !important;">@TextResources.APP_StringKeys_TagAgeAnalyse :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].AgeAnalsys" style="width: 100px !important;" class="form-control input-search-span-lg pointer" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 8px !important;">@TextResources.APP_StringKeys_Description :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].MovementActionDesc" style="width: 100px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 40px !important;">@TextResources.APP_StringKeys_DocCode :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].MovementActionDocumentId" style="width: 100px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_RegUser :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].Username" style="width: 95px !important;" class="form-control input-search-span-lg pointer" />
+                            </div>
+                        </div>
+                        <div class="card card-stats text-align-center">
+                            <h6 class="form-title card-title" style="text-align: center !important;">
+                                @TextResources.APP_StringKeys_OperationInfo
+                            </h6>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 20px !important;">
+                                @if (MovementActionData is not null)
+                                {
+                                    @foreach (JProperty item in MovementActionData)
+                                    {
+                                        <span class="tech-item" style="margin-left:10px">
+                                            <label>@item.Name</label>
+                                            <input type="text" readonly class="form-control input-search-span" value="@item.Value" style="width:200px!important;" />
+                                        </span>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="card card-stats text-align-center">
+                            <h6 class="form-title card-title" style="text-align: center !important;">
+                                @TextResources.APP_StringKeys_TruckCross_Info
+                            </h6>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 5px !important;">
+                                <label style="margin-right: 18px !important;">@TextResources.APP_StringKeys_DriverName :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].DriverName" style="width: 100px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 32px !important;">@TextResources.APP_StringKeys_NationalCode :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].NationalCode" style="width: 100px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 8px !important;">@TextResources.APP_StringKeys_LicenseCode :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].LicenseCode" style="width: 100px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 45px !important;">@TextResources.APP_StringKeys_Phone_Number :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].DriverPhone" style="width: 100px !important;" class="form-control input-search-span-lg pointer" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 5px !important;">
+                                <label style="margin-right: 41px !important;">@TextResources.APP_StringKeys_Plaque :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].Plaque" style="width: 100px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 8px !important;">@TextResources.APP_StringKeys_TruckCross_TypeTruck :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].TruckCrossTypeTitle" style="width: 100px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 19px !important;">@TextResources.APP_StringKeys_TruckCross_Enter_WeightTonage :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].EnterWeightTonage" style="width: 100px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 29px !important;">@TextResources.APP_StringKeys_TruckCross_Exit_WeightTonage :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].ExitWeightTonage" style="width: 100px !important;" class="form-control input-search-span-lg pointer" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 5px !important;">
+                                <label style="margin-right: 8px !important;">@TextResources.APP_StringKeys_PureWeight :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].ExitPureWeightCargo" style="width: 100px !important;" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 11px !important;">@TextResources.APP_StringKeys_TruckCrossId :</label>
+                                <input readonly="readonly" @bind-value="Sales[0].MovementActionTruckCrossId" style="width: 100px !important;" class="form-control input-search-span-lg pointer" />
+                            </div>
+                        </div>
+                    }
+                </TabStripTab>
+                <TabStripTab Title="@TextResources.APP_StringKeys_Movement">
+                    @if (Movements.Any())
+                    {
+                        <div class="text-align-center">
+                            <TelerikGrid Data="Movements"
+                                         PageSize="10"
+                                         Navigable="true"
+                                         Pageable="true"
+                                         Sortable="true">
+                                <RowTemplate Context="StoreTransactions">
+                                    <td class="td-style td-dt">@StoreTransactions.ActionTypeTitle</td>
+                                    <td class="td-style td-dt">@StoreTransactions.ActionId</td>
+                                    <td class="td-style td-dt">@StoreTransactions.SourceStoreTitle</td>
+                                    <td class="td-style td-dt">@StoreTransactions.DestinationStoreTitle</td>
+                                    <td class="td-style td-dt">@StoreTransactions.ActionDate</td>
+                                    <td class="td-style td-dt">@StoreTransactions.ActionTime</td>
+                                    <td class="td-style td-dt">@StoreTransactions.ActionUHFLogId</td>
+                                    <td class="td-style td-dt">@StoreTransactions.ActionDescription</td>
+                                    <td class="td-style td-dt">@StoreTransactions.ActionUserName</td>
+                                </RowTemplate>
+                                <GridColumns>
+                                    <GridColumn Field="@nameof(GetProductStoreTransactionsBySerialVm.ActionTypeTitle)"
+                                                Width="80px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductStoreTransactionsBySerialVm.ActionId)"
+                                                Width="80px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductStoreTransactionsBySerialVm.SourceStoreTitle)"
+                                                Width="80px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductStoreTransactionsBySerialVm.DestinationStoreTitle)"
+                                                Width="60px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductStoreTransactionsBySerialVm.ActionDate)"
+                                                Width="60px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductStoreTransactionsBySerialVm.ActionTime)"
+                                                Width="60px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductStoreTransactionsBySerialVm.ActionUHFLogId)"
+                                                Width="60px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductStoreTransactionsBySerialVm.ActionDescription)"
+                                                Width="60px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductStoreTransactionsBySerialVm.ActionUserName)"
+                                                Width="50px"></GridColumn>
+                                </GridColumns>
+                            </TelerikGrid>
+                        </div>
+                    }
+                </TabStripTab>
+                <TabStripTab Title="@TextResources.APP_StringKeys_Placement">
+                    @if (Placements.Any())
+                    {
+                        <div class="text-align-center">
+                            <TelerikGrid Data="Placements"
+                                         PageSize="10"
+                                         Navigable="true"
+                                         Pageable="true"
+                                         Sortable="true">
+                                <RowTemplate Context="ProductPlacementInfo">
+                                    <td class="td-style td-dt">@ProductPlacementInfo.WarehouseTitle</td>
+                                    <td class="td-style td-dt">@ProductPlacementInfo.Location</td>
+                                    <td class="td-style td-dt">@ProductPlacementInfo.Date</td>
+                                    <td class="td-style td-dt">@ProductPlacementInfo.Time</td>
+                                    <td class="td-style td-dt">@ProductPlacementInfo.Username</td>
+                                </RowTemplate>
+                                <GridColumns>
+                                    <GridColumn Field="@nameof(GetProductPlacementInfoBySerialVm.WarehouseTitle)"
+                                                Title="@TextResources.APP_StringKeys_Warehouse"
+                                                Width="80px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductPlacementInfoBySerialVm.Location)"
+                                                Title="@TextResources.APP_StringKeys_Location"
+                                                Width="80px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductPlacementInfoBySerialVm.Date)"
+                                                Title="@TextResources.APP_StringKeys_Date"
+                                                Width="60px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductPlacementInfoBySerialVm.Time)"
+                                                Title="@TextResources.APP_StringKeys_Time"
+                                                Width="80px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductPlacementInfoBySerialVm.Username)"
+                                                Title="@TextResources.APP_StringKeys_User"
+                                                Width="80px"></GridColumn>
+                                </GridColumns>
+                            </TelerikGrid>
+                        </div>
+                    }
+                </TabStripTab>
+                <TabStripTab Title="@TextResources.APP_StringKeys_InventoryInfo">
+                    @if (Inventories.Any())
+                    {
+                        <div class="text-align-center">
+                            <TelerikGrid Data="Inventories"
+                                         PageSize="10"
+                                         Navigable="true"
+                                         Pageable="true"
+                                         Sortable="true">
+                                <RowTemplate Context="ProductInventoryInfo">
+                                    <td class="td-style td-dt">@ProductInventoryInfo.OperationCode</td>
+                                    <td class="td-style td-dt">@ProductInventoryInfo.WarehouseTitle</td>
+                                    <td class="td-style td-dt">@ProductInventoryInfo.Date</td>
+                                    <td class="td-style td-dt">@ProductInventoryInfo.Status</td>
+                                    <td class="td-style td-dt">@ProductInventoryInfo.Description</td>
+                                    <td class="td-style td-dt">@ProductInventoryInfo.UserName</td>
+                                </RowTemplate>
+                                <GridColumns>
+                                    <GridColumn Field="@nameof(GetProductInventoryInfoBySerialVm.OperationCode)"
+                                                Title="@TextResources.APP_StringKeys_OperationCode"
+                                                Width="40px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductInventoryInfoBySerialVm.WarehouseTitle)"
+                                                Title="@TextResources.APP_StringKeys_Warehouse"
+                                                Width="120px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductInventoryInfoBySerialVm.Date)"
+                                                Title="@TextResources.APP_StringKeys_Date"
+                                                Width="120px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductInventoryInfoBySerialVm.Status)"
+                                                Title="@TextResources.APP_StringKeys_Status"
+                                                Width="120px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductInventoryInfoBySerialVm.Description)"
+                                                Title="@TextResources.APP_StringKeys_Description"
+                                                Width="120px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductInventoryInfoBySerialVm.UserName)"
+                                                Title="@TextResources.APP_StringKeys_User"
+                                                Width="100px"></GridColumn>
+                                </GridColumns>
+                            </TelerikGrid>
+                        </div>
+                    }
+                </TabStripTab>
+                <TabStripTab Title="@TextResources.APP_StringKeys_ReadByGateLog">
+                    @if (ReadGates.Any())
+                    {
+                        <div class="text-align-center">
+                            <TelerikGrid Data="ReadGates"
+                                         PageSize="10"
+                                         Navigable="true"
+                                         Pageable="true"
+                                         Sortable="true">
+                                <RowTemplate Context="ProductReadByGateLog">
+                                    <td class="td-style td-dt">@ProductReadByGateLog.StationName</td>
+                                    <td class="td-style td-dt">@ProductReadByGateLog.LogId</td>
+                                    <td class="td-style td-dt">@ProductReadByGateLog.OperationType</td>
+                                    <td class="td-style td-dt">@ProductReadByGateLog.LogDate</td>
+                                    <td class="td-style td-dt">@ProductReadByGateLog.LogTime</td>
+                                    <td class="td-style td-dt">@ProductReadByGateLog.LogStatus</td>
+                                    <td class="td-style td-dt">@ProductReadByGateLog.Username</td>
+                                </RowTemplate>
+                                <GridColumns>
+                                    <GridColumn Field="@nameof(GetProductReadByGateLogBySerialVm.StationName)"
+                                                Title="@TextResources.APP_StringKeys_Station"
+                                                Width="80px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductReadByGateLogBySerialVm.LogId)"
+                                                Title="@TextResources.APP_StringKeys_OperationCode"
+                                                Width="80px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductReadByGateLogBySerialVm.OperationType)"
+                                                Title="@TextResources.APP_StringKeys_ActionType"
+                                                Width="80px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductReadByGateLogBySerialVm.LogDate)"
+                                                Title="@TextResources.APP_StringKeys_Date"
+                                                Width="80px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductReadByGateLogBySerialVm.LogTime)"
+                                                Title="@TextResources.APP_StringKeys_Time"
+                                                Width="80px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductReadByGateLogBySerialVm.LogStatus)"
+                                                Title="@TextResources.APP_StringKeys_Gate_Identify_Status"
+                                                Width="200px"></GridColumn>
+                                    <GridColumn Field="@nameof(GetProductReadByGateLogBySerialVm.Username)"
+                                                Title="@TextResources.APP_StringKeys_RegUser"
+                                                Width="100px"></GridColumn>
+                                </GridColumns>
+                            </TelerikGrid>
+                        </div>
+                    }
+                </TabStripTab>
+                <TabStripTab Title="@TextResources.APP_StringKeys_Inspect_And_Freeze">
+                    <div class="text-align-center">
+                        @if (Inspects.Any())
+                        {
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 20px !important;">
+
+                                <div>
+                                    <h5 class="form-title card-title" style="text-align: center !important;">
+                                        @TextResources.APP_StringKeys_Inspect
+                                    </h5>
+                                </div>
+                                <hr />
+                                <TelerikGrid Data="Inspects"
+                                             PageSize="5"
+                                             Navigable="true"
+                                             Pageable="true"
+                                             Sortable="true">
+                                    <RowTemplate Context="inspect">
+                                        <td class="td-style">@inspect.InspectId</td>
+                                        <td class="td-style">@inspect.ProductSerial</td>
+                                        <td class="td-style">@inspect.ProductCode</td>
+                                        <td class="td-style">@inspect.ProductName</td>
+                                        <td class="td-style">@inspect.DateTime.ToString("HH:mm") @PersianCalendarTools.GregorianToPersian(inspect.DateTime)</td>
+                                        <td class="td-style">@inspect.InspectUsername</td>
+                                        <td class="td-style">
+                                            @switch (inspect.Result)
+                                            {
+                                                case InspectResult.Verfied:
+                                                    @TextResources.APP_StringKeys_Verified
+                                                    break;
+                                                case InspectResult.NotVerfied:
+                                                    @TextResources.APP_StringKeys_Unverified
+                                                    break;
+                                            }
+                                        </td>
+                                    </RowTemplate>
+                                    <GridColumns>
+                                        <GridColumn Field="@nameof(GetInspectResultsBySerialVm.InspectId)"
+                                                    Title="@TextResources.APP_StringKeys_Code"
+                                                    Width="50px">
+                                        </GridColumn>
+                                        <GridColumn Field="@nameof(GetInspectResultsBySerialVm.ProductSerial)"
+                                                    Title="@TextResources.APP_StringKeys_ProductSerial"
+                                                    Width="80px">
+                                        </GridColumn>
+                                        <GridColumn Field="@nameof(GetInspectResultsBySerialVm.ProductCode)"
+                                                    Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                                                    Width="140px">
+                                        </GridColumn>
+                                        <GridColumn Field="@nameof(GetInspectResultsBySerialVm.ProductName)"
+                                                    Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                                        <GridColumn Field="@nameof(GetInspectResultsBySerialVm.DateTime)"
+                                                    Title="@TextResources.APP_StringKeys_Inspect_Date"
+                                                    Width="120px"></GridColumn>
+                                        <GridColumn Field="@nameof(GetInspectResultsBySerialVm.InspectUsername)"
+                                                    Title="@TextResources.APP_StringKeys_User"
+                                                    Width="140px"></GridColumn>
+                                        <GridColumn Field="@nameof(GetInspectResultsBySerialVm.Result)"
+                                                    Title="@TextResources.APP_StringKeys_Result"
+                                                    Width="80px">
+                                        </GridColumn>
+                                    </GridColumns>
+                                    <DetailTemplate>
+                                        @{
+                                            GetInspectResultsBySerialVm inspect = context as GetInspectResultsBySerialVm;
+                                            <h6>
+                                                @TextResources.APP_StringKeys_Inspect_Result_Reported_By_Inspector
+                                            </h6>
+                                            <div class="text-align-right">
+                                                @foreach (var inspectValue in inspect.Values)
+                                                {
+                                                    GetAllInspectElementVm element = InspectElements.FirstOrDefault(p => p.Id == inspectValue.InspectElementId);
+                                                    <div>
+                                                        <label style="display: unset;">@element.Name :</label>
+                                                        <label style="display: unset;">
+                                                            @switch (element.InspectElementType)
+                                                            {
+                                                                case InspectElementType.OneOption:
+                                                                    @(element.Value.Equals("true") ? TextResources.APP_StringKeys_Verified : TextResources.APP_StringKeys_Unverified)
+                                                                    break;
+                                                                case InspectElementType.MultiOption:
+                                                                    @element.Options.FirstOrDefault(p => p == element.Value)
+                                                                    break;
+                                                                case InspectElementType.Int or InspectElementType.String:
+                                                                    @element.Value
+                                                                    break;
+                                                            }
+                                                        </label>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </DetailTemplate>
+                                </TelerikGrid>
+                            </div>
+                        }
+                        @if (Freezes.Any())
+                        {
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 20px !important;">
+
+                                <div>
+                                    <h5 class="form-title card-title" style="text-align: center !important;">
+                                        @TextResources.APP_StringKeys_Freeze_Tag
+                                    </h5>
+                                </div>
+                                <hr />
+
+                                <TelerikGrid Data="Freezes"
+                                             PageSize="5"
+                                             Navigable="true"
+                                             Pageable="true"
+                                             Sortable="true">
+                                    <RowTemplate Context="freeze">
+                                        <td class="td-style">@freeze.Id</td>
+                                        <td class="td-style">@freeze.UserName</td>
+                                        <td class="td-style">@PersianCalendarTools.GregorianToPersian(freeze.SaveDateTime) @freeze.SaveDateTime.Value.ToShortTimeString()</td>
+                                        <td class="td-style">@freeze.Description</td>
+                                        <td class="td-style">@(freeze.Status ? TextResources.APP_StringKeys_Status_Freezed : TextResources.APP_StringKeys_Status_Not_Freezed)</td>
+                                    </RowTemplate>
+                                    <GridColumns>
+                                        <GridColumn Field="@nameof(GetFreezeHeadersBySerialVm.Id)"
+                                                    Title="@TextResources.APP_StringKeys_Code"
+                                                    Width="50px">
+                                        </GridColumn>
+                                        <GridColumn Field="@nameof(GetFreezeHeadersBySerialVm.UserName)"
+                                                    Title="@TextResources.APP_StringKeys_Username"
+                                                    Width="80px">
+                                        </GridColumn>
+                                        <GridColumn Field="@nameof(GetFreezeHeadersBySerialVm.SaveDateTime)"
+                                                    Title="@TextResources.APP_StringKeys_DateTime"
+                                                    Width="140px">
+                                        </GridColumn>
+                                        <GridColumn Field="@nameof(GetFreezeHeadersBySerialVm.Description)"
+                                                    Title="@TextResources.APP_StringKeys_Description"></GridColumn>
+                                        <GridColumn Field="@nameof(GetFreezeHeadersBySerialVm.Status)"
+                                                    Title="@TextResources.APP_StringKeys_OperationType"
+                                                    Width="100px"></GridColumn>
+                                    </GridColumns>
+                                </TelerikGrid>
+                            </div>
+                        }
+                    </div>
+                </TabStripTab>
+                <TabStripTab Title="@TextResources.APP_StringKeys_Guarantee">
+                    @if (Guarantees.Any())
+                    {
+                        <div class="card card-stats text-align-center @Guarantees[0].GuaranteeStatusClass">
+                            <h6 class="form-title card-title" style="text-align: center !important;">
+                                @TextResources.APP_StringKeys_Guarantee
+                            </h6>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 35px !important;">@TextResources.APP_StringKeys_ExpireAndGuarantee_GuaranteeStatus :</label>
+                                <input readonly="readonly" @bind-value="Guarantees[0].GuaranteeStatusTitle" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 35px !important;">@TextResources.APP_StringKeys_Guarantee_Start_Type :</label>
+                                <input readonly="readonly" @bind-value="Guarantees[0].GuaranteeActivationType" class="form-control input-search-span-lg pointer" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 58px !important;">@TextResources.APP_StringKeys_StartDate :</label>
+                                <input readonly="readonly" @bind-value="Guarantees[0].GuaranteeStartDate" class="form-control input-search-span-lg pointer" />
+                                <label style="margin-right: 58px !important;">@TextResources.APP_StringKeys_EndDate :</label>
+                                <input readonly="readonly" @bind-value="Guarantees[0].GuaranteeEndDate" class="form-control input-search-span-lg pointer" />
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 13px !important;">@TextResources.APP_StringKeys_RemainingDay :</label>
+                                @if (Guarantees[0].RemainsDays is not null)
+                                {
+                                    <input readonly="readonly"
+                                           value="@Guarantees[0].RemainsDays"
+                                           style="font-size: large;"
+                                           class="form-control input-search-span-lg pointer text-xlarge" />
+                                }
+                                else
+                                {
+                                    <input readonly="readonly"
+                                           style="font-size: large;"
+                                           class="form-control input-search-span-lg pointer" />
+                                }
+                                <label style="margin-right: 53px !important;">@TextResources.APP_StringKeys_RemainingMonth :</label>
+                                @if (Guarantees[0].RemainsDays is not null)
+                                {
+                                    var month = Math.Round(Convert.ToDouble(Guarantees[0].RemainsDays) / 30, 1);
+
+                                    <input readonly="readonly"
+                                           value="@month"
+                                           style="font-size: large;"
+                                           class="form-control input-search-span-lg pointer text-xlarge" />
+                                }
+                                else
+                                {
+                                    <input readonly="readonly"
+                                           style="font-size: large;"
+                                           class="form-control input-search-span-lg pointer" />
+                                }
+                            </div>
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                <label style="margin-right: 97px !important;">@TextResources.APP_StringKeys_User :</label>
+                                <input readonly="readonly" @bind-value="Guarantees[0].Username" class="form-control input-search-span-lg pointer" />
+                            </div>
+                        </div>
+                    }
+                </TabStripTab>
+                <TabStripTab Title="@TextResources.APP_StringKeys_Expire">
+                    @if (Expires.Any())
+                    {
+                        <div class="text-align-center">
+
+                            <div class="card card-stats text-align-center @Expires[0].ExpireStatusClass">
+                                <h6 class="form-title card-title" style="text-align: center !important;">
+                                    @TextResources.APP_StringKeys_Expire
+                                </h6>
+                                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                    <label style="margin-right: 35px !important;">@TextResources.APP_StringKeys_ExpireAndGuarantee_GuaranteeStatus :</label>
+                                    <input readonly="readonly" @bind-value="Expires[0].ExpireStatusTitle" class="form-control input-search-span-lg pointer" />
+                                    <label style="margin-right: 35px !important;">@TextResources.APP_StringKeys_Guarantee_Start_Type :</label>
+                                    <input readonly="readonly" @bind-value="Expires[0].ExpireActivationType" class="form-control input-search-span-lg pointer" />
+                                </div>
+                                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                    <label style="margin-right: 58px !important;">@TextResources.APP_StringKeys_StartDate :</label>
+                                    <input readonly="readonly" @bind-value="Expires[0].ExpireStartDate" class="form-control input-search-span-lg pointer" />
+                                    <label style="margin-right: 58px !important;">@TextResources.APP_StringKeys_EndDate :</label>
+                                    <input readonly="readonly" @bind-value="Expires[0].ExpireEndDate" class="form-control input-search-span-lg pointer" />
+                                </div>
+                                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                                    <label style="margin-right: 13px !important;">@TextResources.APP_StringKeys_RemainingDay :</label>
+                                    @if (Expires[0].RemainsDays is not null)
+                                    {
+                                        <input readonly="readonly"
+                                               value="@Expires[0].RemainsDays"
+                                               style="font-size: large;"
+                                               class="form-control input-search-span-lg pointer text-xlarge" />
+                                    }
+                                    else
+                                    {
+                                        <input readonly="readonly"
+                                               style="font-size: large;"
+                                               class="form-control input-search-span-lg pointer" />
+                                    }
+                                    <label style="margin-right: 96px !important;">@TextResources.APP_StringKeys_User :</label>
+                                    <input readonly="readonly" @bind-value="Expires[0].Username" class="form-control input-search-span-lg pointer" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </TabStripTab>
+                <TabStripTab Title="@TextResources.APP_StringKeys_Station_Alert">
+                    @if (GateAlerts.Any())
+                    {
+                        <div class="text-align-center">
+                            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 20px !important;">
+
+                                <TelerikGrid Data="GateAlerts"
+                                             PageSize="5"
+                                             Navigable="true"
+                                             Pageable="true"
+                                             Sortable="true">
+                                    <RowTemplate Context="alert">
+                                        <td class="td-style">@alert.StationName</td>
+                                        <td class="td-style">@PersianCalendarTools.GregorianToPersian(alert.Date)</td>
+                                        <td class="td-style">@alert.Time</td>
+                                        <td class="td-style">@alert.Type</td>
+                                        <td class="td-style">@alert.Username</td>
+                                    </RowTemplate>
+                                    <GridColumns>
+                                        <GridColumn Field="@nameof(GetGateAlertsBySerialVm.StationName)"
+                                                    Title="@TextResources.APP_StringKeys_Station"
+                                                    Width="110px">
+                                        </GridColumn>
+                                        <GridColumn Field="@nameof(GetGateAlertsBySerialVm.Date)"
+                                                    Title="@TextResources.APP_StringKeys_Date"
+                                                    Width="100px">
+                                        </GridColumn>
+                                        <GridColumn Field="@nameof(GetGateAlertsBySerialVm.Time)"
+                                                    Title="@TextResources.APP_StringKeys_Time"
+                                                    Width="100px">
+                                        </GridColumn>
+                                        <GridColumn Field="@nameof(GetGateAlertsBySerialVm.Type)"
+                                                    Title="@TextResources.APP_StringKeys_Alert_Desc"></GridColumn>
+                                        <GridColumn Field="@nameof(GetGateAlertsBySerialVm.Username)"
+                                                    Title="@TextResources.APP_StringKeys_CreateUser"></GridColumn>
+                                    </GridColumns>
+                                </TelerikGrid>
+                            </div>
+                        </div>
+                    }
+                </TabStripTab>
+                <TabStripTab Title="ریز تغییرات">
+                    @if (TagChangeLogs.Any())
+                    {
+                        <TelerikGrid Data="@TagChangeLogs"
+                                     PageSize="10"
+                                     Pageable="true"
+                                     Sortable="true"
+                                     Navigable="true">
+                            <RowTemplate Context="log">
+                                @{
+                                    var action = GetAction(log.Description);
+                                }
+                                <td class="td-style">@log.RecordKey</td>
+                                <td class="td-style">@(string.IsNullOrWhiteSpace(log.UserName) ? "نامشخص" : log.UserName)</td>
+                                <td class="td-style">@GetActionTitle(log.Description)</td>
+                                <td class="td-style">@($"{PersianCalendarTools.GregorianToPersian(log.CreatedAt)} {log.CreatedAt:HH:mm}")</td>
+                                <td class="td-style">
+                                    @if (action == "UPDATE")
+                                    {
+                                        <span class="text-primary">برای مشاهده جزئیات، ردیف را باز کنید</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@ToReadableTagChange(log.Description)</span>
+                                    }
+                                </td>
+                            </RowTemplate>
+                            <GridColumns>
+                                <GridColumn Field="@nameof(GetTablesChangeLogDto.RecordKey)"
+                                            Title="@TextResources.APP_StringKeys_ProductSerial"
+                                            Width="150px" />
+                                <GridColumn Title="@TextResources.APP_StringKeys_CreateUser" Width="180px" />
+                                <GridColumn Title="@TextResources.APP_StringKeys_OperationType" Width="130px" />
+                                <GridColumn Title="@TextResources.APP_StringKeys_Date" Width="180px" />
+                                <GridColumn Title="@TextResources.APP_StringKeys_Details" />
+                            </GridColumns>
+                            <DetailTemplate Context="log">
+                                @{
+                                    var item = (GetTablesChangeLogDto)log;
+                                    var action = GetAction(item.Description);
+                                }
+
+                                @if (action == "UPDATE")
+                                {
+                                    var rows = GetUpdateRows(item.Description);
+
+                                    @if (rows.Any())
+                                    {
+                                        <div class="p-2 bg-light border rounded">
+                                            <table class="table table-sm table-bordered mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th style="width:35%">اطلاعات تغییر یافته</th>
+                                                        <th style="width:32%">مقدار قبلی</th>
+                                                        <th style="width:33%">مقدار جدید</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var row in rows)
+                                                    {
+                                                        <tr>
+                                                            <td>@row.Field</td>
+                                                            <td dir="rtl">@row.OldValue</td>
+                                                            <td dir="rtl">@row.NewValue</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="p-2 text-muted">جزئیات ویرایش قابل نمایش نیست.</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="p-2">
+                                        @ToReadableTagChange(item.Description)
+                                    </div>
+                                }
+                            </DetailTemplate>
+                        </TelerikGrid>
+                    }
+                </TabStripTab>
+                <TabStripTab Title="لاگ GPS">
+                    @if (GpsLogs.Any())
+                    {
+                        <TelerikGrid Data="@GpsLogs"
+                                     PageSize="10"
+                                     Pageable="true"
+                                     Sortable="true"
+                                     Navigable="true">
+                            <RowTemplate Context="log">
+                                @{
+                                    var jsonData = JsonDocument.Parse(log.AdditionalData);
+                                    jsonData.RootElement.TryGetProperty("ActionTypeTitle", out var actionTypeTitle);
+                                    var mapLink = $"https://www.google.com/maps/search/?api=1&query={log.Lat},{log.Long}";
+                                }
+                                <td class="td-style">
+                                  @actionTypeTitle
+                                </td>
+                                <td class="td-style">@PersianCalendarTools.GregorianToPersian(log.LogDateTime)</td>
+                                <td class="td-style">@log.UserName</td>
+                                <td class="td-style">@($"{log.Lat},{log.Long}")</td>
+                                <td class="td-style">
+                                    <a href="@mapLink"
+                                       class="btn-dt-1 btn-success tr-buttom btn"
+                                       target="_blank">
+                                        <MaterialIcon IconName="@MaterialIconsHelper.Map" />
+                                    </a>
+                                </td>
+                            </RowTemplate>
+                            <GridColumns>
+                                <GridColumn Title="@TextResources.APP_StringKeys_OperationType" Width="130px" />
+                                <GridColumn Title="@TextResources.APP_StringKeys_Date" Width="180px" />
+                                <GridColumn Title="@TextResources.APP_StringKeys_CreateUser" Width="180px" />
+                                <GridColumn Title="مختصات"
+                                            Width="100px" />
+                                <GridColumn Title="@TextResources.APP_StringKeys_Details" />
+                            </GridColumns>
+                        </TelerikGrid>
+                    }
+                </TabStripTab>
+            </TelerikTabStrip>
+        </div>
+    }
+</div>
+<CascadingValue Value="Notification">
+    <Gallery @ref="GalleryRef"
+             Readonly="true">
+    </Gallery>
+</CascadingValue>
+<CascadingValue Value="IsLoading">
+    <CascadingValue Value="Notification">
+        <SelectPrintFormat @ref="SelectPrintFormatRef"
+                           OnFileNameSelect="OnPrintActionClick">
+        </SelectPrintFormat>
+    </CascadingValue>
+</CascadingValue>
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

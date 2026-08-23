@@ -1,0 +1,18 @@
+﻿@namespace Silo.Shared.Components
+
+@if (IsVisible)
+{
+    <label class="toggle-cls @Class"
+           style="@Style"
+           id="toggle-@Id">
+        <input type="checkbox"
+               checked="@Value"
+               @onclick="OnToggleChanged">
+        <span class="slider-cls round">
+            @if (IconName.HasValue())
+            {
+                <MaterialIcon IconName="@IconName" Class="@GetIconClass()" />
+            }
+        </span>
+    </label>
+}

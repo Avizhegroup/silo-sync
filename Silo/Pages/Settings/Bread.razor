@@ -1,0 +1,57 @@
+﻿@page "/settings/bread/{LinkId:int?}"
+@inherits SiloBasePage
+
+<PageTitle>@TextResources.APP_StringKeys_Software_Map</PageTitle>
+
+<div class="page-settings-bread">
+    <div class="dashboard-container">
+
+        @if (SelectedAllTitle is not null)
+        {
+            @* Page title *@
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body py-2 d-flex align-items-center gap-2">
+                            <MaterialIcon IconName="@MaterialIconsHelper.AccountTree" />
+                            <span class="page-title">@SelectedAllTitle.Title</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Category cards *@
+            <div class="row g-3">
+                @foreach (var category in SelectedAllTitle.Children)
+                {
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card category-card shadow-sm border-0 h-100">
+                            <div class="card-header">
+                                @category.Title
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex flex-column gap-1">
+                                    @foreach (var link in category.Children)
+                                    {
+                                        <NavLink class="bread-nav-link"
+                                                 href="@link.Url"
+                                                 Match="NavLinkMatch.All">
+                                            <MaterialIcon IconName="@MaterialIconsHelper.ChevronLeft" />
+                                            @link.Title
+                                        </NavLink>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading" />

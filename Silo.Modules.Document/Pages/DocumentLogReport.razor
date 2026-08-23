@@ -1,0 +1,263 @@
+@page "/document/LogReport"
+@page "/document/LogReport/{DocumentKey}/{DocumentType}"
+@inherits SiloBasePage
+@namespace Silo.Modules.Document.Pages
+@using Newtonsoft.Json.Linq;
+@using Silo.Application.Dto;
+@using Silo.Application.Features;
+@using Silo.Identity.Client;
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Telerik.Blazor.Components
+@using Silo.Shared.Components
+@using Silo.Shared.Components.Modals
+
+<PageTitle>@PageTitle</PageTitle>
+
+@if (IsFiltersShown)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center">
+            <div class="form-search-span" id="form-main" style="margin-top:5px !important;">
+                <EditForm class="form-search-span"
+                          style="margin-top:10px !important;"
+                      Model="Request"
+                      OnValidSubmit="OnSearchValidSubmit">
+
+                    <DataAnnotationsValidator />
+                    <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:5px!important;">
+                        <label style="margin-right: 28px !important;">@TextResources.APP_StringKeys_DocCode :</label>
+                        <TelerikTextBox @bind-Value="Request.DocumentKey"
+                                    Class="form-control input-search-span-lg pointer text-dir-left" Width="200px !important">
+                        </TelerikTextBox>
+                        <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Document_Type :</label>
+                        <TelerikDropDownList Data="DocumentTypes"
+                                         TextField="@nameof(GetAllDocumentTypesVm.Title)"
+                                         ValueField="@nameof(GetAllDocumentTypesVm.Code)"
+                                         @bind-Value="Request.DocumentType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         Width="200px"
+                                         Class="drop-all">
+                            <DropDownListSettings>
+                                <DropDownListPopupSettings Class="text-align-right" />
+                            </DropDownListSettings>
+                        </TelerikDropDownList>
+                        <label style="margin-right: 24px;  ">@TextResources.APP_StringKeys_FromDate:</label>
+                        <DatePicker InputClass=" input-search-span-lg pointer "
+                                @bind-Value="Request.FromDate"
+                                Style="width: 200px !important;"></DatePicker>
+                        <label style="margin-right: 53px;  ">@TextResources.APP_StringKeys_ToDate:</label>
+                        <DatePicker InputClass=" input-search-span-lg pointer "
+                                @bind-Value="Request.ToDate" Style="width: 200px !important;"></DatePicker>
+                    </div>
+                    <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:5px!important;">
+                        <label style="margin-right: 10px !important;">@TextResources.APP_StringKeys_Document_Description  :</label>
+                        <TelerikTextBox @bind-Value="Request.HeaderData"
+                                    Class="form-control input-search-span-lg pointer" Width="200px !important">
+                        </TelerikTextBox>
+                        <label style="margin-right:12px !important;">@TextResources.APP_StringKeys_DocumentEvent_User :</label>
+                        <TelerikDropDownList Data="DocumentLogUsers"
+                                         TextField="@nameof(GetAllDocumentLogUserVm.Title)"
+                                         ValueField="@nameof(GetAllDocumentLogUserVm.Code)"
+                                         @bind-Value="Request.User"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         Width="200px"
+                                         Class="drop-all">
+                            <DropDownListSettings>
+                                <DropDownListPopupSettings Class="text-align-right" />
+                            </DropDownListSettings>
+                        </TelerikDropDownList>
+                        <label style="margin-right: 16px !important;">@TextResources.APP_StringKeys_DocumentEvent_Type :</label>
+                        <TelerikDropDownList Data="DocumentEventTypes"
+                                         TextField="@nameof(TelerikDropDownItemGeneric<DocumentEventType>.Name)"
+                                         ValueField="@nameof(TelerikDropDownItemGeneric<DocumentEventType>.Value)"
+                                         @bind-Value="Request.DocumentEventType"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         Width="200px"
+                                         Class="drop-all">
+                            <DropDownListSettings>
+                                <DropDownListPopupSettings Class="text-align-right" />
+                            </DropDownListSettings>
+                        </TelerikDropDownList>
+                        <label style="margin-right: 15px !important;">@TextResources.APP_StringKeys_DocumentEvent_Description :</label>
+                        <TelerikTextBox @bind-Value="Request.Description"
+                                    Class="form-control input-search-span-lg pointer" Width="200px !important">
+                        </TelerikTextBox>
+                    </div>
+                    <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-top:-40px !important; direction:ltr!important; margin-bottom:5px;">
+                        <button type="submit" class="btn btn-primary"
+                                title="@TextResources.APP_StringKeys_Send">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                        </button>
+                        <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                                style="margin-left: 5px;" @onclick="OnClearClick">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
+@if (DocumentLogs.Any())
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:10px;">
+            <TelerikGrid @ref="GridDocumentLog"
+                     Data="DocumentLogs"
+                     PageSize="5"
+                     Navigable="true"
+                     Pageable="true"
+                     Sortable="true"
+                     Resizable="true">
+                <RowTemplate Context="docLog">
+                    <td class="td-style text-dir-left text-align-right">@docLog.DocumentKey</td>
+                    <td class="td-style">
+                        @(DocumentTypes.FirstOrDefault(p => p.Code.ToString().Equals(docLog.DocumentType))?.Title)
+                    </td>
+                    <td class="td-style">
+                        @(docLog.ImportDateTime.HasValue() ? PersianCalendarTools.GregorianToPersian(docLog.ImportDateTime) : "")
+                    </td>
+                    @foreach (string column in DynamicFieldColumns)
+                    {
+                        if (JToken.Parse(docLog.HeaderData)[column] is not null)
+                        {
+                            <td class="td-style">@JToken.Parse(docLog.HeaderData)[column]</td>
+                        }
+                        else
+                        {
+                            <td class="td-style"></td>
+                        }
+                    }
+                    <td class="td-style">
+                        @if (docLog.DocumentEventType == DocumentEventType.ChangeStatusMasterBackward 
+                            ||docLog.DocumentEventType ==DocumentEventType.ChangeStatusMasterForward)
+                        {
+                            @(TextResources.APP_StringKeys_Change_To_Status + " " +
+                            DocumentStatuses.FirstOrDefault(p=>p.Id == docLog.DocumentStatus)?.Title)
+                        }
+                        else
+                        {
+                            @(DocumentEventTypes.FirstOrDefault(p => p.Value == docLog.DocumentEventType.ToString())?.Name)
+                        }
+                    </td>
+                    <td class="td-style">
+                        @(PersianCalendarTools.GregorianToPersian(docLog.DateTime) + " " + docLog.DateTime.ToShortTimeString())
+                    </td>
+                    <td class="td-style">
+                        @docLog.User
+                    </td>
+                    <td class="td-style">
+                        @docLog.Description
+                    </td>
+                    <td class="td-style">
+                        <button class="btn btn-success btn-details tr-buttom"
+                            @onclick="async ()=>await OnDocumentDetailsClick(docLog.DocumentKey,docLog.DocumentType)">
+                            @TextResources.APP_StringKeys_Details
+                        </button>
+                    </td>
+                    @if (IsMinutesUntilNextActive)
+                    {
+                        <td class="td-style">
+                            @docLog.MinutesUntilNext
+                        </td>
+                    }
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllDocumentLogVm.DocumentKey)"
+                            Title="@TextResources.APP_StringKeys_DocCode"
+                            Width="100px">
+                        <FooterTemplate>
+                            @TextResources.APP_StringKeys_Count_All_Documents: @context.Count
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentLogVm.DocumentType)"
+                            Title="@TextResources.APP_StringKeys_Document_Type"
+                            Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentLogVm.ImportDateTime)"
+                            Title="@TextResources.APP_StringKeys_Document_ImportDateTime"
+                            Width="80px"></GridColumn>
+                    @foreach (string column in DynamicFieldColumns)
+                    {
+                        <GridColumn Title="@column" Width="150px"></GridColumn>
+                    }
+                    <GridColumn Field="@nameof(GetAllDocumentLogVm.DocumentEventType)"
+                            Title="@TextResources.APP_StringKeys_DocumentEvent_Type"
+                            Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentLogVm.DateTime)"
+                            Title="@TextResources.APP_StringKeys_DocumentEvent_DateTime"
+                            Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentLogVm.User)"
+                            Title="@TextResources.APP_StringKeys_DocumentEvent_User"
+                            Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentLogVm.Description)"
+                            Title="@TextResources.APP_StringKeys_DocumentEvent_Description"
+                            Width="100px"></GridColumn>
+                    <GridColumn Width="80px"></GridColumn>
+                    @if (IsMinutesUntilNextActive)
+                    {
+                        <GridColumn Field="@nameof(GetAllDocumentLogVm.MinutesUntilNext)"
+                            Title="@TextResources.APP_StringKeys_MinutesUntilNext"
+                            Width="90px"></GridColumn>
+                    }
+                </GridColumns>
+                <GridAggregates>
+                    <GridAggregate Field=@nameof(GetAllDocumentLogVm.DocumentKey) Aggregate="@GridAggregateType.Count" />
+                </GridAggregates>
+            </TelerikGrid>
+        </div>
+    </div>
+}
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="DetailsModal"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+            <div>
+                <h6 class="form-title card-title " style="text-align: center !important; font-size: small;">
+                    @DetailModalHeaderData
+                </h6>
+            </div>
+        </div>
+        <div class="text-align-center">
+            <TelerikGrid Data="DocumentDetails"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="detils">
+                    <td class="td-style td-dt text-dir-left text-align-right">@detils.DocumentKey</td>
+                    <td class="td-style td-dt">@detils.ProductCode</td>
+                    <td class="td-style td-dt">@detils.ProductTitle</td>
+                    <td class="td-style td-dt">@detils.Count</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllDocumentItemByStatusVm.DocumentKey)" Title="@TextResources.APP_StringKeys_DocCode"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentItemByStatusVm.ProductCode)" Title="@TextResources.APP_StringKeys_ProductCode"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentItemByStatusVm.ProductTitle)" Title="@TextResources.APP_StringKeys_ProductTitle"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllDocumentItemByStatusVm.Count)" Title="@TextResources.APP_StringKeys_Value"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<style type="text/css">
+    .td-style-full {
+        font-size: 75%;
+    }
+</style>

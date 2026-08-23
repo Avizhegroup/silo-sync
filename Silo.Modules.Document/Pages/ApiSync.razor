@@ -1,0 +1,339 @@
+@page "/setting/apisync"
+@namespace Silo.Modules.Document.Pages
+@inherits SiloBasePage
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Silo.Application.Features
+@using Silo.Identity.Client
+@using Silo.Shared.Components
+@using Telerik.Blazor.Components
+@using Telerik.Blazor.Components.Common.Dropdowns
+@using Telerik.FontIcons
+@using Silo.Shared.Components.Modals
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+        <div class="form-search-span" id="form-main">
+            <EditForm Model="Request"
+                      OnInvalidSubmit="OnInvalidSubmit"
+                      OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important; margin-top: 10px">
+                    <label style="margin-right: -4px !important;">@TextResources.APP_StringKeys_ActionType :</label>
+                    <TelerikDropDownList Data="ActionTypes"
+                                         TextField="@nameof(GetAllActionTypesDto.Title)"
+                                         ValueField="@nameof(GetAllActionTypesDto.Code)"
+                                         @bind-Value="Request.ActionType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all"
+                                         OnChange="OnActionTypeChange"
+                                         @ref="ActionTypesDrop">
+                        <DropDownListSettings>
+                            <DropDownListPopupSettings Class="text-align-right" />
+                        </DropDownListSettings>
+                    </TelerikDropDownList>
+                    <label style="margin-right: 74px !important;">@TextResources.APP_StringKeys_Warehouse:</label>
+                    <TelerikDropDownList Data="SearchWarehouses"
+                                         TextField="DestinationTitle"
+                                         ValueField="DestinationCode"
+                                         @bind-Value="Request.WarehouseCode"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 30px !important;">@TextResources.APP_StringKeys_Date :</label>
+                    <TelerikTextBox @bind-Value="Request.Date"
+                                    Class="form-control input-search-span-lg"
+                                    Enabled="false"
+                                    Width="200px !important">
+                    </TelerikTextBox>
+                    <MaterialIcon Style="margin-right: -40px; z-index:1px;"
+                                  Class="nav-flesh"
+                                  IconName="@MaterialIconsHelper.Arrow_forward_ios"
+                                  OnClick="()=> OnNavigateDate(false)"></MaterialIcon>
+                    <MaterialIcon Class="nav-flesh"
+                                  IconName="@MaterialIconsHelper.Arrow_back_ios"
+                                  OnClick="()=> OnNavigateDate(true)"></MaterialIcon>
+
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important; margin-top: 10px">
+                    <label style="margin-right: -8px !important;">@TextResources.APP_StringKeys_Chart_Qc :</label>
+                    <TelerikDropDownList Data="Qcs"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="Request.ProductQc"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 51px !important;">@TextResources.APP_StringKeys_Product_Size :</label>
+                    <TelerikDropDownList Data="Sizes"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="Request.ProductSize"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 12px !important;">@TextResources.APP_StringKeys_ProductType :</label>
+                    <TelerikDropDownList Data="Types"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="Request.ProductType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 10px !important; margin-top: 10px">
+                    <label style="margin-right: 15px !important;">@TextResources.APP_StringKeys_Chart_Regcode :</label>
+                    <TelerikTextBox @bind-Value="Request.RegCode"
+                                    Class="form-control input-search-span-lg"
+                                    Width="200px !important">
+                    </TelerikTextBox>
+                    <label style="margin-right: 14px !important;">@TextResources.APP_StringKeys_Station :</label>
+                    <TelerikDropDownList Data="Stations"
+                                         TextField="Name"
+                                         ValueField="Code"
+                                         @bind-Value="Request.GateCode"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 19px !important;">@TextResources.APP_StringKeys_ProductCode :</label>
+                    <TelerikTextBox @bind-Value="Request.ProductCode"
+                                    Class="form-control input-search-span-lg"
+                                    Width="200px !important">
+                    </TelerikTextBox>
+                    <button type="button" class="btn btn-light" @onclick="async ()=> await ProductCodeModal.Show()">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                    </button>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap search-button-div" style="margin-top:-60px!important">
+                    <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                            style="margin-left: 2px;" @onclick="OnClickClear">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    <button type="submit" id="btn-send" class="btn btn-primary" title="@TextResources.APP_StringKeys_Send">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@if (Results is not null)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center">
+            <br />
+            <TelerikGrid Data="Results"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true"
+                         OnRowRender="OnRowRenderHandler">
+                <RowTemplate Context="product">
+                    <td class="td-style">@product.ProductCode</td>
+                    <td class="td-style">@product.ProductTitle</td>
+                    <td class="td-style">@product.RegCode</td>
+                    <td class="td-style">@product.Size</td>
+                    <td class="td-style">@product.Qc</td>
+                    <td class="td-style">@product.ProductTypeCode</td>
+                    <td class="td-style">@product.ProductTypeTitle</td>
+                    <td class="td-style">@product.Count</td>
+                    <td class="td-style">@product.SumCount</td>
+                    <td class="td-style">@product.ProductCountInPack</td>
+                    <td class="td-style">
+                        <button @onclick="async ()=> await OnClickRowDetails(product)"
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                            <MaterialIcon IconName="@MaterialIconsHelper.List"></MaterialIcon>
+                        </button>
+                        <button @onclick="async ()=> await OnSendClickRowDetails(product)"
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Send"></MaterialIcon>
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                    <TelerikButton Icon="@FontIcon.Print" OnClick="OnPdfExportClick" Class="orange-pdf">
+                        @TextResources.APP_StringKeys_Print
+                    </TelerikButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@PageTitle" />
+                </GridExport>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetApiSyncProductVm.ProductCode)"
+                                Width="150px">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetApiSyncProductVm.ProductTitle)"></GridColumn>
+                    <GridColumn Field="@nameof(GetApiSyncProductVm.RegCode)"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetApiSyncProductVm.Size)"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetApiSyncProductVm.Qc)"
+                                Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetApiSyncProductVm.ProductTypeCode)"
+                                Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetApiSyncProductVm.ProductTypeTitle)"
+                                Width="120px"></GridColumn>
+                    <GridColumn Field="@nameof(GetApiSyncProductVm.Count)"
+                                Width="80px">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetApiSyncProductVm.SumCount)"
+                                Width="100px">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetApiSyncProductVm.ProductCountInPack)"
+                                Width="120px">
+                    </GridColumn>
+                    <GridColumn Width="80px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </div>
+}
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalDetails"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <div class="text-align-center">
+                @TextResources.APP_StringKeys_ProductCode: @DetailsChoosed.ProductCode
+                @TextResources.APP_StringKeys_ProductCount: @DetailsChoosed.ProductValue
+                <br />
+                @TextResources.APP_StringKeys_ProductName: @DetailsChoosed.ProductTitle
+            </div>
+            <hr />
+            @if (Details is not null)
+            {
+                <TelerikGrid Data="Details"
+                             PageSize="10"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true">
+                    <RowTemplate Context="product">
+                        <td class="td-style">@product.ProductSerial</td>
+                        <td class="td-style">@product.ProductTitle</td>
+                        <td class="td-style">@product.RegisterDateTime.ToNormalPersianDateTime()</td>
+                        <td class="td-style">@product.TagZone</td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetApiSyncProductDetailsVm.ProductSerial)"
+                                    Width="150px">
+                        </GridColumn>
+                        <GridColumn Field="@nameof(GetApiSyncProductDetailsVm.ProductTitle)"
+                                    Width="300px"></GridColumn>
+                        <GridColumn Field="@nameof(GetApiSyncProductDetailsVm.RegisterDateTime)"
+                                    Width="120px"></GridColumn>
+                        <GridColumn Field="@nameof(GetApiSyncProductDetailsVm.TagZone)"
+                                    Width="100px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_ApiSync_Send"
+       @ref="ModalSend"
+       Size="ModalSize.ExtraLarge"
+       OnCloseModal="OnClearSendClick">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; background-color:darkseagreen;">
+                <div class="form-search-span">
+                    @TextResources.APP_StringKeys_ProductCode: @DetailsChoosed.ProductCode
+                    @TextResources.APP_StringKeys_ProductCount: @DetailsChoosed.ProductValue
+                    <br />
+                    @TextResources.APP_StringKeys_ProductName: @DetailsChoosed.ProductTitle
+                </div>
+            </div>
+            <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; background-color:darkseagreen;">
+                <div class="form-search-span">
+                    <EditForm Model="ProductCodes"
+                              OnValidSubmit="OnValidUpdateProductCodeSubmit">
+                        <DataAnnotationsValidator />
+                        <div style="margin-top:10px;">
+                            <h6>
+                                @TextResources.APP_StringKeys_Update_ProductCode
+                            </h6>
+                        </div>
+                        <div class="bg-danger text-align-right">
+                            <ValidationSummary />
+                        </div>
+                        <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 15px !important; margin-top: 15px">
+                            <label style="margin-right: 14px !important;">@TextResources.APP_StringKeys_ProductCode:</label>
+                            <TelerikTextBox @bind-Value="ProductCodes.OldProductCode"
+                                            Class="form-control input-search-span-lg"
+                                            Enabled="false">
+                            </TelerikTextBox>
+                            <label style="margin-right: 19px !important;">@TextResources.APP_StringKeys_Update_ProductCode:</label>
+                            <TelerikTextBox @bind-Value="ProductCodes.NewProductCode"
+                                            Class="form-control input-search-span-lg">
+                            </TelerikTextBox>
+                            <button type="submit" class="btn btn-primary" title="@TextResources.APP_StringKeys_Send">
+                                <MaterialIcon IconName="@MaterialIconsHelper.Save_as"></MaterialIcon>
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+            <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; background-color:bisque;">
+                <div class="form-search-span">
+                    <EditForm Model="SendAction"
+                              OnValidSubmit="OnValidSendSubmit">
+                        <div style="margin-top:10px;">
+                            <h6>
+                                @TextResources.APP_StringKeys_ApiSync_Send
+                            </h6>
+                        </div>
+                        <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 15px !important; margin-top: 15px">
+                            <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Warehouse:</label>
+                            <TelerikTextBox @bind-Value="SendAction.WarehouseCode"
+                                            Class="form-control input-search-span-lg">
+                            </TelerikTextBox>
+                            <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Basic_Document:</label>
+                            <TelerikTextBox @bind-Value="SendAction.BasicDocument"
+                                            Class="form-control input-search-span-lg">
+                            </TelerikTextBox>
+                            <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Document_Desc:</label>
+                            <TelerikTextBox @bind-Value="SendAction.DocumentType"
+                                            Width="300px">
+                            </TelerikTextBox>
+                            <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                                    style="margin-left: 2px;" @onclick="OnClearSendClick">
+                                <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                            </button>
+                            <button type="submit" id="btn-send" class="btn btn-primary" title="@TextResources.APP_StringKeys_Send">
+                                <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<ProductCodeModal @ref="ProductCodeModal"
+                  OnClickProductCode="OnProductCodeChoose">
+</ProductCodeModal>

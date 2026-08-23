@@ -1,0 +1,154 @@
+@page "/product/revoke"
+@inherits SiloBasePage
+@namespace Silo.Pages.Reports
+@using Microsoft.AspNetCore.Components.Web
+@using Silo.Application.Features;
+@using Silo.Modules.Product.Pages
+@using Silo.Shared.Components
+@using Telerik.Blazor.Components
+
+<PageTitle>@TextResources.APP_StringKeys_Product_Revoke</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+        <div class="form-search-span" style="padding-top:10px;">
+            <div class=" d-flex flex-row align-items-center flex-wrap" style=" margin-top:5px; margin-right:15px;">
+                <label>@TextResources.APP_StringKeys_ProductSerial</label>
+                <input @bind-value="Serial" type="text" class="form-control input-search-span-lg pointer"
+                @onkeyup="OnSerialKeyUp" />
+                <button type="button"
+                        class="btn btn-primary"
+                        style="width:50px; height:42px;"
+                @onclick="OnHandHeldTagReadClick">
+                    <img src="/images/Utilities/handheld-logo.png" width="20" height="20" />
+                </button>
+                <button type="button"
+                        class="btn btn-primary"
+                        style="margin-right:5px;"
+                @onclick="OnAddSerialClick">
+                    <MaterialIcon IconName="add"></MaterialIcon>
+                </button>
+
+            </div>
+        </div>
+    </div>
+    @if (Product is not null)
+    {
+        <div class="card card-stats col-md-12 text-align-center-center">
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-right:15px;">
+                <span class="tech-item" style="margin-left:10px">
+                    <label>@TextResources.APP_StringKeys_ProductSerial</label>
+                    <input type="text" readonly class="form-control input-search-span" value="@Product.ProductSerial" />
+                </span>
+                <span class="tech-item" style="margin-left:10px">
+                    <label>@TextResources.APP_StringKeys_ProductCode</label>
+                    <input type="text" readonly class="form-control input-search-span" value="@Product.ProductCode" />
+                </span>
+                <span class="tech-item" style="margin-left:10px">
+                    <label>@TextResources.APP_StringKeys_ProductName</label>
+                    <input type="text"
+                           readonly
+                           class="form-control input-search-span"
+                           value="@Product.ProductName"
+                           width="120" />
+                </span>
+                <span class="tech-item" style="margin-left:10px">
+                    <label>@TextResources.APP_StringKeys_ProductValue</label>
+                    <input type="text" readonly class="form-control input-search-span" value="@Product.Count" />
+                </span>
+                <span class="tech-item" style="margin-left:10px">
+                    <label>@TextResources.APP_StringKeys_Chart_ProductDate</label>
+                    <input type="text" readonly class="form-control input-search-span" value="@Product.ProductDate" />
+                </span>
+                <span class="tech-item" style="margin-left:10px">
+                    <label>@TextResources.APP_StringKeys_Chart_Regcode</label>
+                    <input type="text" readonly class="form-control input-search-span" value="@Product.RegCode" />
+                </span>
+                <span class="tech-item" style="margin-left:10px">
+                    <label>@TextResources.APP_StringKeys_Chart_Qc</label>
+                    <input type="text" readonly class="form-control input-search-span" value="@Product.Qc" />
+                </span>
+                <span class="tech-item" style="margin-left:10px">
+                    <label>@TextResources.APP_StringKeys_Product_Size</label>
+                    <input type="text" readonly class="form-control input-search-span" value="@Product.Size" />
+                </span>
+                <span class="tech-item" style="margin-left:10px">
+                    <label>@TextResources.APP_StringKeys_ProductBrand</label>
+                    <input type="text" readonly class="form-control input-search-span" value="@Product.ProductBrand" />
+                </span>
+                <span class="tech-item" style="margin-left:10px">
+                    <label>@TextResources.APP_StringKeys_ProductGroup</label>
+                    <input type="text" readonly class="form-control input-search-span" value="@Product.ProductGroup" />
+                </span>
+                <span class="tech-item" style="margin-left:10px">
+                    <label>@TextResources.APP_StringKeys_ProductType</label>
+                    <input type="text" readonly class="form-control input-search-span" value="@Product.ProductType" />
+                </span>
+                <span class="tech-item" style="margin-left:10px">
+                    <label>@TextResources.APP_StringKeys_Freeze_Status</label>
+                    <input type="text" readonly class="form-control input-search-span" value="@Product.FreezeStatus" />
+                </span>
+                <span class="tech-item" style="margin-left:10px">
+                    <label>@TextResources.APP_StringKeys_Inspect_Status</label>
+                    <input type="text" readonly class="form-control input-search-span" value="@Product.InspectStatus" />
+                </span>
+                <span class="tech-item" style="margin-left:10px">
+                    <label>@TextResources.APP_StringKeys_User</label>
+                    <input type="text" readonly class="form-control input-search-span" value="@Product.User" />
+                </span>
+                <span class="tech-item" style="margin-left:10px">
+                    <label>@TextResources.APP_StringKeys_Field_Warehouse_Title</label>
+                    <input type="text" readonly class="form-control input-search-span" value="@Product.Warehouse" />
+                </span>
+            </div>
+            <div class="div-submit">
+                <button type="button"
+                        class="btn btn-warning"
+                @onclick="()=> Product = null">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                </button>
+                <button type="button"
+                        class="btn btn-danger"
+                        style="margin-right:5px;"
+                @onclick="async (e)=> await ErrorModal.Open(e)">
+                    @TextResources.APP_StringKeys_Revoke
+                    <MaterialIcon IconName="@MaterialIconsHelper.Delete_forever"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Attention"
+@ref="ErrorModal"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Confirm"
+       OkBtnClass="btn btn-danger"
+       OnOkModal="OnModalOk">
+    <ModalBodyContentHtml>
+        <div class="text-align-center col-md-12" style="margin-top:5px;">
+            @if (Product is not null)
+            {
+                <div class="bg-danger">
+                    <h6>
+                        @string.Format(TextResources.APP_StringKeys_Revoke_Confirm,Product.ProductSerial)
+                    </h6>
+                </div>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<style type="text/css">
+    .input-search-span {
+        width: 400px !important;
+    }
+</style>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

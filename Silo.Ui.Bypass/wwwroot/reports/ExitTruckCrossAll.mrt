@@ -1,0 +1,1132 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<StiSerializer version="1.02" type="Net" application="StiReport">
+  <Dictionary Ref="1" type="Dictionary" isKey="true">
+    <BusinessObjects isList="true" count="0" />
+    <Databases isList="true" count="0" />
+    <DataSources isList="true" count="2">
+      <GetCargoByTruckCrossIdVm Ref="2" type="Stimulsoft.Report.Dictionary.StiBusinessObjectSource" isKey="true">
+        <Alias>اطلاعات اقلام محموله</Alias>
+        <Columns isList="true" count="6">
+          <value>ProductCode,کدکالا,System.String</value>
+          <value>ProductName,نام_x0020_کالا,System.String</value>
+          <value>RegCode,کدفنی,System.String</value>
+          <value>SumCount,جمع_x0020_مقدار,System.Decimal</value>
+          <value>DocumentCode,System.String</value>
+          <value>TruckCrossId,System.Int32</value>
+        </Columns>
+        <Dictionary isRef="1" />
+        <Key>a2a803dd8e724dcd8cbe16986ed1d58a</Key>
+        <Name>GetCargoByTruckCrossIdVm</Name>
+        <NameInSource>GetCargoByTruckCrossIdVm</NameInSource>
+      </GetCargoByTruckCrossIdVm>
+      <TruckCrossHeaderPrintDto Ref="3" type="Stimulsoft.Report.Dictionary.StiBusinessObjectSource" isKey="true">
+        <Alias>اطلاعات تردد</Alias>
+        <Columns isList="true" count="70">
+          <value>ORIGINAL,Id,Id,کد_x0020_عملیات_x0020_تردد,System.Int32,_x0031_57e3837eb4e492da79a81dca9bac63f</value>
+          <value>ORIGINAL,PresentDateTime,PresentDateTime,تاریخ_x0020_و_x0020_ساعت_x0020_پذیرش,System.DateTime,_x0035_e7ad988c30148cb8a487a921837cc07</value>
+          <value>ORIGINAL,PresentUser,PresentUser,کاربر_x0020_پذیرش,System.String,d72471ad17ae493db499bd78dba55336</value>
+          <value>ORIGINAL,NationalCode,NationalCode,کد_x0020_ملی_x0020_راننده,System.String,_x0030_7f015af064f4408be200e6d629b1c79</value>
+          <value>ORIGINAL,DriverName,DriverName,نام_x0020_راننده,System.String,a611277d10e74494a7ee79a0b1ccf3bb</value>
+          <value>ORIGINAL,CompanyTitle,CompanyTitle,شرکت,System.String,_x0039_7082942b4c94559bbd5a291ceac43ae</value>
+          <value>ORIGINAL,PassportCode,PassportCode,شماره_x0020_پاسپورت,System.String,_x0038_c6448ce6c28474988f37ddd9d3a3d4d</value>
+          <value>ORIGINAL,DriverPhone,DriverPhone,شماره_x0020_راننده,System.String,d9325de878ed41ce835e41482fccb47e</value>
+          <value>ORIGINAL,LicenseCode,LicenseCode,گواهینامه,System.String,_x0031_70f6bde24364bf09ef31eb0837c51a7</value>
+          <value>ORIGINAL,Plaque,Plaque,پلاک,System.String,a0344fc393054174adab3357914529e4</value>
+          <value>ORIGINAL,InternationalPlaque,InternationalPlaque,پلاک_x0020_بین_x0020_المللی,System.String,b6eb08de39294b318bed784fc87ea037</value>
+          <value>ORIGINAL,TruckTypeTitle,TruckTypeTitle,نوع_x0020_ماشین,System.String,b09330dfa05b43f48046ee95253bbc31</value>
+          <value>ORIGINAL,TypeDesc,TypeDesc,شرح_x0020_ماشین,System.String,_x0032_c3de7952bbf420da6cb0226b26d86c3</value>
+          <value>ORIGINAL,PresentCauseTitle,PresentCauseTitle,علت_x0020_مراجعه,System.String,_x0037_baad1ac8be448498c12a7d88353a1f5</value>
+          <value>ORIGINAL,OperationTypeTitle,OperationTypeTitle,نوع_x0020_عملیات,System.String,_x0033_0878e1be01848e89e0904b6ce61a3f0</value>
+          <value>ORIGINAL,PresentShipmentTitle,PresentShipmentTitle,باربری,System.String,_x0030_b8dc88b408549d3ba0e8ff18ccd92fd</value>
+          <value>ORIGINAL,PresentShipmentNumber,PresentShipmentNumber,شماره_x0020_بارنامه,System.String,b34c3e0b68ff48da82307d4c7e035acd</value>
+          <value>ORIGINAL,PresentCustomerTitle,PresentCustomerTitle,فرستنده_x002F_گیرنده,System.String,_x0037_a7023c15db84fac8ce5fc16314523a2</value>
+          <value>ORIGINAL,OperationDestinationTitle,OperationDestinationTitle,مقصد_x0020_عملیات_x000A_,System.String,_x0032_1c0bfd79a824c45b4bd88936536d674</value>
+          <value>ORIGINAL,PresentDesc,PresentDesc,توضیحات_x0020_پذیرش_x000A_,System.String,_x0039_07d0103da4a407f8125bfc1d2171de2</value>
+          <value>ORIGINAL,PresentTurn,PresentTurn,نوبت_x0020_پذیرش_x000A_,System.Int32,f2ad445068404d9d84ed25f539cc841f</value>
+          <value>EnterDateTime,تاریخ_x0020_و_x0020_ساعت_x0020_ورود_x000A_,System.DateTime</value>
+          <value>EnterUser,کاربر_x0020_ورود_x000A_,System.String</value>
+          <value>EnterWeightTonage,وزن_x0020_ورود,System.Decimal</value>
+          <value>EnterAcceptor,شخص_x0020_مراجعه,System.String</value>
+          <value>AcceptPlaceTitle,محل_x0020_مراجعه_x000A_,System.String</value>
+          <value>ExitDateTime,تاریخ_x0020_و_x0020_ساعت_x0020_خروج,System.DateTime</value>
+          <value>ExitUser,کاربر_x0020_خروج,System.String</value>
+          <value>ExitWeightTonage,وزن_x0020_خروج_x000A_,System.Decimal</value>
+          <value>ExitPureWeightCargo,وزن_x0020_خالص,System.Decimal</value>
+          <value>ExitWeightbridgeReceiptNumber,شماره_x0020_قبض_x0020_باسکول_x000A_,System.String</value>
+          <value>ExitCargoOwnerName,نام_x0020_صاحب_x0020_بار,System.String</value>
+          <value>ExitDeliveryAddress,آدرس_x0020_تحویل,System.String</value>
+          <value>ExitCargoOwnerPhone,شماره_x0020_تماس_x0020_صاحب_x0020_بار_x000A_,System.String</value>
+          <value>ExitDesc,توضیحات_x0020_خروج,System.String</value>
+          <value>ExitPaymentTypeTitle,نوع_x0020_کرایه_x0020_حمل,System.String</value>
+          <value>ExitTotalCost,قیمت_x0020_نهایی_x0020_کرایه,System.String</value>
+          <value>ExitUnitPrice,مبلغ_x0020_واحد,System.String</value>
+          <value>ExitDistance,مسافت,System.String</value>
+          <value>GateOpCode,کد_x0020_عملیات_x0020_گیت,System.String</value>
+          <value>DocumentId,کد_x0020_سند,System.String</value>
+          <value>GateCode,کد_x0020_گیت,System.String</value>
+          <value>EnterDate,تاریخ_x0020_ورود,System.String</value>
+          <value>EnterTime,ساعت_x0020_ورود,System.String</value>
+          <value>PresentDate,تاریخ_x0020_پذیرش,System.String</value>
+          <value>PresentTime,ساعت_x0020_پذیرش,System.String</value>
+          <value>ExitDate,تاریخ_x0020_خروج,System.String</value>
+          <value>ExitTime,ساعت_x0020_خروج,System.String</value>
+          <value>RelatedCargos,System.String</value>
+          <value>DynamicFieldsDisplayText,فیلدهای_x0020_داینامیک,System.String</value>
+          <value>DynamicField1,System.String</value>
+          <value>DynamicField2,System.String</value>
+          <value>DynamicField3,System.String</value>
+          <value>DynamicField4,System.String</value>
+          <value>DynamicField5,System.String</value>
+          <value>DynamicField6,System.String</value>
+          <value>DynamicField7,System.String</value>
+          <value>DynamicField8,System.String</value>
+          <value>DynamicField9,System.String</value>
+          <value>DynamicField10,System.String</value>
+          <value>DynamicField11,System.String</value>
+          <value>DynamicField12,System.String</value>
+          <value>DynamicField13,System.String</value>
+          <value>DynamicField14,System.String</value>
+          <value>DynamicField15,System.String</value>
+          <value>DynamicField16,System.String</value>
+          <value>DynamicField17,System.String</value>
+          <value>DynamicField18,System.String</value>
+          <value>DynamicField19,System.String</value>
+          <value>DynamicField20,System.String</value>
+        </Columns>
+        <Dictionary isRef="1" />
+        <Key>22eed410c492428780fc473e46410f94</Key>
+        <Name>TruckCrossHeaderPrintDto</Name>
+        <NameInSource>TruckCrossHeaderPrintDto</NameInSource>
+      </TruckCrossHeaderPrintDto>
+    </DataSources>
+    <Relations isList="true" count="0" />
+    <Report isRef="0" />
+    <Resources isList="true" count="0" />
+    <Variables isList="true" count="35">
+      <value>,DateString,تاریخ_x0020_و_x0020_ساعت_x0020_تولید_x0020_گزارش,,System.String,,False,False,False,False,,_x0033_2fc06d0e5e54c578c52f3a889d75ad5</value>
+      <value>,CompanyName,CompanyName,,System.String,,False,False,False,False,,_x0031_80cd4854d85468596dd6b575d540324</value>
+      <value>,DocumentKey,کلید_x0020_سند,,System.String,,False,False,False,False,,_x0035_faabc3bbab941bcb915d4544125832a</value>
+      <value>,DocumentType,نوع_x0020_سند,,System.String,,False,False,False,False,,_x0030_4d5af7bccd844efb8b1f4f6439903b4</value>
+      <value>,DateTimeString,تاریخ_x0020_و_x0020_ساعت_x0020_تجمیع,,System.String,,False,False,False,False,,_x0031_f8cf2b5987547849401485eb4f22a2f</value>
+      <value>,Description,توضیحات,,System.String,,False,False,False,False,,ddc8983153af4c87904de6e638f91ce4</value>
+      <value>,Status,وضعیت,,System.String,,False,False,False,False,,_x0038_9bcf69a1c2746099519b506db6af5ee</value>
+      <value>,HeaderData,مشخصات_x0020_سند,,System.String,,False,False,False,False,,_x0038_a0670545a64472ba56507d1c935f976</value>
+      <value>,کد_مجوز_فروش,کد_x0020_مجوز_x0020_فروش,,System.String,,False,False,False,False,,_x0032_7a348a9a9dc444986113c8ccc7c4438</value>
+      <value>,تاریخ_مجوز_فروش,تاریخ_مجوز_فروش,,System.String,,False,False,False,False,,_x0039_792e8c6e581454c8791b88be4837a44</value>
+      <value>,کد_مشتری_مجوز_فروش,کد_مشتری_مجوز_فروش,,System.String,,False,False,False,False,,fb08208ae91c4283a31c3ba1eb94d80a</value>
+      <value>,عنوان_مشتری_مجوز_فروش,عنوان_مشتری_مجوز_فروش,,System.String,,False,False,False,False,,fc732490a97d4bbe89e1d06e196f9ff2</value>
+      <value>,موبایل_مشتری_مجوز_فروش,موبایل_مشتری_مجوز_فروش,,System.String,,False,False,False,False,,e01443a496124fbfb1fca5e0c30bb01a</value>
+      <value>,PageTitle,PageTitle,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle1,DynamicFieldTitle1,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle2,DynamicFieldTitle2,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle3,DynamicFieldTitle3,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle4,DynamicFieldTitle4,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle5,DynamicFieldTitle5,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle6,DynamicFieldTitle6,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle7,DynamicFieldTitle7,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle8,DynamicFieldTitle8,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle9,DynamicFieldTitle9,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle10,DynamicFieldTitle10,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle11,DynamicFieldTitle11,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle12,DynamicFieldTitle12,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle13,DynamicFieldTitle13,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle14,DynamicFieldTitle14,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle15,DynamicFieldTitle15,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle16,DynamicFieldTitle16,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle17,DynamicFieldTitle17,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle18,DynamicFieldTitle18,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle19,DynamicFieldTitle19,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldTitle20,DynamicFieldTitle20,,System.String,,False,False,False,False</value>
+      <value>,DynamicFieldCount,DynamicFieldCount,,System.Int32,,False,False,False,False</value>
+    </Variables>
+  </Dictionary>
+  <EngineVersion>EngineV2</EngineVersion>
+  <GlobalizationStrings isList="true" count="0" />
+  <Key>c594166eda35420a9c8e89ddb1a08f9c</Key>
+  <MetaTags isList="true" count="0" />
+  <Pages isList="true" count="1">
+    <Page1 Ref="4" type="Page" isKey="true">
+      <Border>None;Black;2;Solid;False;4;Black</Border>
+      <Brush>Transparent</Brush>
+      <Components isList="true" count="16">
+        <PageHeaderBand1 Ref="5" type="PageHeaderBand" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>0,0.2,7.49,1.5</ClientRectangle>
+          <Components isList="true" count="4">
+            <Image_Logo Ref="6" type="Image" isKey="true">
+              <AspectRatio>True</AspectRatio>
+              <Brush>Transparent</Brush>
+              <ClientRectangle>3.3,0,1.1,1.1</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <IconColor>68, 114, 196</IconColor>
+              <Margins>0,0,0,0</Margins>
+              <Name>Image_Logo</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <Stretch>True</Stretch>
+            </Image_Logo>
+            <Text11 Ref="7" type="Text" isKey="true">
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>5.2,0.2,2.2,0.3</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),16</Font>
+              <GrowToHeight>True</GrowToHeight>
+              <Guid>6c7634a3900a4f03b14640843902390a</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text11</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <Text>{PageTitle}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text11>
+            <Text17 Ref="8" type="Text" isKey="true">
+              <Border>None;[182:182:182];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>0.1,0.2,3,0.3</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10</Font>
+              <GrowToHeight>True</GrowToHeight>
+              <Guid>2c4b31ff71d74439b78f22ccf8e6b8f7</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text17</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text17>
+            <StartPointPrimitive1 Ref="9" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>0,0,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive1</Name>
+              <Page isRef="4" />
+              <Parent isRef="5" />
+              <ReferenceToGuid>bc0f681e2f3f4875bf206845425015a1</ReferenceToGuid>
+            </StartPointPrimitive1>
+          </Components>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Name>PageHeaderBand1</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+        </PageHeaderBand1>
+        <PageFooterBand1 Ref="10" type="PageFooterBand" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>0,10.11,7.49,0.8</ClientRectangle>
+          <Components isList="true" count="16">
+            <Text16 Ref="11" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>5.7,0.49,1.7,0.2</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10</Font>
+              <HorAlignment>Right</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text16</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <Text>{CompanyName}</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+            </Text16>
+            <Text18 Ref="12" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>5.9,0.19,1.5,0.2</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10</Font>
+              <HorAlignment>Right</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text18</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <Text>سیلو- مدیریت انبارمحصول</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+            </Text18>
+            <Text19 Ref="13" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>3.8,0.19,0.9,0.4</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),15,Bold</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text19</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <Text>تهیه کننده</Text>
+              <TextBrush>[191:191:191]</TextBrush>
+              <Type>Expression</Type>
+            </Text19>
+            <Text26 Ref="14" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>2.6,0.19,1,0.4</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),15,Bold</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text26</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <Text>مدیر تضمین</Text>
+              <TextBrush>[191:191:191]</TextBrush>
+              <Type>Expression</Type>
+            </Text26>
+            <Text27 Ref="15" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>1.4,0.19,1,0.4</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),15,Bold</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text27</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <Text>مدیر تولید</Text>
+              <TextBrush>[191:191:191]</TextBrush>
+              <Type>Expression</Type>
+            </Text27>
+            <Text20 Ref="16" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>0.2,0.19,1,0.4</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),15,Bold</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text20</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <Text>مدیر کارخانه</Text>
+              <TextBrush>[191:191:191]</TextBrush>
+              <Type>Expression</Type>
+            </Text20>
+            <Text2 Ref="17" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>4.9,0.19,0.5,0.3</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10,Bold</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text2</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <Text>{PageNumber}</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+            </Text2>
+            <StartPointPrimitive2 Ref="18" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>0,-0.01,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive2</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <ReferenceToGuid>33546fcf2bec4d8cbc80b390beb62508</ReferenceToGuid>
+            </StartPointPrimitive2>
+            <StartPointPrimitive3 Ref="19" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>0.1,0.09,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive3</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <ReferenceToGuid>d1a717b4b017485e9ecf84ac5277e955</ReferenceToGuid>
+            </StartPointPrimitive3>
+            <EndPointPrimitive3 Ref="20" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>4.8,0.69,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive3</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <ReferenceToGuid>d1a717b4b017485e9ecf84ac5277e955</ReferenceToGuid>
+            </EndPointPrimitive3>
+            <StartPointPrimitive4 Ref="21" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>3.7,0.09,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive4</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <ReferenceToGuid>75f77ba735344590bc0aac074489ac3e</ReferenceToGuid>
+            </StartPointPrimitive4>
+            <EndPointPrimitive4 Ref="22" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>3.7,0.69,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive4</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <ReferenceToGuid>75f77ba735344590bc0aac074489ac3e</ReferenceToGuid>
+            </EndPointPrimitive4>
+            <StartPointPrimitive5 Ref="23" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>2.5,0.09,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive5</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <ReferenceToGuid>d0d48f199bed4fcab9eb8780390126e3</ReferenceToGuid>
+            </StartPointPrimitive5>
+            <EndPointPrimitive5 Ref="24" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>2.5,0.69,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive5</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <ReferenceToGuid>d0d48f199bed4fcab9eb8780390126e3</ReferenceToGuid>
+            </EndPointPrimitive5>
+            <StartPointPrimitive6 Ref="25" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>1.3,0.09,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive6</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <ReferenceToGuid>04aa3546031447cfa79deded61c8c0a9</ReferenceToGuid>
+            </StartPointPrimitive6>
+            <EndPointPrimitive6 Ref="26" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+              <ClientRectangle>1.3,0.69,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>EndPointPrimitive6</Name>
+              <Page isRef="4" />
+              <Parent isRef="10" />
+              <ReferenceToGuid>04aa3546031447cfa79deded61c8c0a9</ReferenceToGuid>
+            </EndPointPrimitive6>
+          </Components>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Name>PageFooterBand1</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+        </PageFooterBand1>
+        <HeaderBand2 Ref="27" type="HeaderBand" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>0,2.1,7.49,0.6</ClientRectangle>
+          <Components isList="true" count="1">
+            <StartPointPrimitive7 Ref="28" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+              <ClientRectangle>0,0,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Name>StartPointPrimitive7</Name>
+              <Page isRef="4" />
+              <Parent isRef="27" />
+              <ReferenceToGuid>b4add9a9935c4fc9bdc9b6c34c22ee91</ReferenceToGuid>
+            </StartPointPrimitive7>
+          </Components>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Name>HeaderBand2</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+        </HeaderBand2>
+        <HeaderBand1 Ref="29" type="HeaderBand" isKey="true">
+          <Border>Left, Right;White;1;Solid;False;4;Black</Border>
+          <Brush>EmptyBrush</Brush>
+          <ClientRectangle>0,3.1,7.49,0.4</ClientRectangle>
+          <Components isList="true" count="24">
+ <!-- Row number (rightmost in RTL) -->
+            <Text15 Ref="32" type="Text" isKey="true">
+            <Border>All;[0:0:0];1;Solid;False;4;Black</Border>
+<Brush>EmptyBrush</Brush>
+  <ClientRectangle>7.1,0,0.39,0.4</ClientRectangle>
+         <Conditions isList="true" count="0" />
+     <Expressions isList="true" count="0" />
+        <Font>IRANSans(FaNum),10,Bold</Font>
+            <HorAlignment>Center</HorAlignment>
+       <Margins>0,0,0,0</Margins>
+  <Name>Text15</Name>
+   <Page isRef="4" />
+   <Parent isRef="29" />
+      <Text>ردیف</Text>
+              <TextBrush>[0:0:0]</TextBrush>
+      <Type>Expression</Type>
+    <VertAlignment>Center</VertAlignment>
+      </Text15>
+ <!-- Truck Cross ID -->
+ <Text14 Ref="31" type="Text" isKey="true">
+         <Border>All;[0:0:0];1;Solid;False;4;Black</Border>
+<Brush>EmptyBrush</Brush>
+     <ClientRectangle>6.4,0,0.7,0.4</ClientRectangle>
+      <ComponentStyle>Header3</ComponentStyle>
+          <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+   <Font>IRANSans(FaNum),10,Bold</Font>
+        <HorAlignment>Center</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+       <Name>Text14</Name>
+     <Page isRef="4" />
+     <Parent isRef="29" />
+       <Text>کد تردد</Text>
+      <TextBrush>[0:0:0]</TextBrush>
+  <Type>Expression</Type>
+   <VertAlignment>Center</VertAlignment>
+            </Text14>
+      <!-- Related Cargos (main content) -->
+   <Text6 Ref="30" type="Text" isKey="true">
+          <Border>All;[0:0:0];1;Solid;False;4;Black</Border>
+      <Brush>EmptyBrush</Brush>
+  <ClientRectangle>3.0,0,3.4,0.4</ClientRectangle>
+   <ComponentStyle>Header3</ComponentStyle>
+    <Conditions isList="true" count="0" />
+  <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),10,Bold</Font>
+   <HorAlignment>Center</HorAlignment>
+      <Margins>0,0,0,0</Margins>
+    <Name>Text6</Name>
+  <Page isRef="4" />
+         <Parent isRef="29" />
+  <Text>شرح محموله</Text>
+        <TextBrush>[0:0:0]</TextBrush>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text6>
+            <!-- Dynamic Field Headers (LEFT side in RTL) -->
+            <Text_DynHeader1 Ref="73" type="Text" isKey="true">
+            <Border>All;[0:0:0];1;Solid;False;4;Black</Border>
+              <Brush>EmptyBrush</Brush>
+              <ClientRectangle>2.4,0,0.6,0.4</ClientRectangle>
+   <ComponentStyle>Header3</ComponentStyle>
+         <Conditions isList="true" count="1">
+        <StiCondition Ref="74" type="StiCondition" isKey="true">
+     <Expression>{DynamicFieldCount &gt;= 1}</Expression>
+         <Item>Enabled</Item>
+    <Value1>true</Value1>
+</StiCondition>
+              </Conditions>
+  <Expressions isList="true" count="0" />
+     <Font>IRANSans(FaNum),8,Bold</Font>
+      <HorAlignment>Center</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+   <Name>Text_DynHeader1</Name>
+      <Page isRef="4" />
+            <Parent isRef="29" />
+              <Text>{DynamicFieldTitle1}</Text>
+              <TextBrush>[0:0:0]</TextBrush>
+         <Type>Expression</Type>
+   <VertAlignment>Center</VertAlignment>
+       </Text_DynHeader1>
+       <Text_DynHeader2 Ref="75" type="Text" isKey="true">
+              <Border>All;[0:0:0];1;Solid;False;4;Black</Border>
+     <Brush>EmptyBrush</Brush>
+       <ClientRectangle>1.8,0,0.6,0.4</ClientRectangle>
+       <ComponentStyle>Header3</ComponentStyle>
+       <Conditions isList="true" count="1">
+      <StiCondition Ref="76" type="StiCondition" isKey="true">
+    <Expression>{DynamicFieldCount &gt;= 2}</Expression>
+       <Item>Enabled</Item>
+         <Value1>true</Value1>
+      </StiCondition>
+       </Conditions>
+   <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),8,Bold</Font>
+  <HorAlignment>Center</HorAlignment>
+   <Margins>0,0,0,0</Margins>
+   <Name>Text_DynHeader2</Name>
+       <Page isRef="4" />
+     <Parent isRef="29" />
+       <Text>{DynamicFieldTitle2}</Text>
+       <TextBrush>[0:0:0]</TextBrush>
+         <Type>Expression</Type>
+      <VertAlignment>Center</VertAlignment>
+     </Text_DynHeader2>
+       <Text_DynHeader3 Ref="77" type="Text" isKey="true">
+         <Border>All;[0:0:0];1;Solid;False;4;Black</Border>
+   <Brush>EmptyBrush</Brush>
+        <ClientRectangle>1.2,0,0.6,0.4</ClientRectangle>
+            <ComponentStyle>Header3</ComponentStyle>
+       <Conditions isList="true" count="1">
+         <StiCondition Ref="78" type="StiCondition" isKey="true">
+            <Expression>{DynamicFieldCount &gt;= 3}</Expression>
+    <Item>Enabled</Item>
+  <Value1>true</Value1>
+          </StiCondition>
+    </Conditions>
+      <Expressions isList="true" count="0" />
+    <Font>IRANSans(FaNum),8,Bold</Font>
+              <HorAlignment>Center</HorAlignment>
+        <Margins>0,0,0,0</Margins>
+       <Name>Text_DynHeader3</Name>
+     <Page isRef="4" />
+          <Parent isRef="29" />
+        <Text>{DynamicFieldTitle3}</Text>
+   <TextBrush>[0:0:0]</TextBrush>
+  <Type>Expression</Type>
+   <VertAlignment>Center</VertAlignment>
+</Text_DynHeader3>
+            <Text_DynHeader4 Ref="79" type="Text" isKey="true">
+          <Border>All;[0:0:0];1;Solid;False;4;Black</Border>
+     <Brush>EmptyBrush</Brush>
+         <ClientRectangle>0.6,0,0.6,0.4</ClientRectangle>
+        <ComponentStyle>Header3</ComponentStyle>
+      <Conditions isList="true" count="1">
+       <StiCondition Ref="80" type="StiCondition" isKey="true">
+      <Expression>{DynamicFieldCount &gt;= 4}</Expression>
+      <Item>Enabled</Item>
+        <Value1>true</Value1>
+     </StiCondition>
+   </Conditions>
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),8,Bold</Font>
+       <HorAlignment>Center</HorAlignment>
+         <Margins>0,0,0,0</Margins>
+              <Name>Text_DynHeader4</Name>
+        <Page isRef="4" />
+              <Parent isRef="29" />
+     <Text>{DynamicFieldTitle4}</Text>
+    <TextBrush>[0:0:0]</TextBrush>
+        <Type>Expression</Type>
+            <VertAlignment>Center</VertAlignment>
+    </Text_DynHeader4>
+            <Text_DynHeader5 Ref="81" type="Text" isKey="true">
+   <Border>All;[0:0:0];1;Solid;False;4;Black</Border>
+        <Brush>EmptyBrush</Brush>
+              <ClientRectangle>0,0,0.6,0.4</ClientRectangle>
+ <ComponentStyle>Header3</ComponentStyle>
+     <Conditions isList="true" count="1">
+       <StiCondition Ref="82" type="StiCondition" isKey="true">
+                  <Expression>{DynamicFieldCount &gt;= 5}</Expression>
+           <Item>Enabled</Item>
+                  <Value1>true</Value1>
+       </StiCondition>
+         </Conditions>
+              <Expressions isList="true" count="0" />
+     <Font>IRANSans(FaNum),8,Bold</Font>
+     <HorAlignment>Center</HorAlignment>
+        <Margins>0,0,0,0</Margins>
+           <Name>Text_DynHeader5</Name>
+           <Page isRef="4" />
+           <Parent isRef="29" />
+          <Text>{DynamicFieldTitle5}</Text>
+ <TextBrush>[0:0:0]</TextBrush>
+   <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+       </Text_DynHeader5>
+  </Components>
+  <ComponentStyle>Header3</ComponentStyle>
+  <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Name>HeaderBand1</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+        </HeaderBand1>
+        <DataBand1 Ref="34" type="DataBand" isKey="true">
+          <Brush>Transparent</Brush>
+          <BusinessObjectGuid isNull="true" />
+          <ClientRectangle>0,3.9,7.49,0.2</ClientRectangle>
+          <Components isList="true" count="24">
+<!-- Row number (rightmost) -->
+       <Text8 Ref="35" type="Text" isKey="true">
+      <Border>Left, Right, Bottom;[0:0:0];1;Solid;False;4;Black</Border>
+  <Brush>Transparent</Brush>
+         <CanGrow>True</CanGrow>
+  <ClientRectangle>7.1,0,0.4,0.2</ClientRectangle>
+           <ComponentStyle>Data1</ComponentStyle>
+    <Conditions isList="true" count="0" />
+       <Expressions isList="true" count="0" />
+       <Font>IRANSans(FaNum),8</Font>
+    <GrowToHeight>True</GrowToHeight>
+     <Guid>11a751099d82421084ff92b57ed9d64a</Guid>
+   <HorAlignment>Center</HorAlignment>
+        <Margins>3,3,3,3</Margins>
+  <Name>Text8</Name>
+        <Page isRef="4" />
+         <Parent isRef="34" />
+    <Text>{Line}</Text>
+    <TextBrush>[74:74:74]</TextBrush>
+       <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+       <Type>Expression</Type>
+      <VertAlignment>Center</VertAlignment>
+       </Text8>
+  <!-- Truck Cross ID -->
+ <Text3 Ref="36" type="Text" isKey="true">
+       <Border>Left, Right, Bottom;[0:0:0];1;Solid;False;4;Black</Border>
+   <Brush>Transparent</Brush>
+       <CanGrow>True</CanGrow>
+       <ClientRectangle>6.4,0,0.7,0.2</ClientRectangle>
+       <ComponentStyle>Data1</ComponentStyle>
+    <Conditions isList="true" count="0" />
+  <Expressions isList="true" count="0" />
+        <Font>IRANSans(FaNum),8</Font>
+    <GrowToHeight>True</GrowToHeight>
+      <Guid>930a73c84b374196aec2c5baea3b688d</Guid>
+       <HorAlignment>Center</HorAlignment>
+   <Margins>3,3,3,3</Margins>
+       <Name>Text3</Name>
+       <Page isRef="4" />
+     <Parent isRef="34" />
+       <Text>{TruckCrossHeaderPrintDto.Id}</Text>
+       <TextBrush>[74:74:74]</TextBrush>
+       <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+  <Type>Expression</Type>
+       <VertAlignment>Center</VertAlignment>
+       </Text3>
+            <!-- Related Cargos (main content) -->
+  <Text4 Ref="37" type="Text" isKey="true">
+  <Border>Left, Right, Bottom;[0:0:0];1;Solid;False;4;Black</Border>
+    <Brush>Transparent</Brush>
+   <CanGrow>True</CanGrow>
+    <ClientRectangle>3.0,0,3.4,0.2</ClientRectangle>
+ <ComponentStyle>Data1</ComponentStyle>
+    <Conditions isList="true" count="0" />
+    <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),8</Font>
+  <GrowToHeight>True</GrowToHeight>
+         <Guid>c7112eecf6d54c3685b150aa17599f5d</Guid>
+    <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+    <Name>Text4</Name>
+     <Page isRef="4" />
+       <Parent isRef="34" />
+       <Text>{TruckCrossHeaderPrintDto.RelatedCargos}</Text>
+       <TextBrush>[74:74:74]</TextBrush>
+     <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+       <Type>Expression</Type>
+<VertAlignment>Center</VertAlignment>
+            </Text4>
+  <!-- Dynamic Field Values (LEFT side in RTL) -->
+          <Text_DynValue1 Ref="85" type="Text" isKey="true">
+       <Border>Left, Right, Bottom;[0:0:0];1;Solid;False;4;Black</Border>
+          <Brush>Transparent</Brush>
+ <CanGrow>True</CanGrow>
+   <ClientRectangle>2.4,0,0.6,0.2</ClientRectangle>
+       <ComponentStyle>Data1</ComponentStyle>
+       <Conditions isList="true" count="1">
+         <StiCondition Ref="86" type="StiCondition" isKey="true">
+           <Expression>{DynamicFieldCount &gt;= 1}</Expression>
+           <Item>Enabled</Item>
+    <Value1>true</Value1>
+ </StiCondition>
+      </Conditions>
+       <Expressions isList="true" count="0" />
+ <Font>IRANSans(FaNum),7</Font>
+     <GrowToHeight>True</GrowToHeight>
+       <Guid>a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1</Guid>
+       <HorAlignment>Center</HorAlignment>
+     <Margins>2,2,2,2</Margins>
+       <Name>Text_DynValue1</Name>
+     <Page isRef="4" />
+       <Parent isRef="34" />
+    <Text>{TruckCrossHeaderPrintDto.DynamicField1}</Text>
+       <TextBrush>[74:74:74]</TextBrush>
+     <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+    <Type>Expression</Type>
+       <VertAlignment>Center</VertAlignment>
+       </Text_DynValue1>
+  <Text_DynValue2 Ref="87" type="Text" isKey="true">
+        <Border>Left, Right, Bottom;[0:0:0];1;Solid;False;4;Black</Border>
+   <Brush>Transparent</Brush>
+ <CanGrow>True</CanGrow>
+  <ClientRectangle>1.8,0,0.6,0.2</ClientRectangle>
+       <ComponentStyle>Data1</ComponentStyle>
+       <Conditions isList="true" count="1">
+ <StiCondition Ref="88" type="StiCondition" isKey="true">
+          <Expression>{DynamicFieldCount &gt;= 2}</Expression>
+            <Item>Enabled</Item>
+             <Value1>true</Value1>
+       </StiCondition>
+     </Conditions>
+       <Expressions isList="true" count="0" />
+       <Font>IRANSans(FaNum),7</Font>
+       <GrowToHeight>True</GrowToHeight>
+       <Guid>a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2</Guid>
+       <HorAlignment>Center</HorAlignment>
+     <Margins>2,2,2,2</Margins>
+       <Name>Text_DynValue2</Name>
+       <Page isRef="4" />
+    <Parent isRef="34" />
+    <Text>{TruckCrossHeaderPrintDto.DynamicField2}</Text>
+   <TextBrush>[74:74:74]</TextBrush>
+       <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+     <Type>Expression</Type>
+       <VertAlignment>Center</VertAlignment>
+     </Text_DynValue2>
+ <Text_DynValue3 Ref="89" type="Text" isKey="true">
+  <Border>Left, Right, Bottom;[0:0:0];1;Solid;False;4;Black</Border>
+   <Brush>Transparent</Brush>
+       <CanGrow>True</CanGrow>
+           <ClientRectangle>1.2,0,0.6,0.2</ClientRectangle>
+   <ComponentStyle>Data1</ComponentStyle>
+    <Conditions isList="true" count="1">
+     <StiCondition Ref="90" type="StiCondition" isKey="true">
+      <Expression>{DynamicFieldCount &gt;= 3}</Expression>
+    <Item>Enabled</Item>
+  <Value1>true</Value1>
+         </StiCondition>
+     </Conditions>
+    <Expressions isList="true" count="0" />
+       <Font>IRANSans(FaNum),7</Font>
+      <GrowToHeight>True</GrowToHeight>
+              <Guid>a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3</Guid>
+       <HorAlignment>Center</HorAlignment>
+   <Margins>2,2,2,2</Margins>
+  <Name>Text_DynValue3</Name>
+       <Page isRef="4" />
+       <Parent isRef="34" />
+   <Text>{TruckCrossHeaderPrintDto.DynamicField3}</Text>
+       <TextBrush>[74:74:74]</TextBrush>
+    <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+     <Type>Expression</Type>
+      <VertAlignment>Center</VertAlignment>
+     </Text_DynValue3>
+       <Text_DynValue4 Ref="91" type="Text" isKey="true">
+       <Border>Left, Right, Bottom;[0:0:0];1;Solid;False;4;Black</Border>
+ <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+       <ClientRectangle>0.6,0,0.6,0.2</ClientRectangle>
+       <ComponentStyle>Data1</ComponentStyle>
+       <Conditions isList="true" count="1">
+ <StiCondition Ref="92" type="StiCondition" isKey="true">
+           <Expression>{DynamicFieldCount &gt;= 4}</Expression>
+   <Item>Enabled</Item>
+                  <Value1>true</Value1>
+         </StiCondition>
+     </Conditions>
+       <Expressions isList="true" count="0" />
+        <Font>IRANSans(FaNum),7</Font>
+       <GrowToHeight>True</GrowToHeight>
+<Guid>a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4</Guid>
+  <HorAlignment>Center</HorAlignment>
+       <Margins>2,2,2,2</Margins>
+     <Name>Text_DynValue4</Name>
+       <Page isRef="4" />
+       <Parent isRef="34" />
+     <Text>{TruckCrossHeaderPrintDto.DynamicField4}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+       <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+       <Type>Expression</Type>
+      <VertAlignment>Center</VertAlignment>
+            </Text_DynValue4>
+ <Text_DynValue5 Ref="93" type="Text" isKey="true">
+       <Border>Left, Right, Bottom;[0:0:0];1;Solid;False;4;Black</Border>
+       <Brush>Transparent</Brush>
+   <CanGrow>True</CanGrow>
+   <ClientRectangle>0,0,0.6,0.2</ClientRectangle>
+       <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="1">
+         <StiCondition Ref="94" type="StiCondition" isKey="true">
+           <Expression>{DynamicFieldCount &gt;= 5}</Expression>
+            <Item>Enabled</Item>
+     <Value1>true</Value1>
+         </StiCondition>
+ </Conditions>
+    <Expressions isList="true" count="0" />
+       <Font>IRANSans(FaNum),7</Font>
+       <GrowToHeight>True</GrowToHeight>
+       <Guid>a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5</Guid>
+     <HorAlignment>Center</HorAlignment>
+   <Margins>2,2,2,2</Margins>
+    <Name>Text_DynValue5</Name>
+       <Page isRef="4" />
+<Parent isRef="34" />
+       <Text>{TruckCrossHeaderPrintDto.DynamicField5}</Text>
+       <TextBrush>[74:74:74]</TextBrush>
+     <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+       <Type>Expression</Type>
+         <VertAlignment>Center</VertAlignment>
+     </Text_DynValue5>
+          </Components>
+          <Conditions isList="true" count="0" />
+          <DataRelationName isNull="true" />
+          <DataSourceName>TruckCrossHeaderPrintDto</DataSourceName>
+          <Expressions isList="true" count="0" />
+   <Filters isList="true" count="0" />
+          <Name>DataBand1</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <Sort isList="true" count="0" />
+        </DataBand1>
+        <FooterBand1 Ref="39" type="FooterBand" isKey="true">
+          <Brush>[191:191:191]</Brush>
+          <ClientRectangle>0,4.5,7.49,0.4</ClientRectangle>
+          <Components isList="true" count="4">
+            <Text1 Ref="40" type="Text" isKey="true">
+              <Border>Left, Right, Bottom;[0:0:0];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>7.1,0,0.4,0.4</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),8</Font>
+              <GrowToHeight>True</GrowToHeight>
+              <Guid>09c8278ba39143dfac4dc640dc8ddca9</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text1</Name>
+              <Page isRef="4" />
+              <Parent isRef="39" />
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text1>
+            <Text21 Ref="41" type="Text" isKey="true">
+              <Border>Left, Right, Bottom;[0:0:0];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>5.4,0,1.7,0.4</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),8</Font>
+              <GrowToHeight>True</GrowToHeight>
+              <Guid>ee458c8d0d6c48809b9c82e61e401dc0</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text21</Name>
+              <Page isRef="4" />
+              <Parent isRef="39" />
+              <Text>تعداد: {Count()}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text21>
+            <Text_FooterDynamic Ref="42" type="Text" isKey="true">
+              <Border>Left, Right, Bottom;[0:0:0];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>3.2,0,2.2,0.4</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),8</Font>
+              <GrowToHeight>True</GrowToHeight>
+              <Guid>a1b2c3d4e5f6478899a0b1c2d3e4f5a6</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text_FooterDynamic</Name>
+              <Page isRef="4" />
+              <Parent isRef="39" />
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text_FooterDynamic>
+            <Text22 Ref="43" type="Text" isKey="true">
+              <Border>Left, Right, Bottom;[0:0:0];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <ClientRectangle>0,0,3.2,0.4</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),12,Bold</Font>
+              <GrowToHeight>True</GrowToHeight>
+              <Guid>625661787ac74f3d871efb04385ca450</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text22</Name>
+              <Page isRef="4" />
+              <Parent isRef="39" />
+              <Text>خلاصه گزارش</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text22>
+          </Components>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Name>FooterBand1</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+        </FooterBand1>
+        <RoundedRectanglePrimitive1 Ref="57" type="Stimulsoft.Report.Components.StiRoundedRectanglePrimitive" isKey="true">
+          <ClientRectangle>0,0.2,7.5,1.1</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Guid>bc0f681e2f3f4875bf206845425015a1</Guid>
+          <Name>RoundedRectanglePrimitive1</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <Round>0.2</Round>
+        </RoundedRectanglePrimitive1>
+        <EndPointPrimitive1 Ref="58" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+          <ClientRectangle>7.5,1.3,0,0</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Name>EndPointPrimitive1</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <ReferenceToGuid>bc0f681e2f3f4875bf206845425015a1</ReferenceToGuid>
+        </EndPointPrimitive1>
+        <RoundedRectanglePrimitive2 Ref="59" type="Stimulsoft.Report.Components.StiRoundedRectanglePrimitive" isKey="true">
+          <ClientRectangle>0,10.1,7.5,0.8</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Guid>33546fcf2bec4d8cbc80b390beb62508</Guid>
+          <Name>RoundedRectanglePrimitive2</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <Round>0.2</Round>
+        </RoundedRectanglePrimitive2>
+        <EndPointPrimitive2 Ref="60" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+          <ClientRectangle>7.5,10.9,0,0</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Name>EndPointPrimitive2</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <ReferenceToGuid>33546fcf2bec4d8cbc80b390beb62508</ReferenceToGuid>
+        </EndPointPrimitive2>
+        <RoundedRectanglePrimitive3 Ref="61" type="Stimulsoft.Report.Components.StiRoundedRectanglePrimitive" isKey="true">
+          <ClientRectangle>0.1,10.2,4.7,0.6</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Guid>d1a717b4b017485e9ecf84ac5277e955</Guid>
+          <Name>RoundedRectanglePrimitive3</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <Round>0.2</Round>
+        </RoundedRectanglePrimitive3>
+        <VerticalLinePrimitive1 Ref="62" type="VerticalLinePrimitive" isKey="true">
+          <ClientRectangle>3.7,10.2,0.01,0.6</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <EndCap Ref="63" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </EndCap>
+          <Expressions isList="true" count="0" />
+          <Guid>75f77ba735344590bc0aac074489ac3e</Guid>
+          <Name>VerticalLinePrimitive1</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <StartCap Ref="64" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </StartCap>
+        </VerticalLinePrimitive1>
+        <VerticalLinePrimitive2 Ref="65" type="VerticalLinePrimitive" isKey="true">
+          <ClientRectangle>2.5,10.2,0.01,0.6</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <EndCap Ref="66" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </EndCap>
+          <Expressions isList="true" count="0" />
+          <Guid>d0d48f199bed4fcab9eb8780390126e3</Guid>
+          <Name>VerticalLinePrimitive2</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <StartCap Ref="67" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </StartCap>
+        </VerticalLinePrimitive2>
+        <VerticalLinePrimitive3 Ref="68" type="VerticalLinePrimitive" isKey="true">
+          <ClientRectangle>1.3,10.2,0.01,0.6</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <EndCap Ref="69" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </EndCap>
+          <Expressions isList="true" count="0" />
+          <Guid>04aa3546031447cfa79deded61c8c0a9</Guid>
+          <Name>VerticalLinePrimitive3</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <StartCap Ref="70" type="Cap" isKey="true">
+            <Color>Black</Color>
+          </StartCap>
+        </VerticalLinePrimitive3>
+        <RectanglePrimitive1 Ref="71" type="RectanglePrimitive" isKey="true">
+          <BottomSide>False</BottomSide>
+          <ClientRectangle>0,2.1,7.5,2.1</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Guid>b4add9a9935c4fc9bdc9b6c34c22ee91</Guid>
+          <Name>RectanglePrimitive1</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+        </RectanglePrimitive1>
+        <EndPointPrimitive7 Ref="72" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+          <ClientRectangle>7.5,4.2,0,0</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Name>EndPointPrimitive7</Name>
+          <Page isRef="4" />
+          <Parent isRef="4" />
+          <ReferenceToGuid>b4add9a9935c4fc9bdc9b6c34c22ee91</ReferenceToGuid>
+        </EndPointPrimitive7>
+      </Components>
+      <Conditions isList="true" count="0" />
+      <Expressions isList="true" count="0" />
+      <Guid>d8f0745f1519452a916daf3a2d51d12f</Guid>
+      <Margins>0.39,0.39,0.39,0.39</Margins>
+      <Name>Page1</Name>
+      <PageHeight>11.69</PageHeight>
+      <PageWidth>8.27</PageWidth>
+      <PaperSize>A4</PaperSize>
+      <Report isRef="0" />
+    </Page1>
+  </Pages>
+  <ReferencedAssemblies isList="true" count="8">
+    <value>System.Dll</value>
+    <value>System.Drawing.Dll</value>
+    <value>System.Windows.Forms.Dll</value>
+    <value>System.Data.Dll</value>
+    <value>System.Xml.Dll</value>
+    <value>Stimulsoft.Controls.Dll</value>
+    <value>Stimulsoft.Base.Dll</value>
+    <value>Stimulsoft.Report.Dll</value>
+  </ReferencedAssemblies>
+  <ReportAlias>Report</ReportAlias>
+  <ReportChanged>10/28/2025 5:06:37 PM</ReportChanged>
+  <ReportCreated>5/22/2022 11:49:22 AM</ReportCreated>
+  <ReportFile>E:\Avizhe\Silo\Silo.Ui.Bypass\wwwroot\reports\ExitTruckCrossAll.mrt</ReportFile>
+  <ReportGuid>227c95bfb7e148c5ad7b07f269d97027</ReportGuid>
+  <ReportName>Report</ReportName>
+  <ReportUnit>Inches</ReportUnit>
+  <ReportVersion>2022.1.1.0</ReportVersion>
+  <Script>using System;
+using System.Drawing;
+using System.Windows.Forms;
+using System.Data;
+using Stimulsoft.Controls;
+using Stimulsoft.Base.Drawing;
+using Stimulsoft.Report;
+using Stimulsoft.Report.Dialogs;
+using Stimulsoft.Report.Components;
+
+namespace Reports
+{
+    public class Report : Stimulsoft.Report.StiReport
+    {
+        public Report()        {
+            this.InitializeComponent();
+        }
+
+        #region StiReport Designer generated code - do not modify
+		#endregion StiReport Designer generated code - do not modify
+    }
+}
+</Script>
+  <ScriptLanguage>CSharp</ScriptLanguage>
+  <Styles isList="true" count="0" />
+</StiSerializer>

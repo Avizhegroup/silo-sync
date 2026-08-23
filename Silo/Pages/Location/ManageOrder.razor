@@ -1,0 +1,207 @@
+@page "/location/manageorder"
+@using Silo.Application.Features;
+@inherits SiloBasePage
+
+<PageTitle>@TextResources.APP_StringKeys_View_Position_Order</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="padding-top:5px;padding-bottom:5px;">
+        <form asp-action="Search" asp-controller="Home" method="post" role="form" class="form-search-span" id="form-main">
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 5px;">
+                <label style="margin-right:15px;">@TextResources.APP_StringKeys_Chart_ProductCode</label>
+                <input @bind-value="NewOrder.ProductCode" class="form-control input-search-span-lg pointer" readonly="readonly" />
+                <button type="button" class="btn btn-light" style="margin-left: 25px;"
+                        @onclick="async ()=> await OnOpenProductCodeModal(false)">
+                        <MaterialIcon ></MaterialIcon>
+                    <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                </button>
+                <label>@TextResources.APP_StringKeys_ProductName</label>
+                <input @bind-value="NewOrder.ProductName" class="form-control input-search-span-xxslg pointer" readonly="readonly" />
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                <label style="margin-right: 16px;">@TextResources.APP_StringKeys_Zone_Code</label>
+                <input @bind-value="TempLocation" class=" form-control input-search-span-lg" />
+                <button class="btn btn-primary" type="button" title="@TextResources.APP_StringKeys_Add"
+                        style="margin-left: 5px;" @onclick="OnAddZone">
+                <MaterialIcon IconName="@MaterialIconsHelper.Add"></MaterialIcon>
+                </button>
+                <button type="button" class="btn btn-light"
+                        @onclick="async ()=> await OnOpenLocationModal(false)">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                </button>
+                <input @bind-value="NewOrder.Zones" class="form-control input-search-span-lg" readonly
+                       style="margin-right: 9px;" />
+                <label>@TextResources.APP_StringKeys_ProductCount</label>
+                <input @bind-value="NewOrder.Count" class="form-control input-search-span"/>
+                <button id="btn-recal" class="btn btn-light" type="button"
+                        title="@TextResources.APP_StringKeys_Recalculate"
+                        @onclick="OnRecalculateClick">
+                                    <MaterialIcon IconName="@MaterialIconsHelper.Recycling"></MaterialIcon>
+                </button>
+                <button id="btn-clear" class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                        style="margin-left: 2px;margin-right: 2px;"
+                        @onclick="()=> NewOrder = new()">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                </button>
+                <button type="button" id="btn-send" class="btn btn-primary" 
+                        title="@TextResources.APP_StringKeys_Send"
+                        @onclick="OnSaveOrder">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row col-md-12" style="font-size:11px;">
+    <div class="card card-stats col-md-12 text-align-center" style="padding-top:5px;padding-bottom:5px;">
+        <div class=" d-flex flex-row align-items-center flex-wrap">
+            <label>@TextResources.APP_StringKeys_Chart_ProductCode</label>
+            <input readonly @bind-value="Filter.ProductCode" class="filter-input form-control input-search-span-lg pointer" />
+            <button type="button" class="btn btn-light" @onclick="async ()=> await OnOpenProductCodeModal(true)">
+                <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+            </button>
+            <label>@TextResources.APP_StringKeys_Zone_Code</label>
+            <input readonly @bind-value="Filter.Location" class="filter-input form-control input-search-span-lg pointer" />
+            <button type="button" class="btn btn-light" @onclick="async ()=> await OnOpenLocationModal(true)">
+                <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+            </button>
+            <label>@TextResources.APP_StringKeys_Status</label>
+            <TelerikDropDownList Data="FilterStatus"
+                                 TextField="@nameof(TelerikDropDownItem.Name)"
+                                 ValueField="@nameof(TelerikDropDownItem.Value)"
+                                 @bind-Value="Filter.Status"
+                                 DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                 Width="200px"
+                                 Class="drop-all">
+            </TelerikDropDownList>
+            <button class="btn btn-warning"
+                    type="button"
+                    style="margin-right: 72px;"
+                    @onclick="OnClearFilterClick">
+                <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+            </button>
+            <button class="btn btn-primary"
+                    type="button"
+                    style="margin-right: 10px;"
+                    @onclick="OnFilterClick">
+                <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="padding-bottom:10px;">
+        <TelerikGrid Data="OrdersFiltered"
+                     PageSize="10"
+                     Navigable="true"
+                     Pageable="true"
+                     Sortable="true">
+            <RowTemplate Context="order">
+                <td>@order.OrderCode</td>
+                <td>@order.DateTime</td>
+                <td>@order.Username</td>
+                <td>@order.ProductCode</td>
+                <td>@order.RegCode</td>
+                <td>@order.ProductName</td>
+                <td>@order.Count</td>
+                <td>@order.PackRemain</td>
+                <td>@order.Zones</td>
+                <td>
+                    @if (order.Status.Equals(1))
+                    {
+                        <button type="button"
+                            class="btn btn-danger btn-ignore-modal"
+                            @onclick="async()=> await OnChooseOrderForIgnore(order.OrderCode.ToString())">
+                            @TextResources.APP_StringKeys_Ignore
+                        </button>
+                    }
+                    @if (order.Status.Equals(2))
+                    {
+                        <button type="button"
+                            class="btn btn-outline-success" disabled>
+                            @TextResources.APP_StringKeys_Finished
+                        </button>
+                    }
+                    @if (order.Status.Equals(3))
+                    {
+                        <button type="button"
+                            class="btn btn-light" disabled>
+                            @TextResources.APP_StringKeys_Ignored
+                        </button>
+                    }
+                </td>
+            </RowTemplate>
+            <GridColumns>
+                <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.OrderCode)"
+                            Title="@TextResources.APP_StringKeys_Code"></GridColumn>
+                <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.DateTime)"
+                            Title="@TextResources.APP_StringKeys_Date"></GridColumn>
+                <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.Username)"
+                            Title="@TextResources.APP_StringKeys_Field_Username"></GridColumn>
+                <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.ProductCode)"
+                            Title="@TextResources.APP_StringKeys_Chart_ProductCode"></GridColumn>
+                <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.RegCode)"
+                            Title="@TextResources.APP_StringKeys_Chart_Regcode"></GridColumn>
+                <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.ProductName)"
+                            Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.Count)"
+                            Title="@TextResources.APP_StringKeys_Count"></GridColumn>
+                <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.PackRemain)"
+                            Title="@TextResources.APP_StringKeys_Remain"></GridColumn>
+                <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.Zones)"
+                            Title="@TextResources.APP_StringKeys_Zones"></GridColumn>
+                <GridColumn></GridColumn>
+            </GridColumns>
+        </TelerikGrid>
+    </div>
+</div>
+
+<ProductCodeModal @ref="ProductCodeModal" 
+                  OnClickProductCode="OnChooseProductCode"
+                  OnClickProductTitle="OnChooseProductTitle">
+</ProductCodeModal>
+
+<LocationModal @ref="LocationModal" OnClickLocation="OnChooseLocation">
+</LocationModal>
+
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_Attention"
+       @ref="ModalIgnore"
+       Size="ModalSize.Normal"
+       OnYesModal="OnIgnoreClick"
+       YesBtnText="@TextResources.APP_StringKeys_Ignore"
+       CancelBtnText="@TextResources.APP_StringKeys_Close">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @TextResources.APP_StringKeys_Order_IgnoreMessage
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Attention"
+       @ref="ModalMessage"
+       Size="ModalSize.Normal"
+       OkBtnText="@TextResources.APP_StringKeys_Ok"
+       CloseBtnText="@TextResources.APP_StringKeys_Close">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @MessageText
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+@if (IsLoading)
+{
+    <TelerikLoaderContainer LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+    </TelerikLoaderContainer>
+}
+
+<style type="text/css">
+    tr.hidden {
+        display: none;
+    }
+</style>

@@ -1,0 +1,167 @@
+@namespace Silo.Components.Filter.Customs
+@using Silo.Application.Features;
+
+<div id="@Id"
+     class="report-filters-section"
+     style="padding-top: 5px;">
+    <TelerikDropDownList Data="Filters"
+                         @ref="DropRef"
+                         TextField="@nameof(ReportFilterGeneric<ExitActionDynamicReportFilterType>.Label)"
+                         ValueField="@nameof(ReportFilterGeneric<ExitActionDynamicReportFilterType>.Id)"
+                         Width="200px"
+                         DefaultText="@TextResources.APP_StringKeys_Filters_Type"
+    @bind-Value="SelectedFilterId"
+                         OnChange="OnDropFilterChooseChange"
+                         Filterable="true"
+                         FilterOperator="StringFilterOperator.Contains">
+    </TelerikDropDownList>
+    @if (Request.Component != FilterComponent.NotSpecified)
+    {
+        <label>
+            @Request.Label
+        </label>
+
+        if (Request.Component == FilterComponent.Text)
+        {
+            <TelerikTextBox @bind-Value="Request.Value"
+                            Class="@InputClass"
+                            Width="200px">
+            </TelerikTextBox>
+        }
+        else if (Request.Component == FilterComponent.Drop)
+        {
+            <TelerikDropDownList Data="Request.Items"
+                                 TextField="@nameof(ReportDataItem.Label)"
+                                 ValueField="@nameof(ReportDataItem.Value)"
+            @bind-Value="Request.Value"
+                                 Class="@InputClass"
+                                 Width="200px"
+                                 Filterable="true"
+                                 FilterOperator="StringFilterOperator.Contains">
+            </TelerikDropDownList>
+        }
+        else if (Request.Component == FilterComponent.PersianDate)
+        {
+            <DatePicker InputClass="@InputClass"
+            @bind-Value="Request.Value"></DatePicker>
+        }
+        else if (Request.Component == FilterComponent.Modal)
+        {
+            <button type="button"
+                    class="btn btn-success"
+            @onclick="OnModalOpenClick">
+                @if (Request.Items.Any(p => p.IsChoosen))
+                {
+                    @(Request.Items.Where(p => p.IsChoosen).Select(p => p.Label).Aggregate((p, q) => p + ", " + q))
+                }
+                <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+            </button>
+            <Modal Buttons="ModalButtons.OKClose"
+                   ModalTitle="@TextResources.APP_StringKeys_Details"
+            @ref="ModalDetails"
+                   Size="ModalSize.ExtraLarge"
+                   CloseBtnText="@TextResources.APP_StringKeys_Close"
+                   OkBtnText="@TextResources.APP_StringKeys_Choose">
+                <ModalBodyContentHtml>
+                    <div class="text-align-center">
+                        <TelerikGrid Data="Request.Items"
+                                     PageSize="5"
+                                     Navigable="true"
+                                     Pageable="true"
+                                     Sortable="true">
+                            <RowTemplate Context="item">
+                                <td class="td-style td-dt">
+                                    <TelerikCheckBox @bind-Value="item.IsChoosen"
+                                                     OnChange="OnModalCheckboxChange">
+                                    </TelerikCheckBox>
+                                </td>
+                                <td class="td-style td-dt">@item.Label</td>
+                                <td class="td-style td-dt">@item.Value</td>
+                            </RowTemplate>
+                            <GridColumns>
+                                <GridColumn Field="@nameof(ReportDataItem.IsChoosen)"
+                                            Title="" Width="40px"></GridColumn>
+                                <GridColumn Field="@nameof(ReportDataItem.Label)"
+                                            Title="@TextResources.APP_StringKeys_Field_Title"></GridColumn>
+                                <GridColumn Field="@nameof(ReportDataItem.Value)"
+                                            Title="@TextResources.APP_StringKeys_Value"></GridColumn>
+                            </GridColumns>
+                        </TelerikGrid>
+                    </div>
+                </ModalBodyContentHtml>
+            </Modal>
+        }
+        else if (Request.Component == FilterComponent.ProductCodeModal)
+        {
+            <TelerikTextBox @bind-Value="Request.Value" Class="form-control input-search-span-lg pointer"></TelerikTextBox>
+            <button type="button" class="btn btn-light" @onclick="async ()=> await ProductCodeModal.Show()">
+                <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+            </button>
+            <ProductCodeModal @ref="ProductCodeModal"
+                              OnClickProductCode="OnClickProductCode">
+            </ProductCodeModal>
+        }
+        <button type="button"
+                class="btn btn-warning"
+                style="margin-right:5px;"
+        @onclick="OnRefreshFilterClick">
+            <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+        </button>
+        <button type="button"
+                class="btn btn-primary"
+                style="margin-right:5px;"
+        @onclick="OnAddFilterClick">
+            <MaterialIcon IconName="@MaterialIconsHelper.Add"></MaterialIcon>
+        </button>
+    }
+
+    @if (ApplyFilters.Any())
+    {
+        <div class="list-group text-align-right" style="margin-top:10px;">
+            <span class="list-group-item">
+                @foreach (var filter in ApplyFilters)
+                {
+                    <span style="margin-right:5px;">
+                        @if (filter.Component == FilterComponent.Drop)
+                        {
+                            <label>
+                                @filter.Label : @filter.Items.FirstOrDefault(p=>p.Value.Equals(filter.Value))?.Label
+                            </label>
+                        }
+                        else if (filter.Component == FilterComponent.Modal)
+                        {
+                            <label>
+                                @filter.Label :
+                                @if (filter.Items.Any(p => p.IsChoosen == true))
+                                {
+                                    @filter.Items.Where(p => p.IsChoosen).Select(p => p.Label).Aggregate((p, q) => p + ", " + q)
+                                }
+                            </label>
+                        }
+                        else
+                        {
+                            <label>
+                                @filter.Label : @filter.Value
+                            </label>
+                        }
+                        <button type="button"
+                                class="btn btn-danger btn-item-remove"
+                        @onclick="async()=> await OnFilterRemoveClick(filter)">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                        </button>
+
+                    </span>
+                }
+            </span>
+        </div>
+    }
+
+</div>
+
+<style>
+    .btn-item-remove {
+        padding: 0px;
+        height: 30px;
+        margin-left: 0px;
+    }
+</style>

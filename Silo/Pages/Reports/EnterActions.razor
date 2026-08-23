@@ -1,0 +1,779 @@
+@page "/report/enteraction"
+@page "/report/enteraction/{TabMode:int}"
+@inherits SiloBasePage
+@namespace Silo.Pages.Reports
+@using Newtonsoft.Json.Linq;
+@using Silo.Application.Features;
+@using Silo.Components.Filter
+@using Silo.Shared.Components.Print
+@using Silo.Shared.Components.Report
+
+<PageTitle>@PageTitle</PageTitle>
+
+@if (IsFiltersShown)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-right" style="margin-bottom:5px; min-height: 70px;">
+            <h6>@TextResources.APP_StringKeys_Filters</h6>
+            <div class=" d-flex flex-row align-items-center flex-wrap  search-button-div" style="margin-top:-148px !important;width:480px;">
+                <button class="btn btn-success" type="button" title="@TextResources.APP_StringKeys_Filters"
+                        style="margin-left: 2px;" @onclick="OnFilterModalClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Filter_alt"></MaterialIcon>
+                </button>
+                <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                        style="margin-left: 2px;" @onclick="OnClearClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                </button>
+                <button class="btn btn-primary" type="button"
+                        title="@TextResources.APP_StringKeys_Send"
+                        @onclick="OnSearchClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                </button>
+            </div>
+            @if (ApplyFilters.Any())
+            {
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:10px!important;">
+                    <FilterReportEditSection Filters="ApplyFilters"
+                                             OnFilterValueChanged="OnChangeFilterValueInEditComponent">
+                    </FilterReportEditSection>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<div class="row col-md-12" style="margin-top: -10px;">
+    <div class="card card-stats col-md-12 text-align-center">
+        <TelerikTabStrip>
+            @if (TabMode == 1 || TabMode == 0)
+            {
+                <TabStripTab Title="@TextResources.APP_StringKeys_Report_Exit_Tab2">
+                    @if (Aggregates is not null)
+                    {
+                        <TelerikGrid Data="Aggregates"
+                                     PageSize="10"
+                                     Navigable="true"
+                                     Pageable="true"
+                                     Sortable="true">
+                            <RowTemplate Context="product">
+                                <td class="td-style">@product.ProductCode</td>
+                                <td class="td-style">@product.ProductName</td>
+                                <td class="td-style">@product.TechnicalCode</td>
+                                <td class="td-style">@product.OpCode</td>
+                                <td class="td-style">@product.ActionTypeTitle</td>
+                                <td class="td-style">@product.StoreTitle</td>
+                                <td class="td-style">@product.DestinationTitle</td>
+                                <td class="td-style">@product.Qc</td>
+                                <td class="td-style">@product.Count</td>
+                                <td class="td-style">@product.SumCount</td>
+                                <td class="td-style">@product.ProductCountInPack</td>
+                                @if (product.TechnicalInfoData is not null)
+                                {
+                                    @foreach (var field in TechnicalFilterColumns)
+                                    {
+                                        <td class="td-style">@JToken.Parse(product.TechnicalInfoData.Split("-,-").First())[$"{field}"]</td>
+                                    }
+                                }
+                                <td class="td-style">
+                                    <button class="btn btn-success btn-details tr-buttom"
+                                            @onclick="async()=> await OnEnterActionAggOnProductCodeDetailsClick(product)">
+                                        @TextResources.APP_StringKeys_Details
+                                    </button>
+                                </td>
+                            </RowTemplate>
+                            <GridToolBarTemplate>
+                                <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                                    @TextResources.APP_StringKeys_ExportExcel
+                                </GridCommandButton>
+                                <TelerikButton Icon="@FontIcon.Print" OnClick="@OnClickExportAggregatesToPdfMaster" Class="orange-pdf">
+                                    @TextResources.APP_StringKeys_Print
+                                </TelerikButton>
+                            </GridToolBarTemplate>
+                            <GridExport>
+                                <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Report_Exit_Tab2"
+                                                 OnBeforeExport="@(async(e) => await OnExcelBeforeExport(e,TextResources.APP_StringKeys_Report_Exit_Tab2))" />
+                            </GridExport>
+                            <GridColumns>
+                                <GridColumn Field="@nameof(GetEnterActionAggregateOnProductCodeVm.ProductCode)"
+                                            Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                                            Width="120px">
+                                    <FooterTemplate>
+                                        تعداد کد کالا: @context.Count
+                                    </FooterTemplate>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionAggregateOnProductCodeVm.ProductName)"
+                                            Title="@TextResources.APP_StringKeys_ProductName"
+                                            Width="200px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionAggregateOnProductCodeVm.TechnicalCode)"
+                                            Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                                            Width="100px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionAggregateOnProductCodeVm.OpCode)"
+                                            Title="@TextResources.APP_StringKeys_OperationCode"
+                                            Width="80px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionAggregateOnProductCodeVm.ActionTypeTitle)"
+                                            Title="@TextResources.APP_StringKeys_ActionType"
+                                            Width="150px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionAggregateOnProductCodeVm.StoreTitle)"
+                                            Title="@TextResources.APP_StringKeys_From_Warehouse"
+                                            Width="80px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionAggregateOnProductCodeVm.DestinationTitle)"
+                                            Title="@TextResources.APP_StringKeys_To_Warehouse"
+                                            Width="80px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionAggregateOnProductCodeVm.Qc)"
+                                            Title="@TextResources.APP_StringKeys_Chart_Qc"
+                                            Width="90px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionAggregateOnProductCodeVm.Count)"
+                                            Title="@TextResources.APP_StringKeys_Count"
+                                            Width="80px">
+                                    <FooterTemplate>
+                                        تعداد کل: @context.Sum
+                                    </FooterTemplate>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionAggregateOnProductCodeVm.SumCount)"
+                                            Title="@TextResources.APP_StringKeys_SumValue"
+                                            Width="80px">
+                                    <FooterTemplate>
+                                        جمع مقدار: @context.Sum
+                                    </FooterTemplate>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionAggregateOnProductCodeVm.ProductCountInPack)"
+                                            Title="@TextResources.APP_StringKeys_ProductCountInPack"
+                                            Width="100px">
+                                </GridColumn>
+                                @foreach (var column in TechnicalFilterColumns)
+                                {
+                                    <GridColumn Field="@nameof(GetEnterActionAggregateOnProductCodeVm.TechnicalInfoData)" Title="@column" Width="100px"></GridColumn>
+                                }
+                                <GridColumn Field="" Width="60px"></GridColumn>
+                            </GridColumns>
+                            <GridAggregates>
+                                <GridAggregate Field=@nameof(GetEnterActionAggregateOnProductCodeVm.SumCount) Aggregate="@GridAggregateType.Sum" />
+                                <GridAggregate Field=@nameof(GetEnterActionAggregateOnProductCodeVm.Count) Aggregate="@GridAggregateType.Sum" />
+                                <GridAggregate Field=@nameof(GetEnterActionAggregateOnProductCodeVm.ProductCode) Aggregate="@GridAggregateType.Count" />
+                            </GridAggregates>
+                        </TelerikGrid>
+                    }
+                </TabStripTab>
+            }
+            @if (TabMode == 2 || TabMode == 0)
+            {
+                <TabStripTab Title="@TextResources.APP_StringKeys_Report_EnterAction_Tab1">
+                    @if (Enters is not null)
+                    {
+                        <TelerikGrid Data="Enters"
+                                     PageSize="10"
+                                     Navigable="true"
+                                     Pageable="true"
+                                     Sortable="true"
+                                     Width="100%"
+                                     ScrollMode="GridScrollMode.Scrollable">
+                            <RowTemplate Context="product">
+                                <td class="td-style td-style-full">@product.OpCode</td>
+                                <td class="td-style td-style-full">@product.DateTime</td>
+                                <td class="td-style td-style-full">@product.User</td>
+                                <td class="td-style td-style-full">@product.ActionTypeTitle</td>
+                                <td class="td-style td-style-full">@product.StoreTitle</td>
+                                <td class="td-style td-style-full">@product.DestinationTitle</td>
+                                <td class="td-style td-style-full">@product.ActionDocumentId</td>
+                                <td class="td-style td-style-full">@product.MovementActionDesc</td>
+                                <td class="td-style td-style-full">@product.GateOp</td>
+                                <td class="td-style td-style-full">@product.StationName</td>
+                                <td class="td-style td-style-full">@product.Count</td>
+                                <td class="td-style td-style-full">@product.SumCount</td>
+                                @if (product.MovementActionData is not null)
+                                {
+                                    @foreach (var field in DynamicFields.Where(p => p.ActionType == CurrentActionType && p.FieldShowColumnForAction))
+                                    {
+                                        <td class="td-style  td-style-full">@(JToken.Parse(product.MovementActionData)[$"{field.Title}"] ?? "")</td>
+                                    }
+                                }
+                                <td class="td-style  td-style-full">
+                                    <button class="btn btn-success btn-details tr-buttom"
+                                            @onclick="async()=> await OnEnterActionDetailsClick(product)">
+                                        @TextResources.APP_StringKeys_Details
+                                    </button>
+                                    <button class="btn btn-success btn-details tr-buttom"
+                                            @onclick="async()=> await OnActionInfoClick(product)">
+                                        @TextResources.APP_StringKeys_Info
+                                    </button>
+                                    <button class="btn btn-success btn-details tr-buttom"
+                                            @onclick="async ()=>await OnSelectProductForPrint(product)">
+                                        @TextResources.APP_StringKeys_Print
+                                    </button>
+                                    <button class="btn btn-success btn-details tr-buttom"
+                                            @onclick="async ()=>await OnTruckCrossClick(product.OpCode)">
+                                        @TextResources.APP_StringKeys_TruckCross
+                                    </button>
+                                </td>
+                            </RowTemplate>
+                            <GridToolBarTemplate>
+                                <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                                    @TextResources.APP_StringKeys_ExportExcel
+                                </GridCommandButton>
+                                <TelerikButton Icon="@FontIcon.Print" OnClick="@OnClickExportEntersToPdfMaster" Class="orange-pdf">
+                                    @TextResources.APP_StringKeys_Print
+                                </TelerikButton>
+                            </GridToolBarTemplate>
+                            <GridExport>
+                                <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Report_EnterAction_Tab1"
+                                                 OnBeforeExport="@(async(e) => await OnExcelBeforeExport(e,TextResources.APP_StringKeys_Report_EnterAction_Tab1))" />
+                            </GridExport>
+                            <GridColumns>
+                                <GridColumn Field="@nameof(GetAllEnterActionsVm.OpCode)"
+                                            Title="@TextResources.APP_StringKeys_OperationCode"
+                                            Width="80px">
+                                    <FooterTemplate>
+                                        تعداد کد عملیات: @context.Count
+                                    </FooterTemplate>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(GetAllEnterActionsVm.DateTime)"
+                                            Title="@TextResources.APP_StringKeys_Time"
+                                            Width="150px"></GridColumn>
+                                <GridColumn Field="@nameof(GetAllEnterActionsVm.User)"
+                                            Title="@TextResources.APP_StringKeys_User"
+                                            Width="100px"></GridColumn>
+                                <GridColumn Field="@nameof(GetAllEnterActionsVm.ActionTypeTitle)"
+                                            Title="@TextResources.APP_StringKeys_ActionType"
+                                            Width="150px">
+                                </GridColumn>
+                                <GridColumn Field="@nameof(GetAllEnterActionsVm.StoreTitle)"
+                                            Title="@TextResources.APP_StringKeys_From_Warehouse"
+                                            Width="100px">
+                                </GridColumn>
+                                <GridColumn Field="@nameof(GetAllEnterActionsVm.DestinationTitle)"
+                                            Title="@TextResources.APP_StringKeys_To_Warehouse"
+                                            Width="100px">
+                                </GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ActionDocumentId)"
+                                            Title="@TextResources.APP_StringKeys_DocKey"
+                                            Width="90px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.MovementActionDesc)"
+                                            Title="@TextResources.APP_StringKeys_Description"
+                                            Width="120px"></GridColumn>
+                                <GridColumn Field="@nameof(GetAllEnterActionsVm.GateOp)"
+                                            Title="@TextResources.APP_StringKeys_GateOpCode"
+                                            Width="100px">
+                                </GridColumn>
+                                <GridColumn Field="@nameof(GetAllEnterActionsVm.StationName)"
+                                            Title="@TextResources.APP_StringKeys_Station"
+                                            Width="110px">
+                                </GridColumn>
+                                <GridColumn Field="@nameof(GetAllEnterActionsVm.Count)"
+                                            Title="@TextResources.APP_StringKeys_Count"
+                                            Width="60px">
+                                    <FooterTemplate>
+                                        تعداد کل: @context.Sum
+                                    </FooterTemplate>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(GetAllEnterActionsVm.SumCount)"
+                                            Title="@TextResources.APP_StringKeys_Summery_SumCount"
+                                            Width="90px">
+                                    <FooterTemplate>
+                                        جمع مقدار: @context.Sum
+                                    </FooterTemplate>
+                                </GridColumn>
+                                @foreach (var column in DynamicFields.Where(p => p.ActionType == CurrentActionType && p.FieldShowColumnForAction))
+                                {
+                                    <GridColumn Field="@nameof(GetAllEnterActionsVm.MovementActionData)" Title="@column.Title" Width="100px"></GridColumn>
+                                }
+                                <GridColumn Width="250px"></GridColumn>
+                            </GridColumns>
+                            <GridAggregates>
+                                <GridAggregate Field=@nameof(GetAllEnterActionsVm.SumCount) Aggregate="@GridAggregateType.Sum" />
+                                <GridAggregate Field=@nameof(GetAllEnterActionsVm.Count) Aggregate="@GridAggregateType.Sum" />
+                                <GridAggregate Field=@nameof(GetAllEnterActionsVm.OpCode) Aggregate="@GridAggregateType.Count" />
+                            </GridAggregates>
+                        </TelerikGrid>
+                    }
+                </TabStripTab>
+            }
+            @if (TabMode == 3 || TabMode == 0)
+            {
+                <TabStripTab Title="@TextResources.APP_StringKeys_Report_Exit_Tab3">
+                    @if (FullDetails is not null)
+                    {
+                        <TelerikGrid Data="FullDetails"
+                                     PageSize="10"
+                                     Navigable="true"
+                                     Pageable="true"
+                                     Sortable="true"
+                                     Width="100%"
+                                     ScrollMode="@GridScrollMode.Scrollable">
+                            <RowTemplate Context="product">
+                                <td class="td-style td-style-full">@product.ProductCode</td>
+                                <td class="td-style td-style-full">@product.ProductSerial</td>
+                                <td class="td-style td-style-full">@product.ProductName</td>
+                                <td class="td-style td-style-full">@product.OpCode</td>
+                                <td class="td-style td-style-full">@product.DateTime</td>
+                                <td class="td-style td-style-full">@product.Size</td>
+                                <td class="td-style td-style-full">@product.TechnicalCode</td>
+                                <td class="td-style td-style-full">@product.ActionTypeTitle</td>
+                                <td class="td-style td-style-full">@product.StoreTitle</td>
+                                <td class="td-style td-style-full">@product.DestinationTitle</td>
+                                <td class="td-style td-style-full">@product.ActionDocumentId</td>
+                                <td class="td-style td-style-full">@product.MovementActionDesc</td>
+                                <td class="td-style td-style-full">@product.Qc</td>
+                                <td class="td-style td-style-full">@product.ProductGroup</td>
+                                <td class="td-style td-style-full">@product.ProductBrand</td>
+                                <td class="td-style td-style-full">@product.ProductType</td>
+                                <td class="td-style td-style-full">@product.Line</td>
+                                <td class="td-style td-style-full">@product.Shift</td>
+                                <td class="td-style td-style-full">@product.StationName</td>
+                                <td class="td-style td-style-full">@product.Count</td>
+                                <td class="td-style td-style-full">@product.Username</td>
+                                @if (product.TechnicalInfoData is not null)
+                                {
+                                    @foreach (var field in TechnicalFilterColumns)
+                                    {
+                                        <td class="td-style">@JToken.Parse(product.TechnicalInfoData.Split("-,-").First())[$"{field}"]</td>
+                                    }
+                                }
+                                @if (product.ProductProperties.HasValue())
+                                {
+                                    @foreach (var field in DynamicFieldRegisterDataColumns)
+                                    {
+                                        <td class="td-style">@(JToken.Parse(product.ProductProperties)[$"{field}"] ?? "")</td>
+                                    }
+                                }
+                                @if (product.ProductProperties.HasValue())
+                                {
+                                    @foreach (var field in DynamicFieldForActionTypeDataColumns)
+                                    {
+                                        <td class="td-style">@(JToken.Parse(product.MovementActionData)[$"{field}"] ?? "")</td>
+                                    }
+                                }
+                            </RowTemplate>
+                            <GridToolBarTemplate>
+                                <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                                    @TextResources.APP_StringKeys_ExportExcel
+                                </GridCommandButton>
+                            </GridToolBarTemplate>
+                            <GridExport>
+                                <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Report_Exit_Tab3"
+                                                 OnBeforeExport="@(async(e) => await OnExcelBeforeExport(e,TextResources.APP_StringKeys_Report_Exit_Tab3))" />
+                            </GridExport>
+                            <GridColumns>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ProductCode)"
+                                            Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                                            Width="150px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ProductSerial)"
+                                            Title="@TextResources.APP_StringKeys_ProductSerial"
+                                            Width="150px">
+                                    <FooterTemplate>
+                                        تعداد سریال: @context.Count
+                                    </FooterTemplate>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ProductName)"
+                                            Title="@TextResources.APP_StringKeys_ProductName"
+                                            Width="200px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.OpCode)"
+                                            Title="@TextResources.APP_StringKeys_OperationCode"
+                                            Width="100px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.DateTime)"
+                                            Title="@TextResources.APP_StringKeys_DateTime"
+                                            Width="100px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.Size)"
+                                            Title="@TextResources.APP_StringKeys_Product_Size"
+                                            Width="80px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.TechnicalCode)"
+                                            Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                                            Width="80px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ActionTypeTitle)"
+                                            Title="@TextResources.APP_StringKeys_ActionType"
+                                            Width="80px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.StoreTitle)"
+                                            Title="@TextResources.APP_StringKeys_From_Warehouse"
+                                            Width="80px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.DestinationTitle)"
+                                            Title="@TextResources.APP_StringKeys_To_Warehouse"
+                                            Width="80px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ActionDocumentId)"
+                                            Title="@TextResources.APP_StringKeys_DocKey"
+                                            Width="90px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.MovementActionDesc)"
+                                            Title="@TextResources.APP_StringKeys_Description"
+                                            Width="90px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.Qc)"
+                                            Title="@TextResources.APP_StringKeys_Chart_Qc"
+                                            Width="90px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ProductGroup)"
+                                            Title="@TextResources.APP_StringKeys_ProductGroup"
+                                            Width="70px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ProductBrand)"
+                                            Title="@TextResources.APP_StringKeys_ProductBrand"
+                                            Width="70px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ProductType)"
+                                            Title="@TextResources.APP_StringKeys_Field_ProductType"
+                                            Width="70px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.Line)"
+                                            Title="@TextResources.APP_StringKeys_Chart_Pl"
+                                            Width="60px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.Shift)"
+                                            Title="@TextResources.APP_StringKeys_Chart_Shift"
+                                            Width="60px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.StationName)"
+                                            Title="@TextResources.APP_StringKeys_Station"
+                                            Width="110px"></GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.Count)"
+                                            Title="@TextResources.APP_StringKeys_Value"
+                                            Width="80px">
+                                    <FooterTemplate>
+                                        جمع مقدار: @context.Sum
+                                    </FooterTemplate>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.Username)"
+                                            Title="@TextResources.APP_StringKeys_Username"
+                                            Width="110px"></GridColumn>
+                                @foreach (var column in TechnicalFilterColumns)
+                                {
+                                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.TechnicalInfoData)" Title="@column" Width="100px"></GridColumn>
+                                }
+                                @foreach (var column in DynamicFieldRegisterDataColumns)
+                                {
+                                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ProductProperties)" Title="@column" Width="100px"></GridColumn>
+                                }
+                                @foreach (var column in DynamicFieldForActionTypeDataColumns)
+                                {
+                                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.MovementActionData)" Title="@column" Width="100px"></GridColumn>
+                                }
+                            </GridColumns>
+                            <GridAggregates>
+                                <GridAggregate Field=@nameof(GetEnterActionDetailsFullVm.Count) Aggregate="@GridAggregateType.Sum" />
+                                <GridAggregate Field=@nameof(GetEnterActionDetailsFullVm.ProductSerial) Aggregate="@GridAggregateType.Count" />
+                            </GridAggregates>
+                        </TelerikGrid>
+                    }
+                </TabStripTab>
+            }
+        </TelerikTabStrip>
+    </div>
+</div>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="DetailsModal"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="Details"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style td-dt">@product.ProductCode</td>
+                    <td class="td-style td-dt">@product.ProductSerial</td>
+                    <td class="td-style td-dt">@product.ProductName</td>
+                    <td class="td-style td-dt">@product.ProductCount</td>
+                    <td class="td-style td-dt">@product.Size</td>
+                    <td class="td-style td-dt">@product.ProductBrand</td>
+                    <td class="td-style td-dt">@product.ProductGroup</td>
+                    <td class="td-style td-dt">@product.ProductType</td>
+                    <td class="td-style td-dt">@product.TechnicalCode</td>
+                    <td class="td-style td-dt">@product.StationName</td>
+                    @if (product.TechnicalInfoData is not null)
+                    {
+                        @foreach (var field in TechnicalFilterColumns)
+                        {
+                            <td class="td-style">@JToken.Parse(product.TechnicalInfoData.Split("-,-").First())[$"{field}"]</td>
+                        }
+                    }
+                    @if (product.ProductProperties is not null)
+                    {
+                        @foreach (var field in DynamicFieldRegisterDataColumns)
+                        {
+                            <td class="td-style">@(JToken.Parse(product.ProductProperties)[$"{field}"] ?? "")</td>
+                        }
+                    }
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsVm.ProductCode)" Title="@TextResources.APP_StringKeys_Chart_ProductCode" Width="150px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsVm.ProductSerial)" Title="@TextResources.APP_StringKeys_ProductSerial" Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsVm.ProductName)" Title="@TextResources.APP_StringKeys_ProductName" Width="250px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsVm.ProductCount)" Title="@TextResources.APP_StringKeys_ProductCount" Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsVm.Size)" Title="@TextResources.APP_StringKeys_Product_Size" Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsVm.ProductBrand)" Title="@TextResources.APP_StringKeys_ProductBrand" Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsVm.ProductGroup)" Title="@TextResources.APP_StringKeys_ProductGroup" Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsVm.ProductType)" Title="@TextResources.APP_StringKeys_Field_ProductType" Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsVm.TechnicalCode)" Title="@TextResources.APP_StringKeys_Chart_Regcode" Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsVm.StationName)" Title="@TextResources.APP_StringKeys_Station" Width="100px"></GridColumn>
+                    @foreach (var column in TechnicalFilterColumns)
+                    {
+                        <GridColumn Field="@nameof(GetEnterActionDetailsVm.TechnicalInfoData)" Title="@column" Width="100px"></GridColumn>
+                    }
+                    @foreach (var column in DynamicFieldRegisterDataColumns)
+                    {
+                        <GridColumn Field="@nameof(GetEnterActionDetailsVm.ProductProperties)" Title="@column" Width="100px"></GridColumn>
+                    }
+                </GridColumns>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Details"
+                                     OnBeforeExport="@(async(e) => await OnExcelBeforeExport(e,TextResources.APP_StringKeys_Details))" />
+                </GridExport>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="DetailsAggModal"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="AggDetails"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true"
+                         Width="100%"
+                         ScrollMode="@GridScrollMode.Scrollable">
+                <RowTemplate Context="product">
+                    <td class="td-style td-style-full">@product.ProductCode</td>
+                    <td class="td-style td-style-full">@product.ProductSerial</td>
+                    <td class="td-style td-style-full">@product.ProductName</td>
+                    <td class="td-style td-style-full">@product.OpCode</td>
+                    <td class="td-style td-style-full">@product.DateTime</td>
+                    <td class="td-style td-style-full">@product.ActionTypeTitle</td>
+                    <td class="td-style td-style-full">@product.Size</td>
+                    <td class="td-style td-style-full">@product.TechnicalCode</td>
+                    <td class="td-style td-style-full">@product.StoreTitle</td>
+                    <td class="td-style td-style-full">@product.DestinationTitle</td>
+                    <td class="td-style td-style-full">@product.ActionDocumentId</td>
+                    <td class="td-style td-style-full">@product.MovementActionDesc</td>
+                    <td class="td-style td-style-full">@product.Qc</td>
+                    <td class="td-style td-style-full">@product.ProductGroup</td>
+                    <td class="td-style td-style-full">@product.ProductBrand</td>
+                    <td class="td-style td-style-full">@product.ProductType</td>
+                    <td class="td-style td-style-full">@product.Line</td>
+                    <td class="td-style td-style-full">@product.Shift</td>
+                    <td class="td-style td-style-full">@product.StationName</td>
+                    <td class="td-style td-style-full">@product.Count</td>
+                    <td class="td-style td-style-full">@product.Username</td>
+                    @if (product.TechnicalInfoData is not null)
+                    {
+                        @foreach (var field in TechnicalFilterColumns)
+                        {
+                            <td class="td-style">@JToken.Parse(product.TechnicalInfoData.Split("-,-").First())[$"{field}"]</td>
+                        }
+                    }
+                    @if (product.ProductProperties.HasValue())
+                    {
+                        @foreach (var field in DynamicFieldRegisterDataColumns)
+                        {
+                            <td class="td-style">@(JToken.Parse(product.ProductProperties)[$"{field}"] ?? "")</td>
+                        }
+                    }
+                    @if (product.MovementActionData.HasValue())
+                    {
+                        @foreach (var field in DynamicFieldForActionTypeDataColumns)
+                        {
+                            <td class="td-style">@(JToken.Parse(product.MovementActionData)[$"{field}"] ?? "")</td>
+                        }
+                    }
+                </RowTemplate>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Details"
+                                     OnBeforeExport="@(async(e) => await OnExcelBeforeExport(e,TextResources.APP_StringKeys_Details))" />
+                </GridExport>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                                Width="120px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ProductSerial)"
+                                Title="@TextResources.APP_StringKeys_ProductSerial"
+                                Width="80px">
+                        <FooterTemplate>
+                            تعداد سریال: @context.Count
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName"
+                                Width="200px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.OpCode)"
+                                Title="@TextResources.APP_StringKeys_OperationCode"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.DateTime)"
+                                Title="@TextResources.APP_StringKeys_DateTime"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ActionTypeTitle)"
+                                Title="@TextResources.APP_StringKeys_ActionType"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.Size)"
+                                Title="@TextResources.APP_StringKeys_Product_Size"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.TechnicalCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.StoreTitle)"
+                                Title="@TextResources.APP_StringKeys_From_Warehouse"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.DestinationTitle)"
+                                Title="@TextResources.APP_StringKeys_To_Warehouse"
+                                Width="80px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ActionDocumentId)"
+                                Title="@TextResources.APP_StringKeys_DocKey"
+                                Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.MovementActionDesc)"
+                                Title="@TextResources.APP_StringKeys_Description"
+                                Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.Qc)"
+                                Title="@TextResources.APP_StringKeys_Chart_Qc"
+                                Width="90px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ProductGroup)"
+                                Title="@TextResources.APP_StringKeys_ProductGroup"
+                                Width="70px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ProductBrand)"
+                                Title="@TextResources.APP_StringKeys_ProductBrand"
+                                Width="70px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ProductType)"
+                                Title="@TextResources.APP_StringKeys_Field_ProductType"
+                                Width="70px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.Line)"
+                                Title="@TextResources.APP_StringKeys_Chart_Pl"
+                                Width="60px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.Shift)"
+                                Title="@TextResources.APP_StringKeys_Chart_Shift"
+                                Width="60px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.StationName)"
+                                Title="@TextResources.APP_StringKeys_Station"
+                                Width="110px"></GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.Count)"
+                                Title="@TextResources.APP_StringKeys_Value"
+                                Width="80px">
+                        <FooterTemplate>
+                            جمع مقدار: @context.Sum
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.Username)"
+                                Title="@TextResources.APP_StringKeys_Username"
+                                Width="110px"></GridColumn>
+                    @foreach (var column in TechnicalFilterColumns)
+                    {
+                        <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.TechnicalInfoData)" Title="@column" Width="100px"></GridColumn>
+                    }
+                    @foreach (var column in DynamicFieldRegisterDataColumns)
+                    {
+                        <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.ProductProperties)" Title="@column" Width="100px"></GridColumn>
+                    }
+                    @foreach (var column in DynamicFieldForActionTypeDataColumns)
+                    {
+                        <GridColumn Field="@nameof(GetEnterActionDetailsFullVm.MovementActionData)" Title="@column" Width="100px"></GridColumn>
+                    }
+                </GridColumns>
+                <GridAggregates>
+                    <GridAggregate Field=@nameof(GetEnterActionDetailsFullVm.Count) Aggregate="@GridAggregateType.Sum" />
+                    <GridAggregate Field=@nameof(GetEnterActionDetailsFullVm.ProductSerial) Aggregate="@GridAggregateType.Count" />
+                </GridAggregates>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_Filters"
+       @ref="FiltersModal"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-right">
+            @if (FiltersModal.ModalClass.Equals("Show"))
+            {
+                <FilterReportSelectSection Filters="Filters" OnSearchClick="OnAddNewFilterClick"
+                                           OnAddClick="OnAddNewFilterInComponentClick"
+                                           OnRemoveClick="OnRemoveFilterInComponentClick">
+                </FilterReportSelectSection>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Info"
+       @ref="InfoModal"
+       Size="ModalSize.ExtraLarge"
+       OkBtnClass="btn btn-success"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Save"
+       OnOkModal="OnSaveInfoClick">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @foreach (var chunck in MovementActionDataItems.Chunk(3))
+            {
+                <div class="d-flex flex-row align-items-center flex-wrap">
+                    @foreach (var item in chunck)
+                    {
+                        <label>@item.Name:</label>
+                        <input type="text"
+                               class="form-control input-search-span-lg"
+                               @bind-value="item.Value" />
+                    }
+                </div>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_TruckCross"
+       @ref="ModalTruckCross"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close">
+    <ModalBodyContentHtml>
+        @if (ActionTruckCross is not null)
+        {
+            <div class="text-align-center">
+                <div class="form-inline">
+                    <label style="margin-right:32px;">@TextResources.APP_StringKeys_DriverName</label>
+                    <input type="text" class="form-control input-search-span-lg" @bind-value="@ActionTruckCross.DriverName" disabled="true" />
+                    <label style="margin-right:63px;">@TextResources.APP_StringKeys_NationalCode</label>
+                    <input type="text" class="form-control input-search-span-lg" @bind-value="@ActionTruckCross.NationalCode" disabled="true" />
+                    <label style="margin-right:10px;">@TextResources.APP_StringKeys_LicenseCode</label>
+                    <input type="text" class="form-control input-search-span-lg" @bind-value="@ActionTruckCross.LicenseCode" disabled="true" />
+                </div>
+                <div class="form-inline">
+                    <label style="margin-right:11px;">@TextResources.APP_StringKeys_Phone_Number</label>
+                    <input type="text" class="form-control input-search-span-lg" @bind-value="@ActionTruckCross.DriverPhone" disabled="true" />
+                    <label style="margin-right:73px;">@TextResources.APP_StringKeys_Plaque</label>
+                    <input type="text" class="form-control input-search-span-lg" @bind-value="@ActionTruckCross.Plaque" disabled="true" />
+                    <label style="margin-right:41px;">@TextResources.APP_StringKeys_TruckCross_TypeTruck</label>
+                    <input type="text" class="form-control input-search-span-lg" @bind-value="@ActionTruckCross.TypeTitle" disabled="true" />
+                </div>
+                <div class="form-inline">
+                    <label style="margin-right:0px;">@TextResources.APP_StringKeys_TruckCross_Enter_WeightTonage</label>
+                    <input type="text" class="form-control input-search-span-lg" @bind-value="@ActionTruckCross.EnterWeightTonage" disabled="true" />
+                    <label style="margin-right:10px;">@TextResources.APP_StringKeys_TruckCross_Exit_WeightTonage</label>
+                    <input type="text" class="form-control input-search-span-lg" @bind-value="@ActionTruckCross.ExitWeightTonage" disabled="true" />
+                </div>
+            </div>
+        }
+    </ModalBodyContentHtml>
+</Modal>
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+<CascadingValue Value="IsLoading">
+    <CascadingValue Value="Notification">
+        <SelectPrintFormat @ref="SelectPrintFormatRef"
+                           OnFileNameSelect="OnPrintActionClick">
+        </SelectPrintFormat>
+    </CascadingValue>
+</CascadingValue>
+
+<style type="text/css">
+    .td-style-full {
+        font-size: 75%;
+    }
+</style>

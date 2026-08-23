@@ -1,0 +1,659 @@
+@page "/location/place/{Mode:int?}/{ActiveStations?}/{ActionTypeCode:int?}/{TruckCrossId:int?}"
+@inherits SiloBasePage
+@using Silo.Application.Dto.DynamicField
+@using Silo.Components.DynamicField
+@using Silo.Shared.Components.Print
+@using Silo.Application.Features
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; padding-bottom: 10px;">
+        <div class="form-search-span" style="padding-top:10px;">
+            <div class=" d-flex flex-row align-items-center flex-wrap" style=" margin-top:5px;">
+                <label style="margin-right: 15px;">@TextResources.APP_StringKeys_OperationCode</label>
+                <input @bind-value="DirectPlaceDto.MovementActionId" class="form-control input-search-span" readonly />
+                <label style="margin-right: 20px;">@TextResources.APP_StringKeys_DateTime</label>
+                <input @bind-value="DirectPlaceDto.MovementActionDateTime" class="form-control input-search-span" style="width:120px!important" readonly />
+                <label style="margin-right: 20px;">@TextResources.APP_StringKeys_User</label>
+                <input @bind-value="DirectPlaceDto.UserName" class="form-control input-search-span" readonly />
+                <label style="margin-right: 15px;">@TextResources.APP_StringKeys_Source_Warehouse</label>
+                @if (FinalProductInfos.Count == 0)
+                {
+                    <TelerikDropDownList Data="SourceWarehouses"
+                                         TextField="DestinationTitle"
+                                         ValueField="DestinationCode"
+                                         @bind-Value="DirectPlaceDto.SourceWarehouseCode"
+                                         Width="150px"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         OnChange="OnSourceWarehouseChange"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                }
+                else
+                {
+                    <TelerikDropDownList Data="SourceWarehouses"
+                                         TextField="DestinationTitle"
+                                         ValueField="DestinationCode"
+                                         @bind-Value="DirectPlaceDto.SourceWarehouseCode"
+                                         Width="150px"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         OnChange="OnSourceWarehouseChange"
+                                         Class="drop-all"
+                                         Enabled="false">
+                    </TelerikDropDownList>
+                }
+                <label style="margin-right: 15px;">@TextResources.APP_StringKeys_Destination_Warehouse</label>
+                @if (Documents.Count == 0)
+                {
+                    <TelerikDropDownList Data="DestinationWarehouses"
+                                         TextField="DestinationTitle"
+                                         ValueField="DestinationCode"
+                                         @bind-Value="DirectPlaceDto.DestinationWarehouseCode"
+                                         Width="150px"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         OnChange="OnDestinationWarehouseChange"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                }
+                else
+                {
+                    <TelerikDropDownList Data="DestinationWarehouses"
+                                         TextField="DestinationTitle"
+                                         ValueField="DestinationCode"
+                                         @bind-Value="DirectPlaceDto.DestinationWarehouseCode"
+                                         Width="150px"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         OnChange="OnDestinationWarehouseChange"
+                                         Class="drop-all"
+                                         Enabled="false">
+                    </TelerikDropDownList>
+                }
+                <label style="margin-right: 15px;">@TextResources.APP_StringKeys_Zone</label>
+                <input @bind-value="DirectPlaceDto.DestinationZoneCode" class="form-control input-search-span" readonly style="margin-left: 5px; width: 120px!important;" />
+                <button type="button" class="btn btn-light" @onclick="OnModalLocationClick"
+                        style="margin-left: 18px;" data-target-for="Destination">
+                    <MaterialIcon IconName="Checklist_rtl"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+        <div class="form-search-span" style="padding-top:10px;">
+            <div class=" d-flex flex-row align-items-center flex-wrap" style=" margin-top:5px; margin-right:15px; margin-bottom:5px;">
+                @if (InnerPermissions.AdditionalData.ContainsKey("Select"))
+                {
+                    @if (InnerPermissions.AdditionalData["Select"].ToString().Contains("Modal"))
+                    {
+                        <label>@TextResources.APP_StringKeys_ProductSerial</label>
+                        <input @bind-value="Serial" type="text" class="form-control input-search-span-lg pointer"
+                               @onkeyup="OnSerialKeyUp" />
+                        <button type="button"
+                                class="btn btn-primary"
+                                style="margin-left:5px;"
+                                @onclick="OnSingleSerialAddClick">
+                            <MaterialIcon IconName="add"></MaterialIcon>
+                        </button>
+                    }
+                    @if (InnerPermissions.AdditionalData["Select"].ToString().Contains("Modal"))
+                    {
+                        <button type="button"
+                                class="btn btn-primary"
+                                style="margin-left:5px;"
+                                @onclick="OnProductModalClick">
+                            <MaterialIcon IconName="Checklist_rtl"></MaterialIcon>
+                        </button>
+                    }
+                }
+                @if (InnerPermissions.AdditionalData.ContainsKey("ReadTag"))
+                {
+                    @if (InnerPermissions.AdditionalData["ReadTag"].ToString().Contains("Excel"))
+                    {
+                        @if (DirectPlaceDto.SourceWarehouseCode.HasValue() && DirectPlaceDto.DestinationWarehouseCode.HasValue())
+                        {
+                            <FileUpload AllowedExtensions=".xlsx"
+                                        OnStartUpload="()=>IsLoading = true"
+                                        ButtonClass="btn btn-primary"
+                                        UploadUrl="/Tools/UploadAccountingFile"
+                                        ButtonImageUrl="/images/Utilities/Excel.png"
+                                        OnCompleteUpload="OnUploadExcelComplete">
+                            </FileUpload>
+                        }
+                        else
+                        {
+                            <button type="button"
+                                    class="btn btn-primary"
+                                    style="margin-left:5px;">
+                                <img src="/images/Utilities/Excel.png" width="20px" />
+                            </button>
+                        }
+                    }
+                    @if (InnerPermissions.AdditionalData["ReadTag"].ToString().Contains("Handheld") ||
+                   InnerPermissions.AdditionalData["ReadTag"].ToString().Contains("Gate"))
+                    {
+                        <button type="button"
+                                class="btn btn-primary"
+                                style="margin-left:5px; margin-right:5px; padding-left:9px;padding-right:9px;"
+                                @onclick="OnGateModalClick">
+                            <img src="/images/Utilities/handheld-logo.png" width="28px" />
+                        </button>
+                    }
+                    @if (InnerPermissions.AdditionalData["ReadTag"].ToString().Contains("Barcode"))
+                    {
+                        <button type="button"
+                                class="btn btn-primary"
+                                style="margin-left:5px;"
+                                @onclick="OnOpenBarcodeModalClick">
+                            <MaterialIcon IconName="barcode_scanner"></MaterialIcon>
+                        </button>
+                    }
+                }
+                <button type="button" class="btn @ErrorButtonClass" style="left: 20px;position:absolute;">
+                    <MaterialIcon IconName="warning"></MaterialIcon>
+                </button>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-right:15px; padding-bottom: 10px;">
+                @foreach (var item in ChosenActionInfos)
+                {
+                    <h6 class="text-success"
+                        style="margin-right: 20px">
+                        @item
+                    </h6>
+                }
+                <TelerikTabStrip @bind-ActiveTabIndex="ActiveTabIndex">
+                    <TabStripTab Title="@TextResources.APP_StringKeys_Chosen_Serials">
+                        <TelerikGrid Data="FinalProductInfos"
+                                     @ref="FinalProductInfosGrid"
+                                     PageSize="10"
+                                     Navigable="true"
+                                     Pageable="true"
+                                     Sortable="true"
+                                     OnRowRender="OnRowSerialsRenderHandler">
+                            <RowTemplate Context="product">
+                                <td class="td-style td-dt">@product.ProductSerial</td>
+                                <td class="td-style td-dt">@product.ProductCode</td>
+                                <td class="td-style td-dt">@product.ProductName</td>
+                                <td class="td-style td-dt">@product.RegCode</td>
+                                <td class="td-style td-dt">
+                                    @if (product.IsEditMode)
+                                    {
+                                        <TelerikNumericTextBox @bind-Value="product.SumCount"
+                                                               Min="0"
+                                                               Class="form-control input-search-span"></TelerikNumericTextBox>
+                                        <button @onclick="async()=> await OnEditCountSerialClick(product)"
+                                                class="btn-dt-1 btn-success tr-buttom btn">
+                                            <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        @product.SumCount
+                                        if (IsTagCountEditable)
+                                        {
+                                            <button @onclick="()=> product.IsEditMode = true"
+                                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                                <MaterialIcon IconName="@MaterialIconsHelper.Edit"></MaterialIcon>
+                                            </button>
+                                        }
+                                    }
+                                </td>
+                                <td class="td-style td-dt">@product.Status</td>
+                                <td class="td-style td-dt">
+                                    @if (ShowSerialDelete)
+                                    {
+                                        <button @onclick="async()=> await OnDeleteSerialProductClick(product)"
+                                                class="btn-dt-1 btn-danger tr-buttom btn">
+                                            <MaterialIcon IconName="delete"></MaterialIcon>
+                                        </button>
+                                    }
+                                </td>
+                            </RowTemplate>
+                            <GridColumns>
+                                <GridColumn Field="@nameof(PlaceProductBySerialDto.ProductSerial)"
+                                            Title="@TextResources.APP_StringKeys_ProductSerial" Width="100px">
+                                    <FooterTemplate>
+                                        تعداد کل: @context.Count
+                                    </FooterTemplate>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(PlaceProductBySerialDto.ProductCode)"
+                                            Title="@TextResources.APP_StringKeys_ProductCode" Width="200px"></GridColumn>
+                                <GridColumn Field="@nameof(PlaceProductBySerialDto.ProductName)"
+                                            Title="@TextResources.APP_StringKeys_Field_Name"></GridColumn>
+                                <GridColumn Field="@nameof(PlaceProductBySerialDto.RegCode)"
+                                            Title="@TextResources.APP_StringKeys_Chart_Regcode" Width="100px"></GridColumn>
+                                <GridColumn Field="@nameof(PlaceProductBySerialDto.SumCount)"
+                                            Title="@TextResources.APP_StringKeys_Value" Width="100px">
+                                    <FooterTemplate>
+                                        جمع مقدار: @context.Sum
+                                    </FooterTemplate>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(PlaceProductBySerialDto.Status)"
+                                            Title="@TextResources.APP_StringKeys_Field_Status" Width="100px"></GridColumn>
+                                <GridColumn Width="50px"></GridColumn>
+                            </GridColumns>
+                            <GridAggregates>
+                                <GridAggregate Field=@nameof(PlaceProductBySerialDto.ProductSerial) Aggregate="@GridAggregateType.Count" />
+                                <GridAggregate Field=@nameof(PlaceProductBySerialDto.SumCount) Aggregate="@GridAggregateType.Sum" />
+                            </GridAggregates>
+
+                        </TelerikGrid>
+                    </TabStripTab>
+                    <TabStripTab Title="@TextResources.APP_StringKeys_Report_Exit_Tab2">
+                        <TelerikGrid Data="PlaceProductsAgg"
+                                     PageSize="10"
+                                     Navigable="true"
+                                     Pageable="true"
+                                     Sortable="true"
+                                     OnRowRender="OnRowOpRenderHandler">
+                            <RowTemplate Context="product">
+                                <td class="td-style">@product.ProductCode</td>
+                                <td class="td-style">@product.ProductName</td>
+                                <td class="td-style">@product.SumCount</td>
+                                <td class="td-style">@product.ProductCount</td>
+                                <td class="td-style">@product.Status</td>
+                            </RowTemplate>
+                            <GridColumns>
+                                <GridColumn Field="@nameof(PlaceProductAggDto.ProductCode)"
+                                            Title="@TextResources.APP_StringKeys_Chart_ProductCode"></GridColumn>
+                                <GridColumn Field="@nameof(PlaceProductAggDto.ProductName)"
+                                            Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                                <GridColumn Field="@nameof(PlaceProductAggDto.SumCount)"
+                                            Title="@TextResources.APP_StringKeys_Count">
+                                    <FooterTemplate>
+                                        تعداد کل: @context.Sum
+                                    </FooterTemplate>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(PlaceProductAggDto.ProductCount)"
+                                            Title="@TextResources.APP_StringKeys_SumValue">
+                                    <FooterTemplate>
+                                        جمع مقدار: @context.Sum
+                                    </FooterTemplate>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(PlaceProductAggDto.Status)"
+                                            Title="@TextResources.APP_StringKeys_Field_Status"></GridColumn>
+                            </GridColumns>
+                            <GridAggregates>
+                                <GridAggregate Field=@nameof(PlaceProductAggDto.SumCount) Aggregate="@GridAggregateType.Sum" />
+                                <GridAggregate Field=@nameof(PlaceProductAggDto.ProductCount) Aggregate="@GridAggregateType.Sum" />
+                            </GridAggregates>
+                        </TelerikGrid>
+                    </TabStripTab>
+                </TelerikTabStrip>
+            </div>
+        </div>
+    </div>
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+        <div class="form-search-span" style="padding-top:10px;">
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                <div>
+                    <h6 class="form-title card-title" style="position: absolute;left: 20px;margin-top: -10px !important;">
+                        @TextResources.APP_StringKeys_Doc
+                    </h6>
+                </div>
+                <div class="form-search-span" style="padding-bottom: 10px;">
+                    <div class=" d-flex flex-row align-items-center flex-wrap">
+                        <label>@TextResources.APP_StringKeys_DocCode:</label>
+                        <input @bind-value="DirectPlaceDto.DocumentCode" class="form-control input-search-span" @onkeyup="OnDocumentKeyUp" />
+                        <button id="btn-doc" class="btn btn-primary" @onclick="OnSearchDocumentClick"
+                                type="button" title="@TextResources.APP_StringKeys_Search">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                        </button>
+                        <button id="btn-doc" class="btn btn-warning" @onclick="OnClearDocumentClick"
+                                type="button" title="@TextResources.APP_StringKeys_Search" style="margin-right:5px;">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                        </button>
+                    </div>
+                </div>
+                <TelerikGrid @ref="DocumentsGrid"
+                             Data="Documents"
+                             PageSize="10"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true"
+                             OnRowRender="OnRowDocRenderHandler">
+                    <RowTemplate Context="doc">
+                        <td class="td-style">@doc.ProductCode</td>
+                        <td class="td-style">@doc.ProductName</td>
+                        <td class="td-style">@doc.SumValue</td>
+                        @if (doc.DocumentCheckType == DocumentCheckType.ProductCodeAndDocCodeRemain
+                        || doc.DocumentCheckType == DocumentCheckType.DocCodeRemain)
+                        {
+                            <td class="td-style">@doc.DocumentUnusedCount</td>
+                        }
+                        else
+                        {
+                            <td class="td-style"></td>
+                        }
+                        <td class="td-style">@doc.Status</td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetDocProductDataByDocKeyVm.ProductCode)"
+                                    Title="@TextResources.APP_StringKeys_Chart_ProductCode"></GridColumn>
+                        <GridColumn Field="@nameof(GetDocProductDataByDocKeyVm.ProductName)"
+                                    Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                        <GridColumn Field="@nameof(GetDocProductDataByDocKeyVm.SumValue)"
+                                    Title="@TextResources.APP_StringKeys_SumValue"></GridColumn>
+                        <GridColumn Field="@nameof(GetDocProductDataByDocKeyVm.DocumentUnusedCount)"
+                                    Title="@TextResources.APP_StringKeys_Document_Unused"
+                                    Width="120px"></GridColumn>
+                        <GridColumn Field="@nameof(GetDocProductDataByDocKeyVm.Status)"
+                                    Title="@TextResources.APP_StringKeys_Field_Status"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+                <br />
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap col-md-10" style=" margin-bottom: 10px !important; margin-top: 10px;">
+                <label style="margin-right:15px;">@TextResources.APP_StringKeys_Description</label>
+                <input @bind-value="DirectPlaceDto.MovementActionDesc" class="form-control input-search-span-lg" tabindex="indexCount" style="width: 300px !important;" />
+                @if (TruckCrossShow)
+                {
+                    <label style="margin-right:15px;">@TextResources.APP_StringKeys_TruckCross</label>
+                    <TelerikDropDownList Data="NotExitedCrosses"
+                                         TextField="@(nameof(TruckCrossDataDto.OneRowData))"
+                                         ValueField="@(nameof(TruckCrossDataDto.Id))"
+                                         @bind-Value="DirectPlaceDto.TruckCrossId"
+                                         Width="300px"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Class="drop-all"
+                                         Enabled="@(TruckCrossId == -1)">
+                    </TelerikDropDownList>
+                }
+
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap col-md-10" style=" margin-bottom: 10px !important; margin-top: 10px;">
+                <DynamicFieldFillValue @ref="DynamicFieldFillValueRef"
+                                       DynamicFieldsDto="DynamicFieldsDto">
+                </DynamicFieldFillValue>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap save-button-div" style="margin-top:10px;margin-bottom:10px;">
+                <EditForm Model="DirectPlaceDto"
+                          OnInvalidSubmit="OnInvalidSubmit"
+                          OnValidSubmit="OnValidSubmit">
+
+                    <DataAnnotationsValidator />
+                    <InputText @bind-Value="DirectPlaceDto.DestinationZoneCode" hidden="hidden" />
+
+                    <div class="div-submit">
+                        <button type="button"
+                                class="btn btn-info"
+                                @onclick="OnSelectProductForPrint">
+                            <MaterialIcon IconName="print"></MaterialIcon>
+                        </button>
+                        <button type="button" class="btn btn-warning"
+                                @onclick="OnClearAllClick">
+                            <MaterialIcon IconName="refresh"></MaterialIcon>
+                        </button>
+                        <button ButtonType="ButtonType.Submit" class="btn btn-primary"
+                                title="@TextResources.APP_StringKeys_Send">
+                            <MaterialIcon IconName="save"></MaterialIcon>
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@Errors.ErrorTitle"
+       @ref="ErrorModal"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="card card-stats text-align-center col-md-12" style="margin-top:5px;">
+            <TelerikTabStrip>
+                <TabStripTab Title="@TextResources.APP_StringKeys_Error">
+                    <TelerikListView Data="Errors.Serials"
+                                     Pageable="true"
+                                     PageSize="20">
+                        <HeaderTemplate>
+                            @TextResources.APP_StringKeys_Attention
+                        </HeaderTemplate>
+                        <Template>
+                            <div class="k-card k-card-horizontal bg-warning">
+                                <div class="k-vbox k-flex-grow">
+                                    <div class="k-card-body">
+                                        <h4 class="k-card-title">سریال</h4>
+                                        <div class="card-date">@context</div>
+                                        <div class="card-date" style="direction:ltr;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </Template>
+                    </TelerikListView>
+                </TabStripTab>
+            </TelerikTabStrip>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<ProductSerialModal @ref="ProductModal"
+                    MultiSelect="true"
+                    OnSelectSerials="OnApproveSelectedProductsClick">
+</ProductSerialModal>
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle=""
+       CloseBtnText="@TextResources.APP_StringKeys_Ignore"
+       @ref="PlaceOperationModal"
+       Size="ModalSize.ExtraLarge">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <form class="form-search-span">
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <button class="btn btn-primary" @onclick="OnSearchPlaceOperationModalClick"
+                            type="button" title="@TextResources.APP_StringKeys_Search"
+                            style="margin-right:5px;">
+                        <MaterialIcon IconName="search"></MaterialIcon>
+                    </button>
+                </div>
+            </form>
+            @if (DirectPlaceHeaders is not null)
+            {
+                <TelerikGrid Data="DirectPlaceHeaders"
+                             PageSize="10"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true">
+                    <RowTemplate Context="response">
+                        <td class="td-style">@response.PlaceId</td>
+                        <td class="td-style">@response.DateTime</td>
+                        <td class="td-style">@response.UserName</td>
+                        <td class="td-style">@response.DestinationWarehouseTitle</td>
+                        <td class="td-style">@response.Destination</td>
+                        <td class="td-style">
+                            <button @onclick="async()=> await OnChoosePlaceHeader(response)" type="button" class="btn btn-success tr-buttom">@TextResources.APP_StringKeys_Choose</button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetAllPlaceHeadersVm.PlaceId)"
+                                    Title="@TextResources.APP_StringKeys_OperationCode"
+                                    Width="180px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllPlaceHeadersVm.DateTime)"
+                                    Title="@TextResources.APP_StringKeys_DateTime"
+                                    Width="180px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllPlaceHeadersVm.UserName)"
+                                    Title="@TextResources.APP_StringKeys_User"
+                                    Width="180px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllPlaceHeadersVm.DestinationWarehouseTitle)"
+                                    Title="@TextResources.APP_StringKeys_Warehouse"
+                                    Width="180px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllPlaceHeadersVm.Destination)"
+                                    Title="@TextResources.APP_StringKeys_Location"
+                                    Width="180px"></GridColumn>
+                        <GridColumn Width="60px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Gate_Operations"
+       @ref="GateActionsModal"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close">
+    <ModalBodyContentHtml>
+        <div class="form-search-span">
+            <EditForm Model="SearchGateAction"
+                      OnInvalidSubmit="OnInvalidSubmit"
+                      OnValidSubmit="OnGateValidSubmit">
+                <DataAnnotationsValidator />
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <label>@TextResources.APP_StringKeys_GateOpCode:</label>
+                    <TelerikTextBox Width="150px"
+                                    @bind-Value="SearchGateAction.UhfGateActionId">
+                    </TelerikTextBox>
+                    <label style="margin-right: 10px !important;">@TextResources.APP_StringKeys_Station:</label>
+                    <TelerikDropDownList Data="Stations"
+                                         TextField="Name"
+                                         ValueField="Code"
+                                         @bind-Value="SearchGateAction.UhfGateCode"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="150px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                </div>
+                <div class="div-submit" style="margin-top:-40px;margin-bottom:10px; direction:ltr;">
+                    <button type="button"
+                            class="btn btn-warning"
+                            @onclick="OnGateActionsClear">
+                        <MaterialIcon IconName="refresh"></MaterialIcon>
+                    </button>
+                    <button ButtonType="ButtonType.Submit" class="btn btn-primary"
+                            title="@TextResources.APP_StringKeys_Search">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                    </button>
+                </div>
+            </EditForm>
+            <TelerikGrid Data="GateActionsData"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="action">
+                    <td class="td-style">@action.Code</td>
+                    <td class="td-style">@action.Count</td>
+                    <td class="td-style">@action.DateTime.ToNormalPersianDateTime()</td>
+                    <td class="td-style">@action.StationName</td>
+                    <td class="td-style">@action.Status</td>
+                    <td class="td-style">
+                        <button @onclick="async ()=> await OnGateActionChoose(action)"
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                            @TextResources.APP_StringKeys_Choose
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(Get100LastActionsByIdVm.Code)"
+                                Title="@TextResources.APP_StringKeys_Code"></GridColumn>
+                    <GridColumn Field="@nameof(Get100LastActionsByIdVm.Count)"
+                                Title="@TextResources.APP_StringKeys_Field_Count"></GridColumn>
+                    <GridColumn Field="@nameof(Get100LastActionsByIdVm.DateTime)"
+                                Title="@TextResources.APP_StringKeys_DateTime"></GridColumn>
+                    <GridColumn Field="@nameof(Get100LastActionsByIdVm.StationName)"
+                                Title="@TextResources.APP_StringKeys_Station"></GridColumn>
+                    <GridColumn Field="@nameof(Get100LastActionsByIdVm.Status)"
+                                Title="@TextResources.APP_StringKeys_Field_Status"></GridColumn>
+                    <GridColumn Width="60px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_Attention"
+       @ref="ModalDelete"
+       Size="ModalSize.Normal"
+       OnYesModal="OnRemoveClick"
+       YesBtnText="@TextResources.APP_StringKeys_Delete"
+       CancelBtnText="@TextResources.APP_StringKeys_Close">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @TextResources.APP_StringKeys_Remove_CheckBeforeDelete
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<BarcodeModal @ref="BarcodeModal"
+              OnBarcodeClick="OnAddBarcodeClick">
+</BarcodeModal>
+@if (InnerPermissions.AdditionalData.ContainsKey("ToWarehouseType"))
+{
+    DestinationOperationalType type = (DestinationOperationalType)InnerPermissions.AdditionalData["ToWarehouseType"];
+    <LocationModal @ref="LocationModal"
+                   WarehouseType="type"
+                   WarehouseCode="@DirectPlaceDto.DestinationWarehouseCode"
+                   OnClickLocationWithZone="OnChooseDestinationZoneClick">
+    </LocationModal>
+}
+else
+{
+    <LocationModal @ref="LocationModal"
+                   WarehouseCode="@DirectPlaceDto.DestinationWarehouseCode"
+                   OnClickLocationWithZone="OnChooseDestinationZoneClick">
+    </LocationModal>
+}
+
+<CascadingValue Value="IsLoading">
+    <CascadingValue Value="Notification">
+        <SelectPrintFormat @ref="SelectPrintFormatRef"
+                           OnFileNameSelect="OnPrintClick">
+        </SelectPrintFormat>
+    </CascadingValue>
+</CascadingValue>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<style type="text/css">
+    .btn-range {
+        font-size: 140%;
+    }
+
+    .k-listview-header,
+    .k-listview-content {
+        padding: 20px;
+    }
+
+    .k-listview-footer {
+        border-width: 0;
+        padding: 10px 20px;
+    }
+
+    .k-listview-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 180px);
+        gap: 20px 10px;
+    }
+
+    .k-card {
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .k-card-body {
+        padding: 10px 0;
+    }
+
+    .k-card .k-card-title {
+        padding: 0;
+        font-size: 1em;
+        font-weight: bold;
+        line-height: normal;
+    }
+
+    .k-card-subtitle {
+        font-size: 0.85em;
+    }
+
+    .k-card {
+        cursor: pointer;
+    }
+
+    .k-card-choosed {
+        background-color: #789aff !important;
+    }
+</style>

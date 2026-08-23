@@ -1,0 +1,140 @@
+@typeparam TColumn where TColumn : struct
+@namespace Silo.Shared.Components.Report
+@using Silo.Application.Dto.Filter;
+@using Silo.Application.Dto;
+@using Silo.Application.Features;
+
+<CascadingValue Value="IsLoading">
+    <CascadingValue Value="Notification">
+        <div id="@Id"
+             class="report-filters-section"
+             style="padding-top: 5px;">
+
+            @if (AddedCalculatingColumns.Any() || AddedDataColumns.Any()|| AddedDataMiningElementColumns.Any() || AddedPivotColumn is not null)
+            {
+                <div class="list-group text-align-right" style="margin-top:10px; margin-bottom:10px;">
+                    <span class="list-group-item">
+                        @foreach (var column in AddedDataColumns)
+                        {
+                            <span style="margin-right:5px;">
+                                <label>
+                                    @column.Title
+                                </label>
+                                <button type="button"
+                                        class="btn-dt-1 btn-danger tr-buttom btn"
+                                        @onclick="async()=> await OnRemoveDataClick(column)">
+                                    <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                                </button>
+                            </span>
+                        }
+                        @foreach (var column in AddedCalculatingColumns)
+                        {
+                            <span style="margin-right:5px;">
+                                <label>
+                                    @column.Title
+                                </label>
+                                <button type="button"
+                                        class="btn-dt-1 btn-danger tr-buttom btn"
+                                        @onclick="async()=> await OnRemoveCalculatingClick(column)">
+                                    <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                                </button>
+                            </span>
+                        }
+                        @if (AddedPivotColumn is not null)
+                        {
+                            <span style="margin-right:5px;">
+                                <label>
+                                    @AddedPivotColumn.Title
+                                </label>
+                                <button type="button"
+                                        class="btn-dt-1 btn-danger tr-buttom btn"
+                                        @onclick="OnRemovePivotClick">
+                                    <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                                </button>
+                            </span>
+                        }
+                        @foreach (var column in AddedDataMiningElementColumns)
+                        {
+                            <span style="margin-right:5px;">
+                                <label>
+                                    @column.Title
+                                </label>
+                                <button type="button"
+                                        class="btn-dt-1 btn-danger tr-buttom btn"
+                                        @onclick="async()=> await OnRemoveDataMiningElementClick(column)">
+                                    <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                                </button>
+                            </span>
+                        }
+
+                    </span>
+                </div>
+            }
+
+            <div class="d-flex flex-row align-items-center flex-wrap">
+                <TelerikRadioGroup @bind-Value="Mode"
+                                   Data="Modes"
+                                   TextField="@nameof(TelerikDropDownItem.Name)"
+                                   ValueField="@nameof(TelerikDropDownItem.Value)"
+                                   Layout="RadioGroupLayout.Horizontal"
+                                   OnChange="OnModeChange">
+                </TelerikRadioGroup>
+                <span style="margin-right:20px">
+                    @if (Mode.Equals("0")) //cal
+                    {
+                        <TelerikDropDownList DefaultText="@TextResources.APP_StringKeys_Columns"
+                                             Data="CalculatingColumns"
+                                             TextField="@nameof(ReportColumn.Title)"
+                                             ValueField="@nameof(ReportColumn.Id)"
+                                             @bind-Value="SelectedCalculatingColumn"
+                                             Width="200px"
+                                             Filterable="true"
+                                             FilterOperator="StringFilterOperator.Contains">
+                        </TelerikDropDownList>
+                    }
+                    else if (Mode.Equals("1"))
+                    {
+                        <TelerikDropDownList DefaultText="@TextResources.APP_StringKeys_Columns"
+                                             Data="DataColumns"
+                                             TextField="@nameof(ReportColumn.Title)"
+                                             ValueField="@nameof(ReportColumn.Id)"
+                                             @bind-Value="SelectedDataColumn"
+                                             Width="200px"
+                                             Filterable="true"
+                                             FilterOperator="StringFilterOperator.Contains">
+                        </TelerikDropDownList>
+                    }
+                    else if (Mode.Equals("2"))
+                    {
+                        <TelerikDropDownList DefaultText="@TextResources.APP_StringKeys_Columns"
+                                             Data="PivotColumns"
+                                             TextField="@nameof(ReportColumn.Title)"
+                                             ValueField="@nameof(ReportColumn.Id)"
+                                             @bind-Value="SelectedPivotColumn"
+                                             Width="200px"
+                                             Filterable="true"
+                                             FilterOperator="StringFilterOperator.Contains">
+                        </TelerikDropDownList>
+                    }
+                    else
+                    {
+                        <TelerikDropDownList DefaultText="@TextResources.APP_StringKeys_Data_Mining_Elements"
+                                             Data="DataMiningElementColumns"
+                                             TextField="@nameof(ReportColumn.Title)"
+                                             ValueField="@nameof(ReportColumn.Id)"
+                                             @bind-Value="SelectedDataMiningElementColumn"
+                                             Width="200px"
+                                             Filterable="true"
+                                             FilterOperator="StringFilterOperator.Contains">
+                        </TelerikDropDownList>
+                    }
+                    <button type="button"
+                            class="btn btn-success"
+                            @onclick="OnAddColumnClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Add"></MaterialIcon>
+                    </button>
+                </span>
+            </div>
+        </div>
+    </CascadingValue>
+</CascadingValue>

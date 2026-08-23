@@ -1,0 +1,52 @@
+﻿@namespace Silo.Components
+
+<nav class="k-breadcrumb k-breadcrumb-md telerik-blazor" dir="rtl" aria-label="Breadcrumb" data-id="408c5eb8-aef1-4504-a322-8b2f1006c571">
+    <ol class="k-breadcrumb-container ">
+        <li class="k-breadcrumb-item k-breadcrumb-root-item" data-index="0">
+            <a href="/" class="k-breadcrumb-root-link k-breadcrumb-icontext-link" role="link" tabindex="0">
+                <span class="telerik-blazor k-svg-icon k-svg-i-home" aria-hidden="true">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Home"></MaterialIcon>
+                </span>
+                <span class="k-breadcrumb-item-text">
+                    @TextResources.APP_StringKeys_Home_Index
+                </span>
+            </a>
+        </li>
+        @if (Items.Any())
+        {
+            foreach (var menuLink in Items)
+            {
+                foreach (var category in menuLink.Children)
+                {
+                    foreach (var link in category.Children)
+                    {
+                        <li class="k-breadcrumb-item " data-index="1">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Arrow_back_ios"></MaterialIcon>
+                            <a class="k-breadcrumb-link" role="link" tabindex="0" style="" 
+                                @onclick="async ()=> await OnBreadItemClick(menuLink.Id)">
+                                <span class="k-breadcrumb-item-text">@menuLink.Title</span>
+                            </a>
+                        </li>
+
+                        <li class="k-breadcrumb-item " data-index="2" style="">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Arrow_back_ios"></MaterialIcon>
+                            <a class="k-breadcrumb-link" role="link" tabindex="0"
+                               @onclick="async ()=> await OnBreadItemClick(category.Id)">
+                                <span class="k-breadcrumb-item-text"> @category.Title</span>
+                            </a>
+                        </li>
+
+                        <li class="k-breadcrumb-item k-breadcrumb-last-item" data-index="3">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Arrow_back_ios"></MaterialIcon>
+                            <a class="k-breadcrumb-link k-disabled" aria-disabled="true" aria-current="page" role="link" tabindex="-1">
+                                <span class="k-breadcrumb-item-text">
+                                    @link.Title
+                                </span>
+                            </a> 
+                        </li>
+                    }
+                }
+            }
+        }
+    </ol>
+</nav>

@@ -1,0 +1,501 @@
+@page "/report/truckcross"
+@inherits SiloBasePage
+@namespace Silo.Modules.TruckCross.Pages
+@using Silo.Application.Dto
+@using Silo.Application.Features
+@using Silo.Identity.Client;
+@using Silo.Modules.TruckCross.Tools;
+@using Silo.Shared
+
+<PageTitle>@PageTitle</PageTitle>
+<div class="container-fluid px-3 py-3 tc-report">
+    @if (IsFiltersShown)
+    {
+        <div class="card border-0 shadow-sm mb-3 tc-filter-bar">
+            <div class="card-body">
+                <EditForm Model="Search"
+                          class="form-search-span"
+                          OnInvalidSubmit="OnInvalidSubmit"
+                          OnValidSubmit="OnSearchValidSubmit">
+                    <DataAnnotationsValidator />
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-2">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_NationalCode</span>
+                            <TelerikMaskedTextBox Class="form-control text-dir-left"
+                                                  Mask="000 000000 0"
+                                                  @bind-Value="Search.NationalCode"
+                                                  Width="100%" />
+                        </div>
+                        <div class="col-md-2">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_DriverName</span>
+                            <TelerikTextBox Class="form-control" @bind-Value="Search.DriverName" Width="100%" />
+                        </div>
+                        <div class="col-md-2">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_FromDate</span>
+                            <DatePicker InputClass="form-control pointer" @bind-Value="Search.FromDate" />
+                        </div>
+                        <div class="col-md-2">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_ToDate</span>
+                            <DatePicker InputClass="form-control pointer" @bind-Value="Search.ToDate" />
+                        </div>
+                        <div class="col-md-2">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_TruckCross_Present_Cause</span>
+                            <TelerikDropDownList Data="Causes"
+                                                 TextField="@nameof(GetAllTruckCrossPresentCauseVm.Title)"
+                                                 ValueField="@nameof(GetAllTruckCrossPresentCauseVm.Id)"
+                                                 @bind-Value="Search.PresentCause"
+                                                 DefaultText="@TextResources.APP_StringKeys_Unchoosed"
+                                                 TabIndex="11"
+                                                 Class="drop-all w-100" />
+                        </div>
+                        <div class="col-md-2">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_Status</span>
+                            <TelerikDropDownList Data="TruckCrossStatusList"
+                                                 TextField="@nameof(TelerikDropDownItemGeneric<TruckCrossStatuses>.Name)"
+                                                 ValueField="@nameof(TelerikDropDownItemGeneric<TruckCrossStatuses>.Value)"
+                                                 @bind-Value="Search.Status"
+                                                 DefaultText="@TextResources.APP_StringKeys_Unchoosed"
+                                                 TabIndex="11"
+                                                 Class="drop-all w-100" />
+                        </div>
+                        <div class="col-md-3">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_Plaque</span>
+                            <div class="d-flex align-items-center gap-1 flex-row-reverse">
+                                <TelerikNumericTextBox Class="form-control plaque-part"
+                                                       Width="55px" Min="10" Max="99"
+                                                       TabIndex="9" Arrows="false"
+                                                       @bind-Value="Search.PlaqueCityPart" />
+                                <span class="fw-bold px-1">ایران</span>
+                                <TelerikNumericTextBox Class="form-control plaque-part"
+                                                       Width="60px" Min="100" Max="999"
+                                                       TabIndex="8" Arrows="false"
+                                                       @bind-Value="Search.PlaqueSecondPart" />
+                                <TelerikDropDownList Data="@TruckCrossStringTools.GetIranianPlateAlphabets()"
+                                                     TextField="Name" ValueField="Value"
+                                                     @bind-Value="Search.PlaqueCharacter"
+                                                     Width="75px" DefaultText=""
+                                                     TabIndex="7" Class="drop-all" />
+                                <TelerikNumericTextBox Class="form-control plaque-part"
+                                                       Width="55px" Min="10" Max="99"
+                                                       TabIndex="6" Arrows="false"
+                                                       @bind-Value="Search.PlaqueFirstPart" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_TruckCross_Shipment</span>
+                            <TelerikDropDownList Data="Shipments"
+                                                 TextField="@nameof(GetAllTruckCrossShipmentVm.Title)"
+                                                 ValueField="@nameof(GetAllTruckCrossShipmentVm.Id)"
+                                                 @bind-Value="Search.PresentShipmentId"
+                                                 DefaultText=""
+                                                 TabIndex="16"
+                                                 Filterable="true"
+                                                 FilterOperator="StringFilterOperator.Contains"
+                                                 Class="drop-all w-100">
+                                <DropDownListSettings>
+                                    <DropDownListPopupSettings Class="text-align-right" />
+                                </DropDownListSettings>
+                            </TelerikDropDownList>
+                        </div>
+                        <div class="col-md-2">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_TruckCross_Operation_Type</span>
+                            <TelerikDropDownList Data="OperationTypes"
+                                                 TextField="@nameof(GetAllTruckCrossOperationTypesVm.Title)"
+                                                 ValueField="@nameof(GetAllTruckCrossOperationTypesVm.Id)"
+                                                 @bind-Value="Search.PresentOperationTypeId"
+                                                 DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                                 TabIndex="15"
+                                                 Filterable="true"
+                                                 FilterOperator="StringFilterOperator.Contains"
+                                                 Class="drop-all w-100">
+                                <DropDownListSettings>
+                                    <DropDownListPopupSettings Class="text-align-right" />
+                                </DropDownListSettings>
+                            </TelerikDropDownList>
+                        </div>
+                        <div class="col-md-2">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_TruckCross_Operation_Destination</span>
+                            <TelerikDropDownList Data="OperationDestinations"
+                                                 TextField="@nameof(GetAllTruckCrossOperationDestinationsVm.Title)"
+                                                 ValueField="@nameof(GetAllTruckCrossOperationDestinationsVm.Id)"
+                                                 @bind-Value="Search.PresentOperationDestinationId"
+                                                 DefaultText=""
+                                                 TabIndex="19"
+                                                 Filterable="true"
+                                                 FilterOperator="StringFilterOperator.Contains"
+                                                 Class="drop-all w-100">
+                                <DropDownListSettings>
+                                    <DropDownListPopupSettings Class="text-align-right" />
+                                </DropDownListSettings>
+                            </TelerikDropDownList>
+                        </div>
+                        <div class="col-md-2">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_TruckCross_Customer</span>
+                            <TelerikDropDownList Data="Customers"
+                                                 TextField="@nameof(GetAllTruckCrossCustomerVm.Title)"
+                                                 ValueField="@nameof(GetAllTruckCrossCustomerVm.Id)"
+                                                 @bind-Value="Search.PresentCustomerId"
+                                                 DefaultText=""
+                                                 TabIndex="18"
+                                                 Filterable="true"
+                                                 FilterOperator="StringFilterOperator.Contains"
+                                                 Class="drop-all w-100">
+                                <DropDownListSettings>
+                                    <DropDownListPopupSettings Class="text-align-right" />
+                                </DropDownListSettings>
+                            </TelerikDropDownList>
+                        </div>
+                        <div class="col-md-2">
+                            <span class="tc-filter-label">@TextResources.APP_StringKeys_ProductTitle</span>
+                            <TelerikTextBox Class="form-control" @bind-Value="Search.ProductTitle" Width="100%" />
+                        </div>
+                        <div class="col-auto d-flex gap-2">
+                            <button type="button" class="btn btn-warning" @onclick="OnSearchClearClick">
+                                <MaterialIcon IconName="refresh" />
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <MaterialIcon IconName="search" />
+                                <span class="ms-1">@TextResources.APP_StringKeys_Search</span>
+                            </button>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+
+    @if (Crosses is not null)
+    {
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-body p-0">
+                <TelerikGrid Data="Crosses"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true"
+                         Resizable="true"
+                         ColumnVirtualization="true"
+                         Width="100%">
+                <GridToolBarTemplate>
+                    <button type="button"
+                            class="btn btn-success"
+                            @onclick="OnPrintAllReportsClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Print" />
+                    </button>
+                </GridToolBarTemplate>
+                <RowTemplate Context="cross">
+                    <td class="td-style present-category">
+                        @cross.Id
+                    </td>
+                    <td class="td-style present-category">
+                        @(PersianCalendarTools.GregorianToPersian(cross.PresentDateTime))  @cross.PresentDateTime?.ToShortTimeString()
+                    </td>
+                    <td class="td-style present-category">@cross.DriverName</td>
+                    <td class="td-style present-category">@cross.NationalCode</td>
+                    <td class="td-style present-category">@cross.DriverPhone</td>
+                    <td class="td-style present-category">@(TruckCrossStatusList.FirstOrDefault(p => p.Value == cross.TruckCrossStatus)?.Name)</td>
+                    <td class="td-style present-category">
+                        <button type="button" class="btn btn-success tr-buttom"
+                                @onclick="@(async (e) => await OnOpenDriverGallery(e, @cross.NationalCode))">
+                            <MaterialIcon IconName="photo_library"></MaterialIcon>
+                        </button>
+                    </td>
+                    <td class="td-style present-category">
+                        @cross.Plaque.Substring(6, 2)
+                        ایران
+                        @cross.Plaque.Substring(3, 3)
+                        @cross.Plaque.Substring(2, 1)
+                        @cross.Plaque.Substring(0, 2)
+                    </td>
+                    <td class="td-style present-category">
+                        @cross.TruckTypeTitle
+                    </td>
+                    <td class="td-style present-category">
+                        
+                    </td>
+                    <td class="td-style present-category">
+                        @cross.PresentRevokeUsername
+                    </td>
+                    <td class="td-style present-category">
+                        @(PersianCalendarTools.GregorianToPersian(cross.PresentRevokeDateTime))  @cross.PresentRevokeDateTime?.ToShortTimeString()
+                    </td>
+                    <td class="td-style present-category">
+                        @(Causes.FirstOrDefault(p => p.Id == cross.PresentCause)?.Title)
+                    </td>
+                    <td class="td-style present-category">@cross.PresentDesc</td>
+                    <td class="td-style present-category">@cross.PresentTurn</td>
+                    <td class="td-style present-category">@cross.PresentOperationTypeTitle</td>
+                    <td class="td-style present-category">@cross.PresentShipmentTitle</td>
+                    <td class="td-style present-category">@cross.PresentOperationDestinationTitle</td>
+                    <td class="td-style present-category">@cross.PresentCustomerTitle</td>
+                    <td class="td-style present-category">@cross.PresentUsername</td>
+                    <td class="td-style present-category">
+                        <button type="button" class="btn btn-success tr-buttom"
+                                @onclick="@(async (e) => await OnOpenPresentGallery(e, @cross.NationalCode, @cross.Id))">
+                            <MaterialIcon IconName="photo_library"></MaterialIcon>
+                        </button>
+                    </td>
+                    @if (DynamicFields is not null && DynamicFieldsSections is not null)
+                    {
+                        @foreach (var section in DynamicFieldsSections.Where(s => s.DynamicFieldType == (int)DynamicFieldType.TruckCrossPresent))
+                        {
+                            @foreach (var field in DynamicFields.Where(f => f.SectionId == section.Id))
+                            {
+                                <td class="td-style present-category">
+                                    @if (cross.DynamicDataDict?.ContainsKey(field.Id) == true)
+                                    {
+                                        @cross.DynamicDataDict[field.Id]
+                                    }
+                                </td>
+                            }
+                        }
+                    }
+                    <td class="td-style enter-category">
+                        @(PersianCalendarTools.GregorianToPersian(cross.EnterDateTime))  @cross.EnterDateTime?.ToShortTimeString()
+                    </td>
+                    <td class="td-style enter-category">@cross.EnterUsername</td>
+                    <td class="td-style enter-category">@cross.EnterWeightTonage</td>
+                    <td class="td-style enter-category">
+                        <button type="button" class="btn btn-success tr-buttom"
+                                @onclick="@(async (e) => await OnOpenEnterGallery(e, @cross.NationalCode, @cross.Id))">
+                            <MaterialIcon IconName="photo_library"></MaterialIcon>
+                        </button>
+                    </td>
+                    @if (DynamicFields is not null && DynamicFieldsSections is not null)
+                    {
+                        @foreach (var section in DynamicFieldsSections.Where(s => s.DynamicFieldType == (int)DynamicFieldType.TruckCrossEnter))
+                        {
+                            @foreach (var field in DynamicFields.Where(f => f.SectionId == section.Id))
+                            {
+                                <td class="td-style enter-category">
+                                    @if (cross.DynamicDataDict?.ContainsKey(field.Id) == true)
+                                    {
+                                        @cross.DynamicDataDict[field.Id]
+                                    }
+                                </td>
+                            }
+                        }
+                    }
+                    <td class="td-style exit-category">
+                        @(PersianCalendarTools.GregorianToPersian(cross.ExitDateTime))  @cross.ExitDateTime?.ToShortTimeString()
+                    </td>
+                    <td class="td-style exit-category">@cross.ExitUsername</td>
+                    <td class="td-style exit-category">@cross.ExitWeightTonage</td>
+                    <td class="td-style exit-category">@cross.ExitPureWeightCargo</td>
+                    <td class="td-style exit-category">@cross.GateOperationCode</td>
+                    <td class="td-style exit-category">@cross.MovementActionId</td>
+                    <td class="td-style exit-category">
+                        <button type="button" class="btn btn-success tr-buttom"
+                                @onclick="@(async (e) => await OnOpenExitGallery(e, @cross.NationalCode, @cross.Id))">
+                            <MaterialIcon IconName="photo_library"></MaterialIcon>
+                        </button>
+                    </td>
+                    @if (DynamicFields is not null && DynamicFieldsSections is not null)
+                    {
+                        @foreach (var section in DynamicFieldsSections.Where(s => s.DynamicFieldType == (int)DynamicFieldType.TruckCrossExit))
+                        {
+                            @foreach (var field in DynamicFields.Where(f => f.SectionId == section.Id))
+                            {
+                                <td class="td-style exit-category">
+                                    @if (cross.DynamicDataDict?.ContainsKey(field.Id) == true)
+                                    {
+                                        @cross.DynamicDataDict[field.Id]
+                                    }
+                                </td>
+                            }
+                        }
+                    }
+                    <td class="td-style exit-category">
+                        <button type="button" class="btn btn-success tr-buttom"
+                                @onclick="@(async (e) => await OnGetLoadedProductsClick(e, @cross.Id))">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Local_shipping" />
+                        </button>
+                        <button type="button" class="btn btn-success tr-buttom"
+                                @onclick="@(async (e) => await OnCrossPrintClick(cross))">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Print" />
+                        </button>
+                        <a class="btn btn-success tr-buttom"
+                           href="/gate/truckcross/@cross.Id"
+                           target="_blank">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Edit" />
+                        </a>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="">
+                        <HeaderTemplate>
+                            @TextResources.APP_StringKeys_DataList
+                            @TextResources.APP_StringKeys_TruckCross_Steps_Present
+                        </HeaderTemplate>
+                        <Columns>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.Id)"
+                                        Width="50px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.PresentDateTime)"
+                                        Width="150px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.DriverName)"
+                                        Width="150px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.NationalCode)"
+                                        Width="80px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.DriverPhone)"
+                                        Width="80px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.TruckCrossStatus)"
+                                        Width="100px"></GridColumn>
+                            <GridColumn Title="@TextResources.APP_StringKeys_TruckCross_Present_DirverDoc"
+                                        Width="80px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.Plaque)"
+                                        Width="120px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.TypeId)"
+                                        Width="100px"></GridColumn>
+                            <GridColumn Title="@TextResources.APP_StringKeys_TruckCross_Present_CarDoc"
+                                        Width="100px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.PresentRevokeUsername)"
+                                        Width="100px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.PresentRevokeDateTime)"
+                                        Width="120px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.PresentCause)"
+                                        Width="200px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.PresentDesc)"
+                                        Width="120px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.PresentTurn)"
+                                        Width="100px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.PresentOperationTypeTitle)"
+                                        Width="110px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.PresentShipmentTitle)"
+                                        Width="120px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.PresentOperationDestinationTitle)"
+                                        Width="100px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.PresentCustomerTitle)"
+                                        Width="110px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.PresentUsername)"
+                                        Width="110px"></GridColumn>
+                            <GridColumn Field="@TextResources.APP_StringKeys_TruckCross_Present_Doc"
+                                        Width="90px"></GridColumn>
+                            @if (DynamicFields is not null && DynamicFieldsSections is not null)
+                            {
+                                @foreach (var section in DynamicFieldsSections.Where(s => s.DynamicFieldType == (int)DynamicFieldType.TruckCrossPresent))
+                                {
+                                    @foreach (var field in DynamicFields.Where(f => f.SectionId == section.Id))
+                                    {
+                                        <GridColumn Title="@field.Title"
+                                                    Width="120px"></GridColumn>
+                                    }
+                                }
+                            }
+                        </Columns>
+                    </GridColumn>
+                    <GridColumn Field="">
+                        <HeaderTemplate>
+                            @TextResources.APP_StringKeys_DataList
+                            @TextResources.APP_StringKeys_TruckCross_Steps_Enter
+                        </HeaderTemplate>
+                        <Columns>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.EnterDateTime)"
+                                        Width="120px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.EnterUsername)"
+                                        Width="100px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.EnterWeightTonage)"
+                                        Width="100px"></GridColumn>
+                            <GridColumn Field="@TextResources.APP_StringKeys_TruckCross_Enter_Doc"
+                                        Width="90px"></GridColumn>
+                            @if (DynamicFields is not null && DynamicFieldsSections is not null)
+                            {
+                                @foreach (var section in DynamicFieldsSections.Where(s => s.DynamicFieldType == (int)DynamicFieldType.TruckCrossEnter))
+                                {
+                                    @foreach (var field in DynamicFields.Where(f => f.SectionId == section.Id))
+                                    {
+                                        <GridColumn Title="@field.Title"
+                                                    Width="120px"></GridColumn>
+                                    }
+                                }
+                            }
+                        </Columns>
+                    </GridColumn>
+                    <GridColumn Field="">
+                        <HeaderTemplate>
+                            @TextResources.APP_StringKeys_DataList
+                            @TextResources.APP_StringKeys_TruckCross_Steps_Exit
+                        </HeaderTemplate>
+                        <Columns>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.ExitDateTime)"
+                                        Width="150px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.ExitUsername)"
+                                        Width="100px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.ExitWeightTonage)"
+                                        Width="100px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.ExitPureWeightCargo)"
+                                        Width="120px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.GateOperationCode)"
+                                        Width="100px"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossDataDto.MovementActionId)"
+                                        Width="110px"></GridColumn>
+                            <GridColumn Field="@TextResources.APP_StringKeys_TruckCross_Exit_Doc"
+                                        Width="90px"></GridColumn>
+                            @if (DynamicFields is not null && DynamicFieldsSections is not null)
+                            {
+                                @foreach (var section in DynamicFieldsSections.Where(s => s.DynamicFieldType == (int)DynamicFieldType.TruckCrossExit))
+                                {
+                                    @foreach (var field in DynamicFields.Where(f => f.SectionId == section.Id))
+                                    {
+                                        <GridColumn Title="@field.Title"
+                                                    Width="120px"></GridColumn>
+                                    }
+                                }
+                            }
+                            <GridColumn Field=""
+                                        Width="200px"></GridColumn>
+                        </Columns>
+                    </GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+            </div>
+        </div>
+    }
+</div>
+
+<Gallery @ref="Gallery" Readonly="true"></Gallery>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalLoadedProducts"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="LoadedProducts"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style">@product.DocumentCode</td>
+                    <td class="td-style">@product.ProductCode</td>
+                    <td class="td-style">@product.ProductName</td>
+                    <td class="td-style">@product.ProductSerial</td>
+                    <td class="td-style">@product.ProductCount</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetLoadedCargoProductsDto.DocumentCode)"
+                                Title="@TextResources.APP_StringKeys_DocCode"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetLoadedCargoProductsDto.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetLoadedCargoProductsDto.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName"
+                                Width="150px"></GridColumn>
+                    <GridColumn Field="@nameof(GetLoadedCargoProductsDto.ProductSerial)"
+                                Title="@TextResources.APP_StringKeys_ProductSerial"
+                                Width="60px"></GridColumn>
+                    <GridColumn Field="@nameof(GetLoadedCargoProductsDto.ProductCount)"
+                                Title="@TextResources.APP_StringKeys_Value"
+                                Width="60px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

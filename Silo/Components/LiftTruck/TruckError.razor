@@ -1,0 +1,16 @@
+﻿@if (ErrorMessage.HasValue())
+{
+    <div class="app-center div-error text-align-center">
+        <h3>
+            @ErrorMessage
+        </h3>
+    </div>
+
+    <div class="div-footer text-align-center">
+        <TruckButton Class="btn-cancel"
+                 ButtonType="ButtonType.Button" OnClick="OnCloseButtonClicked">
+            <MaterialIcon IconName="close"
+                      Style="font-size:50px; color:white;"></MaterialIcon>
+        </TruckButton>
+    </div>
+}      

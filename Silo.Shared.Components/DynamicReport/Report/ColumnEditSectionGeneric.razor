@@ -1,0 +1,81 @@
+﻿@typeparam TColumn where TColumn : struct
+@namespace Silo.Shared.Components.Report
+@using Silo.Application.Dto
+@using Silo.Application.Dto.Filter
+@using Silo.Shared.Components
+@using Silo.Shared.Components.Modals
+
+@if (AddedCalculatingColumns.Any() || AddedDataMiningElementColumns.Any() || AddedDataColumns.Any() || AddedPivotColumn is not null)
+{
+    <div class="list-group text-align-right" style="margin-top:10px; margin-bottom:10px;">
+        <span class="list-group-item">
+            @foreach (var column in AddedDataColumns)
+            {
+                <span class="dynamic-item-box"
+                      style="margin-right:5px;"
+                      @key="@($"data_{column.Id}")"
+                      @oncontextmenu="async (args) => await OnDataColumnContextMenu(column, args)"
+                      @oncontextmenu:preventDefault="true">
+                    <label>
+                        @column.Title
+                    </label>
+                    @if (column.SortType != ReportColumnSortType.None)
+                    {
+                        <span style="margin-left:5px;" @key="@($"{column.Id}_{column.SortType}")">
+                            @if (column.SortType == ReportColumnSortType.Asc)
+                            {
+                                <MaterialIcon IconName="@MaterialIconsHelper.ArrowDropUp"></MaterialIcon>
+                            }
+                            else if (column.SortType == ReportColumnSortType.Desc)
+                            {
+                                <MaterialIcon IconName="@MaterialIconsHelper.ArrowDropDown"></MaterialIcon>
+                            }
+                        </span>
+                    }
+                </span>
+            }
+            @foreach (var column in AddedCalculatingColumns)
+            {
+                <span class="dynamic-item-box"
+                      @key="@($"cal_{column.Id}")"
+                      @oncontextmenu="async (args) => await OnCalculatingColumnContextMenu(column, args)"
+                      @oncontextmenu:preventDefault="true">
+                    <label>
+                        @column.Title
+                    </label>
+                </span>
+            }
+            @if (AddedPivotColumn is not null)
+            {
+                <span class="dynamic-item-box"
+                      @key="@($"pivot_{AddedPivotColumn.Id}")"
+                      @oncontextmenu="async (args) => await OnPivotColumnContextMenu(args)"
+                      @oncontextmenu:preventDefault="true">
+                    <label>
+                        @AddedPivotColumn.Title
+                    </label>
+                </span>
+            }
+            @foreach (var column in AddedDataMiningElementColumns)
+            {
+                <span class="dynamic-item-box"
+                      @key="@($"dm_{column.Id}")"
+                      @oncontextmenu="async (args) => await OnDataMiningColumnContextMenu(column, args)"
+                      @oncontextmenu:preventDefault="true">
+                    <label>
+                        @column.Title
+                    </label>
+                </span>
+            }
+        </span>
+    </div>
+}
+
+<TelerikContextMenu @ref="ContextMenuRef"
+                    Data="@MenuItems"
+                    TextField="@nameof(TelerikContextMenuItem.Text)"
+                    IconField="@nameof(TelerikContextMenuItem.Icon)"
+                    DisabledField="@nameof(TelerikContextMenuItem.Disabled)"
+                    SeparatorField="@nameof(TelerikContextMenuItem.Separator)"
+                    OnClick="@((TelerikContextMenuItem item) => OnContextMenuClick(item))">
+</TelerikContextMenu>

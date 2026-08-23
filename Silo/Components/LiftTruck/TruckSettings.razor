@@ -1,0 +1,25 @@
+﻿@if (IsComponentShown)
+{
+    <div class="app-center row col-md-12 d-flex flex-row align-items-center flex-wrap">
+        <EditForm @ref="EditForm" 
+                  Model="TruckConfig"
+                  OnInvalidSubmit="OnInvalidSubmit" 
+                  OnValidSubmit="OnValidSubmit">
+
+            <DataAnnotationsValidator />
+            <label>
+                @TextResources.APP_StringKeys_Truck_Number
+            </label>
+            <InputText @bind-Value="TruckConfig.TruckNumber"
+                   class="truck-number"
+                   placeholder="@TextResources.APP_StringKeys_Truck_Number" />
+
+            <div class="div-submit text-align-center">
+                <TruckButton ButtonType="ButtonType.Submit">
+                    <MaterialIcon IconName="done"
+                              Style="font-size:50px; color:white;"></MaterialIcon>
+                </TruckButton>
+            </div>
+        </EditForm>
+    </div>
+}

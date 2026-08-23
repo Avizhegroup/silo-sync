@@ -1,0 +1,258 @@
+@page "/dynamicreport/inspect"
+@inherits SiloBasePage
+@namespace Silo.Modules.Inspect.Pages
+@using System.Text.Json
+@using Silo.Application.Dto.Filter
+@using Silo.Application.Dto
+@using Silo.Application.Features
+@using Silo.Identity.Client
+@using Silo.Shared.Components.Report
+@using Telerik.FontIcons
+
+<PageTitle>@PageTitle</PageTitle>
+
+@if (IsFiltersShown)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:2px;">
+            <div class=" d-flex flex-row align-items-center flex-wrap  search-button-div" style="margin-top:-145px !important;width:480px;">
+                <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                        style="margin-left: 2px;" @onclick="()=> ApplyFilters.Clear()">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                </button>
+                <button class="btn btn-success" type="button" title="@TextResources.APP_StringKeys_Filters"
+                        style="margin-left: 2px;" @onclick="OnFilterModalClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Filter_alt"></MaterialIcon>
+                </button>
+            </div>
+            @if (ApplyFilters.Any())
+            {
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:10px!important;">
+                    <div class=" d-flex flex-row align-items-center flex-wrap col-md-12" style="margin-bottom:10px!important;">
+                        @foreach (var filter in ApplyFilters)
+                        {
+                            <label style="margin-right:20px;">@filter.Label :</label>
+                            @if (filter.Component == FilterComponent.Drop)
+                            {
+                                <TelerikTextBox Placeholder="@filter.Items.FirstOrDefault(p=>p.Value.Equals(filter.Value))?.Label"
+                                                Class="form-control input-search-span-lg" Width="150px!important" Enabled="false">
+                                </TelerikTextBox>
+                            }
+                            else if (filter.Component == FilterComponent.Modal)
+                            {
+
+                                <TelerikTextBox Placeholder="@filter.Items.Where(p => p.IsChoosen).Select(p => p.Label).Aggregate((p, q) => p + ", " + q)"
+                                                Class="form-control input-search-span-lg" Width="150px!important" Enabled="false">
+                                </TelerikTextBox>
+                            }
+                            else
+                            {
+                                <TelerikTextBox Placeholder="@filter.Value" Class="form-control input-search-span-lg" Width="150px!important" Enabled="false">
+                                </TelerikTextBox>
+                            }
+                            <button type="button"
+                                    class="btn btn-danger btn-item-remove"
+                                    @onclick="async()=> await OnFilterRemoveClick(filter)">
+                                <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+            <div>
+                <h5 class="form-title card-title" style="text-align: right !important;">
+                    @TextResources.APP_StringKeys_Columns
+                </h5>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap  search-button-div" style="margin-top:-145px !important;width:480px;">
+                <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                        style="margin-left: 2px;" @onclick="OnClearColumnsClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                </button>
+                <button class="btn btn-success" type="button" title="@TextResources.APP_StringKeys_Columns"
+                        style="margin-left: 2px;" @onclick="OnColumnModalClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.List"></MaterialIcon>
+                </button>
+                <button class="btn btn-primary" type="button"
+                        style="margin-left: 2px;" @onclick="OnSearchClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                </button>
+            </div>
+            @if (AddedDataColumns.Any() || AddedCalculatingColumns.Any() || AddedPivotColumn is not null)
+            {
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:10px!important;">
+                    <div class=" d-flex flex-row align-items-center flex-wrap col-md-12" style="margin-bottom:10px!important;">
+                        @foreach (var column in AddedDataColumns)
+                        {
+                            <span style="margin-right:5px;">
+                                <label>
+                                    @column.Title
+                                </label>
+                                <button type="button"
+                                        class="btn btn-danger btn-item-remove"
+                                        @onclick="async()=> await OnDataColumnRemove(column)">
+                                    <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                                </button>
+                            </span>
+                        }
+                        @foreach (var column in AddedCalculatingColumns)
+                        {
+                            <span style="margin-right:5px;">
+                                <label>
+                                    @column.Title
+                                </label>
+                                <button type="button"
+                                        class="btn btn-danger btn-item-remove"
+                                        @onclick="async()=> await OnCalculatingColumnRemove(column)">
+                                    <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                                </button>
+                            </span>
+                        }
+                        @if (AddedPivotColumn is not null)
+                        {
+                            <span style="margin-right:5px;">
+                                <label>
+                                    @AddedPivotColumn.Title
+                                </label>
+                                <button type="button"
+                                        class="btn btn-danger btn-item-remove"
+                                        @onclick="OnPivotColumnRemove">
+                                    <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                                </button>
+                            </span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@if (Results is not null && !IsLoading)
+{
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;margin-right:-8px;padding:5px;">
+        <TelerikGrid Data="Results"
+                 PageSize="10"
+                 Navigable="true"
+                 Pageable="true"
+                 Sortable="true"
+                 ScrollMode="GridScrollMode.Scrollable"
+                 Resizable="true"
+                 Width="100%">
+            <RowTemplate Context="product">
+                @{
+                    var data = (JsonElement)product;
+                    decimal rowCount = 0;
+                }
+                @foreach (var item in GridColumns)
+                {
+                    @if (data.TryGetProperty(item, out JsonElement element))
+                    {
+                        <td class="td-style">@element.ToString().Replace("{}","0")</td>
+                        @if (ColumnAgg.ContainsKey(item))
+                        {
+                            if (decimal.TryParse(element.ToString(), out var result))
+                            {
+                                rowCount += decimal.Parse(element.ToString().Replace("{}", "0"));
+                            }
+                        }
+                    }
+                }
+                @if (AddedPivotColumn is not null)
+                {
+                    <td class="td-style">@rowCount</td>
+                }
+            </RowTemplate>
+            <GridColumns>
+                @foreach (var item in GridColumns)
+                {
+                    <GridColumn Title="@(item.Split('-').Skip(1).FirstOrDefault()??item)"
+                        Width="120px">
+                        <FooterTemplate>
+                            @if (ColumnAgg.ContainsKey(item))
+                            {
+                                <span>@ColumnAgg[item]</span>
+                            }
+                        </FooterTemplate>
+                    </GridColumn>
+                }
+                @if (AddedPivotColumn is not null)
+                {
+                    <GridColumn Title="@TextResources.APP_StringKeys_SumValue">
+                        <FooterTemplate>
+                            @{
+                                TotalSum = ColumnAgg.Sum(p => p.Value);
+                            }
+
+                            @TotalSum
+                        </FooterTemplate>
+                    </GridColumn>
+                }
+            </GridColumns>
+            <GridToolBarTemplate>
+                <TelerikButton Icon="@FontIcon.FileExcel" OnClick="@OnExcelExportClick" Class="green-excel">
+                    @TextResources.APP_StringKeys_ExportExcel
+                </TelerikButton>
+            </GridToolBarTemplate>
+        </TelerikGrid>
+    </div>
+}
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Filters"
+       @ref="ModalFilters"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-right">
+            @if (ModalFilters.ModalClass.Equals("Show"))
+            {
+                <FilterReportSectionInspect Filters="Filters"
+                                        OnAddClick="OnAddNewFilter"
+                                        OnRemoveClick="OnFilterRemoveClick">
+                </FilterReportSectionInspect>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Columns"
+       @ref="ModalColumns"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close">
+    <ModalBodyContentHtml>
+        <div class="text-align-right">
+            @if (ModalColumns.ModalClass.Equals("Show"))
+            {
+                <ColumnSection TColumn="InspectReportDynamicColumnsType"
+                                     CalculatingColumns="CalculatingColumns"
+                                     DataColumns="DataColumns"
+                                     PivotColumns="PivotColumns"
+                                     OnCalculatingColumnAdd="OnCalculatingColumnAdd"
+                                     OnDataColumnAdd="OnDataColumnAdd"
+                                     OnCalculatingColumnRemove="OnCalculatingColumnRemove"
+                                     OnDataColumnRemove="OnDataColumnRemove"
+                                     OnPivotColumnAdd="OnPivotColumnAdd"
+                                     OnPivotColumnRemove="OnPivotColumnRemove">
+                </ColumnSection>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<style type="text/css">
+    .td-dt {
+        font-size: 80%;
+    }
+</style>

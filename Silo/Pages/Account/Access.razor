@@ -1,0 +1,138 @@
+﻿@page "/account/access"
+@page "/account/access/{AccountId}"
+@inherits SiloBasePage
+@namespace Silo.Pages.Account
+
+<PageTitle>@PageTitle</PageTitle>
+@if (IsEditable)
+{
+    <div class="card mb-2">
+        <div class="card-body py-2 d-flex align-items-center gap-2 flex-wrap">
+            <button type="button" 
+                    class="btn btn-warning btn-sm" 
+                    @onclick="OnClearClick">
+                <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+            </button>
+            <button type="button"
+                    class="btn btn-sm btn-primary"
+                    @onclick="OnWebSaveClick">
+                <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+            </button>
+        </div>
+    </div>
+    <div class="card card-stats text-align-center col-md-12" style="margin-top:5px;">
+        <div class="row">
+            
+            <div class="col-md-12">
+                <TelerikTabStrip>
+                    @if (IsBulkMode)
+                    {
+                        <TabStripTab Title="@TextResources.APP_StringKeys_User">
+                            <TelerikGrid Data="AllUsers"
+                                         Pageable="true"
+                                         PageSize="10"
+                                         FilterMode="@GridFilterMode.FilterRow">
+                                <GridColumns>
+                                    <GridColumn Width="50px" Title="" Filterable="false">
+                                        <Template>
+                                            @{
+                                                var userItem = (ChoosableKeyValue)context;
+                                            }
+                                            @if (userItem.IsEditable)
+                                            {
+                                                <TelerikCheckBox @bind-Value="@userItem.IsChoosed" />
+                                            }
+                                        </Template>
+                                    </GridColumn>
+                                    <GridColumn Field="@nameof(ChoosableKeyValue.Value)"
+                                    Title="@TextResources.APP_StringKeys_Name" />
+                                </GridColumns>
+                            </TelerikGrid>
+                        </TabStripTab>
+                    }
+                    <TabStripTab Title="@TextResources.APP_StringKeys_Web">
+                        <TelerikGrid Data="WebAccesses"
+                                     Pageable="true"
+                                     PageSize="10"
+                                     FilterMode="@GridFilterMode.FilterRow">
+                            <GridColumns>
+                                <GridColumn Width="50px" Title="" Filterable="false">
+                                    <Template>
+                                        @{
+                                            var item = (ChoosableKeyValue)context;
+                                        }
+                                        <TelerikCheckBox @bind-Value="@item.IsChoosed" />
+                                    </Template>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(ChoosableKeyValue.Value)"
+                                            Title="لیست صفحات قابل دسترسی" />
+                                <GridColumn Field="@nameof(ChoosableKeyValue.Key)" Title="مسیر">
+                                    <Template>
+                                        @{
+                                            var item = (ChoosableKeyValue)context;
+                                        }
+                                        <span style="direction:ltr;">@item.Key.Replace(".cshtml", "").Replace("/Views", "")</span>
+                                    </Template>
+                                </GridColumn>
+                            </GridColumns>
+                        </TelerikGrid>
+                    </TabStripTab>
+                    <TabStripTab Title="@TextResources.APP_StringKeys_Android">
+                        <TelerikGrid Data="AndroidAccesses"
+                                     Pageable="true"
+                                     PageSize="10"
+                                     FilterMode="@GridFilterMode.FilterRow">
+                            <GridColumns>
+                                <GridColumn Width="50px" Title="" Filterable="false">
+                                    <Template>
+                                        @{
+                                            var item = (ChoosableKeyValue)context;
+                                        }
+                                        <TelerikCheckBox @bind-Value="@item.IsChoosed" />
+                                    </Template>
+                                </GridColumn>
+                                <GridColumn Field="@nameof(ChoosableKeyValue.Value)"
+                                            Title="لیست صفحات قابل دسترسی" />
+                                <GridColumn Field="@nameof(ChoosableKeyValue.Key)" Title="مسیر">
+                                    <Template>
+                                        @{
+                                            var item = (ChoosableKeyValue)context;
+                                        }
+                                        <span style="direction:ltr;">@item.Key.Replace(".cshtml", "").Replace("/Views", "")</span>
+                                    </Template>
+                                </GridColumn>
+                            </GridColumns>
+                        </TelerikGrid>
+                    </TabStripTab>
+                </TelerikTabStrip>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card card-stats text-align-center text-warning col-md-12" style="margin-top:5px;">
+        @TextResources.APP_StringKeys_Message_Access_NotChangable
+    </div>
+}
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalMessage"
+       Size="ModalSize.Normal"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @DialogMessage
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<style type="text/css">
+
+</style>

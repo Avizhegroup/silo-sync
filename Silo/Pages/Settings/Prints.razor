@@ -1,0 +1,37 @@
+﻿@page "/settings/prints"
+@inherits SiloBasePage
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center">
+        <br />
+        <TelerikGrid Data="Files"
+                     PageSize="10"
+                     Navigable="true"
+                     Pageable="true"
+                     Sortable="true">
+            <RowTemplate Context="print">
+                <td class="td-style">@print.Value</td>
+                <td class="td-style">@print.Key</td>
+                <td class="td-style">
+                    <button @onclick="async ()=> await OnDownloadFileClick(print.Value)"
+                            class="btn-dt-1 btn-success tr-buttom btn">
+                        @TextResources.APP_StringKeys_Details
+                    </button>
+                </td>
+            </RowTemplate>
+            <GridColumns>
+                <GridColumn Field="@nameof(KeyValuePair<string, string>.Key)"
+                            Title="@TextResources.APP_StringKeys_Settings_Print_ReportFile"></GridColumn>
+                <GridColumn Field="@nameof(KeyValuePair<string, string>.Value)"
+                            Title="@TextResources.APP_StringKeys_Settings_Print_ReportTitle"></GridColumn>
+                <GridColumn Width="120px"></GridColumn>
+            </GridColumns>
+        </TelerikGrid>
+    </div>
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

@@ -1,0 +1,149 @@
+﻿@page "/location/managelocation"
+@inherits SiloBasePage
+
+<PageTitle>@PageTitle</PageTitle>
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="height: 150px;">
+        <form asp-action="Add" asp-controller="Zone" method="post" role="form" class="form-search-span" id="form-main">
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-top: 10px;">
+                <label style="margin-right: 66px;">
+                    @TextResources.APP_StringKeys_Warehouse
+                </label>
+                <TelerikDropDownList Data="Warehouses"
+                                     TextField="DestinationTitle"
+                                     ValueField="DestinationCode"
+                @bind-Value="Request.StoreCode"
+                                     Width="200px"
+                                     Class="drop-all"
+                                     OnChange="OnComboWarehouseChange">
+                </TelerikDropDownList>
+                <label style="margin-right: 52px;">
+                    @TextResources.APP_StringKeys_Zone_Code
+                </label>
+                <input @bind-value="Request.ZoneCode" class="form-control input-search-span-lg pointer"
+                       style="width:72px !important;" />
+                <label style="margin-right: 19px;">
+                    @TextResources.APP_StringKeys_ParentCode
+                </label>
+                <input @bind-value="Request.ParentCode" class="form-control input-search-span-lg pointer"
+                       style="width:72px !important;" readonly />
+                <label style="margin-right: 73px;">
+                    @TextResources.APP_StringKeys_Row
+                </label>
+                <input @bind-value="Request.RowIndex" class="form-control input-search-span-lg pointer"
+                       style="width:72px !important;" />
+                <label style="margin-right: 14px;">
+                    @TextResources.APP_StringKeys_Resolution
+                </label>
+                <input @bind-value="Request.ParentLayer" class="form-control input-search-span-lg pointer"
+                       style="width:72px !important;" readonly />
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                <label style="margin-right: 17px;">
+                    @TextResources.APP_StringKeys_Zones_Max
+                </label>
+                <input @bind-value="Request.MaxCapacity" class="form-control input-search-span-lg pointer" />
+                <label style="margin-right: 32px;">
+                    @TextResources.APP_StringKeys_Zones_Min
+                </label>
+                <input @bind-value="Request.MinCapacity" class="form-control input-search-span-lg pointer" />
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap search-button-div" style="width:310px;">
+                <button id="btn-delete" class="btn btn-danger" type="button" title="@TextResources.APP_StringKeys_Remove"
+                        style="margin-left: 2px;" @onclick="OnRemoveClick">
+                    <MaterialIcon IconName="delete"></MaterialIcon>
+                </button>
+                <button id="btn-clear" class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                        style="margin-left: 2px;" @onclick="()=> Request = new()">
+                    <MaterialIcon IconName="refresh"></MaterialIcon>
+                </button>
+                <button type="button" id="btn-send" class="btn btn-success"
+                        title="@TextResources.APP_StringKeys_Insert_Batch"
+                @onclick="async ()=> await ModalExcel.Open(new())">
+                    @TextResources.APP_StringKeys_Insert_Batch
+                    <MaterialIcon IconName="input"></MaterialIcon>
+                </button>
+                <button type="button" id="btn-save" class="btn btn-primary" title="@TextResources.APP_StringKeys_Send"
+                @onclick="OnSaveClick">
+                    <MaterialIcon IconName="save"></MaterialIcon>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-right">
+        <div class="demo-section wide k-content item-scroll">
+            <br />
+            @if (IsShownTreeview)
+            {
+                <TelerikTreeView Data="@Nodes"
+                                 OnItemClick="OnNodeSelect">
+                    <TreeViewBindings>
+                        <TreeViewBinding TextField="@nameof(TreeviewNode.text)"
+                                         ItemsField="@nameof(TreeviewNode.nodes)">
+                            <ItemTemplate>
+                                @{
+                                    TreeviewNode currentNode = context as TreeviewNode;
+                                    <div @oncontextmenu:preventDefault="true"
+                                         @oncontextmenu="@( (MouseEventArgs e) => OnNodeRightClick(e, currentNode) )">
+                                        @currentNode.text
+                                    </div>
+                                }
+                            </ItemTemplate>
+                        </TreeViewBinding>
+                    </TreeViewBindings>
+                </TelerikTreeView>
+            }
+        </div>
+    </div>
+</div>
+
+<TelerikContextMenu @ref="@ContextMenu"
+                    Data="@ContextMenuItems"
+                    Selector=".target"
+                    OnClick="@((TelerikContextMenuItem item) => OnContextMenuItemClick(item))">
+</TelerikContextMenu>
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_Attention"
+       @ref="ModalDelete"
+       Size="ModalSize.Normal"
+       OnYesModal="OnRemoveChoosedItemClick"
+       YesBtnText="@TextResources.APP_StringKeys_Remove"
+       CancelBtnText="@TextResources.APP_StringKeys_Close"
+       YesBtnClass="btn btn-danger">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @TextResources.APP_StringKeys_Remove_CheckBeforeDelete
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_Insert_Batch"
+       @ref="ModalExcel"
+       Size="ModalSize.Normal">
+    <ModalBodyContentHtml>
+        <div class="text-align-right">
+            <button type="button" 
+                    class="btn btn-success"
+                    @onclick="OnSampleClick">
+                @TextResources.APP_StringKeys_DownloadSample
+                <img width="20" height="20" src="/images/Utilities/Excel.png">
+            </button>
+            <FileUpload AllowedExtensions=".xlsx"
+                        MaterialIconClass="@MaterialIconsHelper.Upload"
+                        ButtonClass="btn btn-success"
+                        ButtonText="@TextResources.APP_StringKeys_UploadExcel"
+                        ShowFileName="false"
+                        UploadUrl="/Tools/UploadAccountingFile"
+                        OnCompleteUpload="OnCompleteUploadExcelAdd"
+                        OnStartUpload="()=>IsLoading = true"></FileUpload>
+            <hr />
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<TelerikLoaderContainer Visible="@IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

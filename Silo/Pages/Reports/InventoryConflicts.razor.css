@@ -1,0 +1,14 @@
+﻿.k-tabstrip-content {
+    background-color: #e8e8e8 !important;
+}
+
+.tab-str-s {
+    width: 90% !important;
+    margin-top: 10px;
+}
+
+.nav-report-summary {
+    margin-top: -20px;
+    text-align: right;
+    margin-right: -40px;
+}

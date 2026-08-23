@@ -1,0 +1,732 @@
+@page "/report/inventoryconflicts"
+@inherits SiloBasePage
+@namespace Silo.Pages.Reports
+@using Silo.Application.Features;
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="report-inventory-conflicts">
+    @if (IsFiltersShown)
+    {
+        <div class="row col-md-12">
+            <div class="card card-stats col-md-12 text-align-center" style="height: 205px;">
+                <EditForm Model="Request"
+                          OnInvalidSubmit="OnInvalidSubmit"
+                          OnValidSubmit="OnValidSubmit">
+                    <DataAnnotationsValidator />
+                    <div style="margin-top:10px; width: 100%!important;">
+                        <TelerikTabStrip Class="tab-str-s">
+                            <TabStripTab Title="@TextResources.APP_StringKeys_SearchFilter_OperationInfo">
+                                <div class=" d-flex flex-row align-items-center flex-wrap">
+                                    <label style="margin-right: 12px;">@TextResources.APP_StringKeys_OperationCode :</label>
+                                    <TelerikTextBox @bind-Value="Request.InventoryHeaderId" Class="form-control input-search-span-lg pointer"
+                                                    Width="200px!important"></TelerikTextBox>
+                                    <label style="margin-right: 38px;">@TextResources.APP_StringKeys_User :</label>
+                                    <TelerikDropDownList Data="Users"
+                                                         TextField="Name"
+                                                         ValueField="Id"
+                                                         @bind-Value="Request.User"
+                                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                                         Width="200px"
+                                                         Class="drop-all">
+                                    </TelerikDropDownList>
+                                    <label style="margin-right: 17px;">@TextResources.APP_StringKeys_FromDate :</label>
+                                    <DatePicker InputClass=" input-search-span-lg pointer "
+                                                @bind-Value="Request.FromDate"></DatePicker>
+                                    <label style="margin-right: 18px;">@TextResources.APP_StringKeys_ToDate :</label>
+                                    <DatePicker InputClass=" input-search-span-lg pointer "
+                                                @bind-Value="Request.ToDate"></DatePicker>
+                                </div>
+                                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:0px;">
+                                    <label style="margin-right: 24px;">@TextResources.APP_StringKeys_Placement :</label>
+                                    <TelerikTextBox @bind-Value="Request.Place" Class="form-control input-search-span-lg pointer"
+                                                    Width="200px!important"></TelerikTextBox>
+                                    <label style="margin-right: 8px;">@TextResources.APP_StringKeys_Description :</label>
+                                    <TelerikTextBox @bind-Value="Request.Desc" Class="form-control input-search-span-lg pointer"
+                                                    Width="200px!important"></TelerikTextBox>
+                                    <label style="margin-right: 42px;">@TextResources.APP_StringKeys_Warehouse :</label>
+                                    <button type="button"
+                                            class="btn btn-success"
+                                            @onclick="OnModalOpenClick">
+                                        @if (WarehouseItems.Any(p => p.IsChoosen))
+                                        {
+                                            @(WarehouseItems.Where(p => p.IsChoosen).Select(p => p.Label).Aggregate((p, q) => p + ", " + q))
+                                        }
+                                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                                    </button>
+                                </div>
+                            </TabStripTab>
+                            <TabStripTab Title="@TextResources.APP_StringKeys_SearchFilter_ProductInfo">
+                                <div class=" d-flex flex-row align-items-center flex-wrap">
+                                    <label style="margin-right:10px;">@TextResources.APP_StringKeys_ProductCode :</label>
+                                    <TelerikTextBox @bind-Value="Request.ProductCode" Class="form-control input-search-span-lg pointer"
+                                                    Width="200px!important"></TelerikTextBox>
+                                    <button type="button" class="btn btn-light" @onclick="async ()=> await ProductCodeModal.Show()">
+                                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                                    </button>
+                                    <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Chart_Regcode :</label>
+                                    <TelerikTextBox @bind-Value="Request.TechnicalCode" Class="form-control input-search-span-lg pointer"
+                                                    Width="200px!important"></TelerikTextBox>
+                                    <label style="margin-right: -60px;">@TextResources.APP_StringKeys_Like:</label>
+                                    <TelerikCheckBox @bind-Value="@Request.TechnicalCodeLike" Class="form-control"
+                                                     Title="@TextResources.APP_StringKeys_Security_Index_Doc_required">
+                                    </TelerikCheckBox>
+                                    <label style="margin-right:95px;">@TextResources.APP_StringKeys_Count_Conflicts_Shown </label>
+                                    <TelerikCheckBox @bind-Value="@Request.ConflictsShown" Class="form-control">
+                                    </TelerikCheckBox>
+                                </div>
+                                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:0px;">
+                                    <label>@TextResources.APP_StringKeys_Product_Size :</label>
+                                    <TelerikDropDownList Data="Sizes"
+                                                         TextField="Title"
+                                                         ValueField="Code"
+                                                         @bind-Value="Request.Size"
+                                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                                         Width="200px"
+                                                         Class="drop-all">
+                                    </TelerikDropDownList>
+                                    <label style="margin-right: 47px;">@TextResources.APP_StringKeys_ProductType :</label>
+                                    <TelerikDropDownList Data="Types"
+                                                         TextField="Title"
+                                                         ValueField="Code"
+                                                         @bind-Value="Request.Type"
+                                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                                         Width="200px"
+                                                         Class="drop-all">
+                                    </TelerikDropDownList>
+                                    <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Chart_Qc :</label>
+                                    <TelerikDropDownList Data="Qcs"
+                                                         TextField="Title"
+                                                         ValueField="Code"
+                                                         @bind-Value="Request.Qc"
+                                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                                         Width="200px"
+                                                         Class="drop-all">
+                                    </TelerikDropDownList>
+                                </div>
+                            </TabStripTab>
+                            <TabStripTab Title="@TextResources.APP_StringKeys_Inventory_Filter_EnterExit">
+                                <div class=" d-flex flex-row align-items-center flex-wrap"
+                                     style="margin-bottom: 5px;margin-top: 5px;">
+                                    <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Inventory_Filter_EnterExit :</label>
+                                    <TelerikToggleButton @bind-Selected="@Request.IsMovementFiltered">
+                                        @if (Request.IsMovementFiltered)
+                                        {
+                                            @TextResources.APP_StringKeys_Active
+                                        }
+                                        else
+                                        {
+                                            @TextResources.APP_StringKeys_Deactive
+                                        }
+                                    </TelerikToggleButton>
+                                </div>
+                                <div class=" d-flex flex-row align-items-center flex-wrap">
+                                    <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Enter_Count :</label>
+                                    <TelerikNumericTextBox @bind-Value="EnterExitValue.EnterCount" Class="form-control input-search-span-lg pointer"
+                                                           Width="200px!important" Arrows="false" Enabled="false"></TelerikNumericTextBox>
+                                    <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Enter_SumCount :</label>
+                                    <TelerikNumericTextBox @bind-Value="EnterExitValue.EnterSumCount" Class="form-control input-search-span-lg pointer"
+                                                           Width="200px!important" Arrows="false" Enabled="false"></TelerikNumericTextBox>
+                                    <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Exit_Count :</label>
+                                    <TelerikNumericTextBox @bind-Value="EnterExitValue.ExitCount" Class="form-control input-search-span-lg pointer"
+                                                           Width="200px!important" Arrows="false" Enabled="false"></TelerikNumericTextBox>
+                                    <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Exit_SumCount :</label>
+                                    <TelerikNumericTextBox @bind-Value="EnterExitValue.ExitSumCount" Class="form-control input-search-span-lg pointer"
+                                                           Width="200px!important" Arrows="false" Enabled="false"></TelerikNumericTextBox>
+                                </div>
+                            </TabStripTab>
+                        </TelerikTabStrip>
+                    </div>
+                    <div class=" d-flex flex-row align-items-center flex-wrap search-button-div"
+                         style="margin-top:5px!important; width:600px;">
+                        @if (Request.InventoryHeaderId.HasNoValue())
+                        {
+                            <button id="silo-up-btn-@Guid.NewGuid().ToString()"
+                                    title="@TextResources.APP_StringKeys_UploadExcel_RealityCount"
+                                    class="up-btn btn btn-success"
+                                    @onclick="OnValidationUploadClick"
+                                    type="button">
+                                @TextResources.APP_StringKeys_UploadExcel_RealityCount
+
+                                <MaterialIcon IconName="@MaterialIconsHelper.Upload"></MaterialIcon>
+                            </button>
+                            <button id="silo-up-btn-@Guid.NewGuid().ToString()"
+                                    title="@TextResources.APP_StringKeys_GetData_Acounting_Brief"
+                                    class="up-btn btn btn-success"
+                                    @onclick="OnValidationUploadClick"
+                                    type="button">
+                                @TextResources.APP_StringKeys_GetData_Acounting_Brief
+
+                                <MaterialIcon IconName="@MaterialIconsHelper.Upload"></MaterialIcon>
+                            </button>
+                        }
+                        else
+                        {
+                            <FileUpload AllowedExtensions=".xlsx"
+                                        OnStartUpload="()=>IsLoading = true"
+                                        ButtonClass="btn btn-success"
+                                        ButtonText="@TextResources.APP_StringKeys_UploadExcel_RealityCount"
+                                        MaterialIconClass="@MaterialIconsHelper.Upload"
+                                        OnUpload="OnUploadRealityCount"
+                                        MaxAllowedSizeMB="MaxAllowedSizeMB"
+                                        ButtonTitle="@TextResources.APP_StringKeys_UploadExcel_RealityCount">
+                            </FileUpload>
+                            <FileUpload AllowedExtensions=".xlsx"
+                                        OnStartUpload="()=>IsLoading = true"
+                                        ButtonClass="btn btn-success"
+                                        ButtonText="@TextResources.APP_StringKeys_GetData_Acounting_Brief"
+                                        MaterialIconClass="@MaterialIconsHelper.Upload"
+                                        OnUpload="OnUploadAccounting"
+                                        MaxAllowedSizeMB="MaxAllowedSizeMB"
+                                        ButtonTitle="@TextResources.APP_StringKeys_GetData_Acounting">
+                            </FileUpload>
+                        }
+
+                        <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                                style="margin-left: 2px;" @onclick="OnClickClear">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                        </button>
+                        <button type="submit"
+                                id="btn-send"
+                                class="btn btn-primary"
+                                title="@TextResources.APP_StringKeys_Send">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+    @if (Result.Any())
+    {
+        <div class="row col-md-12">
+            <div class="card card-stats col-md-12 text-align-center">
+                <br />
+                <TelerikGrid @ref="MainGrid"
+                             Data="Result"
+                             PageSize="10"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true"
+                             OnRowRender="OnRowRenderHandler"
+                             Class="@(Request.ConflictsShown ? "table-boarder-collapse" : "")"
+                             ColumnVirtualization="true"
+                             Width="100%">
+                    <RowTemplate Context="product">
+                        <td class="td-style">@product.ProductCode</td>
+                        <td class="td-style">@product.ProductName</td>
+                        <td class="td-style">@product.TechnicalCode</td>
+                        <td class="td-style">@(string.Join("| ", product.LocationList))</td>
+                        <td class="td-style">@product.Count</td>
+                        <td class="td-style">@product.SumCount</td>
+                        <td class="td-style">@product.SumCountAccounting</td>
+                        <td class="td-style">@product.SumCountReality</td>
+                        <td class="td-style">@product.CountInventory</td>
+                        <td class="td-style">@product.SumCountInventory</td>
+                        <td class="td-style">@product.ConflictCount</td>
+                        <td class="td-style">@product.ConflictSumCount</td>
+                        <td class="td-style">@product.ConflictSumCountAccounting</td>
+                        <td class="td-style">@product.ConflictSumCountReality</td>
+                        <td class="td-style">
+                            <button @onclick="async ()=> await OnShortageConflictModalOpen(product)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Count
+                                @product.Details.Count(p => p.Status.Contains("کسری"))
+                            </button>
+                        </td>
+                        <td class="td-style">
+                            <button @onclick="async ()=> await OnExtraConflictModalOpen(product)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Count
+                                @product.Details.Count(p => p.Status.Contains("اضافی"))
+                            </button>
+                        </td>
+                    </RowTemplate>
+                    <GridToolBarTemplate>
+                        <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                            @TextResources.APP_StringKeys_ExportExcel
+                        </GridCommandButton>
+                        <TelerikButton Icon="@FontIcon.Print" OnClick="OnClickExportToPdfMaster" Class="orange-pdf">
+                            @TextResources.APP_StringKeys_Print
+                        </TelerikButton>
+                        <TelerikButton Icon="@FontIcon.DetailSection" OnClick="OnClickDetails" Class="btn-primary">
+                            همه ی جزئیات
+                        </TelerikButton>
+                    </GridToolBarTemplate>
+                    <GridExport>
+                        <GridExcelExport AllPages="true" FileName="@PageTitle" />
+                    </GridExport>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.ProductCode)"
+                                    Title="@TextResources.APP_StringKeys_ProductCode"
+                                    Width="135px">
+                        </GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.ProductName)"
+                                    Title="@TextResources.APP_StringKeys_ProductName"
+                                    Width="300px"></GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.TechnicalCode)"
+                                    Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                                    Width="120px"></GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.Locations)"
+                                    Title="@TextResources.APP_StringKeys_Zones"
+                                    Width="85px"></GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.Count)"
+                                    Title="@TextResources.APP_StringKeys_Count_Rfid"
+                                    Width="150px">
+                        </GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.SumCount)"
+                                    Title="@TextResources.APP_StringKeys_SumCount_Rfid"
+                                    Width="150px">
+                        </GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.SumCountAccounting)"
+                                    Title="@TextResources.APP_StringKeys_Count_Accounting"
+                                    Width="120px">
+                        </GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.SumCountReality)"
+                                    Title="@TextResources.APP_StringKeys_Count_Reality"
+                                    Width="120px">
+                        </GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.CountInventory)"
+                                    Title="@TextResources.APP_StringKeys_Inventory_Count"
+                                    Width="130px">
+                        </GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.SumCountInventory)"
+                                    Title="@TextResources.APP_StringKeys_Inventory_SumCount"
+                                    Width="130px">
+                        </GridColumn>
+                         <GridColumn Field="@nameof(GetInventoryConflictsVm.ConflictCount)"
+                                    Title="@TextResources.APP_StringKeys_Count_Conflicts"
+                                    Width="115px">
+                        </GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.ConflictSumCount)"
+                                    Title="@TextResources.APP_StringKeys_SumCount_Conflicts"
+                                    Width="115px">
+                        </GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.ConflictSumCountAccounting)"
+                                    Title="@TextResources.APP_StringKeys_Conflict_Accounting"
+                                    Width="120px">
+                        </GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.ConflictSumCountReality)"
+                                    Title="@TextResources.APP_StringKeys_Conflict_Reality"
+                                    Width="150px">
+                        </GridColumn>
+                        <GridColumn Width="100px"
+                                    title="@(TextResources.APP_StringKeys_Conflict + ' ' + TextResources.APP_StringKeys_Shortage)"></GridColumn>
+                        <GridColumn Width="100px"
+                                    title="@(TextResources.APP_StringKeys_Conflict + ' ' + TextResources.APP_StringKeys_Extra)"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+                <br />
+                <nav aria-label="Page navigation example bg-light"
+                     style="font-family: IRANSans; font-size: 75%; margin-right: 40px;">
+                    <ul class="pagination  nav-report-summary">
+                        <li>
+                            <a class="bg-light page-link nav-report-summary-li">
+                                @($"تعداد کد کالا: {ProductCodeCount}")
+                            </a>
+                        </li>
+                        <li>
+                            <a class="bg-light page-link nav-report-summary-li">
+                                @($"موجودی RFID: {RfidCount} | {RfidSumCount}")
+                            </a>
+                        </li>
+                        <li>
+                            <a class="bg-light page-link nav-report-summary-li">
+                                @($"موجودی حسابداری : {AccountingSumCount}")
+                            </a>
+                        </li>
+                        <li>
+                            <a class="bg-light page-link nav-report-summary-li">
+                                @($"موجودی شمارش فیزیکی : {RealitySumCount}")
+                            </a>
+                        </li>
+                        <li>
+                            <a class="bg-light page-link nav-report-summary-li">
+                                @($"مغایرت با RFID : {RfidConflictCount} | {RfidConflictSumCount}")
+                            </a>
+                        </li>
+                        <li>
+                            <a class="bg-light page-link nav-report-summary-li">
+                                @($"مغایرت با حسابداری : {AccountingConflictSumCount}")
+                            </a>
+                        </li>
+                        <li>
+                            <a class="bg-light page-link nav-report-summary-li">
+                                @($"مغایرت با شمارش فیزیکی : {RealityConflictSumCount}")
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div class="row col-md-12">
+            <div class="card card-stats col-md-1 text-align-center"
+                 style="max-height: 150px; margin: 0px;">
+                <div>
+                    <h6 class="card-title">
+                        موجودی RFID
+                    </h6>
+                    <br><br>
+                    <h7>@RfidSumCount</h7>
+                </div>
+            </div>
+            <div class="card card-stats col-md-1 text-align-center"
+                 style="max-height: 150px; margin: 0px;">
+                <div>
+                    <h6 class="card-title">
+                        موجودی حسابداری
+                    </h6>
+                    <br><br>
+                    <h7>@AccountingSumCount</h7>
+                </div>
+            </div>
+            <div class="card card-stats col-md-1 text-align-center"
+                 style="max-height: 150px; margin: 0px;">
+                <div>
+                    <h6 class="card-title">
+                        موجودی شمارش فیزیکی
+                    </h6>
+                    <br>
+                    <h7>@RealitySumCount</h7>
+                </div>
+            </div>
+            <div class="card card-stats col-md-1 text-align-center"
+                 style="max-height: 150px; margin: 0px;">
+                <div>
+                    <h6 class="card-title">
+                        موجودی انبارگردانی
+                    </h6>
+                    <br><br>
+                    <h7>@InventorySumCount</h7>
+                </div>
+            </div>
+            <div class="card card-stats col-md-8 text-align-center" style=" margin: 0px;">
+                <div>
+                    <TelerikChart Width="100%">
+                        <ChartTitle Text="نمودار نتیجه انبارگردانی">
+                        </ChartTitle>
+                        <ChartLegend Position="@ChartLegendPosition.Bottom"></ChartLegend>
+                        <ChartSeriesItems>
+                            <ChartSeries Type="ChartSeriesType.Bar"
+                                         Data="@ChartValues"
+                                         Field="@nameof(TelerikDropDownItem.Value)"
+                                         CategoryField="@nameof(TelerikDropDownItem.Name)">
+                                <ChartSeriesTooltip Visible="true" Context="item">
+                                    <Template>
+                                        @item.Category
+                                    </Template>
+                                </ChartSeriesTooltip>
+                                <ChartSeriesLabels Visible="true"
+                                                   Template="@seriesLabelTamplateNoPercent"
+                                                   Distance="1"
+                                                   Position="seriesLabelPosition"></ChartSeriesLabels>
+                            </ChartSeries>
+                        </ChartSeriesItems>
+                    </TelerikChart>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalDetailsAll"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="AllDetails"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true"
+                         OnRowRender="OnDetailsRowRenderHandler">
+                <RowTemplate Context="details">
+                    <td class="td-style td-dt">@details.ProductSerial</td>
+                    <td class="td-style td-dt">@details.ProductCode</td>
+                    <td class="td-style td-dt">@details.ProductName</td>
+                    <td class="td-style td-dt">@details.RegCode</td>
+                    <td class="td-style td-dt">@details.ProductCount</td>
+                    <td class="td-style td-dt">@details.Zone</td>
+                    <td class="td-style td-dt">@details.Date.ToNormalPersianDate()</td>
+                    <td class="td-style td-dt">@details.Status</td>
+                    <td class="td-style td-dt">
+                        <a href="/report/taghistory/@details.ProductSerial"
+                           target="_blank"
+                           class="btn-dt-1 btn-success tr-buttom btn">
+                            @TextResources.APP_StringKeys_Details
+                        </a>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.ProductSerial)" Width="160px"
+                                Title="@TextResources.APP_StringKeys_ProductSerial"></GridColumn>
+                    <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.ProductCode)" Width="160px"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"></GridColumn>
+                    <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                    <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.RegCode)" Width="80px"
+                                Title="@TextResources.APP_StringKeys_Chart_Regcode"></GridColumn>
+                    <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.ProductCount)" Width="80px"
+                                Title="@TextResources.APP_StringKeys_ProductCount"></GridColumn>
+                    <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.Zone)" Width="80px"
+                                Title="@TextResources.APP_StringKeys_Zone"></GridColumn>
+                    <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.Date)" Width="80px"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductDate"></GridColumn>
+                    <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.Status)" Width="80px"
+                                Title="@TextResources.APP_StringKeys_Field_Status"></GridColumn>
+                    <GridColumn Width="60px"></GridColumn>
+                </GridColumns>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                    <TelerikButton Icon="@FontIcon.Print" OnClick="@OnClickExportToPdfDetails" Class="orange-pdf">
+                        @TextResources.APP_StringKeys_Print
+                    </TelerikButton>
+                    <TelerikButton Icon="@(!IsDetailsShown ? "check" : "x")"
+                                   OnClick="@OnClickShowAllDetails"
+                                   Class="@(!IsAllDetailsShown ? "" : "rfid-conf")">
+                        @(!IsAllDetailsShown ? "نمایش همه" : "نمایش رکورد های مغایرت")
+                    </TelerikButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Details" />
+                </GridExport>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<ProductCodeModal @ref="ProductCodeModal"
+                  OnClickProductCode="OnClickProductCode">
+</ProductCodeModal>
+
+@{
+    var conflictType = ProductFixConflicts.IsExtraConflict
+                ? TextResources.APP_StringKeys_Extra
+                : TextResources.APP_StringKeys_Shortage;
+
+    var productCode = ProductFixConflicts?.ProductCode;
+    var productName = ProductFixConflicts?.ProductName;
+
+    var modalTitle = $"{TextResources.APP_StringKeys_Conflict} {conflictType} کد: {productCode} شرح کالا: {productName}";
+}
+
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@modalTitle"
+       @ref="ModalFixConflicts"
+       Size="ModalSize.ExtraLarge">
+    <ModalBodyContentHtml>
+        <div class="row col-md-12" style="font-size:14px;">
+            <div class="col-md-12 text-align-center" style="margin-bottom:15px;">
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <label style="margin-right: 25px;">@TextResources.APP_StringKeys_ProductSerial :</label>
+                    <TelerikTextBox @bind-Value="SearchDetails.ProductSerial" Class="form-control input-search-span-lg pointer"
+                                    Width="200px!important"></TelerikTextBox>
+                    <label style="margin-right: 17px;">@TextResources.APP_StringKeys_FromRegisterDate :</label>
+                    <DatePicker InputClass=" input-search-span-lg pointer "
+                                @bind-Value="SearchDetails.FromRegisterDate"></DatePicker>
+                    <label style="margin-right: 18px;">@TextResources.APP_StringKeys_ToRegisterDate :</label>
+                    <DatePicker InputClass=" input-search-span-lg pointer "
+                                @bind-Value="SearchDetails.ToRegisterDate"></DatePicker>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <label style="margin-right: 4px;">@TextResources.APP_StringKeys_ContractStatus :</label>
+                    <TelerikTextBox @bind-Value="SearchDetails.ContractStatus" Class="form-control input-search-span-lg pointer"
+                                    Width="200px!important"></TelerikTextBox>
+                    <label style="margin-right: 52px;">@TextResources.APP_StringKeys_Location :</label>
+                    <TelerikTextBox @bind-Value="SearchDetails.Location" Class="form-control input-search-span-lg pointer"
+                                    Width="200px!important"></TelerikTextBox>
+                    <button type="button"
+                            class="btn btn-light"
+                            @onclick="async ()=> await LocationModal.Show()"
+                            style="margin-left: 18px;">
+                        <MaterialIcon IconName="Checklist_rtl"></MaterialIcon>
+                    </button>
+                    <label style="margin-right: 15px;">@TextResources.APP_StringKeys_Warehouse :</label>
+                    <TelerikDropDownList Data="Warehouses"
+                                         TextField="@nameof(GetAllWarehousesVm.DestinationTitle)"
+                                         ValueField="@nameof(GetAllWarehousesVm.DestinationCode)"
+                                         @bind-Value="SearchDetails.Warehouse"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <div style=" position: absolute; left: 40px; margin-top: -20px;">
+                        <button class="btn btn-warning"
+                                type="button"
+                                title="@TextResources.APP_StringKeys_Clear"
+                                style="margin-left: 2px;" @onclick="OnClearModalSearchClick">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                        </button>
+                        <button class="btn btn-primary"
+                                type="button"
+                                title="@TextResources.APP_StringKeys_Send"
+                                style="margin-left: 2px;" @onclick="OnSearchDetailsModalClick">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="text-align-center">
+                <TelerikGrid @ref="DetailsGridRef"
+                             Data="FilteredDetails"
+                             PageSize="5"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true"
+                             OnRowRender="OnDetailsRowRenderHandler">
+                    <RowTemplate Context="details">
+                        <td class="td-style td-style-full">
+                            <TelerikCheckBox @bind-Value="details.IsSelected"
+                                             OnChange="async(e) => await OnFixConflictProductCodeSelect(details)">
+                            </TelerikCheckBox>
+                        </td>
+                        <td class="td-style td-dt">@details.ProductSerial</td>
+                        <td class="td-style td-dt">@details.ProductCode</td>
+                        <td class="td-style td-dt">@details.ProductName</td>
+                        <td class="td-style td-dt">@details.RegCode</td>
+                        <td class="td-style td-dt">@details.ProductCount</td>
+                        <td class="td-style td-dt">@details.ContractStatus</td>
+                        <td class="td-style td-dt">@details.Date.ToNormalPersianDate()</td>
+                        <td class="td-style td-dt">@details.DestinationTitle</td>
+                        <td class="td-style td-dt">@details.Zone</td>
+                        <td class="td-style td-dt">
+                            <a href="/report/taghistory/@details.ProductSerial"
+                               target="_blank"
+                               class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Histories
+                            </a>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridCheckboxColumn Visible="true" Width="30px" HeaderClass="header-select-all">
+                            <HeaderTemplate>
+                                @{
+                                    <TelerikCheckBox @bind-Value="@IsAllProductConflictSelected"
+                                                     TabIndex="-1"
+                                                     OnChange="OnToggleSelectAll" />
+                                }
+                            </HeaderTemplate>
+                        </GridCheckboxColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.ProductSerial)" Width="160px"
+                                    Title="@TextResources.APP_StringKeys_ProductSerial">
+                            <FooterTemplate>
+                                @TextResources.APP_StringKeys_Count : @context.Count
+                            </FooterTemplate>
+                        </GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.ProductCode)" Width="160px"
+                                    Title="@TextResources.APP_StringKeys_ProductCode"></GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.ProductName)"
+                                    Title="@TextResources.APP_StringKeys_ProductTitle"></GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.RegCode)" Width="80px"
+                                    Title="@TextResources.APP_StringKeys_Chart_Regcode"></GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.ProductCount)" Width="80px"
+                                    Title="@TextResources.APP_StringKeys_ProductCount">
+                            <FooterTemplate>
+                                @TextResources.APP_StringKeys_SumValue : @context.Sum
+                            </FooterTemplate>
+                        </GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.ContractStatus)" Width="80px"
+                                    Title="@TextResources.APP_StringKeys_ContractStatus"></GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.Date)" Width="80px"
+                                    Title="@TextResources.APP_StringKeys_Chart_ProductDate"></GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.DestinationTitle)" Width="80px"
+                                    Title="@TextResources.APP_StringKeys_Warehouse"></GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.Zone)" Width="80px"
+                                    Title="@TextResources.APP_StringKeys_Zone"></GridColumn>
+                        <GridColumn Width="60px"></GridColumn>
+                    </GridColumns>
+                    <GridAggregates>
+                        <GridAggregate Field=@nameof(GetInventoryConflictDetailsVm.ProductCount) Aggregate="@GridAggregateType.Sum" />
+                        <GridAggregate Field=@nameof(GetInventoryConflictDetailsVm.ProductSerial) Aggregate="@GridAggregateType.Count" />
+                    </GridAggregates>
+                    <GridToolBarTemplate>
+                        <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                            @TextResources.APP_StringKeys_ExportExcel
+                        </GridCommandButton>
+                        <TelerikButton Icon="@FontIcon.Print" OnClick="@OnClickExportToPdfDetails" Class="orange-pdf">
+                            @TextResources.APP_StringKeys_Print
+                        </TelerikButton>
+                    </GridToolBarTemplate>
+                    <GridExport>
+                        <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Details" />
+                    </GridExport>
+                </TelerikGrid>
+            </div>
+        </div>
+    </ModalBodyContentHtml>
+    <ModalFooterHtmlWhitoutCloseBtn>
+        <div class="col-md-12 d-flex flex-row align-items-center text-align-center flex-wrap">
+            <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Destination_Warehouse :</label>
+            <TelerikDropDownList Data="Warehouses"
+                                 TextField="@nameof(GetAllWarehousesVm.DestinationTitle)"
+                                 ValueField="@nameof(GetAllWarehousesVm.DestinationCode)"
+                                 @bind-Value="FixConflictCommand.WarehouseCode"
+                                 DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                 Width="200px"
+                                 Class="drop-all">
+            </TelerikDropDownList>
+            <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Description :</label>
+            <TelerikTextBox @bind-Value="FixConflictCommand.Desc" Class="form-control input-search-span-lg pointer"
+                            Width="300px!important"></TelerikTextBox>
+            <button type="button"
+                    class="btn btn-primary"
+                    title="@TextResources.APP_StringKeys_Send"
+                    style="margin-right: 10px;"
+                    @onclick="OnFixConflictsClick">
+                <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+            </button>
+        </div>
+    </ModalFooterHtmlWhitoutCloseBtn>
+</Modal>
+
+
+<LocationModal @ref="LocationModal"
+               WarehouseCode="@Request.Warehouse"
+               OnClickLocationWithZone="OnChooseDestinationZoneClick">
+</LocationModal>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Choose_Warehouse"
+       @ref="ModalWarehouses"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Choose">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="WarehouseItems"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="item">
+                    <td class="td-style td-dt">
+                        <TelerikCheckBox @bind-Value="item.IsChoosen"
+                                         OnChange="OnModalCheckboxChange"></TelerikCheckBox>
+                    </td>
+                    <td class="td-style td-dt">@item.Label</td>
+                    <td class="td-style td-dt">@item.Value</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(ReportDataItem.IsChoosen)"
+                                Title="" Width="40px"></GridColumn>
+                    <GridColumn Field="@nameof(ReportDataItem.Label)"
+                                Title="@TextResources.APP_StringKeys_Field_Title"></GridColumn>
+                    <GridColumn Field="@nameof(ReportDataItem.Value)"
+                                Title="@TextResources.APP_StringKeys_Code"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>

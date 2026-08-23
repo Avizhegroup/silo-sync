@@ -1,0 +1,229 @@
+﻿@page "/inspect/reportproduct"
+@inherits SiloBasePage
+@using Newtonsoft.Json.Linq
+@using Silo.Identity.Client
+@using Silo.Shared.Components.Modals
+@namespace Silo.Modules.Inspect.Pages
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="padding:15px;">
+        <EditForm Model="Request"
+                  OnInvalidSubmit="OnInvalidSubmit"
+                  OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <div class="form-search-span">
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:5px!important;">
+                    <label style="margin-right:17px;">@TextResources.APP_StringKeys_ProductCode:</label>
+                    <TelerikTextBox @bind-Value="Request.ProductCode" Class="form-control input-search-span-lg pointer"
+                                    Width="200px"></TelerikTextBox>
+                    <button type="button" class="btn btn-light" @onclick="async ()=> await ProductCodeModal.Show()">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                    </button>
+                    <label style="margin-right: 30px;">@TextResources.APP_StringKeys_Chart_Regcode:</label>
+                    <TelerikTextBox @bind-Value="Request.TechnicalCode" Class="form-control input-search-span-lg pointer"
+                                    Width="200px!important"></TelerikTextBox>
+                    <label style="margin-right: -50px; z-index:1;">@TextResources.APP_StringKeys_Like:</label>
+                    <TelerikCheckBox @bind-Value="Request.TechnicalCodeLike">
+                    </TelerikCheckBox>
+                    <label style="margin-right: 27px;">@TextResources.APP_StringKeys_FromDate:</label>
+                    <DatePicker InputClass=" input-search-span-lg pointer "
+                                @bind-Value="Request.FromDate"></DatePicker>
+                    <label style="margin-right: 15px;">@TextResources.APP_StringKeys_ToDate:</label>
+                    <DatePicker InputClass=" input-search-span-lg pointer "
+                                @bind-Value="Request.ToDate"></DatePicker>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:10px">
+                    <label style="margin-right: 0px;">@TextResources.APP_StringKeys_Line :</label>
+                    <TelerikDropDownList Data="Lines"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="Request.Line"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 47px;">@TextResources.APP_StringKeys_Product_Size:</label>
+                    <TelerikDropDownList Data="Sizes"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="Request.Size"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 21px;">@TextResources.APP_StringKeys_Changes_FromTime:</label>
+                    <ClockPicker Class="form-control input-search-span-lg pointer "
+                                 @bind-Value="Request.FromTime"></ClockPicker>
+                    <label style="margin-right: 12px;">@TextResources.APP_StringKeys_Changes_ToTime:</label>
+                    <ClockPicker Class="form-control input-search-span-lg pointer "
+                                 @bind-Value="Request.ToTime"></ClockPicker>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <label style="margin-right:18px;">@TextResources.APP_StringKeys_Chart_Shift:</label>
+                    <TelerikDropDownList Data="Shifts"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="Request.Shift"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 27px;">@TextResources.APP_StringKeys_Chart_Qc:</label>
+                    <TelerikDropDownList Data="Qcs"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="Request.Qc"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap search-button-div" style="top: 160px;">
+                    <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                            style="margin-left: 2px;" @onclick="OnClickClear">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    <button type="submit" id="btn-send" class="btn btn-primary" title="@TextResources.APP_StringKeys_Send">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                    </button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+    @if (Responses is not null)
+    {
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; padding:5px;">
+            <div class="form-search-span" style="padding-top:10px;">
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-right:15px;">
+                    <TelerikGrid Data="Responses"
+                             PageSize="10"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true"
+                             Resizable="true"
+                             ColumnVirtualization="true"
+                             Width="100%">
+                        <RowTemplate Context="response">
+                            <td class="td-style">@response.RegCode</td>
+                            <td class="td-style">@response.Size</td>
+                            <td class="td-style">@response.Line</td>
+                            <td class="td-style">@response.AcceptedCount</td>
+                            <td class="td-style">@response.AcceptedSum</td>
+                            <td class="td-style">@response.RejectedCount</td>
+                            <td class="td-style">@response.RejectedSum</td>
+                            @foreach (string column in Columns)
+                            {
+                                @if (response.Items.Any())
+                                {
+                                    @foreach (var item in response.Items)
+                                    {
+                                        if (column == item.Qc)
+                                        {
+                                            <td class="td-style">@item.SumCount</td>
+                                            <td class="td-style">
+                                                @if (response.AcceptedSum == 0)
+                                                {
+                                                    @("0")
+                                                }
+                                                else
+                                                {
+                                                    @(Math.Round(item.SumCount / response.AcceptedSum * 100))
+                                                }
+                                                %
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="td-style">
+                                                0
+                                            </td>
+                                            <td class="td-style">
+                                                0%
+                                            </td>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    <td class="td-style">
+                                        0
+                                    </td>
+                                    <td class="td-style">
+                                        0%
+                                    </td>
+                                }
+                            }
+                        </RowTemplate>
+                        <GridColumns>
+                            <GridColumn Field=""
+                                    Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                                    Width="80px"></GridColumn>
+                            <GridColumn Field=""
+                                    Title="@TextResources.APP_StringKeys_Product_Size"
+                                    Width="80px"></GridColumn>
+                            <GridColumn Field=""
+                                    Title="@TextResources.APP_StringKeys_Line"
+                                    Width="80px"></GridColumn>
+                            <GridColumn Field="AcceptCount"
+                                    Title="@TextResources.APP_StringKeys_Accept_Inspect_Count"
+                                    Width="120px">
+                                <FooterTemplate>
+                                    جمع : @AcceptedCount
+                                </FooterTemplate>
+                            </GridColumn>
+                            <GridColumn Field="AcceptSum"
+                                    Title="@TextResources.APP_StringKeys_Accept_Inspect_Value"
+                                    Width="120px">
+                                <FooterTemplate>
+                                    جمع : @AcceptedSum
+                                </FooterTemplate>
+                            </GridColumn>
+                            <GridColumn Field=""
+                                    Title="@TextResources.APP_StringKeys_Reject_Inspect_Count"
+                                    Width="120px">
+                                <FooterTemplate>
+                                    جمع : @RejectedCount
+                                </FooterTemplate>
+                            </GridColumn>
+                            <GridColumn Field=""
+                                    Title="@TextResources.APP_StringKeys_Reject_Inspect_Value"
+                                    Width="120px">
+                                <FooterTemplate>
+                                    جمع : @RejectedSum
+                                </FooterTemplate>
+                            </GridColumn>
+
+                            @foreach (string column in Columns)
+                            {
+                                <GridColumn Width="100px" Field="" Title="@(string.Concat(column,"-","مقدار"))">
+                                    <FooterTemplate>
+                                        جمع : @CountQcs[column]
+                                    </FooterTemplate>
+                                </GridColumn>
+                                <GridColumn Width="100px" Field="" Title="@(string.Concat(column,"-","درصد"))">
+                                    <FooterTemplate>
+                                        درصد : @PercentQcs[column]
+                                    </FooterTemplate>
+                                </GridColumn>
+                            }
+                        </GridColumns>
+                    </TelerikGrid>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<ProductCodeModal @ref="ProductCodeModal"
+                  OnClickProductCode="OnClickProductCode">
+
+</ProductCodeModal>

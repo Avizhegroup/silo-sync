@@ -1,0 +1,57 @@
+﻿@page "/settings/strings"
+@inherits SiloBasePage
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; padding:10px;">
+        <div class=" d-flex flex-row align-items-center flex-wrap">
+            <label>@TextResources.APP_StringKeys_Search</label>
+            <TelerikTextBox @bind-Value="SearchText"
+                            Class="form-control input-search-span"></TelerikTextBox>
+
+            <button type="button"
+                    @onclick="OnSearchClick"
+                    class="btn btn-success"
+                    style="margin-right:15px">
+                <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+            </button>
+            <div style="left:5px; position:absolute;">
+                <button type="button"
+                        @onclick="OnSaveClick"
+                        class="btn btn-primary">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center">
+        <br />
+        <TelerikGrid Data="SearchedStrings"
+                     PageSize="10"
+                     Navigable="true"
+                     Pageable="true"
+                     Sortable="true">
+            <RowTemplate Context="context">
+                <td class="td-style">@context.Name</td>
+                <td class="td-style">
+                    <input type="text"
+                           class="form-control input-search-span"
+                           @bind-value="context.Value"
+                           style="width:80% !important" />
+                </td>
+            </RowTemplate>
+            <GridColumns>
+                <GridColumn Title="کلید"></GridColumn>
+                <GridColumn Title="مقدار"></GridColumn>
+            </GridColumns>
+        </TelerikGrid>
+    </div>
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

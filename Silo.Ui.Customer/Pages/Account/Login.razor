@@ -1,0 +1,45 @@
+﻿@page "/account/login"
+@attribute [AllowAnonymous]
+@using Telerik.Blazor.Components
+
+<PageTitle>ورود به حساب کاربری</PageTitle>
+
+<div class="page-login">
+    <EditForm Model="Request"
+              class="form-login"
+              OnValidSubmit="OnValidSubmit"
+              OnInvalidSubmit="OnInvalidSubmit">
+        <DataAnnotationsValidator />
+        <img class="mb-4" src="/images/icons/company.png" alt="" width="72" height="57">
+        <h1 class="h3 mb-3 fw-normal">@Company</h1>
+        <div class="form-floating">
+            <InputText @bind-Value="Request.Username"
+                       type="text"
+                       class="form-control"
+                       placeholder="نام کاربری"
+                       id="floatingInput">
+            </InputText>
+            <label for="floatingInput">نام کاربری</label>
+        </div>
+        <div class="form-floating">
+            <InputText @bind-Value="Request.Password" 
+                       type="password" 
+                       class="form-control"
+                       placeholder="رمز عبور"
+                       id="floatingPassword"
+                       @onkeydown="OnPasswordKeyDown">
+            </InputText>
+            <label for="floatingPassword">رمز عبور</label>
+        </div>
+        <button type="submit"
+                class="w-100 btn btn-lg btn-primary">
+            <b>ورود</b>
+        </button>
+    </EditForm>
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="درحال بارگزاری">
+</TelerikLoaderContainer>

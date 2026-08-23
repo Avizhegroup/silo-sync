@@ -1,0 +1,28 @@
+﻿CREATE TABLE [dbo].[tbl_BillOfLading] (
+    [Id]                  INT             IDENTITY (1, 1) NOT NULL,
+    [BillOfLadingCode]    NVARCHAR (50)   CONSTRAINT [DF_tbl_BillOfLading_BillOfLadingCode] DEFAULT ((0)) NULL,
+    [OrderCode]           NVARCHAR (50)   CONSTRAINT [DF_tbl_BillOfLading_OrderCode] DEFAULT ((0)) NOT NULL,
+    [ProjectCode]         NVARCHAR (50)   CONSTRAINT [DF_tbl_BillOfLading_ProjectCdoe] DEFAULT ((0)) NOT NULL,
+    [ProductCode]         NVARCHAR (50)   CONSTRAINT [DF_tbl_BillOfLading_ProductCode] DEFAULT ((0)) NOT NULL,
+    [ProductSerial]       NVARCHAR (50)   CONSTRAINT [DF_tbl_BillOfLading_ProductSerial] DEFAULT ((0)) NOT NULL,
+    [ProductCount]        DECIMAL (18, 2) CONSTRAINT [DF_tbl_BillOfLading_ProductCount] DEFAULT ((0)) NOT NULL,
+    [ProductType]         TINYINT         CONSTRAINT [DF_tbl_BillOfLading_ProductType] DEFAULT ((0)) NULL,
+    [TagEpc]              NVARCHAR (50)   NOT NULL,
+    [ProductParentSerial] NVARCHAR (50)   CONSTRAINT [DF_tbl_BillOfLading_ProductParentSerial] DEFAULT ((0)) NULL,
+    [ProductParentEpc]    NVARCHAR (50)   CONSTRAINT [DF_tbl_BillOfLading_ProductParentEpc] DEFAULT ((0)) NULL,
+    [Status]              NVARCHAR (50)   CONSTRAINT [DF_tbl_BillOfLading_Status] DEFAULT ((0)) NOT NULL,
+    [BillDate]            NVARCHAR (50)   NOT NULL,
+    [BillTime]            NVARCHAR (50)   NOT NULL,
+    [CarPlaque]           NVARCHAR (50)   NOT NULL,
+    [DriverName]          NVARCHAR (100)  NULL,
+    [Username]            NVARCHAR (50)   NOT NULL,
+    [DeviceIp]            NVARCHAR (50)   NOT NULL,
+    [DeviceId]            NVARCHAR (50)   NOT NULL,
+    [CanLading]           INT             NULL,
+    [DriverMobile]        NVARCHAR (50)   NULL,
+    [Destination]         NVARCHAR (50)   NULL,
+    [RemainingOrderCount] DECIMAL (18, 2) NULL,
+    [ProductCodeCoupling] NVARCHAR (50)   NULL,
+    CONSTRAINT [PK_tbl_BillOfLading_1] PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+

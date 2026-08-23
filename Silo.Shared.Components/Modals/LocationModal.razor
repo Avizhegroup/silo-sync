@@ -1,0 +1,97 @@
+﻿@namespace Silo.Shared.Components.Modals
+@using Silo.Application.Features;
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_Zone_Search"
+       @ref="Modal"
+       Size="ModalSize.Large">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                <label style="margin-right: 97px;">@TextResources.APP_StringKeys_Warehouse</label>
+                @if (WarehouseCode.HasValue())
+                {
+                    <TelerikDropDownList Data="Warehouses"
+                                     TextField="DestinationTitle"
+                                     ValueField="DestinationCode"
+                                     @bind-Value="Warehouse"
+                                     Width="200px"
+                                     Class="drop-all"
+                                     Enabled="false">
+                    </TelerikDropDownList>
+                }
+                else
+                {
+                    <TelerikDropDownList Data="Warehouses"
+                                     TextField="DestinationTitle"
+                                     ValueField="DestinationCode"
+                                     @bind-Value="Warehouse"
+                                     Width="200px"
+                                     Class="drop-all">
+                    </TelerikDropDownList>
+                }
+                <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Tagzone</label>
+                <input @bind-value="Location" class="form-control input-search-span-lg" />
+
+                <label style="margin-right:-63px;"> همانند </label>
+                <input type="checkbox" @bind="LocationLike" />
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                <label>@TextResources.APP_StringKeys_Capacity_Occupied</label>
+                <TelerikDropDownList Data="Capacities"
+                                     TextField="Title"
+                                     ValueField="Value"
+                                     @bind-Value="OccupiedCapacity"
+                                     Width="200px"
+                                     Class="drop-all">
+                </TelerikDropDownList>
+                <button class="btn btn-warning" style="margin-right: 224px;"
+                        type="button" title="@TextResources.APP_StringKeys_Clear"
+                        @onclick="OnClearClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                </button>
+                <button id="btn-lsend" class="btn btn-primary" style="margin-right: 10px;"
+                        type="button" title="@TextResources.APP_StringKeys_Search"
+                        @onclick="OnSearchClick">
+                    <MaterialIcon IconName="search"></MaterialIcon>
+                </button>
+            </div>
+                <TelerikGrid @ref="GridZones"
+                         Data="Zones"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                    <RowTemplate Context="zone">
+                        <td class="td-style">@zone.ZoneCode</td>
+                        <td class="td-style">@zone.Title</td>
+                        <td class="td-style">@zone.OccupiedCapacity</td>
+                        <td class="td-style">@zone.FreeCapacity</td>
+                        <td class="td-style">@zone.StoreTitle</td>
+                        <td class="td-style">
+                            <button @onclick="async()=> await OnChooseLocation(zone)" type="button" class="btn btn-success tr-buttom">@TextResources.APP_StringKeys_Choose</button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetAllZonesVm.ZoneCode)"
+                                Title="@TextResources.APP_StringKeys_Zone_Code"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllZonesVm.Title)"
+                                    Title="@TextResources.APP_StringKeys_Zone"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllZonesVm.OccupiedCapacity)"
+                                Title="@TextResources.APP_StringKeys_Capacity_Occupied"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllZonesVm.FreeCapacity)"
+                                Title="@TextResources.APP_StringKeys_Capacity_Free"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllZonesVm.StoreTitle)"
+                                Title="@TextResources.APP_StringKeys_Warehouse"></GridColumn>
+                        <GridColumn></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+@if (IsLoading)
+{
+    <TelerikLoaderContainer LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+    </TelerikLoaderContainer>
+}

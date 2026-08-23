@@ -1,0 +1,21 @@
+@using Silo.Application.Features;
+@using Microsoft.AspNetCore.Components.Forms;
+@using Microsoft.AspNetCore.Components.Web;
+@using Telerik.Blazor.Components;
+@using Silo.Shared.Components;
+
+@namespace Silo.Modules.Document.Components
+
+@if (DocumentItems.Any())
+{
+    <TelerikGrid Data="@DocumentItems"
+             Pageable="true"
+             PageSize="4">
+        <GridColumns>
+            <GridColumn Field="@nameof(DocumentItemDto.ProductCode)" Title="@TextResources.APP_StringKeys_ProductCode"></GridColumn>
+            <GridColumn Field="@nameof(DocumentItemDto.ProductTitle)" Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+            <GridColumn Field="@nameof(DocumentItemDto.Count)" Title="@TextResources.APP_StringKeys_ProductValue"></GridColumn>
+            <GridColumn Field="@nameof(DocumentItemDto.ProductUnit)" Title="@TextResources.APP_StringKeys_ProductUnit"></GridColumn>
+        </GridColumns>
+    </TelerikGrid>
+}

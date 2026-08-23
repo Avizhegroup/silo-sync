@@ -1,0 +1,303 @@
+@page "/notif/manage"
+@page "/notif/manage/yosuf"
+@page "/notif/manage/yosuf/moosof"
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using Silo.Application.Features;
+@inherits SiloBasePage
+
+<PageTitle>@TextResources.APP_StringKeys_View_Notif_Manage</PageTitle>
+
+<div class="row col-md-12">
+    <EditForm @ref="EditForm"
+              Model="Order"
+              OnInvalidSubmit="OnInvalidSubmit"
+              OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator />
+        <div class="card card-stats col-md-12 text-align-center">
+            <div class="col-md-12 text-align-center" style="padding:5px;">
+                <div>
+                    <h6 class="form-title card-title" style="text-align: center !important;">
+                        @TextResources.APP_StringKeys_Notif_Plan_Properties
+                    </h6>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 5px !important;">
+                    <label style="margin-right: 74px;">@TextResources.APP_StringKeys_Code:</label>
+                    <input type="text" @bind-value="Order.Id" style="    width: 200px!important;" class="form-control input-search-span" readonly />
+                    <label style="margin-right: 50px;">@TextResources.APP_StringKeys_Title:</label>
+                    <TelerikTextBox @bind-Value="Order.Title" Class="form-control input-search-span"></TelerikTextBox>
+                    <label style="margin-right: 10px;">@TextResources.APP_StringKeys_ActivationStatus:</label>
+                    <TelerikCheckBox @bind-Value="Order.Status"></TelerikCheckBox>
+                </div>
+            </div>
+        </div>
+        <div class="card card-stats col-md-12 text-align-center">
+            <div class="col-md-12 text-align-center" style="padding:5px;">
+                <div>
+                    <h6 class="form-title card-title" style="text-align: center !important;">
+                        @TextResources.APP_StringKeys_Notif_Type_Props
+                    </h6>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 5px;">
+                    <label style="margin-right: 71px;">@TextResources.APP_StringKeys_Type:</label>
+                    <TelerikDropDownList Data="NotifType"
+                                         TextField="@nameof(SelectListItem.Text)"
+                                         ValueField="@nameof(SelectListItem.Value)"
+                                         @bind-Value="Order.Type"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    @if (Order.Type.Equals("0"))
+                    {
+                        <label style="margin-right: 21px;">@TextResources.APP_StringKeys_Event_Type:</label>
+                        <TelerikDropDownList Data="EventTypes"
+                                         TextField="Title"
+                                         ValueField="Id"
+                                         @bind-Value="Order.EventType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                        </TelerikDropDownList>
+                    }
+                    else
+                    {
+                        <label style="margin-right: 21px;">@TextResources.APP_StringKeys_Notif_TimePeriod:</label>
+                        <TelerikDropDownList Data="SendPeriod"
+                                         TextField="@nameof(SelectListItem.Text)"
+                                         ValueField="@nameof(SelectListItem.Value)"
+                                         @bind-Value="Order.TimePeriod"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                        </TelerikDropDownList>
+                        <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Notif_SendDay:</label>
+                        <TelerikDropDownList Data="SendDay"
+                                         TextField="@nameof(SelectListItem.Text)"
+                                         ValueField="@nameof(SelectListItem.Value)"
+                                         @bind-Value="Order.SendDay"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                        </TelerikDropDownList>
+                        <label style="margin-right: 48px;">@TextResources.APP_StringKeys_Notif_SendClock:</label>
+                        <ClockPicker Class="form-control"
+                                 Style="width:200px;"
+                                 @bind-Value="Order.SendClock"></ClockPicker>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="card card-stats col-md-12 text-align-center">
+            <div class="col-md-12 text-align-center" style="padding:5px;">
+                <div>
+                    <h6 class="form-title card-title" style="text-align: center !important;">
+                        @TextResources.APP_StringKeys_Notif_Contacts_Props
+                    </h6>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 8px !important;">
+                    <label style="margin-right:10px;">@TextResources.APP_StringKeys_Notif_SendType:</label>
+                    <TelerikDropDownList Data="SendTypes"
+                                         TextField="@nameof(ChoosableKeyValue.Key)"
+                                         ValueField="@nameof(ChoosableKeyValue.Value)"
+                                         @bind-Value="Order.SendType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 29px;">@TextResources.APP_StringKeys_Notif_Contacts:</label>
+                    @if (Order.SendType == "2")
+                    {
+                        <TelerikDropDownList Data="Users"
+                                         TextField="@nameof(SelectListItem.Text)"
+                                         ValueField="@nameof(SelectListItem.Text)"
+                                         @bind-Value="User"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                        </TelerikDropDownList>
+                    }
+                    else
+                    {
+                        <input type="text" style="width: 200px!important;"
+                               class="form-control input-search-span-lg"
+                               id="input-contact"
+                           @bind-value="Contact" />
+                    }
+                    <button style="margin-right: 7px;" id="btn-contact" class="btn btn-primary"
+                            type="button" @onclick="OnAddContactClick">
+                        <MaterialIcon IconName="add"></MaterialIcon>
+                    </button>
+                    <button style="margin-right: 7px;" id="btn-contact" class="btn btn-light"
+                            type="button" @onclick="async (e)=> await OnModalElementClick(e,true)">
+                            @TextResources.APP_StringKeys_Elements
+                        <MaterialIcon IconName="@MaterialIconsHelper.Check_box"></MaterialIcon>
+                    </button>
+                    <div id="list-contact"
+                         class=" d-flex flex-row align-items-center flex-wrap col-md-6 border"
+                         style="min-height: 90px;width: 430px!important;margin-right: 10px;">
+                        @foreach (string contact in Contacts)
+                        {
+                            <span class="list-item item-contact"
+                              @onclick="async (e)=> await OnRemoveContact(contact)">
+                                @contact
+                            </span>
+                        }
+                    </div>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 8px !important;">
+                    <label style="margin-right: 10px !important;">@TextResources.APP_StringKeys_Notif_Content:</label>
+                    <button style="margin-right: 7px;" id="btn-contact" class="btn btn-light"
+                            type="button" @onclick="async (e)=> await OnModalElementClick(e,false)">
+                        @TextResources.APP_StringKeys_Elements
+                        <MaterialIcon IconName="@MaterialIconsHelper.Check_box"></MaterialIcon>
+                    </button>
+                    <textarea @ref="ContentTextArea"
+                              class="form-control"
+                              style="min-height: 180px;min-width: 1026px; font-size:11px;margin-right: 10px;"
+                              placeholder="از کاراکتر های [ و ] استفاده نکنید"
+                              @bind="Order.Content" @bind:event="oninput">
+                        @Order.Content      
+                    </textarea>
+                </div>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap save-button-div" style="margin:10px;">
+                <button type="button" id="btn-load-data"
+                        class="btn btn-light"
+                        @onclick="async(e)=>await ModalDetails.Open(e)">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                </button>
+                <button id="btn-clear" class="btn btn-danger" type="button"
+                        style="margin-left: 2px;"
+                        @onclick="async(e)=> await ModalDelete.Open(e)">
+                    <MaterialIcon IconName="delete"></MaterialIcon>
+                </button>
+                <button id="btn-clear" class="btn btn-warning" type="button"
+                        style="margin-left: 2px;"
+                        @onclick="OnClearClick">
+                    <MaterialIcon IconName="refresh"></MaterialIcon>
+                </button>
+                <button type="submit" id="btn-save" class="btn btn-primary"
+                        title="@TextResources.APP_StringKeys_Send">
+                    <MaterialIcon IconName="save"></MaterialIcon>
+                </button>
+            </div>
+
+        </div>
+    </EditForm>
+</div>
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalDetails"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="Orders"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="order">
+                    <td class="td-style td-dt">@order.Id</td>
+                    <td class="td-style td-dt">@order.Title</td>
+                    <td class="td-style td-dt">@order.DateTimeShamsi</td>
+                    <td class="td-style td-dt">
+                        @SendTypes.FirstOrDefault(ps=>ps.Value.Equals(order.SendType))?.Key
+                    </td>
+                    <td class="td-style td-dt">@order.Username</td>
+                    <td class="td-style td-dt">
+                        <button class="btn btn-success btn-details tr-buttom"
+                                @onclick="async()=> await OnChooseOrder(order)">
+                            @TextResources.APP_StringKeys_Choose
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllNotificationOrderVm.Id)"
+                                Title="@TextResources.APP_StringKeys_Code"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllNotificationOrderVm.Title)"
+                                Title="@TextResources.APP_StringKeys_Title"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllNotificationOrderVm.DateTimeShamsi)"
+                                Title="@TextResources.APP_StringKeys_DateTime"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllNotificationOrderVm.SendType)"
+                                Title="@TextResources.APP_StringKeys_Notif_SendType"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllNotificationOrderVm.Username)"
+                                Title="@TextResources.APP_StringKeys_Username"></GridColumn>
+                    
+                    <GridColumn></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@ElementsModalTitle"
+       @ref="ModalElements"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <div class="form-search-span" style="padding-top:10px;">
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-right:15px;">
+                    <label style="margin-right:15px;">@TextResources.APP_StringKeys_Search</label>
+                    <input @bind-value="SearchElementText" class="form-control input-search-span-lg pointer" />
+                    <button type="button" class="btn btn-warning" style="margin-left: 5px;"
+                            @onclick="OnElementRefreshClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    <button type="button" class="btn btn-primary" style="margin-left: 5px;"
+                            @onclick="OnElementSearchClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                    </button>
+                </div>
+            </div>
+            <TelerikGrid Data="SearchElements"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="element">
+                    <td class="td-style td-dt">@element.Value</td>
+                    <td class="td-style td-dt">@element.Text</td>
+                    <td class="td-style td-dt">
+                        <button class="btn btn-success btn-details tr-buttom"
+                                @onclick="async()=> await OnSelectElementClick(element.Text)">
+                            @TextResources.APP_StringKeys_Choose
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(SelectListItem.Value)"
+                                Title="@TextResources.APP_StringKeys_Code"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(SelectListItem.Text)"
+                                Title="@TextResources.APP_StringKeys_Element"></GridColumn>
+                    <GridColumn Field="" Title=""
+                                Width="80px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_Attention"
+       @ref="ModalDelete"
+       Size="ModalSize.Normal"
+       OnYesModal="OnRemoveClick"
+       YesBtnText="@TextResources.APP_StringKeys_Delete"
+       CancelBtnText="@TextResources.APP_StringKeys_Close">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @TextResources.APP_StringKeys_Remove_CheckBeforeDelete
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

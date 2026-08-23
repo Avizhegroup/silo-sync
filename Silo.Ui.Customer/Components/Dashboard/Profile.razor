@@ -1,0 +1,95 @@
+﻿@if (IsComponentShown)
+{
+    <PageTitle>پروفایل</PageTitle>
+
+    <div class="row col-md-12">
+        <EditForm Model="Request"
+              OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <div class="col-md-6 k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+                <ValidationSummary />
+            </div>
+            <div class="col-md-4">
+                <label for="uesrName" class="form-label">نام کاربری:</label>
+                <TelerikTextBox @bind-Value="Request.Username"
+                            Class="form-control"
+                            Id="uesrName"
+                            Enabled="false"></TelerikTextBox>
+            </div>
+            <div class="col-md-4">
+                <label for="persianName" class="form-label">نام فارسی:</label>
+                <TelerikTextBox @bind-Value="Request.PersianName"
+                            Class="form-control"
+                            Id="persianName"
+                            Enabled="false"></TelerikTextBox>
+            </div>
+            <div class="col-md-4">
+                <label for="role" class="form-label">نقش کاربری:</label>
+                <TelerikDropDownList Data="Roles"
+                                 TextField="NormalizedName"
+                                 ValueField="Name"
+                                 @bind-Value="Request.Role"
+                                 DefaultText="انتخاب نشده"
+                                 Class="drop-all"
+                                 Id="role"
+                                 Enabled="false">
+                </TelerikDropDownList>
+            </div>
+            <div class="col-md-4">
+                <label for="password" class="form-label">رمز عبور:</label>
+                <div class="input-group">
+                    <TelerikTextBox @bind-Value="Request.Password"
+                                Password="IsPasswordHide"
+                                Class="form-control"
+                                Id="password"></TelerikTextBox>
+                    <span class="input-group-btn">
+                        <button type="button"
+                                class="btn btn-primary"
+                            @onclick="()=> IsPasswordHide = !IsPasswordHide"
+                                style="margin-right: 5px;">
+                            <MaterialIcon IconName="@(IsPasswordHide?MaterialIconsHelper.Visibility:MaterialIconsHelper.Visibility_off)"></MaterialIcon>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="newPassword" class="form-label">کلمه عبور جدید:</label>
+                <div class="input-group">
+                    <TelerikTextBox @bind-Value="Request.PasswordNew"
+                                Password="IsNewPasswordHide"
+                                Class="form-control"
+                                Id="newPassword"></TelerikTextBox>
+                    <span class="input-group-btn">
+                        <button type="button"
+                                class="btn btn-primary"
+                            @onclick="()=> IsNewPasswordHide = !IsNewPasswordHide"
+                                style="margin-right: 5px;">
+                            <MaterialIcon IconName="@(IsNewPasswordHide ? MaterialIconsHelper.Visibility : MaterialIconsHelper.Visibility_off)"></MaterialIcon>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="rePasswordNew" class="form-label">تکرار کلمه عبور جدید:</label>
+                <div class="input-group">
+                    <TelerikTextBox @bind-Value="Request.RePasswordNew"
+                                Password="IsReNewPasswordHide"
+                                Class="form-control"
+                                Id="rePasswordNew"></TelerikTextBox>
+                    <span class="input-group-btn">
+                        <button type="button"
+                                class="btn btn-primary"
+                            @onclick="()=> IsReNewPasswordHide = !IsReNewPasswordHide"
+                                style="margin-right: 5px;">
+                            <MaterialIcon IconName="@(IsReNewPasswordHide ? MaterialIconsHelper.Visibility : MaterialIconsHelper.Visibility_off)"></MaterialIcon>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">ذخیره</button>
+                <button type="button" class="btn btn-warning" @onclick="OnClearClick">پاک کردن</button>
+            </div>
+        </EditForm>
+    </div>
+}

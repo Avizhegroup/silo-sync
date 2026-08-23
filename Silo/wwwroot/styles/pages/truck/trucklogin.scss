@@ -1,0 +1,86 @@
+﻿.page-truck-login {
+    max-width: 768px;
+    margin: auto;
+
+    .div-warning {
+        display: block;
+        width: 100%;
+        min-height: 50px;
+        color: $red;
+        border-right: solid 15px $red;
+        text-align: right;
+        background-color: $grey;
+        padding-right: 10px;
+        padding-left: 20px;
+        padding-top: 10px;
+
+        .logo-cancel {
+            position: absolute;
+            position: absolute;
+            left: 0px;
+            margin-left: 20px;
+            cursor: pointer;
+        }
+    }
+
+    .app-center {
+        background-size: 768px;
+        margin: auto;
+        position: fixed;
+        inset: 0;
+        background-color: white;
+
+        .app-logo {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 43px;
+            width: 145px;
+            margin-bottom: 27px;
+        }
+
+        .login-input {
+            text-align: center;
+            display: block;
+            background-color: $greyWithOp;
+            color: #000;
+            border: 1px;
+            border-color: $greyWithOp;
+            height: 72px;
+            border-radius: 35px;
+            width: 368px;
+            font-size: 30px;
+            margin-left: auto;
+            margin-right: auto;
+
+            & :focus {
+                border-color: $greyWithOp;
+            }
+        }
+
+        .login-button {
+            border-radius: 35px;
+            background-color: #00C7E9;
+            border: 1px;
+            border-color: #00C7E9;
+            color: white;
+            font-size: 30px;
+            width: 368px;
+            text-align: center;
+            height: 72px;
+            margin: 0;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+
+
+            & :focus {
+                border-color: #00C7E9;
+            }
+        }
+    }
+
+    ::placeholder {
+        color: $grey;
+    }
+}

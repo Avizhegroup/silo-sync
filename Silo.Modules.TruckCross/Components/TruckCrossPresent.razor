@@ -1,0 +1,397 @@
+﻿@using Silo.Application.Dto;
+@using Silo.Application.Features;
+@using Silo.Shared;
+@using Silo.Modules.TruckCross.Tools
+
+<EditForm Model="CrossRequest"
+          OnInvalidSubmit="OnInvalidSubmit"
+          OnValidSubmit="OnPresentValidSubmit"
+          Context="editFormContext">
+    <DataAnnotationsValidator />
+
+    <TelerikTabStrip ActiveTabIndexChanged="OnActiveTabbChanged" PersistTabContent="true">
+
+        @* ── Tab 1: Driver Info ────────────────────────────────── *@
+        <TabStripTab Title="@TextResources.APP_StringKeys_Info_Person">
+            <div class="tc-form-section mt-3">
+                <div class="tc-form-section-header">
+                    <span class="tc-form-section-icon"><MaterialIcon IconName="person" /></span>
+                    <span class="tc-form-section-title">@TextResources.APP_StringKeys_Info_Person</span>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_NationalCode</label>
+                            <div class="input-group">
+                                <TelerikMaskedTextBox Class="form-control text-dir-left"
+                                                      Mask="000 000000 0"
+                                                      TabIndex="1"
+                                                      @bind-Value="CrossRequest.NationalCode" />
+                                <button class="btn btn-outline-primary" type="button" @onclick="OnSearchNationalCode">
+                                    <MaterialIcon IconName="search" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_NameAndFamily</label>
+                            <TelerikTextBox Class="form-control"
+                                            @bind-Value="CrossRequest.DriverName"
+                                            TabIndex="2" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_Phone</label>
+                            <TelerikMaskedTextBox Class="form-control text-dir-left"
+                                                  Mask="0900 000 0000"
+                                                  @bind-Value="CrossRequest.DriverPhone"
+                                                  TabIndex="4" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_Company</label>
+                            <TelerikDropDownList Data="TruckCompanies"
+                                                 TextField="@nameof(GetAllTruckCompaniesVm.Title)"
+                                                 ValueField="@nameof(GetAllTruckCompaniesVm.Id)"
+                                                 @bind-Value="CrossRequest.TruckCrossCompanyId"
+                                                 DefaultText=""
+                                                 Filterable="true"
+                                                 FilterOperator="StringFilterOperator.Contains"
+                                                 TabIndex="3"
+                                                 Class="drop-all w-100">
+                                <DropDownListSettings>
+                                    <DropDownListPopupSettings Class="text-align-right" />
+                                </DropDownListSettings>
+                            </TelerikDropDownList>
+                        </div>
+                    </div>
+                </div>
+                <TruckCrossDynamics SectionId="1"
+                                    CrossRequest="CrossRequest"
+                                    LabelMarginRightFirst="105px"
+                                    LabelMarginRightSecond="95px"
+                                    FieldWidth="200px" />
+            </div>
+        </TabStripTab>
+
+        @* ── Tab 2: Truck Info ─────────────────────────────────── *@
+        <TabStripTab Title="@TextResources.APP_StringKeys_Info_Truck">
+            <div class="tc-form-section mt-3">
+                <div class="tc-form-section-header">
+                    <span class="tc-form-section-icon"><MaterialIcon IconName="local_shipping" /></span>
+                    <span class="tc-form-section-title">@TextResources.APP_StringKeys_Info_Truck</span>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_Plaque</label>
+                            <div class="d-flex align-items-center gap-1 flex-row-reverse">
+                                <TelerikTextBox Class="form-control plaque-part" Width="70px" MaxLength="2" TabIndex="10" @bind-Value="CrossRequest.CityPart" />
+                                <span class="fw-bold px-1">ایران</span>
+                                <TelerikTextBox Class="form-control plaque-part" Width="80px" MaxLength="3" TabIndex="9" @bind-Value="CrossRequest.SecondPart" />
+                                <TelerikDropDownList Data="Tools.TruckCrossStringTools.GetIranianPlateAlphabets()"
+                                                     TextField="Name"
+                                                     ValueField="Value"
+                                                     @bind-Value="CrossRequest.Character"
+                                                     Width="70px"
+                                                     DefaultText=""
+                                                     TabIndex="8"
+                                                     Class="drop-all" />
+                                <TelerikTextBox Class="form-control plaque-part" Width="70px" MaxLength="2" TabIndex="7" @bind-Value="CrossRequest.FirstPart" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_TruckCross_TypeTruck</label>
+                            <TelerikDropDownList Data="TruckTypes"
+                                                 TextField="@nameof(GetAllTruckTypesVm.Title)"
+                                                 ValueField="@nameof(GetAllTruckTypesVm.Id)"
+                                                 @bind-Value="CrossRequest.TypeId"
+                                                 DefaultText=""
+                                                 TabIndex="12"
+                                                 Filterable="true"
+                                                 FilterOperator="StringFilterOperator.Contains"
+                                                 Class="drop-all w-100">
+                                <DropDownListSettings>
+                                    <DropDownListPopupSettings Class="text-align-right" />
+                                </DropDownListSettings>
+                            </TelerikDropDownList>
+                        </div>
+                    </div>
+                </div>
+                <TruckCrossDynamics SectionId="2"
+                                    CrossRequest="CrossRequest"
+                                    LabelMarginRightsFirst="@(new List<string>{ "86px", "91px" })"
+                                    FieldWidth="200px" />
+            </div>
+        </TabStripTab>
+
+        @* ── Tab 3: Present Info ───────────────────────────────── *@
+        <TabStripTab Title="@TextResources.APP_StringKeys_Info_Present">
+            <div class="tc-form-section mt-3">
+                <div class="tc-form-section-header">
+                    <span class="tc-form-section-icon"><MaterialIcon IconName="how_to_reg" /></span>
+                    <span class="tc-form-section-title">@TextResources.APP_StringKeys_Info_Present</span>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_TruckCross_Present_Cause</label>
+                            <TelerikDropDownList Data="Causes"
+                                                 TextField="@nameof(GetAllTruckCrossPresentCauseVm.Title)"
+                                                 ValueField="@nameof(GetAllTruckCrossPresentCauseVm.Id)"
+                                                 @bind-Value="CrossRequest.PresentCause"
+                                                 DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                                 TabIndex="14"
+                                                 Class="drop-all w-100"
+                                                 Filterable="true"
+                                                 FilterOperator="StringFilterOperator.Contains"
+                                                 OnChange="OnPresentCauseChange">
+                                <DropDownListSettings>
+                                    <DropDownListPopupSettings Class="text-align-right" />
+                                </DropDownListSettings>
+                            </TelerikDropDownList>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_TruckCross_Operation_Type</label>
+                            <TelerikDropDownList Data="OperationTypes"
+                                                 TextField="@nameof(GetAllTruckCrossOperationTypesVm.Title)"
+                                                 ValueField="@nameof(GetAllTruckCrossOperationTypesVm.Id)"
+                                                 @bind-Value="CrossRequest.PresentOperationTypeId"
+                                                 DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                                 TabIndex="15"
+                                                 Filterable="true"
+                                                 FilterOperator="StringFilterOperator.Contains"
+                                                 Class="drop-all w-100">
+                                <DropDownListSettings>
+                                    <DropDownListPopupSettings Class="text-align-right" />
+                                </DropDownListSettings>
+                            </TelerikDropDownList>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_TruckCross_Shipment</label>
+                            <TelerikDropDownList Data="Shipments"
+                                                 TextField="@nameof(GetAllTruckCrossShipmentVm.Title)"
+                                                 ValueField="@nameof(GetAllTruckCrossShipmentVm.Id)"
+                                                 @bind-Value="CrossRequest.PresentShipmentId"
+                                                 DefaultText=""
+                                                 TabIndex="16"
+                                                 Filterable="true"
+                                                 FilterOperator="StringFilterOperator.Contains"
+                                                 Class="drop-all w-100">
+                                <DropDownListSettings>
+                                    <DropDownListPopupSettings Class="text-align-right" />
+                                </DropDownListSettings>
+                            </TelerikDropDownList>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_TruckCross_Shipment_Number</label>
+                            <TelerikTextBox Class="form-control"
+                                            @bind-Value="CrossRequest.PresentShipmentNumber"
+                                            TabIndex="17" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_TruckCross_Customer</label>
+                            <TelerikDropDownList Data="Customers"
+                                                 TextField="@nameof(GetAllTruckCrossCustomerVm.Title)"
+                                                 ValueField="@nameof(GetAllTruckCrossCustomerVm.Id)"
+                                                 @bind-Value="CrossRequest.PresentCustomerId"
+                                                 DefaultText=""
+                                                 TabIndex="18"
+                                                 Filterable="true"
+                                                 FilterOperator="StringFilterOperator.Contains"
+                                                 Class="drop-all w-100">
+                                <DropDownListSettings>
+                                    <DropDownListPopupSettings Class="text-align-right" />
+                                </DropDownListSettings>
+                            </TelerikDropDownList>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_TruckCross_Operation_Destination</label>
+                            <TelerikDropDownList Data="OperationDestinations"
+                                                 TextField="@nameof(GetAllTruckCrossOperationDestinationsVm.Title)"
+                                                 ValueField="@nameof(GetAllTruckCrossOperationDestinationsVm.Id)"
+                                                 @bind-Value="CrossRequest.PresentOperationDestinationId"
+                                                 DefaultText=""
+                                                 TabIndex="19"
+                                                 Filterable="true"
+                                                 FilterOperator="StringFilterOperator.Contains"
+                                                 Class="drop-all w-100">
+                                <DropDownListSettings>
+                                    <DropDownListPopupSettings Class="text-align-right" />
+                                </DropDownListSettings>
+                            </TelerikDropDownList>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_Description</label>
+                            <TelerikTextArea Class="form-control"
+                                             TabIndex="20"
+                                             @bind-Value="CrossRequest.PresentDesc" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_TruckCross_Turn</label>
+                            <div class="input-group">
+                                <TelerikNumericTextBox Class="form-control"
+                                                       @bind-Value="CrossRequest.PresentTurn" />
+                                <button type="button" class="btn btn-outline-primary" @onclick="OnPresentTurnClick">
+                                    <MaterialIcon IconName="schedule" />
+                                    <TelerikLoader Type="@LoaderType.Pulsing"
+                                                   Size="@(ThemeConstants.Loader.Size.Small)"
+                                                   Visible="IsPresentTurnLoading" />
+                                </button>
+                                <button class="btn btn-outline-secondary" type="button" @onclick="OnOpenPresentGallery">
+                                    <MaterialIcon IconName="photo_library" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <TruckCrossDynamics SectionId="3"
+                                    CrossRequest="CrossRequest"
+                                    LabelMarginRightFirst="100px"
+                                    FieldWidth="520px"
+                                    RichTextMarginTop="20px" />
+            </div>
+
+            @* Metadata: user/date/time *@
+            @if (CrossRequest.PresentUsername.HasValue() || CrossRequest.PresentDateTime is not null)
+            {
+                <div class="tc-form-section">
+                    <div class="tc-form-section-header">
+                        <span class="tc-form-section-icon"><MaterialIcon IconName="info" /></span>
+                        <span class="tc-form-section-title">@TextResources.APP_StringKeys_TruckCross_Present_User</span>
+                    </div>
+                    <div class="tc-meta-row">
+                        @if (CrossRequest.PresentUsername.HasValue())
+                        {
+                            <span class="tc-meta-chip">
+                                <MaterialIcon IconName="person" />
+                                <span class="tc-meta-label">@TextResources.APP_StringKeys_TruckCross_Present_User:</span>
+                                @CrossRequest.PresentUsername
+                            </span>
+                        }
+                        @if (CrossRequest.PresentDateTime is not null)
+                        {
+                            <span class="tc-meta-chip">
+                                <MaterialIcon IconName="calendar_today" />
+                                <span class="tc-meta-label">@TextResources.APP_StringKeys_TruckCross_Present_Date:</span>
+                                @(PersianCalendarTools.GregorianToPersian(CrossRequest.PresentDateTime))
+                            </span>
+                            <span class="tc-meta-chip">
+                                <MaterialIcon IconName="schedule" />
+                                <span class="tc-meta-label">@TextResources.APP_StringKeys_TruckCross_Present_Time:</span>
+                                @(((DateTime)CrossRequest.PresentDateTime).ToString("HH:mm"))
+                            </span>
+                        }
+                    </div>
+                </div>
+            }
+        </TabStripTab>
+
+    </TelerikTabStrip>
+
+    <div class="tc-action-bar">
+        <button type="button" class="btn btn-warning" @onclick="OnClearButtonClick">
+            <MaterialIcon IconName="refresh" />
+        </button>
+        <button type="button" class="btn btn-danger" @onclick="OnRevokeTruckCrossModalOpen">
+            <MaterialIcon IconName="@MaterialIconsHelper.Cancel" />
+        </button>
+        <button type="button" class="btn btn-success">
+            <MaterialIcon IconName="print" />
+        </button>
+        <button type="submit" class="btn btn-primary">
+            <MaterialIcon IconName="save" />
+        </button>
+    </div>
+</EditForm>
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Choose"
+       @ref="ModalReviewPlaque"
+       Size="ModalSize.Normal"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <div class="alert alert-warning mb-2">
+                @TextResources.APP_StringKeys_TruckCross_ChoosePlaque
+            </div>
+            <TelerikGrid Data="ReviewPlaqueCrosses"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="cross">
+                    <td class="td-style">
+                        @cross.Plaque.Substring(6, 2)
+                        @TextResources.APP_StringKeys_Iran
+                        @cross.Plaque.Substring(3, 3)
+                        @cross.Plaque.Substring(2, 1)
+                        @cross.Plaque.Substring(0, 2)
+                    </td>
+                    <td class="td-style">
+                        @(PersianCalendarTools.GregorianToPersian(cross.PresentDateTime))
+                        @(((DateTime)cross.PresentDateTime).ToString("HH:mm"))
+                    </td>
+                    <td class="td-style">
+                        <button type="button"
+                                class="btn btn-success btn-details tr-buttom"
+                                @onclick="async () => await OnChooseReviewTruckCross(cross)">
+                            @TextResources.APP_StringKeys_Choose
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(TruckCrossDataDto.Plaque)"
+                                Title="@TextResources.APP_StringKeys_Plaque"></GridColumn>
+                    <GridColumn Field="@nameof(TruckCrossDataDto.PresentDateTime)"
+                                Title="@TextResources.APP_StringKeys_TruckCross_Present_Date"></GridColumn>
+                    <GridColumn Width="60px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Revoke"
+       @ref="ModalRevoke"
+       Size="ModalSize.Normal"
+       OkBtnClass="btn btn-danger"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Revoke_Word"
+       OnOkModal="OnRevokeConfirmClick">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <div class="alert alert-warning mb-2">
+                @TextResources.APP_StringKeys_Validation_Revoke_TruckCross_Present
+            </div>
+            <div>
+                <label>@TextResources.APP_StringKeys_NameAndFamily: </label>
+                <label>@CrossRequest.DriverName</label>
+            </div>
+            <div>
+                <label>@TextResources.APP_StringKeys_Plaque: </label>
+                <label>@CrossRequest.FirstPart  @CrossRequest.Character @CrossRequest.SecondPart ایران @CrossRequest.CityPart</label>
+            </div>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>

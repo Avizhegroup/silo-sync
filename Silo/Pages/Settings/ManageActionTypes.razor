@@ -1,0 +1,303 @@
+﻿@page "/settings/actiontypes"
+@using Silo.Application.Features
+
+@inherits SiloBasePage
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; padding:10px;">
+        <EditForm Model="Request"
+                  OnInvalidSubmit="OnInvalidSubmit"
+                  OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            @if (Request.Code.HasValue())
+            {
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <label>@TextResources.APP_StringKeys_Code</label>
+                    <TelerikNumericTextBox @bind-Value="Request.Code"
+                                           Class="form-control input-search-span"
+                                           ReadOnly="true" />
+                </div>
+            }
+            <div class=" d-flex flex-row align-items-center flex-wrap"
+                 style="margin-top: 10px">
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_Title</label>
+                <TelerikTextBox @bind-Value="Request.Title"
+                                Class="form-control input-search-span"></TelerikTextBox>
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_RfidPower</label>
+                <TelerikNumericTextBox @bind-Value="Request.RfidPower"
+                                Class="form-control input-search-span"></TelerikNumericTextBox>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap"
+                 style="margin-top: 10px">
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_Field_Warehouse_Operational_Type @TextResources.APP_StringKeys_From</label>
+                <button type="button"
+                        class="btn btn-light"
+                        @onclick="async ()=> await OnWarehouseTypesModalClick(true)">
+                    @GetWarehouseTypeText(true)
+                    <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                </button>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap"
+                 style="margin-top: 10px">
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_Field_Warehouse_Operational_Type @TextResources.APP_StringKeys_Destination</label>
+                <button type="button"
+                        class="btn btn-light"
+                        @onclick="async ()=> await OnWarehouseTypesModalClick(false)">
+                    @GetWarehouseTypeText(false)
+                    <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                </button>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap"
+                 style="margin-top: 10px">
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_DocumentStatus</label>
+                <button type="button"
+                        class="btn btn-light"
+                        @onclick="OnDocumentStatusModalClick">
+                    @GetDocumentStatusText()
+                    <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                </button>
+            </div> 
+            <div class=" d-flex flex-row align-items-center flex-wrap"
+                        style="margin-top: 10px">
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_DocumentStatus_Permitted</label>
+                <button type="button"
+                        class="btn btn-light"
+                        @onclick="OnDocumentStatusPermittedModalClick">
+                    @GetPermittedDocumentStatusText()
+                    <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                </button>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap"
+                 style="margin-top: 10px">
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_ActionControls</label>
+                <button type="button"
+                        class="btn btn-light"
+                        @onclick="OnActionControlsModalOpen">
+                    @GetActionControlsText()
+                    <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                </button>
+                <div style="left:5px; position:absolute;">
+                    <button type="button"
+                            class="btn btn-light"
+                            @onclick="OnOpenModalClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                    </button>
+                    <button type="button"
+                            class="btn btn-warning"
+                            @onclick="OnRefreshClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    @if (Request.Id.HasValue())
+                    {
+                        <button type="button"
+                                class="btn btn-danger"
+                                @onclick="OnRemoveClick">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                        </button>
+                    }
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                    </button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+<Modal Buttons="ModalButtons.Close"
+       @ref="ModalActionTypes"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       CloseBtnText="@TextResources.APP_StringKeys_Ignore"
+       Size="ModalSize.ExtraLarge">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @if (ActionTypes is not null)
+            {
+                <TelerikGrid Data="ActionTypes"
+                             PageSize="10"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true">
+                    <RowTemplate Context="actionType">
+                        <td class="td-style">@actionType.Code</td>
+                        <td class="td-style">@actionType.Title</td>
+                        <td class="td-style">
+                            <button @onclick="async()=> await OnChooseActionType(actionType)"
+                                    type="button"
+                                    class="btn btn-success tr-buttom">
+                                @TextResources.APP_StringKeys_Choose
+                            </button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetAllActionTypesDto.Code)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllActionTypesDto.Title)"></GridColumn>
+                        <GridColumn Width="60px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.Close"
+       @ref="ModalWarehouseTypes"
+       ModalTitle="@ModalWarehouseTypesTitle"
+       CloseBtnText="@TextResources.APP_StringKeys_Choose"
+       CloseBtnClass="btn-primary"
+       OnCloseModal="OnWarehouseTypesModalClose"
+       Size="ModalSize.Large">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @if (WarehouseTypes is not null)
+            {
+                <TelerikGrid Data="WarehouseTypes"
+                             PageSize="10"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true">
+                    <RowTemplate Context="warehouseType">
+                        <td class="td-style">
+                            <TelerikCheckBox @bind-Value="warehouseType.IsChoosen"></TelerikCheckBox>
+                        </td>
+                        <td class="td-style">@(warehouseType.Code)</td>
+                        <td class="td-style">@warehouseType.Title</td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridCheckboxColumn Visible="true"
+                                            Width="30px" 
+                                            HeaderClass="header-select-all">
+                            <HeaderTemplate>
+                                @{
+                                    <TelerikCheckBox @bind-Value="@IsAllWarehouseTypeChoosen"
+                                                     OnChange="()=> WarehouseTypes.ForEach(p => p.IsChoosen = IsAllWarehouseTypeChoosen)" />
+                                }
+                            </HeaderTemplate>
+                        </GridCheckboxColumn>
+                        <GridColumn Field="@nameof(GetAllWarehouseTypesDto.Code)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllWarehouseTypesDto.Title)"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.Close"
+       @ref="ModalDocumentStatus"
+       ModalTitle="@TextResources.APP_StringKeys_DocumentStatus"
+       CloseBtnText="@TextResources.APP_StringKeys_Choose"
+       CloseBtnClass="btn-primary"
+       OnCloseModal="OnDocumentStatusModalClose"
+       Size="ModalSize.Large">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @if (DocumentStatuses is not null)
+            {
+                <TelerikGrid Data="DocumentStatuses"
+                             PageSize="10"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true">
+                    <RowTemplate Context="status">
+                        <td class="td-style">
+                            <TelerikCheckBox @bind-Value="status.IsChoosen"
+                                             OnChange="async ()=> await OnDocumentStatusChooseChange(status)" />
+                        </td>
+                        <td class="td-style">@status.Title</td>
+                        <td class="td-style">
+                            @if (status.IsCartablePermitted)
+                            {
+                                <MaterialIcon IconName="@MaterialIconsHelper.Check"
+                                              Class="bg-success"></MaterialIcon>
+                            }
+                            else
+                            {
+                                <MaterialIcon IconName="@MaterialIconsHelper.Close"
+                                              Class="bg-danger"></MaterialIcon>
+                            }
+                        </td>
+                        <td class="td-style">
+                            @if (status.IsUpdatePermitted)
+                            {
+                                <MaterialIcon IconName="@MaterialIconsHelper.Check"
+                                              Class="bg-success"></MaterialIcon>
+                            }
+                            else
+                            {
+                                <MaterialIcon IconName="@MaterialIconsHelper.Close"
+                                              Class="bg-danger"></MaterialIcon>
+                            }
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridCheckboxColumn Visible="true"
+                                            Width="30px"
+                                            HeaderClass="header-select-all">
+                            <HeaderTemplate>
+                                @{
+                                    @if (IsModalDocumentStatusOpenedInNonPermittedMode)
+                                    {
+                                        <TelerikCheckBox @bind-Value="@IsAllDocumentStatusChoosen"
+                                                         OnChange="()=> DocumentStatuses.ForEach(p => p.IsChoosen = IsAllDocumentStatusChoosen)" />
+                                    }
+                                }
+                            </HeaderTemplate>
+                        </GridCheckboxColumn>
+                        <GridColumn Field="@nameof(GetAllDocumentStatusVm.Title)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllDocumentStatusVm.IsCartablePermitted)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllDocumentStatusVm.IsUpdatePermitted)"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.Close"
+       @ref="ModalActionControls"
+       ModalTitle="@TextResources.APP_StringKeys_ActionControls"
+       CloseBtnText="@TextResources.APP_StringKeys_Choose"
+       CloseBtnClass="btn-primary"
+       OnCloseModal="OnActionControlsModalClose"
+       Size="ModalSize.Large">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @if (ActionControls is not null)
+            {
+                <TelerikGrid Data="ActionControls"
+                             PageSize="10"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true">
+                    <RowTemplate Context="control">
+                        <td class="td-style">
+                            <TelerikCheckBox @bind-Value="control.IsChoosen"></TelerikCheckBox>
+                        </td>
+                        <td class="td-style">@control.Code</td>
+                        <td class="td-style">@control.Name</td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridCheckboxColumn Visible="true"
+                                            Width="30px"
+                                            HeaderClass="header-select-all">
+                            <HeaderTemplate>
+                                @{
+                                    <TelerikCheckBox @bind-Value="@IsAllActionControlsChoosen"
+                                                     OnChange="()=> ActionControls.ForEach(p => p.IsChoosen = IsAllActionControlsChoosen)" />
+                                }
+                            </HeaderTemplate>
+                        </GridCheckboxColumn>
+                        <GridColumn Field="@nameof(GetAllActionTypeControlsDto.Code)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllActionTypeControlsDto.Name)"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

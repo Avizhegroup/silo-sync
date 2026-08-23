@@ -1,0 +1,22 @@
+﻿@if (IsComponentShown)
+{
+    <div class="app-center row col-md-12"
+         style="display: grid;">
+        <input type="text" 
+               @bind-value="ProductCode"
+               class="truck-number"
+               placeholder="@TextResources.APP_StringKeys_ProductCode" />
+
+        <div class="div-submit text-align-center">
+            <TruckButton ButtonType="ButtonType.Button"
+                         OnClick="OnValidSubmit">
+                <MaterialIcon IconName="done"
+                          Style="font-size:50px; color:white;"></MaterialIcon>
+            </TruckButton>
+            <TruckButton ButtonType="ButtonType.Button" OnClick="OnCloseClick">
+                <MaterialIcon IconName="close"
+                          Style="font-size:50px; color:white;"></MaterialIcon>
+            </TruckButton>
+        </div>
+    </div>
+}

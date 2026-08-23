@@ -1,0 +1,382 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<StiSerializer version="1.02" type="Net" application="StiReport">
+  <Dictionary Ref="1" type="Dictionary" isKey="true">
+    <BusinessObjects isList="true" count="0" />
+    <Databases isList="true" count="0" />
+    <DataSources isList="true" count="1">
+      <Serials Ref="2" type="Stimulsoft.Report.Dictionary.StiBusinessObjectSource" isKey="true">
+        <Alias>Serials</Alias>
+        <Columns isList="true" count="1">
+          <value>Value,سریال,System.String</value>
+        </Columns>
+        <Dictionary isRef="1" />
+        <Key>a1b2c3d4e5f6478a9b0c1d2e3f4a5b6c</Key>
+        <Name>Serials</Name>
+        <NameInSource>Serials</NameInSource>
+      </Serials>
+    </DataSources>
+    <Relations isList="true" count="0" />
+    <Report isRef="0" />
+    <Resources isList="true" count="0" />
+    <Variables isList="true" count="19">
+      <value>,DateString,DateString,,System.String,,False,False,False,False,,_x0033_bcc6cc2843a423d8588b943b61b4a17</value>
+      <value>,ProductSize,ProductSize,,System.String,,False,False,False,False,,_x0032_deeff4c3db745ea877650af824aca29</value>
+      <value>,CompanyName,CompanyName,,System.String,,False,False,False,False,,ea280d2760214387b71d225afb28a9d8</value>
+      <value>,ProductTitle,ProductTitle,,System.String,,False,False,False,False,,f047aed46b8843938f5b8af29e201f10</value>
+      <value>,ProductUnit,ProductUnit,,System.String,,False,False,False,False,,aefe22844a674b50a32b00a3352d7266</value>
+      <value>,ProductValue,ProductValue,,System.String,,False,False,False,False,,_x0039_138d73b6d5d4b98ae3ed9a3f5c482cd</value>
+      <value>,ProductCountInPack,ProductCountInPack,,System.String,,False,False,False,False,,_x0031_12479334ef74d4c890014afcdfa447e</value>
+      <value>,ProductPackValue,ProductPackValue,,System.String,,False,False,False,False,,_x0039_8cd258c9faf4f8986835a03b7fcdec5</value>
+      <value>,ProductPackWeight,ProductPackWeight,,System.String,,False,False,False,False,,cfaf9cdf8f8a47f6964b7a7f4775c90c</value>
+      <value>,ProductStatusTitle,ProductStatusTitle,,System.String,,False,False,False,False,,de0724323e5a4ebbb7045ffde4218574</value>
+      <value>,DocumentId,DocumentId,,System.String,,False,False,False,False,,caa001406a5748fdb67b5435f36450e9</value>
+      <value>,ProductCode,ProductCode,,System.String,,False,False,False,False,,_x0037_f9a50374d754195b5e2d263acb5cc85</value>
+      <value>,RegCode,RegCode,,System.String,,False,False,False,False,,bca08bb6933f40a7868ba7536e6f983f</value>
+      <value>,Count,Count,,System.String,,False,False,False,False,,f528e500dec846298a67d5380309f5f6</value>
+      <value>,Line,Line,,System.String,,False,False,False,False,,a344795db2ec420bb305e06bf13e391f</value>
+      <value>,Shift,Shift,,System.String,,False,False,False,False,,_x0038_59845f7771c44df938a7cabf52efbac</value>
+      <value>,Warehouse,Warehouse,,System.String,,False,False,False,False,,_x0032_186c7977ed34231ab9d77f11b3489fd</value>
+      <value>,نام_کارفرما,نام_کارفرما,نام_کارفرما,System.String,,False,False,False,False,,_x0035_39fec51eb1d48839a6899ef5ebe4ece</value>
+      <value>,تاریخ_ورود_قطعات,تاریخ_ورود_قطعات,تاریخ_ورود_قطعات,System.String,,False,False,False,False</value>
+    </Variables>
+  </Dictionary>
+  <EngineVersion>EngineV2</EngineVersion>
+  <GlobalizationStrings isList="true" count="0" />
+  <Key>b1c2d3e4f5a6478b9c0d1e2f3a4b5c6d</Key>
+  <MetaTags isList="true" count="0" />
+  <Pages isList="true" count="1">
+    <Page1 Ref="3" type="Page" isKey="true">
+      <Border>None;Black;2;Solid;False;4;Black</Border>
+      <Brush>Transparent</Brush>
+      <Components isList="true" count="3">
+        <TextFooterSys Ref="4" type="Text" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>5.9,-0.35,1.5,0.2</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Font>IRANSans(FaNum),10</Font>
+          <HorAlignment>Right</HorAlignment>
+          <Margins>0,0,0,0</Margins>
+          <Name>TextFooterSys</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <Text>سیلو- مدیریت انبارمحصول</Text>
+          <TextBrush>Black</TextBrush>
+          <Type>Expression</Type>
+        </TextFooterSys>
+        <TextFooterPage Ref="5" type="Text" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>4.9,-0.35,0.5,0.3</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Expressions isList="true" count="0" />
+          <Font>IRANSans(FaNum),10,Bold</Font>
+          <HorAlignment>Center</HorAlignment>
+          <Margins>0,0,0,0</Margins>
+          <Name>TextFooterPage</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <Text>{PageNumber}</Text>
+          <TextBrush>Black</TextBrush>
+          <Type>Expression</Type>
+        </TextFooterPage>
+        <DataBand1 Ref="6" type="DataBand" isKey="true">
+          <Brush>Transparent</Brush>
+          <BusinessObjectGuid isNull="true" />
+          <ClientRectangle>0,0.2,11.69,7.96</ClientRectangle>
+          <Components isList="true" count="14">
+            <Text4 Ref="7" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>4,0.4,7,1.2</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,40,Bold</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text4</Name>
+              <Page isRef="3" />
+              <Parent isRef="6" />
+              <Text>کارخانه بازسازی شرکت موادکاران</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text4>
+            <Shape1 Ref="8" type="Shape" isKey="true">
+              <BackgroundColor>Transparent</BackgroundColor>
+              <BorderColor>Black</BorderColor>
+              <Brush>Transparent</Brush>
+              <ClientRectangle>4,1.6,7,1.2</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>Arial,8</Font>
+              <ForeColor>Black</ForeColor>
+              <Margins>0,0,0,0</Margins>
+              <Name>Shape1</Name>
+              <Page isRef="3" />
+              <Parent isRef="6" />
+              <ShapeType Ref="9" type="Stimulsoft.Report.Components.ShapeTypes.StiRectangleShapeType" isKey="true" />
+            </Shape1>
+            <Text5 Ref="10" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>9.4,1.9,1.5,0.6</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,20,Bold</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text5</Name>
+              <Page isRef="3" />
+              <Parent isRef="6" />
+              <Text>شماره سریال</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text5>
+            <Text6 Ref="11" type="Text" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>6.4,1.9,2.99,0.6</ClientRectangle>
+              <ComponentStyle>Data1</ComponentStyle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>IRANSans(FaNum),20</Font>
+              <Guid>94b9eb8ded974fd0baa9b361161ef530</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>3,3,3,3</Margins>
+              <Name>Text6</Name>
+              <Page isRef="3" />
+              <Parent isRef="6" />
+              <Text>{Serials.Value}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextOptions>,,,Trimming=Character,,A=0</TextOptions>
+              <Type>DataColumn</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text6>
+            <BarCode2 Ref="12" type="Stimulsoft.Report.BarCodes.StiBarCode" isKey="true">
+              <BackColor>Transparent</BackColor>
+              <BarCodeType Ref="13" type="Stimulsoft.Report.BarCodes.StiCode128AutoBarCodeType" isKey="true" />
+              <ClientRectangle>4.1,1.7,2.3,1</ClientRectangle>
+              <Code>{Serials.Value}</Code>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>Arial,8,Bold,Pixel</Font>
+              <ForeColor>74, 74, 74</ForeColor>
+              <HorAlignment>Center</HorAlignment>
+              <Name>BarCode2</Name>
+              <Page isRef="3" />
+              <Parent isRef="6" />
+              <VertAlignment>Center</VertAlignment>
+            </BarCode2>
+            <Shape2 Ref="14" type="Shape" isKey="true">
+              <BackgroundColor>Transparent</BackgroundColor>
+              <BorderColor>Black</BorderColor>
+              <Brush>Transparent</Brush>
+              <ClientRectangle>4,2.8,7,1.6</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>Arial,8</Font>
+              <ForeColor>Black</ForeColor>
+              <Margins>0,0,0,0</Margins>
+              <Name>Shape2</Name>
+              <Page isRef="3" />
+              <Parent isRef="6" />
+              <ShapeType Ref="15" type="Stimulsoft.Report.Components.ShapeTypes.StiRectangleShapeType" isKey="true" />
+            </Shape2>
+            <Text7 Ref="16" type="Text" isKey="true">
+              <AllowHtmlTags>True</AllowHtmlTags>
+              <Border>None;[0:0:0];1;Solid;False;4;Black</Border>
+              <Brush>[255:255:255]</Brush>
+              <ClientRectangle>4.1,2.9,6.8,1.35</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,39</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text7</Name>
+              <Page isRef="3" />
+              <Parent isRef="6" />
+              <Text>{ProductTitle}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextQuality>Wysiwyg</TextQuality>
+              <VertAlignment>Center</VertAlignment>
+            </Text7>
+            <Shape3 Ref="17" type="Shape" isKey="true">
+              <BackgroundColor>Transparent</BackgroundColor>
+              <BorderColor>Black</BorderColor>
+              <Brush>Transparent</Brush>
+              <ClientRectangle>0.2,2.8,3.8,1.6</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>Arial,8</Font>
+              <ForeColor>Black</ForeColor>
+              <Margins>0,0,0,0</Margins>
+              <Name>Shape3</Name>
+              <Page isRef="3" />
+              <Parent isRef="6" />
+              <ShapeType Ref="18" type="Stimulsoft.Report.Components.ShapeTypes.StiRectangleShapeType" isKey="true" />
+            </Shape3>
+            <Text8 Ref="19" type="Text" isKey="true">
+              <AllowHtmlTags>True</AllowHtmlTags>
+              <Border>None;[0:0:0];1;Solid;False;4;Black</Border>
+              <Brush>[255:255:255]</Brush>
+              <ClientRectangle>0.3,2.9,3.6,1.35</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,48</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text8</Name>
+              <Page isRef="3" />
+              <Parent isRef="6" />
+              <Text>{ProductValue}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextQuality>Wysiwyg</TextQuality>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text8>
+            <Shape4 Ref="20" type="Shape" isKey="true">
+              <BackgroundColor>Transparent</BackgroundColor>
+              <BorderColor>Black</BorderColor>
+              <Brush>Transparent</Brush>
+              <ClientRectangle>0.2,4.4,10.8,1.6</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>Arial,8</Font>
+              <ForeColor>Black</ForeColor>
+              <Margins>0,0,0,0</Margins>
+              <Name>Shape4</Name>
+              <Page isRef="3" />
+              <Parent isRef="6" />
+              <ShapeType Ref="21" type="Stimulsoft.Report.Components.ShapeTypes.StiRectangleShapeType" isKey="true" />
+            </Shape4>
+            <Text9 Ref="22" type="Text" isKey="true">
+              <AllowHtmlTags>True</AllowHtmlTags>
+              <Border>None;[0:0:0];1;Solid;False;4;Black</Border>
+              <Brush>[255:255:255]</Brush>
+              <ClientRectangle>0.3,4.5,10.6,1.35</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,39</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text9</Name>
+              <Page isRef="3" />
+              <Parent isRef="6" />
+              <Text>نام کارفرما :{نام_کارفرما}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextQuality>Wysiwyg</TextQuality>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text9>
+            <Shape5 Ref="23" type="Shape" isKey="true">
+              <BackgroundColor>Transparent</BackgroundColor>
+              <BorderColor>Black</BorderColor>
+              <Brush>Transparent</Brush>
+              <ClientRectangle>0.2,6,10.8,1.5</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>Arial,8</Font>
+              <ForeColor>Black</ForeColor>
+              <Margins>0,0,0,0</Margins>
+              <Name>Shape5</Name>
+              <Page isRef="3" />
+              <Parent isRef="6" />
+              <ShapeType Ref="24" type="Stimulsoft.Report.Components.ShapeTypes.StiRectangleShapeType" isKey="true" />
+            </Shape5>
+            <Text10 Ref="25" type="Text" isKey="true">
+              <AllowHtmlTags>True</AllowHtmlTags>
+              <Border>None;[0:0:0];1;Solid;False;4;Black</Border>
+              <Brush>[255:255:255]</Brush>
+              <ClientRectangle>0.3,6.1,10.6,1.35</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <Font>Microsoft Sans Serif,48</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>Text10</Name>
+              <Page isRef="3" />
+              <Parent isRef="6" />
+              <Text>تاریخ ورود قطعات: {تاریخ_ورود_قطعات}</Text>
+              <TextBrush>[74:74:74]</TextBrush>
+              <TextQuality>Wysiwyg</TextQuality>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text10>
+            <Image_Logo Ref="26" type="Image" isKey="true">
+              <Brush>Transparent</Brush>
+              <ClientRectangle>0.2,0.2,3.7,2.4</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Expressions isList="true" count="0" />
+              <IconColor>68, 114, 196</IconColor>
+              <Margins>0,0,0,0</Margins>
+              <Name>Image_Logo</Name>
+              <Page isRef="3" />
+              <Parent isRef="6" />
+              <Stretch>True</Stretch>
+            </Image_Logo>
+          </Components>
+          <Conditions isList="true" count="0" />
+          <DataRelationName isNull="true" />
+          <DataSourceName>Serials</DataSourceName>
+          <Expressions isList="true" count="0" />
+          <Filters isList="true" count="0" />
+          <Name>DataBand1</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <Sort isList="true" count="0" />
+        </DataBand1>
+      </Components>
+      <Conditions isList="true" count="0" />
+      <Expressions isList="true" count="0" />
+      <Guid>e5f6a7b8c9d040be1f2a3b4c5d6e7f8a</Guid>
+      <Margins>0,0,0,0</Margins>
+      <Name>Page1</Name>
+      <Orientation>Landscape</Orientation>
+      <PageHeight>8.27</PageHeight>
+      <PageWidth>11.69</PageWidth>
+      <Report isRef="0" />
+    </Page1>
+  </Pages>
+  <ReferencedAssemblies isList="true" count="8">
+    <value>System.Dll</value>
+    <value>System.Drawing.Dll</value>
+    <value>System.Windows.Forms.Dll</value>
+    <value>System.Data.Dll</value>
+    <value>System.Xml.Dll</value>
+    <value>Stimulsoft.Controls.Dll</value>
+    <value>Stimulsoft.Base.Dll</value>
+    <value>Stimulsoft.Report.Dll</value>
+  </ReferencedAssemblies>
+  <ReportAlias>Report</ReportAlias>
+  <ReportChanged>5/18/2026 12:36:54 PM</ReportChanged>
+  <ReportCreated>8/29/2024 11:45:47 AM</ReportCreated>
+  <ReportFile>E:\Avizhe\Silo\Silo.Ui.Bypass\wwwroot\reports\Print.mrt</ReportFile>
+  <ReportGuid>5f2ed33e027b4d078f0bb6c6566bae2c</ReportGuid>
+  <ReportName>Report</ReportName>
+  <ReportUnit>Inches</ReportUnit>
+  <ReportVersion>2022.1.1.0</ReportVersion>
+  <Script>using System;
+using System.Drawing;
+using System.Windows.Forms;
+using System.Data;
+using Stimulsoft.Controls;
+using Stimulsoft.Base.Drawing;
+using Stimulsoft.Report;
+using Stimulsoft.Report.Dialogs;
+using Stimulsoft.Report.Components;
+
+namespace Reports
+{
+    public class Report : Stimulsoft.Report.StiReport
+    {
+        public Report()
+        {
+            this.InitializeComponent();
+        }
+
+        #region StiReport Designer generated code - do not modify
+		#endregion StiReport Designer generated code - do not modify
+    }
+}
+</Script>
+  <ScriptLanguage>CSharp</ScriptLanguage>
+  <Styles isList="true" count="0" />
+</StiSerializer>

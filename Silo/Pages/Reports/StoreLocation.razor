@@ -1,0 +1,222 @@
+@page "/report/storelocation"
+@using Silo.Application.Features;
+@inherits SiloBasePage
+@using Silo.Application;
+
+<PageTitle>@PageTitle</PageTitle>
+
+@if (IsFiltersShown)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center" style="padding-top:5px;">
+            <form asp-action="StoreLocationFile" asp-controller="Report" method="post" role="form" class="form-search-span" id="form-main">
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <label style="margin-right:26px">@TextResources.APP_StringKeys_ProductCode:</label>
+                    <input @bind-value="Request.ProductCode" class="form-control input-search-span-lg pointer" />
+                    <button type="button" class="btn btn-light" @onclick="async () => await ProductCodeModal.Show()">
+                        <MaterialIcon IconName="list"></MaterialIcon>
+                    </button>
+                    <label style="margin-right: 15px;">@TextResources.APP_StringKeys_Chart_Regcode:</label>
+                    <input @bind-value="Request.TechnicalCode" class="form-control input-search-span-lg pointer" style="width:200px !important;" />
+                    <label style="margin-right:-50px;">همانند </label>
+                    <input type="checkbox" @bind="Request.TechnicalCodeLike" />
+                    <label style="margin-right: 77px;">@TextResources.APP_StringKeys_Warehouse:</label>
+                    <TelerikDropDownList Data="Warehouses"
+                                         TextField="DestinationTitle"
+                                         ValueField="DestinationCode"
+                                         @bind-Value="Request.WarehouseCode"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right:46px;">@TextResources.APP_StringKeys_Zone:</label>
+                    <input @bind-value="Request.TagZone" style="width:150px !important;" class="form-control input-search-span-lg pointer" />
+                    <button type="button" class="btn btn-light" @onclick="async () => await LocationModal.Show()">
+                        <MaterialIcon IconName="list"></MaterialIcon>
+                    </button>
+                    <label style="margin-right:-97px;"> همانند </label>
+                    <input type="checkbox" @bind="Request.TagZoneLike" />
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:15px!important;">
+                    @* <label style="margin-right: 18px;">@TextResources.APP_StringKeys_Report_RangeAge:</label>
+                    <TelerikDropDownList Data="AgeRanges"
+                                         TextField="Name"
+                                         ValueField="Value"
+                                         @bind-Value="Request.AgeRange"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList> *@
+                    <label style="margin-right: 22px;">@TextResources.APP_StringKeys_Resolution:</label>
+                    <TelerikDropDownList Data="LocationResolutions"
+                                         TextField="Name"
+                                         ValueField="Value"
+                                         @bind-Value="Request.ZoneLayer"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 27px;">@TextResources.APP_StringKeys_Zones_Capacity_Status:</label>
+                    <TelerikDropDownList Data="OccupiedCapacityPercents"
+                                         TextField="Name"
+                                         ValueField="Value"
+                                         @bind-Value="Request.Capacity"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap search-button-div" style="margin-top:-110px !important;">
+                    <button id="btn-clear" class="btn btn-warning" type="reset" title="@TextResources.APP_StringKeys_Clear"
+                            style="margin-left: 2px; margin-right: 5px; " @onclick="OnClearClick">
+                        <MaterialIcon IconName="refresh"></MaterialIcon>
+                    </button>
+                    <button type="button" id="btn-send"
+                            class="btn btn-primary" title="@TextResources.APP_StringKeys_Send"
+                            @onclick="OnSearchClick">
+                        <MaterialIcon IconName="search"></MaterialIcon>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+@if (Result1.Any())
+{
+    <div class="row col-md-12" id="div-result-1">
+        <div class="card card-stats col-md-12 text-align-center">
+            <TelerikGrid Data="Result1"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style">@product.ZoneCode</td>
+                    <td class="td-style">@product.CountProductCode</td>
+                    <td class="td-style">@product.CountSerials</td>
+                    <td class="td-style">@product.TotalCapacity</td>
+                    <td class="td-style">@product.OccupiedCapacity</td>
+                    <td class="td-style">@product.OccupiedPercent</td>
+                    <td class="td-style">@product.FreeCapacity</td>
+                    <td class="td-style">@product.FreePercent</td>
+                    <td class="td-style">
+                        <button @onclick="async (e) => await OnShowSerialsClick(product, e)"
+                                class="btn-dt-1 btn-info tr-buttom btn">
+                            ‌@TextResources.APP_StringKeys_Serials
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Report" />
+                </GridExport>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllZoneProductsVm.ZoneCode)"
+                                Title="@TextResources.APP_StringKeys_Zone"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllZoneProductsVm.CountProductCode)"
+                                Title="@TextResources.APP_StringKeys_Variety_ProductCode"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllZoneProductsVm.CountSerials)"
+                                Title="@($"{TextResources.APP_StringKeys_Count} {TextResources.APP_StringKeys_ProductSerial}")"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllZoneProductsVm.TotalCapacity)"
+                                Title="@($"{TextResources.APP_StringKeys_Capacity} {TextResources.APP_StringKeys_Zone}")"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllZoneProductsVm.OccupiedCapacity)"
+                                Title="@TextResources.APP_StringKeys_Capacity_Occupied"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllZoneProductsVm.OccupiedPercent)"
+                                Title="@($"{TextResources.APP_StringKeys_Percent} اشغال شده")"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllZoneProductsVm.FreeCapacity)"
+                                Title="@TextResources.APP_StringKeys_Capacity_Free"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllZoneProductsVm.FreePercent)"
+                                Title="@($"{TextResources.APP_StringKeys_Percent} آزاد")"></GridColumn>
+                    <GridColumn Width="100px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </div>
+}
+<ProductCodeModal @ref="ProductCodeModal"
+                  OnClickProductCode="OnClickProductCode">
+</ProductCodeModal>
+<LocationModal @ref="LocationModal"
+               WarehouseCode="@Request.WarehouseCode"
+               OnClickLocation="OnClickLocation">
+</LocationModal>
+<Modal Buttons="ModalButtons.Close" 
+       @ref="ModalSerials" 
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close">
+    <ModalBodyContentHtml>
+        <div class="row col-md-12">
+            <div class="card card-stats col-md-12 text-align-center">
+
+                <TelerikGrid Data="ResultSerials"
+                             Pageable="true"
+                             PageSize="10"
+                             Sortable="true"
+                             Navigable="true"
+                             Width="100%"
+                             ScrollMode="GridScrollMode.Scrollable">
+                    <GridToolBarTemplate>
+                        <TelerikButton Icon="@FontIcon.FileExcel" OnClick="@OnExcelExportClick" Class="green-excel">
+                            @TextResources.APP_StringKeys_ExportExcel
+                        </TelerikButton>
+                    </GridToolBarTemplate>
+                    <RowTemplate Context="product">
+                        <td class="td-style td-style-full">@product.ProductSerial</td>
+                        <td class="td-style td-style-full">@product.ProductName</td>
+                        <td class="td-style td-style-full">@product.ProductCode</td>
+                        <td class="td-style td-style-full">@product.RegCode</td>
+                        <td class="td-style td-style-full">@product.ProductCount</td>
+                        @foreach (var field in VisibleFields)
+                        {
+
+                            @if (product.DynamicData.ContainsKey(field.Title))
+                            {
+                                <td class="td-style td-style-full">
+                                    @product.DynamicData[field.Title]
+                                </td>
+
+                            }
+                            else
+                            {
+                                <td class="td-style td-style-full">
+                                </td>
+                            }
+                        }
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(SerialRowDto.ProductSerial)"
+                                    Title="@TextResources.APP_StringKeys_ProductSerial" 
+                                    Width="100px" />
+                        <GridColumn Field="@nameof(SerialRowDto.ProductName)"
+                                    Title="@TextResources.APP_StringKeys_ProductName"
+                                    Width="160px" />
+                        <GridColumn Field="@nameof(SerialRowDto.ProductCode)"
+                                    Title="@TextResources.APP_StringKeys_ProductCode" 
+                                    Width="120px" />
+                        <GridColumn Field="@nameof(SerialRowDto.RegCode)"
+                                    Title="@TextResources.APP_StringKeys_Chart_Regcode" 
+                                    Width="100px" />
+                        <GridColumn Field="@nameof(SerialRowDto.ProductCount)"
+                                    Title="@TextResources.APP_StringKeys_ProductCount" 
+                                    Width="100px" />
+                        @foreach (var field in VisibleFields)
+                        {
+                            <GridColumn Title="@field.Title"
+                                        Width="160px">
+                            </GridColumn>
+                        }
+                    </GridColumns>
+                </TelerikGrid>
+            </div>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<TelerikLoaderContainer LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading"
+                        Visible="IsLoading">
+</TelerikLoaderContainer>

@@ -1,0 +1,438 @@
+@page "/print/management"
+@inherits SiloBasePage
+@namespace Silo.Modules.Product.Pages
+@using Silo.Application.Dto
+@using Silo.Application.Features
+@using Silo.Application.Dto.DynamicField
+@using Microsoft.AspNetCore.Components.Web
+@using Silo.Shared.Components.Print
+@using Telerik.Blazor.Components
+@using Silo.Shared.Components
+@using Silo.Shared.Components.Modals
+@using Silo.Components.DynamicField
+@using Telerik.Blazor.Components.Grid
+
+<PageTitle>@PageTitle</PageTitle>
+
+<EditForm Model="Request"
+          OnValidSubmit="OnValidSubmit"
+          OnInvalidSubmit="OnInvalidSubmit">
+    <DataAnnotationsValidator />
+    <div class="container-fluid page-print-management mt-2"
+         @onkeydown="OnKeyDown">
+
+        
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-header bg-transparent fw-semibold text-center">
+                @TextResources.APP_StringKeys_OperationInfo @TextResources.APP_StringKeys_Register
+            </div>
+            <div class="card-body py-2 toolbar-strip">
+                <div class="action-nav">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="OnPreviousActionClick">
+                        <MaterialIcon IconName="navigate_next" />
+                    </button>
+                    <span class="action-code-badge">
+                        @TextResources.APP_StringKeys_OperationCode : @CurrentPrintActionId
+                    </span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="OnNextActionClick">
+                        <MaterialIcon IconName="navigate_before" />
+                    </button>
+                </div>
+                <button type="button" class="btn btn-warning btn-sm" title="@TextResources.APP_StringKeys_New" @onclick="OnNewClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh" />
+                </button>
+                <button type="button" class="btn btn-success btn-sm" title="@TextResources.APP_StringKeys_Search" @onclick="OnSerialModalOpen">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Search" />
+                </button>
+                <button type="submit" class="btn btn-sm btn-primary" title="@TextResources.APP_StringKeys_Save">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Save" />
+                </button>
+                <button type="button"
+                        class="btn btn-sm btn-primary"
+                        title="@TextResources.APP_StringKeys_Print"
+                        @onclick="async e => await SelectPrintFormatRef.ShowPrintFormatsAsync(e)">
+                    <MaterialIcon IconName="print" />
+                </button>
+            </div>
+        </div>
+
+        
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-header bg-transparent fw-semibold text-center">
+                @TextResources.APP_StringKeys_Product_Add_Properties
+            </div>
+            <div class="card-body py-2">
+                <div class="d-flex flex-wrap gap-2 align-items-end mb-2">
+                    <button type="button" class="btn btn-primary btn-sm" @onclick="OnSearchProductClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Search" />
+                        @TextResources.APP_StringKeys_Search_Product
+                    </button>
+                    <span class="tech-item">
+                        <label>@TextResources.APP_StringKeys_ProductCode</label>
+                        <input type="text" readonly class="form-control input-wide" value="@Request.ProductCode" />
+                    </span>
+                    <span class="tech-item">
+                        <label>@TextResources.APP_StringKeys_ProductTitle</label>
+                        <input type="text" readonly class="form-control input-wide" value="@Request.ProductTitle" />
+                    </span>
+                </div>
+            </div>
+
+            @if (ChosenProduct is not null)
+            {
+                <div class="card-body py-2">
+                    <div class="d-flex flex-wrap gap-2 align-items-end">
+                        <span class="tech-item">
+                            <label>@TextResources.APP_StringKeys_Chart_Regcode</label>
+                            <input type="text" readonly class="form-control input-search-span" value="@Request.ProductRegCode" />
+                        </span>
+                        <span class="tech-item">
+                            <label>@TextResources.APP_StringKeys_Product_Size</label>
+                            <input type="text" readonly class="form-control input-search-span" value="@Request.ProductSize" />
+                        </span>
+                        <span class="tech-item">
+                            <label>@TextResources.APP_StringKeys_ProductUnit</label>
+                            <input type="text" readonly class="form-control input-search-span" value="@Request.ProductUnit" />
+                        </span>
+                        <span class="tech-item">
+                            <label>@TextResources.APP_StringKeys_ProductPackWeight</label>
+                            <input type="text" readonly class="form-control input-search-span" value="@Request.ProductPackWeight" />
+                        </span>
+                        <span class="tech-item">
+                            <label>@TextResources.APP_StringKeys_Chart_Qc</label>
+                            <input type="text" readonly class="form-control input-search-span" value="@Request.ProductStatusTitle" />
+                        </span>
+                    </div>
+                </div>
+            }
+
+            <div class="card-body py-2">
+                <div class="d-flex flex-wrap gap-2 align-items-end mb-2">
+                    <span class="tech-item">
+                        <label style="margin-right:86px">@TextResources.APP_StringKeys_Line</label>
+                        <TelerikDropDownList Data="Lines"
+                                             TextField="Title"
+                                             ValueField="Code"
+                                             @bind-Value="Request.SelectedLine"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="160px"
+                                             Class="drop-all "
+                                             Filterable="true"
+                                             FilterOperator="StringFilterOperator.Contains" />
+                    </span>
+                    <span class="tech-item">
+                        <label style="margin-right:7px">@TextResources.APP_StringKeys_Shift_Code</label>
+                        <TelerikDropDownList Data="Shifts"
+                                             TextField="Title"
+                                             ValueField="Code"
+                                             @bind-Value="Request.SelectedShift"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="140px"
+                                             Class="drop-all"
+                                             Filterable="true"
+                                             FilterOperator="StringFilterOperator.Contains" />
+                    </span>
+                    <span class="tech-item">
+                        <label style="margin-right:9px">@TextResources.APP_StringKeys_Warehouse</label>
+                        <TelerikDropDownList Data="Warehouses"
+                                             TextField="DestinationTitle"
+                                             ValueField="DestinationCode"
+                                             @bind-Value="Request.SelectedWarehouse"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="160px"
+                                             Class="drop-all"
+                                             Filterable="true"
+                                             FilterOperator="StringFilterOperator.Contains" />
+                    </span>
+                    <span class="tech-item">
+                        <label style="margin-right:9px">@TextResources.APP_StringKeys_Document_Register</label>
+                        <TelerikTextBox @bind-Value="Request.DocumentId"
+                                        Class="form-control input-search-span"
+                                        Width="160px !important"></TelerikTextBox>
+                    </span>
+                </div>
+                <div class="d-flex flex-wrap gap-2 align-items-end mb-2">
+                    <span class="tech-item">
+                        <label style="margin-right:111px">@TextResources.APP_StringKeys_ProductCount</label>
+                        <TelerikTextBox @bind-Value="Request.ProductPackValue"
+                                        Width="160px !important"
+                                        Class="form-control input-search-span" />
+                    </span>
+                    <span class="tech-item">
+                        <label style="margin-right:37px">تعداد سریال درخواستی </label>
+                        <TelerikNumericTextBox @bind-Value="Request.Count"
+                                               Class="form-control input-search-span"
+                                               Width="140px !important"
+                                               Min="1"
+                                               ReadOnly="true" />
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        
+        @if (DynamicFieldDtos.Any())
+        {
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-header bg-transparent fw-semibold text-center">
+                    @TextResources.APP_StringKeys_Dynamic_Fields
+                </div>
+                <div class="card-body py-2">
+                    <div class="d-flex flex-wrap gap-2 align-items-end">
+                        <DynamicFieldFillValue @ref="DynamicFieldRef"
+                                               DynamicFieldsDto="DynamicFieldDtos" />
+                    </div>
+                </div>
+            </div>
+        }
+
+        
+        @if (StagedSerials.Any())
+        {
+            <div class="card shadow-sm border-0 mb-3 serials-grid-wrapper">
+                <TelerikGrid Data="StagedSerials"
+                             PageSize="5"
+                             Pageable="true"
+                             Sortable="true"
+                             Height="220px">
+                    <GridColumns>
+                        <GridCheckboxColumn Width="40px"
+                                            HeaderClass="header-select-all">
+                            <HeaderTemplate>
+                                <TelerikCheckBox @bind-Value="@IsAllSerialsChoosen"
+                                                 OnChange="() => StagedSerials.ForEach(p => p.IsChoosed = IsAllSerialsChoosen)" />
+                            </HeaderTemplate>
+                        </GridCheckboxColumn>
+                        <GridColumn Field="@nameof(GetPrintsByPrintActionIdDto.ProductSerial)"
+                                    Title="@TextResources.APP_StringKeys_ProductSerial" />
+                        <GridColumn Width="80px">
+                            <Template Context="control">
+                                @{
+                                    var row = (GetPrintsByPrintActionIdDto)control;
+                                    if (!row.RegisterFlag)
+                                    {
+                                        <button class="btn btn-success btn-sm"
+                                                type="button"
+                                                title="@TextResources.APP_StringKeys_Edit"
+                                                @onclick="async () => await OnEditSerialClick(row)">
+                                            <MaterialIcon IconName="@MaterialIconsHelper.Edit" />
+                                        </button>
+                                    }
+                                }
+                            </Template>
+                        </GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            </div>
+        }
+
+    </div>
+</EditForm>
+<ProductCodeModal @ref="ProductModal"
+                  OnClickProduct="OnProductVmSelected">
+</ProductCodeModal>
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Search"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       @ref="SearchModal"
+       Size="ModalSize.ExtraLarge">
+    <ModalBodyContentHtml>
+        <div class="search-filter-bar">
+            <label>@TextResources.APP_StringKeys_ProductSerial</label>
+            <input @bind-value="SearchSerial" class="form-control input-search-span-lg" />
+            <button class="btn btn-primary btn-sm"
+                    @onclick="OnSearchSerialClick"
+                    type="button"
+                    title="@TextResources.APP_StringKeys_Search">
+                <MaterialIcon IconName="search" />
+            </button>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnClass="btn-success"
+       OkBtnText="@TextResources.APP_StringKeys_Save"
+       @ref="ModalPrintRow"
+       Size="ModalSize.ExtraLarge"
+       OnOkModal="OnEditSinglePrintSubmit">
+    <ModalBodyContentHtml>
+        <div class="card mb-2">
+            <div class="card-header">
+                <h6 class="card-title mb-0 text-center">@TextResources.APP_StringKeys_Serial_Add_Properties</h6>
+            </div>
+            <div class="card-body py-2">
+            <div class="d-flex flex-wrap gap-2 align-items-end mb-2">
+                <span class="tech-item">
+                    <label>@TextResources.APP_StringKeys_ProductSerial</label>
+                    <input type="text"
+                           readonly
+                           class="form-control input-search-span"
+                           @bind-value="@ShowingPrint.ProductSerial" />
+                </span>
+                <span class="tech-item">
+                    <label>@TextResources.APP_StringKeys_ProductCode</label>
+                    <input type="text"
+                           readonly
+                           class="form-control input-search-span"
+                           @bind-value="@ShowingPrint.ProductCode"
+                           style="width: 200px !important;" />
+                </span>
+                <span class="tech-item">
+                    <label>@TextResources.APP_StringKeys_ProductTitle</label>
+                    <input type="text"
+                           class="form-control input-search-span"
+                           @bind-value="@ShowingPrint.ProductName"
+                           style="width: 200px !important;" />
+                </span>
+                <span class="tech-item">
+                    <label>@TextResources.APP_StringKeys_ProductCount</label>
+                    <input type="number"
+                           class="form-control input-search-span"
+                           @bind-value="@ShowingPrint.ProductCount"
+                           min="1" />
+                </span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-end mb-2">
+                <span class="tech-item">
+                    <label>@TextResources.APP_StringKeys_Chart_Regcode</label>
+                    <input type="text"
+                           class="form-control input-search-span"
+                           @bind-value="@ShowingPrint.ProductRegCode"
+                           style="width: 200px !important;" />
+                </span>
+                <span class="tech-item">
+                    <label>@TextResources.APP_StringKeys_ProductUnit</label>
+                    <input type="text"
+                           readonly class="form-control input-search-span"
+                           @bind-value="@ShowingPrint.ProductUnit"
+                           style="width: 200px !important;" />
+                </span>
+                <span class="tech-item">
+                    <label>@TextResources.APP_StringKeys_ProductPackWeight</label>
+                    <input type="text"
+                           class="form-control input-search-span"
+                           @bind-value="@ShowingPrint.ProductPackWeight" />
+                </span>
+                <span class="tech-item">
+                    <label>@TextResources.APP_StringKeys_Document_Register</label>
+                    <input type="text"
+                           class="form-control input-search-span"
+                           @bind-value="@ShowingPrint.DocumentId" />
+                </span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-end mb-2">
+                <span class="tech-item" style="display:flex; flex-direction:column; gap:6px;">
+                    <label>@TextResources.APP_StringKeys_Product_Size</label>
+                    <TelerikDropDownList Data="Sizes"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="ShowingPrint.ProductSize"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         ReadOnly="true"
+                                         FilterOperator="StringFilterOperator.Contains" />
+                </span>
+                <span class="tech-item" style="display:flex; flex-direction:column; gap:6px; margin-right:9px; ">
+                    <label>@TextResources.APP_StringKeys_ProductType</label>
+                    <TelerikDropDownList Data="Types"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="ShowingPrint.ProductTypeCode"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         ReadOnly="true"
+                                         FilterOperator="StringFilterOperator.Contains" />
+                </span>
+                <span class="tech-item" style="display:flex; flex-direction:column; gap:6px; margin-right:5px; ">
+                    <label>@TextResources.APP_StringKeys_Chart_Qc</label>
+                    <TelerikDropDownList Data="Statuses"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="ShowingPrint.ProductStatusCode"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         ReadOnly="true"
+                                         FilterOperator="StringFilterOperator.Contains" />
+                </span>
+                <span class="tech-item" style="display:flex; flex-direction:column; gap:6px; margin-right:5px;">
+                    <label>@TextResources.APP_StringKeys_Chart_Shift</label>
+                    <TelerikDropDownList Data="Shifts"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="ShowingPrint.ProductProductionShift"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains" />
+                </span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-end mb-2">
+                
+                <span class="tech-item" style="display:flex; flex-direction:column; gap:6px;">
+                    <label>@TextResources.APP_StringKeys_Warehouse</label>
+                    <TelerikDropDownList Data="Warehouses"
+                                         TextField="DestinationTitle"
+                                         ValueField="DestinationCode"
+                                         @bind-Value="ShowingPrint.DestinationCode"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains" />
+                </span>
+                <span class="tech-item" style="display:flex; flex-direction:column; gap:6px; margin-right:7px;">
+                    <label>@TextResources.APP_StringKeys_Line</label>
+                    <TelerikDropDownList Data="Lines"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="ShowingPrint.ProductProductionLine"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains" />
+                </span>
+            </div>
+        </div>
+        </div>
+         
+        @if (ShowingPrintDynamicFields.Any())
+        {
+            <div class="card mb-2">
+                <div class="card-header">
+                    <h6 class="card-title mb-0 text-center">
+                        @TextResources.APP_StringKeys_Dynamic_Fields
+                    </h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="d-flex flex-wrap gap-2 align-items-end mb-2">
+                        <DynamicFieldFillValue @ref="ShowingPrintDynamicFieldRef"
+                                               DynamicFieldsDto="ShowingPrintDynamicFields">
+                        </DynamicFieldFillValue>
+                    </div>
+                </div>
+            </div>
+        }
+    </ModalBodyContentHtml>
+</Modal>
+<CascadingValue Value="IsLoading">
+    <CascadingValue Value="Notification">
+        <SelectPrintFormat @ref="SelectPrintFormatRef"
+                           OnFileNameSelect="OnPrintActionClick">
+        </SelectPrintFormat>
+    </CascadingValue>
+</CascadingValue>
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

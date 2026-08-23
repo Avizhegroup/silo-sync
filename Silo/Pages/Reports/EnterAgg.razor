@@ -1,0 +1,49 @@
+﻿@page "/report/enteragg"
+@inherits SiloBasePage
+@using Silo.Components.Filter
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center">
+        <div>
+            <h5 class="form-title card-title">
+                @TextResources.APP_StringKeys_Report_EnterAgg
+            </h5>
+        </div>
+    </div>
+    <div class="card card-stats col-md-12" style="margin-bottom:5px; padding-top:5px; margin-right: 0px;margin-left: 0px; background:transparent; border: none;">
+        <TelerikPanelBar Data="@Panels" @bind-ExpandedItems="@ExpandedPanels">
+            <PanelBarBindings>
+                <PanelBarBinding ItemsField="Panels">
+                    <ContentTemplate>
+                        @{
+                            var item = context as TelerikPanelBarTempleteItem;
+
+                            <div class="row text-align-right" style="margin-right: 10px;">
+                                @if (item.Id == 1)
+                                {
+                                    @if (!IsLoading)
+                                    {
+                                        <FilterReportSelectSection Filters="Filters"></FilterReportSelectSection>
+                                    }
+                                }
+                                else if (item.Id == 2)
+                                {
+
+                                }
+                            </div>
+                        }
+                    </ContentTemplate>
+                </PanelBarBinding>
+            </PanelBarBindings>
+        </TelerikPanelBar>
+    </div>
+</div>
+@if (IsLoading)
+{
+    <TelerikLoaderContainer LoaderPosition="@LoaderPosition.End"
+                            LoaderType="LoaderType.InfiniteSpinner"
+                            Text="@TextResources.APP_StringKeys_Loading">
+    </TelerikLoaderContainer>
+}

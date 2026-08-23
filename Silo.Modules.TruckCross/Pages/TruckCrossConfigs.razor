@@ -1,0 +1,386 @@
+@page "/truckcross/configs"
+@inherits SiloBasePage
+@namespace Silo.Modules.TruckCross.Pages
+@using Silo.Application.Features
+@using Silo.Identity.Client;
+
+<PageTitle>
+    @TextResources.APP_StringKeys_TruckCross_Config
+</PageTitle>
+
+<div class="container-fluid px-3 py-3">
+    <div class="row g-3">
+        @* ── Main form + grid ── *@
+        <div class="col-md-9">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header d-flex align-items-center gap-2">
+                    <MaterialIcon IconName="settings" />
+                    <span class="fw-semibold">@TextResources.APP_StringKeys_TruckCross_Config</span>
+                </div>
+                <div class="card-body">
+        @if (Mode.Equals(TruckCrossConfigModes.TruckCrossOperationType) ||
+        Mode.Equals(TruckCrossConfigModes.TruckCrossProductType))
+        {
+            <EditForm Model="RequestWithCause"
+                      OnInvalidSubmit="OnInvalidSubmit"
+                      OnValidSubmit="OnWithCauseValidSubmit">
+                <DataAnnotationsValidator />
+
+                @* Filter row *@
+                <div class="card border-0 bg-light mb-3 p-3">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-5">
+                            <div class="tc-field">
+                                <label>@TextResources.APP_StringKeys_TruckCross_Present_Cause</label>
+                                @if (Mode.Equals(TruckCrossConfigModes.TruckCrossProductType))
+                                {
+                                    <div class="input-group">
+                                        <TelerikTextBox @bind-Value="ProductTypeCauseTitlesFilter"
+                                                        Class="form-control"
+                                                        Enabled="false" />
+                                        <button type="button" class="btn btn-outline-secondary" @onclick="async (e)=> await ModalTruckCrossCausesFilter.Open(e)">
+                                            <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl" />
+                                        </button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <TelerikDropDownList Data="Causes"
+                                                         TextField="@nameof(GetAllTruckCrossPresentCauseVm.Title)"
+                                                         ValueField="@nameof(GetAllTruckCrossPresentCauseVm.Id)"
+                                                         @bind-Value="OperationTypeCauseIdFilter"
+                                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                                         TabIndex="17"
+                                                         Class="drop-all w-100" />
+                                }
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-primary"
+                                    @onclick="@(Mode.Equals(TruckCrossConfigModes.TruckCrossProductType) ? OnProductTypeByCausesSearchClick : OnOperationTypeByCauseSearchClick)">
+                                <MaterialIcon IconName="@MaterialIconsHelper.Search" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="tc-divider" />
+
+                @* Edit row *@
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-2">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_Code</label>
+                            <TelerikNumericTextBox @bind-Value="RequestWithCause.Id"
+                                                   Class="form-control"
+                                                   Enabled="false"
+                                                   Arrows="false" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_Field_Title</label>
+                            <TelerikTextBox @bind-Value="RequestWithCause.Title" Class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_TruckCross_Present_Cause</label>
+                            @if (Mode.Equals(TruckCrossConfigModes.TruckCrossProductType))
+                            {
+                                <div class="input-group">
+                                    <TelerikTextBox @bind-Value="RequestWithCause.TruckCrossCauseTitles"
+                                                    Class="form-control" Enabled="false" />
+                                    <button type="button" class="btn btn-outline-secondary" @onclick="async (e)=> await ModalTruckCrossCauses.Open(e)">
+                                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl" />
+                                    </button>
+                                </div>
+                            }
+                            else
+                            {
+                                <TelerikDropDownList Data="Causes"
+                                                     TextField="@nameof(GetAllTruckCrossPresentCauseVm.Title)"
+                                                     ValueField="@nameof(GetAllTruckCrossPresentCauseVm.Id)"
+                                                     @bind-Value="RequestWithCause.TruckCrossCauseId"
+                                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                                     TabIndex="17"
+                                                     Class="drop-all w-100" />
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="tc-action-bar">
+                    <button type="button" class="btn btn-danger" @onclick="OnWithClauseRemoveClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Delete" />
+                    </button>
+                    <button type="button" class="btn btn-warning" @onclick="OnRefreshClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh" />
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Save" />
+                    </button>
+                </div>
+            </EditForm>
+        }
+        else
+        {
+            <EditForm Model="Request"
+                      OnInvalidSubmit="OnInvalidSubmit"
+                      OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-2">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_Code</label>
+                            <TelerikNumericTextBox @bind-Value="Request.Id"
+                                                   Class="form-control"
+                                                   Enabled="false"
+                                                   Arrows="false" />
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="tc-field">
+                            <label>@TextResources.APP_StringKeys_Field_Title</label>
+                            <TelerikTextBox @bind-Value="Request.Title" Class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="tc-action-bar">
+                    <button type="button" class="btn btn-danger" @onclick="OnRemoveClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Delete" />
+                    </button>
+                    <button type="button" class="btn btn-warning" @onclick="OnRefreshClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh" />
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Save" />
+                    </button>
+                </div>
+            </EditForm>
+        }
+        @if (!IsLoading)
+        {
+            @if (Configs is not null)
+            {
+                <TelerikGrid @ref="GridConfigs"
+                             Data="Configs"
+                             PageSize="5"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true">
+                    <RowTemplate Context="config">
+                        <td class="td-style">@config.Id</td>
+                        <td class="td-style">@config.Title</td>
+                        <td class="td-style">
+                            <button @onclick="()=> OnChooseConfig(config)" type="button" class="btn btn-success tr-buttom">
+                                @TextResources.APP_StringKeys_Choose
+                            </button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(TruckCrossConfig.Id)"></GridColumn>
+                        <GridColumn Field="@nameof(TruckCrossConfig.Title)"></GridColumn>
+                        <GridColumn Width="60px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            }
+            else if (ConfigsWithCause is not null)
+            {
+                @if (Mode.Equals(TruckCrossConfigModes.TruckCrossProductType))
+                {
+                    <TelerikGrid @ref="GridConfigsWithCause"
+                                 Data="ConfigsWithCause"
+                                 PageSize="5"
+                                 Navigable="true"
+                                 Pageable="true"
+                                 Sortable="true">
+                        <RowTemplate Context="config">
+                            <td class="td-style">@config.Id</td>
+                            <td class="td-style">@config.Title</td>
+                            <td class="td-style">
+                                @(config.TruckCrossCauseTitles = AggregateCauseTitlesFromCauseIds(config.TruckCrossCauseIds))
+                            </td>
+                            <td class="td-style">
+                                <button @onclick="()=> OnChooseConfigWithCause(config)" type="button" class="btn btn-success tr-buttom">
+                                    @TextResources.APP_StringKeys_Choose
+                                </button>
+                            </td>
+                        </RowTemplate>
+                        <GridColumns>
+                            <GridColumn Field="@nameof(TruckCrossConfigWithCause.Id)"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossConfigWithCause.Title)"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossConfigWithCause.TruckCrossCauseTitles)"></GridColumn>
+                            <GridColumn Width="60px"></GridColumn>
+                        </GridColumns>
+                    </TelerikGrid>
+                }
+                else
+                {
+                    <TelerikGrid @ref="GridConfigsWithCause"
+                                 Data="ConfigsWithCause"
+                                 PageSize="5"
+                                 Navigable="true"
+                                 Pageable="true"
+                                 Sortable="true">
+                        <RowTemplate Context="config">
+                            <td class="td-style">@config.Id</td>
+                            <td class="td-style">@config.Title</td>
+                            <td class="td-style">
+                                @(Causes.FirstOrDefault(p => p.Id.Equals(config.TruckCrossCauseId))?.Title)
+                            </td>
+                            <td class="td-style">
+                                <button @onclick="()=> OnChooseConfigWithCause(config)" type="button" class="btn btn-success tr-buttom">
+                                    @TextResources.APP_StringKeys_Choose
+                                </button>
+                            </td>
+                        </RowTemplate>
+                        <GridColumns>
+                            <GridColumn Field="@nameof(TruckCrossConfigWithCause.Id)"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossConfigWithCause.Title)"></GridColumn>
+                            <GridColumn Field="@nameof(TruckCrossConfigWithCause.TruckCrossCauseId)"></GridColumn>
+                            <GridColumn Width="60px"></GridColumn>
+                        </GridColumns>
+                    </TelerikGrid>
+                }
+            }
+        }
+                </div>
+            </div>
+        </div>
+
+        @* ── Side menu ── *@
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header d-flex align-items-center gap-2">
+                    <MaterialIcon IconName="menu" />
+                    <span class="fw-semibold">@TextResources.APP_StringKeys_TruckCross_Config</span>
+                </div>
+                <div class="card-body p-2 tc-config-menu">
+                    @foreach (var item in Modes)
+                    {
+                        <div @onclick="@(async ()=> await OnModeChangeClick(item.Value))"
+                             class="tc-menu-item @(Mode.Equals(item.Value) ? "selected" : "")">
+                            @item.Name
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_TruckCross_Present_Causes"
+@ref="ModalTruckCrossCausesFilter"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Choose"
+       OnOkModal="OnChooseTruckCrossProductTypeCausesFilters">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="ProductTypeCausesFilters"
+                         Sortable="true"
+                         Height="400px"
+                         Width="100%"
+                         ScrollMode="@GridScrollMode.Scrollable">
+                <RowTemplate Context="cause">
+                    <td class="td-style">
+                        <TelerikCheckBox @bind-Value="@cause.IsChoosed"></TelerikCheckBox>
+                    </td>
+                    <td class="td-style">@cause.Id</td>
+                    <td class="td-style">@cause.Title</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllTruckCrossPresentCauseVm.IsChoosed)"
+                                Title="@TextResources.APP_StringKeys_Choose"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllTruckCrossPresentCauseVm.Id)"
+                                Title="@TextResources.APP_StringKeys_Code"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllTruckCrossPresentCauseVm.Title)"
+                                Title="@TextResources.APP_StringKeys_Field_Title"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_TruckCross_Present_Causes"
+@ref="ModalTruckCrossCauses"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Choose"
+       OnOkModal="OnChooseTruckCrossProductTypeCauses">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="Causes"
+                         Sortable="true"
+                         Height="400px"
+                         Width="100%"
+                         ScrollMode="@GridScrollMode.Scrollable">
+                <RowTemplate Context="cause">
+                    <td class="td-style">
+                        <TelerikCheckBox @bind-Value="@cause.IsChoosed"></TelerikCheckBox>
+                    </td>
+                    <td class="td-style">@cause.Id</td>
+                    <td class="td-style">@cause.Title</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllTruckCrossPresentCauseVm.IsChoosed)"
+                                Title="@TextResources.APP_StringKeys_Choose"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllTruckCrossPresentCauseVm.Id)"
+                                Title="@TextResources.APP_StringKeys_Code"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllTruckCrossPresentCauseVm.Title)"
+                                Title="@TextResources.APP_StringKeys_Field_Title"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Delete"
+       OkBtnText="@TextResources.APP_StringKeys_Delete"
+       OkBtnClass="btn-danger"
+       OnOkModal="OnConfirmRemove"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+@ref="ModalDelete"
+       Size="ModalSize.Normal">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @TextResources.APP_StringKeys_Message_DeleteText_Part1
+            <b>
+                @Request?.Title
+            </b>
+            @TextResources.APP_StringKeys_Message_DeleteText_Part2
+            <div class="alert alert-danger mb-0">
+                @TextResources.APP_StringKeys_DeleteModal_SubTitle
+            </div>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Delete"
+       OkBtnText="@TextResources.APP_StringKeys_Delete"
+       OkBtnClass="btn-danger"
+       OnOkModal="OnWithClauseConfirmRemove"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+@ref="ModalWithClauseDelete"
+       Size="ModalSize.Normal">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @TextResources.APP_StringKeys_Message_DeleteText_Part1
+            <b>
+                @RequestWithCause?.Title
+            </b>
+            @TextResources.APP_StringKeys_Message_DeleteText_Part2
+            <div class="alert alert-danger mb-0">
+                @TextResources.APP_StringKeys_DeleteModal_SubTitle
+            </div>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+

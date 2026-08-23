@@ -1,0 +1,169 @@
+@page "/warehouse/ManageWarehouse"
+@inherits SiloBasePage
+@namespace Silo.Pages.Warehouse
+@using Silo.Shared;
+@using Silo.Application.Features;
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center">
+        <form asp-action="Search" asp-controller="Home" method="post" role="form" class="form-search-span" id="form-main">
+            <div class="col-md-9 text-align-center" style="margin-top:10px;padding:5px">
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                    <label style="margin-right: 62px !important;">@TextResources.APP_StringKeys_Field_Warehouse_Code :</label>
+                    <input @bind-value="Warehouse.DestinationCode" type="text" class="form-control input-search-span-lg pointer" disabled="@IsDisabled" />
+                    <label style="margin-right: 52px !important;">@TextResources.APP_StringKeys_Field_Warehouse_Title :</label>
+                    <input @bind-value="Warehouse.DestinationTitle" type="text" class="form-control input-search-span-lg pointer" disabled="@IsDisabled" />
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Active :</label>
+                    <TelerikCheckBox @bind-Value="Warehouse.IsActive"
+                                     Enabled="@(!IsDisabled)">
+                    </TelerikCheckBox>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                    <label style="margin-right: 20px !important; margin-left:3px !important;">@TextResources.APP_StringKeys_Field_Warehouse_Operational_Type :</label>
+                    @if (IsDisabled)
+                    {
+                        <input @bind-value="OperationalType[(int)Warehouse.OperationalType+1].Name" type="text" style="width:200px !important;margin-left:-3px !important;margin-right:0px" class="form-control input-search-span-lg pointer" disabled="@IsDisabled" />
+                    }
+                    else
+                    {
+                        <TelerikDropDownList Data="OperationalType"
+                                         TextField="Name"
+                                         ValueField="Value"
+                                         @bind-Value="Warehouse.OperationalType"
+                                         Width="200px"
+                                         Class="drop-all">
+                        </TelerikDropDownList>
+                    }
+                    <label style="margin-right: 20px !important;  margin-left:6px !important;">@TextResources.APP_StringKeys_Field_Warehouse_Inventory_Type :</label>
+                    @if (IsDisabled)
+                    {
+                        <input @bind-value="InventoryType[(int)Warehouse.InventoryType+1].Name" type="text" style="width:200px !important" class="form-control input-search-span-lg pointer" disabled="@IsDisabled" />
+                    }
+                    else
+                    {
+                        <TelerikDropDownList Data="InventoryType"
+                                         TextField="Name"
+                                         ValueField="Value"
+                                         @bind-Value="Warehouse.InventoryType"
+                                         Width="200px"
+                                         Class="drop-all">
+                        </TelerikDropDownList>
+                    }
+                </div>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap save-button-div" style="margin-top: -45px;">
+                <button type="button" id="btn-search" class="btn btn-primary" data-toggle="modal" data-target="#modal-details" title="@TextResources.APP_StringKeys_Search"
+                        @onclick="async ()=> await ModalWarehouses.Open(new())">
+                    <MaterialIcon IconName="@MaterialIconsHelper.List"></MaterialIcon>
+                </button>
+                <button id="btn-clear" class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                        style="margin-left: 2px;margin-right: 2px;"
+                        @onclick="OnClearClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                </button>
+                <button class="btn btn-danger" type="button" title="@TextResources.APP_StringKeys_Remove"
+                        style="margin-left: 2px;margin-right: 2px;"
+                        @onclick="OnRemoveModalClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                </button>
+                <button type="button" id="btn-send" class="btn btn-primary"
+                        title="@TextResources.APP_StringKeys_Send"
+                        @onclick="OnSubmitClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Choose"
+       @ref="ModalWarehouses"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="Warehouses"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="warehouse">
+                    <td class="td-style td-dt">@warehouse.DestinationCode</td>
+                    <td class="td-style td-dt">@warehouse.DestinationTitle</td>
+                    <td class="td-style td-dt">@OperationalType.FirstOrDefault(p=>p.Value == warehouse.OperationalType).Name</td>
+                    <td class="td-style td-dt">@InventoryType.FirstOrDefault(p=>p.Value == warehouse.InventoryType).Name</td>
+                    <td class="td-style td-dt">
+                        @if (warehouse.IsDefault)
+                        {
+                            <MaterialIcon IconName="@MaterialIconsHelper.Check"></MaterialIcon>
+                        }
+                        else
+                        {
+                            <MaterialIcon IconName="@MaterialIconsHelper.Close"></MaterialIcon>
+                        }
+                    </td>
+                    <td class="td-style td-dt">
+                        @if (warehouse.IsActive)
+                        {
+                            <MaterialIcon IconName="@MaterialIconsHelper.Check"></MaterialIcon>
+                        }
+                        else
+                        {
+                            <MaterialIcon IconName="@MaterialIconsHelper.Close"></MaterialIcon>
+                        }
+                    </td>
+                    <td class="td-style td-dt">
+                        <button @onclick="async ()=> await OnSelectWarehouse(warehouse)"
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                            @TextResources.APP_StringKeys_Choose
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllWarehousesVm.DestinationCode)"
+                                Title="@TextResources.APP_StringKeys_Field_Warehouse_Code" Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllWarehousesVm.DestinationTitle)"
+                                Title="@TextResources.APP_StringKeys_Field_Warehouse_Title" Width="240px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllWarehousesVm.OperationalType)"
+                                Title="@TextResources.APP_StringKeys_Field_Warehouse_Operational_Type"
+                                Width="120px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllWarehousesVm.InventoryType)"
+                                Title="@TextResources.APP_StringKeys_Field_Warehouse_Inventory_Type"
+                                Width="120px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllWarehousesVm.IsDefault)"
+                                Title="@TextResources.APP_StringKeys_Default_Value_Question"
+                                Width="120px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllWarehousesVm.IsActive)"
+                                Title="@TextResources.APP_StringKeys_ActivationStatus"
+                                Width="120px"></GridColumn>
+                    <GridColumn Width="50px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_Attention"
+       @ref="ModalRemove"
+       Size="ModalSize.Normal"
+       CancelBtnText="@TextResources.APP_StringKeys_Close"
+       YesBtnText="@TextResources.APP_StringKeys_Remove"
+       OnYesModal="OnRemoveClick"
+       YesBtnClass="btn-danger">
+    <ModalBodyContentHtml>
+        <div class="text-align-center bg-danger text-light">
+            @TextResources.APP_StringKeys_Remove_CheckBeforeDelete
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

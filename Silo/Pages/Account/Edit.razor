@@ -1,0 +1,185 @@
+﻿@page "/account/edit/{Username}"
+@inherits SiloBasePage
+@namespace Silo.Pages.Account
+@using Microsoft.AspNetCore.Identity;
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row">
+    <div class="col-md-8 text-align-right">
+        <div class=" ">
+            <form asp-controller="Account" asp-action="Edit" method="post" class="form-horizontal" role="form">
+                <div class="">
+                    <label class="col-md-2 control-label">
+                        @TextResources.APP_StringKeys_Field_Username
+                    </label>
+                    <div class="col-md-10">
+                        <input @bind-value="User.Username" class="form-control" readonly />
+                    </div>
+                </div>
+                <div class="">
+                    <label class="col-md-2 control-label">
+                        @TextResources.APP_StringKeys_Name
+                    </label>
+                    <div class="col-md-10">
+                        <input @bind-value="User.PersianName" class="form-control" />
+                    </div>
+                </div>
+                <div class=" @IsAdmin">
+                    <label class="col-md-2 control-label">
+                        @TextResources.APP_StringKeys_Role
+                    </label>
+                    <div class="col-md-10">
+                        <TelerikDropDownList Data="Roles"
+                                             TextField="@(nameof(IdentityRole.NormalizedName))"
+                                             ValueField="@(nameof(IdentityRole.Id))"
+                                             @bind-Value="User.Role"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Class="drop-all"
+                                             Enabled="@(!IsAdmin)">
+                        </TelerikDropDownList>
+                    </div>
+                </div>
+                <div class=" @IsAdmin">
+                    <label class="col-md-2 control-label">
+                        @TextResources.APP_StringKeys_Password
+                    </label>
+                    <div class="col-md-10">
+                        <input type="password" @bind-value="User.Password" class="form-control"
+                               placeholder="@TextResources.APP_StringKeys_Placeholder_Password" />
+                    </div>
+                </div>
+                <br />
+                <br />
+                <div class="">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button class="btn btn-primary" type="button"
+                                @onclick="OnSubmit">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                        </button>
+                        <button class="btn btn-danger" type="button" disabled=@IsAdmin
+                                @onclick="OnRemoveClick">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                        </button>
+                        <NavButton Class="btn btn-light" Link="/account/index">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Arrow_back_ios_new"></MaterialIcon>
+                        </NavButton>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-3 text-align-center">
+        <div class="card card-stats">
+            <h6 class="form-title card-title" style="text-align: center !important;">
+                @TextResources.APP_StringKeys_User_Image
+            </h6>
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                @if (User.Image.Equals("-1"))
+                {
+                    <img width="180" height="150" src="/images/Utilities/user.png" style="display: block;margin-left: auto;margin-right: auto;width: 50%;">
+                }
+                else
+                {
+                    <img width="180" height="150" src="/images/Users/@User.Image" style="display: block;margin-left: auto;margin-right: auto;width: 50%;">
+                }
+            </div>
+            <div style="margin-top:30px;">
+                <FileUpload AllowedExtensions=".png"
+                            ButtonImageUrl="/images/Utilities/upload.png"
+                            ButtonClass="btn btn-success"
+                            ButtonTitle=""
+                            UploadUrl="/Tools/UploadUserImage"
+                            OnCompleteUpload="async(fileName)=> User.Image = fileName">
+                </FileUpload>
+                <button type="button" class="btn btn-danger"
+                        @onclick="async()=> User.Image = (-1).ToString()">
+                    <img width="20" height="20" src="/images/Utilities/trash.png">
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 20px;">
+    <div class="col-md-12">
+        <div class="card card-stats">
+            <h6 class="form-title card-title" style="text-align: center !important;">
+                مدیریت توکن‌های دسترسی
+            </h6>
+            <div style="padding: 20px;">
+                <div style="margin-bottom: 15px;">
+                    <button class="btn btn-success" type="button"
+                            @onclick="OnGenerateToken">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Add"></MaterialIcon>
+                    </button>
+                </div>
+
+                <TelerikGrid Data="@UserTokens"
+                             Pageable="true"
+                             PageSize="10"
+                             Sortable="true">
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetUserTokensDto.Id)" 
+                                    Title="شناسه" 
+                                    Width="80px" />
+                        <GridColumn Field="@nameof(GetUserTokensDto.MaskedValue)" 
+                                    Title="مقدار توکن" 
+                                    Width="300px">
+                            <Template>
+                                @{
+                                    var token = context as GetUserTokensDto;
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <code style="background-color: #f5f5f5; padding: 5px; border-radius: 4px;">
+                                            @token.MaskedValue
+                                        </code>
+                                        <button class="btn btn-sm btn-outline-primary" 
+                                                type="button"
+                                                @onclick="() => OnCopyToken(token.Value)"
+                                                title="کپی توکن">
+                                            <MaterialIcon IconName="@MaterialIconsHelper.ContentCopy"></MaterialIcon>
+                                        </button>
+                                    </div>
+                                }
+                            </Template>
+                        </GridColumn>
+                        <GridColumn Field="@nameof(GetUserTokensDto.HasExpired)" 
+                                    Title="وضعیت" 
+                                    Width="120px">
+                            <Template>
+                                @{
+                                    var token = context as GetUserTokensDto;
+                                    <span class="badge @(token.HasExpired ? "bg-danger" : "bg-success")">
+                                        @(token.HasExpired ? "منقضی شده" : "فعال")
+                                    </span>
+                                }
+                            </Template>
+                        </GridColumn>
+                        <GridColumn Title="عملیات" 
+                                    Width="100px" 
+                                    Filterable="false" 
+                                    Sortable="false">
+                            <Template>
+                                @{
+                                    var token = context as GetUserTokensDto;
+                                    <button class="btn btn-sm btn-danger" 
+                                            type="button"
+                                            @onclick="() => OnDeleteToken(token.Id)">
+                                        <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                                    </button>
+                                }
+                            </Template>
+                        </GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            </div>
+        </div>
+    </div>
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

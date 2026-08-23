@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" />
+		<PackageReference Include="Telerik.UI.for.Blazor" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+        <!--<PackageReference Include="BuildBundlerMinifier2022" />
+        <PackageReference Include="BuildWebCompiler2022">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>-->
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Silo.Application\Silo.Application.Shared.csproj" />
+		<ProjectReference Include="..\Silo.Identity.Client\Silo.Identity.Client.csproj" />
+		<ProjectReference Include="..\Silo.Infrastructure.Shared\Silo.Infrastructure.Shared.csproj" />
+		<ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="Microsoft.AspNetCore.Components.Web" />
+	</ItemGroup>
+
+</Project>

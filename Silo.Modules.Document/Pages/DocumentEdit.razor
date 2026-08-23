@@ -1,0 +1,281 @@
+@page "/document/edit"
+@inherits SiloBasePage
+@namespace Silo.Modules.Document.Pages
+@using Newtonsoft.Json.Linq
+@using Silo.Application.Dto
+@using Silo.Application.Features;
+@using Silo.Identity.Client;
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Telerik.Blazor.Components
+@using Silo.Shared.Components
+@using Silo.Shared.Components.Modals
+@using Silo.Components.DynamicField
+
+<PageTitle>@PageTitle</PageTitle>
+
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+            <div class="form-search-span">
+                <EditForm Model="DocumentRequest"
+                          OnInvalidSubmit="OnInvalidSubmit"
+                          OnValidSubmit="OnValidSubmit">
+                    <DataAnnotationsValidator />
+                    <div class=" d-flex flex-row align-items-center flex-wrap"
+                         style="margin-bottom: 10px !important;margin-top: 10px;">
+                        <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Header_Key :</label>
+                    <TelerikTextBox @bind-Value="DocumentRequest.DocumentKey"
+                                    Class="form-control input-search-span-lg pointer text-dir-left text-align-right">
+                    </TelerikTextBox>
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Document_Type :</label>
+                    <TelerikDropDownList Data="DocumentTypes"
+                                         TextField="@nameof(GetAllActionTypesDto.Title)"
+                                         ValueField="@nameof(GetAllActionTypesDto.Code)"
+                                         @bind-Value="DocumentRequest.DocumentType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         Width="180px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Document_Check_Type :</label>
+                    <TelerikDropDownList Data="DocumentCheckTypes"
+                                         TextField="@nameof(TelerikDropDownItemGeneric<string>.Name)"
+                                         ValueField="@nameof(TelerikDropDownItemGeneric<int>.Value)"
+                                         @bind-Value="DocumentRequest.DocumentCheckType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         Width="250px"
+                                         Class="drop-all">
+                        <DropDownListSettings>
+                            <DropDownListPopupSettings Class="text-align-right" />
+                        </DropDownListSettings>
+                    </TelerikDropDownList>
+                    <button class="btn btn-primary"
+                            type="submit"
+                            title="@TextResources.APP_StringKeys_Search"
+                            style="margin-right: 5px !important;">
+                        <MaterialIcon IconName="search"></MaterialIcon>
+                    </button>
+                    <button id="btn-clear"
+                            class="btn btn-warning"
+                            type="button"
+                            title="@TextResources.APP_StringKeys_Clear"
+                            style="margin-right: 5px; "
+                            @onclick="OnClearClick">
+                        <MaterialIcon IconName="refresh"></MaterialIcon>
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+    @if (HeaderDynamicFields.Any())
+    {
+        <div class="card card-stats col-md-12 text-align-center"
+             style="margin-bottom:5px;">
+            <div class="form-search-span">
+                <div class=" d-flex flex-row align-items-center flex-wrap"
+                     style="margin-bottom: 10px !important;margin-top: 10px;">
+                    @{
+                        <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Document_Type 1:</label>
+                        <TelerikDropDownList Data="DocumentTypes"
+                                     TextField="@nameof(GetAllActionTypesDto.Title)"
+                                     ValueField="@nameof(GetAllActionTypesDto.CodeToString)"
+                                         @bind-Value="LoadedDocument.DocumentType1"
+                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                     Filterable="true"
+                                     FilterOperator="StringFilterOperator.Contains"
+                                     Width="180px"
+                                     Class="drop-all">
+                        </TelerikDropDownList>
+                        <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Document_Type 2:</label>
+                        <TelerikDropDownList Data="DocumentTypes"
+                                     TextField="@nameof(GetAllActionTypesDto.Title)"
+                                     ValueField="@nameof(GetAllActionTypesDto.CodeToString)"
+                                         @bind-Value="LoadedDocument.DocumentType2"
+                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                     Filterable="true"
+                                     FilterOperator="StringFilterOperator.Contains"
+                                     Width="180px"
+                                     Class="drop-all">
+                        </TelerikDropDownList>
+                    }
+                    <DynamicFieldFillValue @ref="HeaderDynamicFieldsRef"
+                                          DynamicFieldsDto="HeaderDynamicFields">
+                    </DynamicFieldFillValue>
+                </div>
+            </div>
+        </div>
+    }
+    @if (LoadedDocument.DocumentItems is not null)
+    {
+        <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px;">
+            <div class="form-search-span" style="padding-top:10px;">
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 10px !important;margin-top: 10px;">
+                    <button class="btn btn-primary" type="submit" title="@TextResources.APP_StringKeys_Add"
+                            style="margin-right: 20px !important;" @onclick="async ()=> await ProductCodeModal.Show()">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Add"></MaterialIcon>
+                    </button>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-right:15px;">
+                    <TelerikGrid @ref="GridDocumentItems"
+                                 Data="LoadedDocument.DocumentItems"
+                                 PageSize="10"
+                                 Navigable="true"
+                                 Pageable="true"
+                                 Sortable="true"
+                                 Resizable="true"
+                                 ColumnVirtualization="true"
+                                 Width="100%">
+                        <RowTemplate Context="documentItem">
+                            <td class="td-style">@documentItem.ProductCode</td>
+                            <td class="td-style">@documentItem.ProductTitle</td>
+                            <td class="td-style">
+                                @if (documentItem.IsEditing)
+                                {
+                                    <TelerikNumericTextBox @bind-Value="@documentItem.EditCount"
+                                                           Class="form-control input-search-span"
+                                                           Width="100px !important"></TelerikNumericTextBox>
+                                }
+                                else
+                                {
+                                    @documentItem.Count
+                                }
+                            </td>
+                            <td class="td-style">
+                                @if (documentItem.IsEditing)
+                                {
+                                    <button @onclick="async ()=> await OnSaveEditItemClick(documentItem)"
+                                            class="btn-dt-1 btn-success tr-buttom btn">
+                                        <MaterialIcon IconName="@MaterialIconsHelper.Done"></MaterialIcon>
+                                    </button>
+                                    <button @onclick="async ()=> await OnCancelEditItemClick(documentItem)"
+                                            class="btn-dt-1 btn-success tr-buttom btn">
+                                        <MaterialIcon IconName="@MaterialIconsHelper.Close"></MaterialIcon>
+                                    </button>
+                                }
+                                else
+                                {
+                                    @if (documentItem.IsDeleting)
+                                    {
+                                        @TextResources.APP_StringKeys_Remove_CheckBeforeDelete
+                                        <button @onclick="async ()=> await OnApproveDeleteRow(documentItem)"
+                                                class="btn-dt-1 btn-danger tr-buttom btn">
+                                            <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                                        </button>
+                                        <button @onclick="async ()=> documentItem.IsDeleting = false"
+                                                class="btn-dt-1 btn-secondary tr-buttom btn">
+                                            <MaterialIcon IconName="@MaterialIconsHelper.Close"></MaterialIcon>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button @onclick="async ()=> await OnEditItemClick(documentItem)"
+                                                class="btn-dt-1 btn-success tr-buttom btn">
+                                            <MaterialIcon IconName="@MaterialIconsHelper.Edit"></MaterialIcon>
+                                        </button>
+                                        <button @onclick="async ()=> documentItem.IsDeleting = true"
+                                                class="btn-dt-1 btn-danger tr-buttom btn">
+                                            <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                                        </button>
+                                    }
+                                }
+                            </td>
+                        </RowTemplate>
+                        <GridColumns>
+                            <GridColumn Width="300px" Field="" Title="@TextResources.APP_StringKeys_ProductCode"></GridColumn>
+                            <GridColumn Width="450px" Field="" Title="@TextResources.APP_StringKeys_ProductTitle"></GridColumn>
+                            <GridColumn Width="100px" Field="" Title="@TextResources.APP_StringKeys_Value"></GridColumn>
+                            <GridColumn Width="200px" Field="" Title=""></GridColumn>
+                        </GridColumns>
+                    </TelerikGrid>
+                </div>
+                @if (LoadedDocument.Key.HasValue() && LoadedDocument.DocumentItems.Any())
+                {
+                    <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-top:10px;margin-bottom:10px;direction:ltr;">
+                        <button class="btn btn-primary" type="submit" title="@TextResources.APP_StringKeys_Save"
+                                style="margin-right: 20px !important;" @onclick="async (e) => await ApproveModal.Open(e)">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Attention"
+       @ref="ApproveModal"
+       Size="ModalSize.Normal"
+       CloseBtnText="@TextResources.APP_StringKeys_Disconfirm"
+       OkBtnText="@TextResources.APP_StringKeys_Approve"
+       OnOkModal="OnSaveDocumentClick">
+    <ModalBodyContentHtml>
+        <div class=" bg-danger text-align-center">
+            @TextResources.APP_StringKeys_Check_Before_Submit
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<ProductCodeModal @ref="ProductCodeModal"
+                  OnClickProduct="OnClickProduct">
+</ProductCodeModal>
+
+<style type="text/css">
+    .btn-range {
+        font-size: 140%;
+    }
+
+    .k-listview-header,
+    .k-listview-content {
+        padding: 20px;
+    }
+
+    .k-listview-footer {
+        border-width: 0;
+        padding: 10px 20px;
+    }
+
+    .k-listview-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 180px);
+        gap: 20px 10px;
+    }
+
+    .k-card {
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .k-card-body {
+        padding: 10px 0;
+    }
+
+    .k-card .k-card-title {
+        padding: 0;
+        font-size: 1em;
+        font-weight: bold;
+        line-height: normal;
+    }
+
+    .k-card-subtitle {
+        font-size: 0.85em;
+    }
+
+    .k-card {
+        cursor: pointer;
+    }
+
+    .k-card-choosed {
+        background-color: #789aff !important;
+    }
+</style>

@@ -1,0 +1,46 @@
+﻿@page "/account/login"
+@namespace Silo.Pages.Account
+
+<PageTitle>@TextResources.APP_StringKeys_View_Account_Login</PageTitle>
+
+<div class="login">
+    <div class="app-left-image"></div>
+    <div class="app-right">
+        <div class="login-card">
+            <EditForm Model="Request"
+                      OnValidSubmit="OnValidSubmit"
+                      OnInvalidSubmit="OnInvalidSubmit">
+                <DataAnnotationsValidator />
+                <img class="app-logo" src="/images/Icons/app.png" alt="Silo" />
+                <div class="login-field-group">
+                    <InputText @bind-Value="Request.Username"
+                               class="login-input"
+                               placeholder="@TextResources.APP_StringKeys_Username"
+                               id="Username" />
+
+                    <div class="password-wrapper">
+                        <InputText @bind-Value="Request.Password"
+                                   type="@(ShowPassword ? "text" : "password")"
+                                   id="Password"
+                                   name="Password"
+                                   class="login-input"
+                                   placeholder="@TextResources.APP_StringKeys_Password" />
+
+                        <MaterialIcon Class="img-pass-inside"
+                                      IconName="@(ShowPassword ? MaterialIconsHelper.Visibility_off : MaterialIconsHelper.Visibility)"
+                                      OnClick="TogglePassword" />
+                    </div>
+                </div>
+                <button type="submit" class="login-button">
+                    <MaterialIcon Class="btn-icon" IconName="@MaterialIconsHelper.Login" />
+                    @TextResources.APP_StringKeys_View_Account_Login
+                </button>
+                <img class="app-logo-hor" src="/images/Icons/tda-hor.png" alt="TDA" />
+            </EditForm>
+        </div>
+    </div>
+</div>
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading" />

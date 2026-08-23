@@ -1,0 +1,74 @@
+@typeparam TColumn where TColumn : struct
+@typeparam TFilter where TFilter : struct
+@namespace Silo.Shared.Components.Report
+@using Microsoft.AspNetCore.Components.Forms
+@using Silo.Application.Features
+
+<div class="d-flex flex-row align-items-center flex-wrap text-align-right" style="margin-top:10px;">
+    <div class="col-md-12 card"
+         style="margin-bottom: 10px;">
+        <EditForm Model="FormatCommand"
+                  OnInvalidSubmit="OnInvalidSubmit"
+                  OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <TelerikFloatingLabel Text="@($"{TextResources.APP_StringKeys_Field_Title}*:")">
+                <div class="k-form-field-wrap">
+                    <TelerikTextBox @bind-Value="FormatCommand.Name"
+                                    Class="form-control input-search-span-lg"></TelerikTextBox>
+                </div>
+            </TelerikFloatingLabel>
+            <button type="submit"
+                    class="btn btn-primary"
+                    style="margin-top: 20px;">
+                <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+            </button>
+        </EditForm>
+    </div>
+    <TelerikGrid Data="ReportFormats"
+                 PageSize="10"
+                 Navigable="true"
+                 Pageable="true"
+                 Sortable="true">
+        <RowTemplate Context="format">
+            <td class="td-style">@format.Name</td>
+            <td class="td-style">
+                @if (DeleteFormat.Id != format.Id)
+                {
+                    <button type="button"
+                            class="btn-dt-1 btn-success tr-buttom btn"
+                            @onclick="async ()=> await OnChooseFormatClick(format)">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Check_box"></MaterialIcon>
+                    </button>
+                    <button type="button"
+                            class="btn-dt-1 btn-danger tr-buttom btn"
+                            @onclick="async ()=> await OnDeleteFormatClick(format)">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                    </button>
+                    <a href="/settings/reportlinks/@UrlTools.RemoveUrlSitePart(NavigationManager.Uri, ","),@format.Id/@format.Id"
+                       target="_blank"
+                       class="btn-dt-1 btn-success tr-buttom btn">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Add_link"></MaterialIcon>
+                    </a>
+                }
+                else
+                {
+                    @TextResources.APP_StringKeys_Remove_CheckBeforeDelete
+                    <button type="button"
+                            class="btn-dt-1 btn-danger tr-buttom btn"
+                            @onclick="OnDeleteFormatConfirmClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Check"></MaterialIcon>
+                    </button>
+                    <button type="button"
+                            class="btn-dt-1 btn-light tr-buttom btn"
+                            @onclick="async ()=> DeleteFormat = new()">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Close"></MaterialIcon>
+                    </button>
+                }
+            </td>
+        </RowTemplate>
+        <GridColumns>
+            <GridColumn Field="@nameof(GetReportFormatsByPathVm.Name)"></GridColumn>
+            <GridColumn Width="130px"></GridColumn>
+        </GridColumns>
+    </TelerikGrid>
+</div>

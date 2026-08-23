@@ -1,0 +1,263 @@
+@page "/inspect/elements"
+@inherits SiloBasePage
+@namespace Silo.Modules.Inspect.Pages
+@using Silo.Application.Dto;
+@using Silo.Application.Features;
+@using Silo.Identity.Client
+
+<PageTitle>@PageTitle</PageTitle>
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center form-search-span d-flex flex-row align-items-center flex-wrap" style="padding:5px;">
+        <EditForm Model="Element"
+                  OnInvalidSubmit="OnInvalidSubmit"
+                  OnValidSubmit="OnSubmitClick">
+            <DataAnnotationsValidator />
+            <div class="card card-stats text-align-center" style="padding:5px;">
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Field_Title :</label>
+                    <TelerikTextBox Class="form-control input-search-span-lg pointer"
+                    @bind-Value="Element.Name"></TelerikTextBox>
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Inspect_ElementType :</label>
+                    <TelerikDropDownList Data="ElementTypes"
+                                         TextField="Name"
+                                         ValueField="Value"
+                    @bind-Value="Element.InspectElementType"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="195px"
+                                         Class="drop-all"
+                                         OnChange="OnElementTypeChanged">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Default_value :</label>
+                    @if (Element.InspectElementType == InspectElementType.String)
+                    {
+                        <TelerikTextBox Class="form-control input-search-span-lg pointer"
+                        @bind-Value="Element.Value"></TelerikTextBox>
+                    }
+                    @if (Element.InspectElementType == InspectElementType.Int)
+                    {
+                        <TelerikTextBox Class="form-control input-search-span-lg pointer"
+                        @bind-Value="Element.Value"></TelerikTextBox>
+                        <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Inspect_Min :</label>
+                        <TelerikNumericTextBox @bind-Value="Element.MinValue" Class="form-control pointer"
+                                               Arrows="false"></TelerikNumericTextBox>
+                        <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Inspect_Max :</label>
+                        <TelerikNumericTextBox @bind-Value="Element.MaxValue" Class="form-control pointer"
+                                               Arrows="false"></TelerikNumericTextBox>
+                    }
+                    @if (Element.InspectElementType == InspectElementType.OneOption)
+                    {
+                        <TelerikDropDownList Data="OneOptionValues"
+                                             TextField="Name"
+                                             ValueField="Value"
+                        @bind-Value="Element.Value"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="195px"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                    }
+                    @if (Element.InspectElementType == InspectElementType.MultiOption)
+                    {
+                        <TelerikDropDownList Data="Options"
+                        @bind-Value="Element.Value"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="195px"
+                                             Class="drop-all"
+                        @ref="ComboMultiOptions">
+                        </TelerikDropDownList>
+                    }
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Inspect_Prevent :</label>
+                    <TelerikCheckBox @bind-Value="Element.Prevent">
+                    </TelerikCheckBox>
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Active :</label>
+                    <TelerikCheckBox @bind-Value="Element.IsActive">
+                    </TelerikCheckBox>
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Required :</label>
+                    <TelerikCheckBox @bind-Value="Element.IsRequired">
+                    </TelerikCheckBox>
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_InspectElement_Row :</label>
+                    <TelerikNumericTextBox @bind-Value="Element.Row" Class="form-control pointer"
+                                           Arrows="false" Width="100px"></TelerikNumericTextBox>
+                </div>
+            </div>
+            @if (Element.InspectElementType == InspectElementType.MultiOption)
+            {
+                <div class="card card-stats text-align-center" style="margin-top:5px;">
+                    <div>
+                        <h6 class="form-title card-title" style="text-align: center !important;">
+                            @TextResources.APP_StringKeys_Option_Add
+                        </h6>
+                    </div>
+                    <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                        <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Options :</label>
+                        <input type="text" style="    width: 200px!important;"
+                               class="form-control input-search-span-lg"
+                        @bind-value="Option" />
+                        <button style="margin-right: 7px;" id="btn-contact" class="btn btn-primary"
+                                type="button" @onclick="OnAddOptionClick">
+                            <img src="/images/Utilities/pluswhite.png" height="20" width="20" />
+                        </button>
+                        <div id="list-contact"
+                             class=" d-flex flex-row align-items-center flex-wrap col-md-6 border"
+                             style="min-height: 90px;width: 500px!important;margin-right: 10px;">
+                            @foreach (string option in Options)
+                            {
+                                <span class="list-item item-contact"
+                                @onclick="async (e)=> await OnRemoveOption(option)">
+                                    @option
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="card card-stats text-align-center" style="margin-top:5px;">
+                <div>
+                    <h6 class="form-title card-title" style="text-align: center !important;">
+                        @TextResources.APP_StringKeys_ProductType_Choose
+                    </h6>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                    @if (Types is not null)
+                    {
+                        <span>
+                            <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Print_SelectAll :</label>
+                            <input type="checkbox" value="@IsSelectAllTypes"
+                                   checked=@IsSelectAllTypes @onchange="OnTypeSelectAllChange" />
+                        </span>
+                        @foreach (ChoosableKeyValue Types in Types)
+                        {
+                            <span>
+                                <label style="margin-right: 20px !important;">@Types.Value :</label>
+                                <input @bind-value="Types.IsChoosed" type="checkbox" checked=@Types.IsChoosed @onclick="@(status=>OnTypeSelectChange(Types.IsChoosed))" />
+                            </span>
+                        }
+                    }
+                </div>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap save-button-div" style="margin-top: 10px;">
+                <button type="button" id="btn-search" class="btn btn-primary" data-toggle="modal" data-target="#modal-details" title="@TextResources.APP_StringKeys_Search"
+                @onclick="async ()=> await ModalInspects.Open(new())">
+                    <MaterialIcon IconName="list"></MaterialIcon>
+                </button>
+                <button id="btn-clear" class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                        style="margin-left: 2px;margin-right: 2px;"
+                @onclick="OnClearClick">
+                    <MaterialIcon IconName="refresh"></MaterialIcon>
+                </button>
+                <button class="btn btn-danger" type="button" title="@TextResources.APP_StringKeys_Remove"
+                        style="margin-left: 2px;margin-right: 2px;"
+                @onclick="OnRemoveModalClick">
+                    <MaterialIcon IconName="delete"></MaterialIcon>
+                </button>
+                <button type="submit" id="btn-send" class="btn btn-primary"
+                        title="@TextResources.APP_StringKeys_Send">
+                    <MaterialIcon IconName="save"></MaterialIcon>
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Choose"
+@ref="ModalInspects"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="InspectElements?.OrderBy(p=>p.Row)"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="element">
+                    <td class="td-style td-dt">@element.Row</td>
+                    <td class="td-style td-dt">@element.Id</td>
+                    <td class="td-style td-dt">@element.Name</td>
+                    <td class="td-style td-dt">
+                        @switch (element.InspectElementType)
+                        {
+                            case InspectElementType.OneOption:
+                                @TextResources.APP_StringKeys_Inspect_Type_Combobox
+                                break;
+                            case InspectElementType.MultiOption:
+                                @TextResources.APP_StringKeys_Inspect_Type_Checkbox
+                                break;
+                            case InspectElementType.Int:
+                                @TextResources.APP_StringKeys_Inspect_Type_Int
+                                break;
+                            case InspectElementType.String:
+                                @TextResources.APP_StringKeys_Inspect_Type_String
+                                break;
+                        }
+                    </td>
+                    <td class="td-style td-dt">
+                        @switch (element.InspectElementType)
+                        {
+                            case InspectElementType.OneOption:
+                                @(element.Value.Equals("true") ? TextResources.APP_StringKeys_Verified : TextResources.APP_StringKeys_Unverified)
+                                break;
+                            default:
+                                @element.Value
+                                break;
+                        }
+                    </td>
+                    <td class="td-style td-dt">
+                        @(element.IsActive ? TextResources.APP_StringKeys_Active : TextResources.APP_StringKeys_Deactive)
+                    </td>
+                    <td class="td-style td-dt">
+                        <button @onclick="async ()=> await OnSelectElement(element)"
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                            @TextResources.APP_StringKeys_Choose
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllInspectElementVm.Row)"
+                                Title="@TextResources.APP_StringKeys_InspectElement_Row" Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllInspectElementVm.Id)"
+                                Title="@TextResources.APP_StringKeys_Code" Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllInspectElementVm.Name)"
+                                Title="@TextResources.APP_StringKeys_Field_Title"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllInspectElementVm.InspectElementType)"
+                                Title="@TextResources.APP_StringKeys_Inspect_ElementType"
+                                Width="240px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllInspectElementVm.Value)"
+                                Title="@TextResources.APP_StringKeys_Default_value"
+                                Width="120px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllInspectElementVm.IsActive)"
+                                Title="@TextResources.APP_StringKeys_ActivationStatus"
+                                Width="120px"></GridColumn>
+                    <GridColumn Width="50px"></GridColumn>
+                </GridColumns>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Inspect_Elements" />
+                </GridExport>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_Attention"
+@ref="ModalRemove"
+       Size="ModalSize.Large"
+       CancelBtnText="@TextResources.APP_StringKeys_Close"
+       YesBtnText="@TextResources.APP_StringKeys_Remove"
+       OnYesModal="OnRemoveClick"
+       YesBtnClass="btn-danger">
+    <ModalBodyContentHtml>
+        <div class="text-align-center bg-danger text-light">
+            @TextResources.APP_StringKeys_Remove_CheckBeforeDelete
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+@if (IsLoading)
+{
+    <TelerikLoaderContainer LoaderPosition="@LoaderPosition.End"
+                            LoaderType="LoaderType.InfiniteSpinner"
+                            Text="@TextResources.APP_StringKeys_Loading">
+    </TelerikLoaderContainer>
+}

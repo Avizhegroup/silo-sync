@@ -1,0 +1,184 @@
+﻿@using System.Globalization
+
+<div class="clock-picker">
+    <div class="time-input" @onclick="ShowClockPopup">
+        <input type="text" value="@SelectedTime" readonly />
+    </div>
+    <div class="popup" style="display: @(IsClockPopupVisible ? "block" : "none")">
+        <div class="clock-face" @onclick="SelectTime">
+            @for (int i = 1; i <= 12; i++)
+            {
+                var angle = (i - 3) * 30;
+                var top = Math.Sin(Math.PI * angle / 180) * 80 + 100;
+                var left = Math.Cos(Math.PI * angle / 180) * 80 + 100;
+
+                <div class="clock-number" style="top: @(top)px; left: @(left)px">
+                    @i
+                </div>
+            }
+            <div class="hour-hand" style="transform: rotate(@HourAngle)"></div>
+            <div class="minute-hand" style="transform: rotate(@MinuteAngle)"></div>
+            <div class="second-hand" style="transform: rotate(@SecondAngle)"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+    <div class="options">
+        <label><input type="checkbox" checked="@Is24HourFormat" @onchange="Toggle24HourFormat" /> 24-Hour Format</label>
+    </div>
+</div>
+
+@code {
+    private bool Is24HourFormat = true;
+    private DateTime SelectedTime;
+    private bool IsClockPopupVisible = false;
+
+    private string HourAngle => GetHourAngle(SelectedTime);
+    private string MinuteAngle => GetMinuteAngle(SelectedTime);
+    private string SecondAngle => GetSecondAngle(SelectedTime);
+
+    private void Toggle24HourFormat(ChangeEventArgs e)
+    {
+        Is24HourFormat = (bool)e.Value;
+    }
+
+    private string GetHourAngle(DateTime time)
+    {
+        int hour = Is24HourFormat ? time.Hour : time.Hour % 12;
+        return $"rotate({hour * 30}deg)";
+    }
+
+    private string GetMinuteAngle(DateTime time)
+    {
+        int minute = time.Minute;
+        return $"rotate({minute * 6}deg)";
+    }
+
+    private string GetSecondAngle(DateTime time)
+    {
+        int second = time.Second;
+        return $"rotate({second * 6}deg)";
+    }
+
+    private void ShowClockPopup()
+    {
+        IsClockPopupVisible = true;
+    }
+
+    private void SelectTime(MouseEventArgs e)
+    {
+        IsClockPopupVisible = false;
+
+        var clockSize = 200; // Adjust the size of the clock face
+        var centerX = clockSize / 2;
+        var centerY = clockSize / 2;
+
+        var angle = Math.Atan2(e.OffsetY - centerY, e.OffsetX - centerX) * (180 / Math.PI);
+        angle = angle < 0 ? 360 + angle : angle;
+
+        var hour = (int)(angle / 30);
+        var minute = (int)((angle % 30) * 2);
+
+        if (!Is24HourFormat)
+        {
+            if (hour == 0)
+                hour = 12;
+            else if (hour > 12)
+                hour -= 12;
+        }
+
+        SelectedTime = new DateTime(SelectedTime.Year, SelectedTime.Month, SelectedTime.Day, hour, minute, 0);
+    }
+
+    protected override void OnInitialized()
+    {
+        SelectedTime = DateTime.Now;
+    }
+}
+
+<style>
+    .clock-picker {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    .time-input {
+        position: relative;
+        padding: 5px;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .popup {
+        position: absolute;
+        top: 40px;
+        left: 0;
+        width: 250px;
+        background-color: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+    }
+
+    .clock-face {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin: 15px;
+        border-radius: 50%;
+        background-color: #f5f5f5;
+        cursor: pointer;
+    }
+
+    .clock-number {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        line-height: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .hour-hand,
+    .minute-hand,
+    .second-hand {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 2px;
+        height: 50px;
+        transform-origin: bottom center;
+        background-color: #333;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .minute-hand {
+        height: 70px;
+        background-color: #555;
+    }
+
+    .second-hand {
+        width: 1px;
+        height: 80px;
+        background-color: #d50000;
+    }
+
+    .dot {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 12px;
+        height: 12px;
+        transform: translate(-50%, -50%);
+        background-color: #333;
+        border-radius: 50%;
+    }
+
+    .options {
+        font-size: 14px;
+    }
+</style>

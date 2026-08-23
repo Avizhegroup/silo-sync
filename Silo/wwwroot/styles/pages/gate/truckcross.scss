@@ -1,0 +1,257 @@
+@import '../../abstracts/colors';
+
+// ─────────────────────────────────────────────────────────────────
+// TruckCross Pages — Silo Design System styles
+// ─────────────────────────────────────────────────────────────────
+
+// ── Stepper ──────────────────────────────────────────────────────
+.tc-stepper {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: stretch;
+    gap: .5rem;
+
+    .tc-step {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: .25rem;
+        padding: .75rem 1rem;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: 600;
+        font-size: .88rem;
+        cursor: pointer;
+        background: $surface-card;
+        border: 2px solid $border-color;
+        color: $text-secondary;
+        transition: background .18s, color .18s, border-color .18s, box-shadow .18s;
+        position: relative;
+
+        .tc-step-icon {
+            font-size: 1.4rem;
+            line-height: 1;
+        }
+
+        .tc-step-label {
+            font-size: .8rem;
+            font-weight: 500;
+        }
+
+        .tc-step-badge {
+            position: absolute;
+            top: -6px;
+            inset-inline-start: -6px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: $color-teal;
+            color: $color-white;
+            font-size: .65rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity .15s;
+        }
+
+        &.done {
+            background: #e8f5e9;
+            border-color: $color-teal;
+            color: #1b7c4a;
+
+            .tc-step-badge { opacity: 1; }
+        }
+
+        &.active {
+            background: $action-primary-bg;
+            border-color: $action-primary-bg;
+            color: $action-primary-text;
+            box-shadow: 0 3px 12px rgba(0, 62, 129, .28);
+
+            .tc-step-icon { color: $color-white; }
+        }
+
+        &:hover:not(.active) {
+            background: $color-grey-300;
+            border-color: $color-grey-400;
+        }
+    }
+
+    .tc-step-divider {
+        display: flex;
+        align-items: center;
+        color: $color-grey-400;
+        font-size: 1rem;
+        padding: 0 .1rem;
+    }
+}
+
+// ── Filter bar ───────────────────────────────────────────────────
+.tc-filter-bar {
+    .card-body {
+        padding: .75rem 1.25rem;
+    }
+
+    .tc-filter-label {
+        font-size: .8rem;
+        font-weight: 600;
+        color: $text-secondary;
+        margin-bottom: .2rem;
+        display: block;
+    }
+}
+
+// ── Pending crosses sidebar ───────────────────────────────────────
+.tc-pending-list {
+    .card-header {
+        background: $action-primary-bg;
+        color: $color-white;
+        font-weight: 600;
+        font-size: .9rem;
+        padding: .6rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
+
+    .tc-status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: .2rem .6rem;
+        border-radius: 12px;
+        font-size: .72rem;
+        font-weight: 600;
+        white-space: nowrap;
+
+        &.status-present { background: #fff3cd; color: #856404; }
+        &.status-enter   { background: #cff4fc; color: #0a6470; }
+        &.status-exit    { background: #d1e7dd; color: #0a5c31; }
+    }
+}
+
+// ── Action bar ───────────────────────────────────────────────────
+.tc-action-bar {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: .5rem;
+    padding: .75rem 0 0;
+    border-top: 1px solid $border-color;
+    margin-top: 1rem;
+}
+
+// ── Form section card (inside tabs) ──────────────────────────────
+.tc-form-section {
+    background: $surface-card;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+
+    .tc-form-section-header {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        margin-bottom: 1rem;
+        padding-bottom: .6rem;
+        border-bottom: 1px solid $border-color;
+
+        .tc-form-section-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: $color-teal-alpha;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: $color-teal;
+            font-size: 1.1rem;
+        }
+
+        .tc-form-section-title {
+            font-weight: 600;
+            font-size: .95rem;
+            color: $text-primary;
+        }
+    }
+
+    // Bootstrap-grid form fields: label on top, input below
+    .tc-field {
+        display: flex;
+        flex-direction: column;
+
+        label {
+            font-size: .78rem;
+            font-weight: 600;
+            color: $text-secondary;
+            margin-bottom: .25rem;
+            white-space: nowrap;
+        }
+    }
+
+    // Meta info row (user, date, time chips)
+    .tc-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+        margin-top: .25rem;
+
+        .tc-meta-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: .3rem;
+            background: $color-grey-100;
+            border: 1px solid $border-color;
+            border-radius: 20px;
+            padding: .2rem .7rem;
+            font-size: .78rem;
+            color: $text-primary;
+
+            .tc-meta-label {
+                color: $text-secondary;
+                font-weight: 600;
+            }
+        }
+    }
+}
+
+// ── Config side menu ─────────────────────────────────────────────
+.tc-config-menu {
+    .tc-menu-item {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        padding: .65rem 1rem;
+        cursor: pointer;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: .85rem;
+        color: $text-nav-link;
+        transition: background .15s, color .15s;
+        margin-bottom: .25rem;
+
+        &:hover { background: $color-grey-300; }
+        &.selected {
+            background: $action-active-bg;
+            color: $action-active-text;
+        }
+    }
+}
+
+// ── Report column tints ───────────────────────────────────────────
+.tc-report {
+    .tc-present-col { background-color: rgba(31, 161, 204, .08) !important; }
+    .tc-enter-col   { background-color: rgba(31, 161, 204, .18) !important; }
+    .tc-exit-col    { background-color: rgba(31, 161, 204, .30) !important; }
+}
+
+// ── Utility ───────────────────────────────────────────────────────
+.tc-divider {
+    border: none;
+    border-top: 1px solid $border-color;
+    margin: .75rem 0;
+}
+

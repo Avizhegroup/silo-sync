@@ -1,0 +1,304 @@
+@page "/inspect/report"
+@inherits SiloBasePage
+@namespace Silo.Modules.Inspect.Pages
+@using Silo.Components.DynamicField
+@using Silo.Identity.Client;
+@using Silo.Shared.Components.Modals
+@using Silo.Application.Features;
+@using Telerik.FontIcons
+
+<PageTitle>@PageTitle</PageTitle>
+
+<TelerikMediaQuery Media="(max-width: 1240px)" OnChange="((changed) => IsSmallerScreen = changed)"></TelerikMediaQuery>
+
+@if (IsFiltersShown)
+{
+    <div class="row col-md-12">
+        <div class="card card-stats col-md-12 text-align-center" style="padding:15px;">
+            <form role="form" class="form-search-span" id="form-main">
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:0px!important;margin-top:5px;">
+                    <label>@TextResources.APP_StringKeys_ProductCode:</label>
+                    <input @bind-value="Request.ProductCode" class="form-control input-search-span-lg pointer" />
+                    <button type="button" class="btn btn-light" @onclick="async ()=> await ProductCodeModal.Show()">
+                        <MaterialIcon IconName="Checklist_rtl"></MaterialIcon>
+                    </button>
+                    <label style="margin-right: 25px;">@TextResources.APP_StringKeys_Chart_Regcode :</label>
+                    <input type="text" class="form-control input-search-span-lg pointer" @bind-value="Request.RegCode" />
+                    <label style="margin-right: 30px;">@TextResources.APP_StringKeys_FromDate:</label>
+                    <DatePicker InputClass=" input-search-span-lg pointer "
+                                @bind-Value="Request.FromDate"></DatePicker>
+                    <label style="margin-right: 38px;">@TextResources.APP_StringKeys_ToDate:</label>
+                    <DatePicker InputClass=" input-search-span-lg pointer "
+                                @bind-Value="Request.ToDate"></DatePicker>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <label style="margin-right: 10px;">@TextResources.APP_StringKeys_User :</label>
+                    <TelerikDropDownList Data="Users"
+                                         TextField="Name"
+                                         ValueField="Id"
+                                         @bind-Value="Request.UserId"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="@(IsSmallerScreen?"150px":"200px")"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 83px;">@TextResources.APP_StringKeys_Result :</label>
+                    <TelerikDropDownList Data="InspectResults"
+                                         TextField="Name"
+                                         ValueField="Value"
+                                         @bind-Value="Request.InspectResult"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="@(IsSmallerScreen?"150px":"200px")"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 22px;">@TextResources.APP_StringKeys_Line :</label>
+                    <TelerikDropDownList Data="Lines"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="Request.Line"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="@(IsSmallerScreen?"150px":"200px")"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label>@TextResources.APP_StringKeys_Notif_ReportElements:</label>
+                    <input @bind-value="FilteredElements" class="form-control input-search-span-lg pointer" readonly="readonly" />
+                    <button type="button" id="btn-search" class="btn btn-light" data-toggle="modal" data-target="#modal-details" title="@TextResources.APP_StringKeys_Search"
+                            @onclick="async ()=> await ModalElementFilter.Open(new())">
+                        <MaterialIcon IconName="Checklist_rtl"></MaterialIcon>
+                    </button>
+                </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap col-md-10">
+                    @if (false)
+                    {
+                        <DynamicFieldFillValue @ref="DynamicFieldFillValueRef" DynamicFieldsDto="DynamicFieldsDto"></DynamicFieldFillValue>
+                    }
+                    else
+                    {
+                        <DynamicFieldFillValue @ref="DynamicFieldFillValueRef" DynamicFieldsDto="new()"></DynamicFieldFillValue>
+                    }
+                    </div>
+                <div class=" d-flex flex-row align-items-center flex-wrap search-button-div" style="top: 120px;">
+                    <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Clear"
+                            style="margin-left: 2px;" @onclick="OnClickClear">
+                        <MaterialIcon IconName="refresh"></MaterialIcon>
+                    </button>
+                    <button type="button" id="btn-send" class="btn btn-primary" title="@TextResources.APP_StringKeys_Send"
+                            @onclick="OnClickSubmit">
+                        <MaterialIcon IconName="search"></MaterialIcon>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+@if (IsSmallerScreen)
+{
+    <style type="text/css">
+        .input-search-span-lg {
+            width: 150px !important;
+        }
+    </style>
+}
+
+@if (Inspects is not null)
+{
+    <TelerikGrid Data="Inspects"
+                 PageSize="10"
+                 Navigable="true"
+                 Pageable="true"
+                 Sortable="true">
+        <RowTemplate Context="inspect">
+            <td class="td-style">@inspect.InspectId</td>
+            <td class="td-style">@inspect.ProductSerial</td>
+            <td class="td-style">@inspect.ProductCode</td>
+            <td class="td-style">@inspect.ProductName</td>
+            <td class="td-style">@inspect.RegCode</td>
+            <td class="td-style">@inspect.ProductionDateTime.ToString("HH:mm") @PersianCalendarTools.GregorianToPersian(inspect.ProductionDateTime)</td>
+            <td class="td-style">@inspect.Line</td>
+            <td class="td-style">@inspect.DateTime.ToString("HH:mm") @PersianCalendarTools.GregorianToPersian(inspect.DateTime)</td>
+            <td class="td-style">@inspect.InspectUsername</td>
+            <td class="td-style">
+                @switch (inspect.Result)
+                {
+                    case InspectResult.Verfied:
+                        @TextResources.APP_StringKeys_Verified
+                        break;
+                    case InspectResult.NotVerfied:
+                        @TextResources.APP_StringKeys_Unverified
+                        break;
+                }
+            </td>
+            <td class="td-style">
+                <button @onclick="async ()=> await OnClickRowDetails(inspect)"
+                        class="btn-dt-1 btn-success tr-buttom btn">
+                    @TextResources.APP_StringKeys_Details
+                </button>
+            </td>
+        </RowTemplate>
+        <GridToolBarTemplate>
+            <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                @TextResources.APP_StringKeys_ExportExcel
+            </GridCommandButton>
+        </GridToolBarTemplate>
+        <GridExport>
+            <GridExcelExport AllPages="true" FileName="@PageTitle" />
+        </GridExport>
+        <GridColumns>
+            <GridColumn Field="@nameof(GetAllInspectReportVm.InspectId)"
+                        Title="@TextResources.APP_StringKeys_Code"
+                        Width="50px">
+            </GridColumn>
+            <GridColumn Field="@nameof(GetAllInspectReportVm.ProductSerial)"
+                        Title="@TextResources.APP_StringKeys_ProductSerial"
+                        Width="80px">
+            </GridColumn>
+            <GridColumn Field="@nameof(GetAllInspectReportVm.ProductCode)"
+                        Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                        Width="140px">
+            </GridColumn>
+            <GridColumn Field="@nameof(GetAllInspectReportVm.ProductName)"
+                        Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+            <GridColumn Field="@nameof(GetAllInspectReportVm.RegCode)"
+                        Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                        Width="80px"></GridColumn>
+            <GridColumn Field="@nameof(GetAllInspectReportVm.ProductionDateTime)"
+                        Title="@TextResources.APP_StringKeys_Chart_ProductDate"
+                        Width="120px"></GridColumn>
+            <GridColumn Field="@nameof(GetAllInspectReportVm.Line)"
+                        Title="@TextResources.APP_StringKeys_Line"
+                        Width="80px"></GridColumn>
+            <GridColumn Field="@nameof(GetAllInspectReportVm.DateTime)"
+                        Title="@TextResources.APP_StringKeys_Inspect_Date"
+                        Width="120px"></GridColumn>
+            <GridColumn Field="@nameof(GetAllInspectReportVm.InspectUsername)"
+                        Title="@TextResources.APP_StringKeys_User"
+                        Width="140px"></GridColumn>
+            <GridColumn Field="@nameof(GetAllInspectReportVm.Result)"
+                        Title="@TextResources.APP_StringKeys_Result"
+                        Width="80px">
+            </GridColumn>
+            <GridColumn Width="60px"></GridColumn>
+        </GridColumns>
+    </TelerikGrid>
+}
+
+@if (IsLoading)
+{
+    <TelerikLoaderContainer LoaderPosition="@LoaderPosition.End"
+                            LoaderType="LoaderType.InfiniteSpinner"
+                            Text="@TextResources.APP_StringKeys_Loading">
+    </TelerikLoaderContainer>
+}
+
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@TextResources.APP_StringKeys_Choose"
+       @ref="ModalElementFilter"
+       Size="ModalSize.ExtraLarge"
+       YesBtnText="@TextResources.APP_StringKeys_Choose"
+       CancelBtnText="@TextResources.APP_StringKeys_Ignore"
+       OnYesModal="OnClickModalYes">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="InspectElements"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="element">
+                    <td class="td-style td-dt">@element.Id</td>
+                    <td class="td-style td-dt">@element.Name</td>
+                    <td class="td-style td-dt">
+                        @switch (element.InspectElementType)
+                        {
+                            case InspectElementType.OneOption:
+                                <TelerikDropDownList Data="OneOptionValues"
+                                                     TextField="Name"
+                                                     ValueField="Value"
+                                                     @bind-Value="element.Value"
+                                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                                     Width="195px"
+                                                     Class="drop-all">
+                                </TelerikDropDownList>
+                                break;
+                            case InspectElementType.MultiOption:
+                                <TelerikDropDownList Data="element.Options"
+                                                     @bind-Value="element.Value"
+                                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                                     Width="195px"
+                                                     Class="drop-all"
+                                                     @ref="ComboMultiOptions">
+                                </TelerikDropDownList>
+                                break;
+                            case InspectElementType.Int:
+                                <input @bind-value="@element.Value" type="number" class="form-control input-search-span-lg pointer" />
+                                break;
+                            case InspectElementType.String:
+                                <input @bind-value="@element.Value" type="text" class="form-control input-search-span-lg pointer" />
+                                break;
+                        }
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllInspectElementVm.Id)"
+                                Title="@TextResources.APP_StringKeys_Code"
+                                Width="100px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllInspectElementVm.Name)"
+                                Title="@TextResources.APP_StringKeys_Field_Title"
+                                Width="240px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllInspectElementVm.Value)"
+                                Title="@TextResources.APP_StringKeys_Value"
+                                Width="195px"></GridColumn>
+                </GridColumns>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Details" />
+                </GridExport>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.YesCancel"
+       ModalTitle="@($"{TextResources.APP_StringKeys_Details} {TextResources.APP_StringKeys_Inspect} {InspectChoosed.InspectId}")"
+       @ref="ModalInspectDetails"
+       Size="ModalSize.ExtraLarge"
+       YesBtnText="@TextResources.APP_StringKeys_Choose"
+       CancelBtnText="@TextResources.APP_StringKeys_Ignore">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="InspectChoosed.Values"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="value">
+                    @{
+                        GetAllInspectElementVm element = InspectElements.FirstOrDefault(p => p.Id.Equals(value.InspectElementId));
+                    }
+                    <td class="td-style td-dt">@element.Name</td>
+                    <td class="td-style td-dt">
+                        @switch (element.InspectElementType)
+                        {
+                            case InspectElementType.OneOption:
+                                @(value.InspectElementValue.ToLower().Equals("true") ? TextResources.APP_StringKeys_Verified : TextResources.APP_StringKeys_Unverified)
+                                break;
+                            default:
+                                @value.InspectElementValue
+                                break;
+                        }
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllInspectElementVm.Name)"
+                                Title="@TextResources.APP_StringKeys_Field_Title"
+                                Width="240px"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllInspectElementVm.Value)"
+                                Title="@TextResources.APP_StringKeys_Value"
+                                Width="195px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<ProductCodeModal @ref="ProductCodeModal"
+                  OnClickProductCode="OnClickProductCode"></ProductCodeModal>

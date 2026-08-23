@@ -1,0 +1,350 @@
+﻿@page "/"
+@page "/home/index"
+@namespace Silo.Pages.Home
+
+<PageTitle>@TextResources.APP_StringKeys_View_Home_Index</PageTitle>
+
+<div class="dashboard-container">
+    @if (IsLoading)
+    {
+        @* ── Skeleton: KPI Cards ── *@
+        <div class="row g-3 mb-4">
+            @for (int i = 0; i < 3; i++)
+            {
+                <div class="col-md-4">
+                    <div class="card kpi-card shadow-sm border-0">
+                        <div class="card-body d-flex align-items-center gap-3">
+                            <TelerikSkeleton ShapeType="SkeletonShapeType.Circle" Width="52px" Height="52px" />
+                            <div class="flex-grow-1">
+                                <TelerikSkeleton ShapeType="SkeletonShapeType.Text" Width="60%" Height="14px" Class="mb-2" />
+                                <TelerikSkeleton ShapeType="SkeletonShapeType.Text" Width="40%" Height="28px" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @* ── Skeleton: Quick Navigation ── *@
+        <div class="row g-3 mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body py-2 d-flex flex-wrap gap-2 align-items-center">
+                        @for (int i = 0; i < 5; i++)
+                        {
+                            <TelerikSkeleton ShapeType="SkeletonShapeType.Rectangle" Width="110px" Height="32px" />
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* ── Skeleton: Charts Row 1 ── *@
+        <div class="row g-3 mb-4">
+            <div class="col-md-7">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-transparent">
+                        <TelerikSkeleton ShapeType="SkeletonShapeType.Text" Width="50%" Height="18px" />
+                    </div>
+                    <div class="card-body p-2">
+                        <TelerikSkeleton ShapeType="SkeletonShapeType.Rectangle" Width="100%" Height="260px" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-transparent">
+                        <TelerikSkeleton ShapeType="SkeletonShapeType.Text" Width="50%" Height="18px" />
+                    </div>
+                    <div class="card-body p-2">
+                        <TelerikSkeleton ShapeType="SkeletonShapeType.Rectangle" Width="100%" Height="260px" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-transparent">
+                        <TelerikSkeleton ShapeType="SkeletonShapeType.Text" Width="40%" Height="18px" />
+                    </div>
+                    <div class="card-body p-2">
+                        <TelerikSkeleton ShapeType="SkeletonShapeType.Rectangle" Width="100%" Height="240px" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-transparent">
+                        <TelerikSkeleton ShapeType="SkeletonShapeType.Text" Width="40%" Height="18px" />
+                    </div>
+                    <div class="card-body p-2">
+                        <TelerikSkeleton ShapeType="SkeletonShapeType.Rectangle" Width="100%" Height="240px" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (false)
+    {
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card kpi-card shadow-sm border-0">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <span class="kpi-icon bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Today" />
+                        </span>
+                        <div>
+                            <div class="kpi-label">@TextResources.APP_StringKeys_Summary_Daily</div>
+                            <div class="kpi-value fw-bold fs-4">@BriefDaily.ToString("N0")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card kpi-card shadow-sm border-0">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <span class="kpi-icon bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center">
+                            <MaterialIcon IconName="@MaterialIconsHelper.CalendarMonth" />
+                        </span>
+                        <div>
+                            <div class="kpi-label">@TextResources.APP_StringKeys_Summary_Monthly</div>
+                            <div class="kpi-value fw-bold fs-4">@BriefMonthly.ToString("N0")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card kpi-card shadow-sm border-0">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <span class="kpi-icon bg-warning-subtle text-warning rounded-circle d-flex align-items-center justify-content-center">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Insights" />
+                        </span>
+                        <div>
+                            <div class="kpi-label">@TextResources.APP_StringKeys_Summary_Yearly</div>
+                            <div class="kpi-value fw-bold fs-4">@BriefYearly.ToString("N0")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* ── Quick Navigation Shortcuts ── *@
+        <div class="row g-3 mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body py-2">
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <span class="text-muted small me-1">دسترسی سریع:</span>
+                            @if (QuickAccessLinks.Any())
+                            {
+                                @foreach (var qa in QuickAccessLinks)
+                                {
+                                    <a href="@qa.Url"
+                                       class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
+                                       @oncontextmenu:preventDefault="true"
+                                       @oncontextmenu="async (e) => await OnQuickAccessRightClick(qa, e)">
+                                        @if (qa.IconName.HasValue())
+                                        {
+                                            <MaterialIcon IconName="@qa.IconName" />
+                                        }
+                                        @qa.Title
+                                    </a>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted small">برای افزودن لینک، روی هر صفحه در منو کلیک راست کنید.</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <TelerikContextMenu @ref="QuickAccessContextMenuRef"
+                            Data="@QuickContextMenuItems"
+                            TextField="@nameof(TelerikContextMenuItem.Text)"
+                            DisabledField="@nameof(TelerikContextMenuItem.Disabled)"
+                            SeparatorField="@nameof(TelerikContextMenuItem.Separator)"
+                            IconField="@nameof(TelerikContextMenuItem.Icon)">
+            <ItemTemplate>
+                @{
+                    var ctxItem = context as TelerikContextMenuItem;
+                    <div @onclick="async () => await OnQuickAccessContextMenuItemClick(ctxItem)">
+                        @ctxItem.Text
+                    </div>
+                }
+            </ItemTemplate>
+        </TelerikContextMenu>
+
+        @* ── Charts Row 1: Trend + Product Distribution ── *@
+        <div class="row g-3 mb-4">
+            <div class="col-md-7">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-transparent fw-semibold">
+                        روند ورود کالا (۳۰ روز گذشته)
+                    </div>
+                    <div class="card-body p-2">
+                        <TelerikChart Width="100%" Height="260px">
+                            <ChartTitle Text="تعداد سریال ثبت‌شده بر اساس تاریخ"></ChartTitle>
+                            <ChartSeriesItems>
+                                <ChartSeries Type="ChartSeriesType.Area"
+                                             Data="@OnDates"
+                                             Field="@nameof(GetTagStatsOnProductDateVm.CountSerial)"
+                                             CategoryField="@nameof(GetTagStatsOnProductDateVm.Date)"
+                                             Style="ChartSeriesStyle.Smooth"
+                                             Color="#3f7fba">
+                                    <ChartSeriesMarkers Visible="false" />
+                                    <ChartSeriesTooltip Visible="true" />
+                                </ChartSeries>
+                            </ChartSeriesItems>
+                            <ChartCategoryAxes>
+                                <ChartCategoryAxis>
+                                    <ChartCategoryAxisLabels>
+                                        <ChartCategoryAxisLabelsRotation Angle="-45" />
+                                    </ChartCategoryAxisLabels>
+                                </ChartCategoryAxis>
+                            </ChartCategoryAxes>
+                            <ChartValueAxes>
+                                <ChartValueAxis>
+                                    <ChartValueAxisLabels Format="{0:N0}" />
+                                </ChartValueAxis>
+                            </ChartValueAxes>
+                        </TelerikChart>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-transparent fw-semibold">
+                        توزیع کالا بر اساس کد محصول
+                    </div>
+                    <div class="card-body p-2">
+                        <TelerikChart Width="100%" Height="260px">
+                            <ChartTitle Text="@TextResources.APP_StringKeys_Report_Diff_ProductCode"></ChartTitle>
+                            <ChartLegend Position="ChartLegendPosition.Bottom" />
+                            <ChartSeriesItems>
+                                <ChartSeries Type="ChartSeriesType.Donut"
+                                             Data="@OnProducts"
+                                             Field="@nameof(GetTagStatsOnProductCodeVm.Percent)"
+                                             CategoryField="@nameof(GetTagStatsOnProductCodeVm.ProductCode)">
+                                    <ChartSeriesTooltip Visible="true" Context="item">
+                                        <Template>@item.Category</Template>
+                                    </ChartSeriesTooltip>
+                                    <ChartSeriesLabels Visible="true"
+                                                       Template="@PieSeriesLabel"
+                                                       Position="ChartSeriesLabelsPosition.OutsideEnd"
+                                                       Distance="5" />
+                                </ChartSeries>
+                            </ChartSeriesItems>
+                        </TelerikChart>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* ── Charts Row 2: Shift + Line ── *@
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-transparent fw-semibold">
+                        آمار بر اساس شیفت
+                    </div>
+                    <div class="card-body p-2">
+                        <TelerikChart Width="100%" Height="240px">
+                            <ChartTitle Text="تعداد سریال به تفکیک شیفت"></ChartTitle>
+                            <ChartSeriesItems>
+                                <ChartSeries Type="ChartSeriesType.Column"
+                                             Data="@OnShifts"
+                                             Field="@nameof(GetTagsStatsOnShiftVm.CountSerial)"
+                                             CategoryField="@nameof(GetTagsStatsOnShiftVm.Shift)"
+                                             Color="#28a745">
+                                    <ChartSeriesTooltip Visible="true" />
+                                </ChartSeries>
+                            </ChartSeriesItems>
+                            <ChartCategoryAxes>
+                                <ChartCategoryAxis>
+                                    <ChartCategoryAxisLabels>
+                                        <ChartCategoryAxisLabelsRotation Angle="-30" />
+                                    </ChartCategoryAxisLabels>
+                                </ChartCategoryAxis>
+                            </ChartCategoryAxes>
+                            <ChartValueAxes>
+                                <ChartValueAxis>
+                                    <ChartValueAxisLabels Format="{0:N0}" />
+                                </ChartValueAxis>
+                            </ChartValueAxes>
+                        </TelerikChart>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-transparent fw-semibold">
+                        آمار بر اساس خط تولید
+                    </div>
+                    <div class="card-body p-2">
+                        <TelerikChart Width="100%" Height="240px">
+                            <ChartTitle Text="تعداد سریال به تفکیک خط"></ChartTitle>
+                            <ChartSeriesItems>
+                                <ChartSeries Type="ChartSeriesType.Bar"
+                                             Data="@OnLines"
+                                             Field="@nameof(GetTagStatsOnLineVm.CountSerial)"
+                                             CategoryField="@nameof(GetTagStatsOnLineVm.LineTitle)"
+                                             Color="#fd7e14">
+                                    <ChartSeriesTooltip Visible="true" />
+                                </ChartSeries>
+                            </ChartSeriesItems>
+                            <ChartCategoryAxes>
+                                <ChartCategoryAxis>
+                                    <ChartCategoryAxisLabels>
+                                        <ChartCategoryAxisLabelsRotation Angle="-30" />
+                                    </ChartCategoryAxisLabels>
+                                </ChartCategoryAxis>
+                            </ChartCategoryAxes>
+                            <ChartValueAxes>
+                                <ChartValueAxis>
+                                    <ChartValueAxisLabels Format="{0:N0}" />
+                                </ChartValueAxis>
+                            </ChartValueAxes>
+                        </TelerikChart>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+
+</div>
+
+<style>
+    .dashboard-container {
+        padding: 1.25rem;
+    }
+
+    .kpi-card {
+        border-radius: 12px;
+        transition: box-shadow .2s;
+    }
+
+        .kpi-card:hover {
+            box-shadow: 0 4px 18px rgba(0,0,0,.12) !important;
+        }
+
+    .kpi-icon {
+        width: 52px;
+        height: 52px;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .kpi-label {
+        font-size: .8rem;
+        color: #6c757d;
+    }
+
+    .kpi-value {
+        line-height: 1.2;
+    }
+</style>

@@ -1,0 +1,314 @@
+@namespace Silo.Shared.Components.Modals
+@using Silo.Application.Features
+
+<Modal Buttons="@(MultiSelect? ModalButtons.YesCancel: ModalButtons.No)"
+       ModalTitle="@TextResources.APP_StringKeys_Search_Product"
+       YesBtnText="@TextResources.APP_StringKeys_Choose"
+       CancelBtnText="@TextResources.APP_StringKeys_Ignore"
+       @ref="Modal"
+       Size="ModalSize.ExtraLarge"
+       OnYesModal="OnProductModalYes">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <div class="form-search-span">
+                <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:6px 12px; margin-top:5px; margin-bottom:5px;">
+                    <div class="d-flex flex-column">
+                        <label style="font-size:0.82em; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@TextResources.APP_StringKeys_From_Serial</label>
+                        <input @bind-value="SearchTagsRequest.FromSerial" class="form-control input-search-span-lg" />
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label style="font-size:0.82em; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@TextResources.APP_StringKeys_To_Serial</label>
+                        <input @bind-value="SearchTagsRequest.ToSerial" class="form-control input-search-span-lg" />
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label style="font-size:0.82em; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@TextResources.APP_StringKeys_ProductCode</label>
+                        <input @bind-value="SearchTagsRequest.ProductCode" class="form-control input-search-span-lg" />
+                    </div>
+                    <div class="d-flex flex-column">
+                        <div class="d-flex flex-row align-items-center" style="margin-bottom:2px; gap:6px;">
+                            <label style="font-size:0.82em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:0; flex:1;">@TextResources.APP_StringKeys_Chart_Regcode</label>
+                            <label style="font-size:0.82em; margin-bottom:0; white-space:nowrap; display:flex; align-items:center; gap:3px;">
+                                <input @bind-value="SearchTagsRequest.TechnicalCodeLike" type="checkbox"
+                                       checked=@SearchTagsRequest.TechnicalCodeLike />
+                                @TextResources.APP_StringKeys_Like
+                            </label>
+                        </div>
+                        <input @bind-value="SearchTagsRequest.TechnicalCode" class="form-control input-search-span-lg" />
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label style="font-size:0.82em; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@TextResources.APP_StringKeys_Field_ProductType</label>
+                        <TelerikDropDownList Data="Types"
+                                             TextField="@(nameof(GetAllProductTypeVm.Title))"
+                                             ValueField="@(nameof(GetAllProductTypeVm.Code))"
+                                             @bind-Value="SearchTagsRequest.Type"
+                                             Width="100%"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label style="font-size:0.82em; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@TextResources.APP_StringKeys_Line</label>
+                        <TelerikDropDownList Data="Lines"
+                                             TextField="Title"
+                                             ValueField="Code"
+                                             @bind-Value="SearchTagsRequest.Line"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="100%"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label style="font-size:0.82em; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@TextResources.APP_StringKeys_Chart_Shift</label>
+                        <TelerikDropDownList Data="Shifts"
+                                             TextField="Title"
+                                             ValueField="Code"
+                                             @bind-Value="SearchTagsRequest.Shift"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="100%"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label style="font-size:0.82em; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@TextResources.APP_StringKeys_FromDate</label>
+                        <DatePicker InputClass="form-control input-search-span-lg pointer"
+                                    @bind-Value="SearchTagsRequest.FromDate" Width="100%"></DatePicker>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label style="font-size:0.82em; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@TextResources.APP_StringKeys_ToDate</label>
+                        <DatePicker InputClass="form-control input-search-span-lg pointer"
+                                    @bind-Value="SearchTagsRequest.ToDate" Width="100%"></DatePicker>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label style="font-size:0.82em; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@TextResources.APP_StringKeys_Group</label>
+                        <TelerikDropDownList Data="Groups"
+                                             TextField="@(nameof(GetAllProductGroupVm.Title))"
+                                             ValueField="@(nameof(GetAllProductGroupVm.Code))"
+                                             @bind-Value="SearchTagsRequest.Group"
+                                             Width="100%"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label style="font-size:0.82em; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@TextResources.APP_StringKeys_Product_Size:</label>
+                        <TelerikDropDownList Data="Sizes"
+                                             TextField="Title"
+                                             ValueField="Code"
+                                             @bind-Value="SearchTagsRequest.Size"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="100%"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label style="font-size:0.82em; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@TextResources.APP_StringKeys_OldSerial</label>
+                        <input @bind-value="SearchTagsRequest.OldSerial" class="form-control input-search-span-lg" />
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label style="font-size:0.82em; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@TextResources.APP_StringKeys_Chart_Qc:</label>
+                        <TelerikDropDownList Data="Qcs"
+                                             TextField="Title"
+                                             ValueField="Code"
+                                             @bind-Value="SearchTagsRequest.Qc"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="100%"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label style="font-size:0.82em; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@TextResources.APP_StringKeys_Freeze_Status :</label>
+                        <TelerikDropDownList Data="FreezeStatuses"
+                                             TextField="Name"
+                                             ValueField="Value"
+                                             @bind-Value="SearchTagsRequest.FreezeStatus"
+                                             Width="100%"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label style="font-size:0.82em; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@TextResources.APP_StringKeys_Brand</label>
+                        <TelerikDropDownList Data="Brands"
+                                             TextField="@(nameof(GetAllProductBrandVm.Title))"
+                                             ValueField="@(nameof(GetAllProductBrandVm.Code))"
+                                             @bind-Value="SearchTagsRequest.Brand"
+                                             Width="100%"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                    </div>
+                </div>
+                <div class="d-flex flex-row justify-content-end gap-2" style="margin-bottom:5px;">
+                    <button type="button"
+                            class="btn btn-warning"
+                            @onclick="ClearProductModal">
+                        <MaterialIcon IconName="refresh"></MaterialIcon>
+                    </button>
+                    <button class="btn btn-primary" @onclick="OnSearchProductModalClick"
+                            type="button" title="@TextResources.APP_StringKeys_Search">
+                        <MaterialIcon IconName="search"></MaterialIcon>
+                    </button>
+                </div>
+                @if (ProductDynamicFields.Any())
+                {
+                    <div class="d-flex flex-row align-items-center" style="margin-top:3px!important;">
+                        <button type="button"
+                                class="btn btn-sm btn-outline-secondary"
+                                @onclick="() => ShowDynamicFields = !ShowDynamicFields">
+                            <MaterialIcon IconName="@(ShowDynamicFields ? "expand_less" : "expand_more")"></MaterialIcon>
+                            @TextResources.APP_StringKeys_Dynamic_Field
+                        </button>
+                    </div>
+                    @if (ShowDynamicFields)
+                    {
+                        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:6px 12px; margin-top:5px; margin-bottom:5px;">
+                            @foreach (var field in ProductDynamicFields)
+                            {
+                                <div class="d-flex flex-column">
+                                    <label style="margin-bottom:2px; font-size:0.82em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"
+                                           title="@field.Title">@field.Title</label>
+                                    @if (field.ValueType == DynamicFieldValueType.DropDown)
+                                    {
+                                        <TelerikDropDownList Data="(field.ValueOptionList ?? new())"
+                                                             TextField="."
+                                                             ValueField="."
+                                                             @bind-Value="field.Value"
+                                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                                             Width="100%"
+                                                             Class="drop-all">
+                                        </TelerikDropDownList>
+                                    }
+                                    else
+                                    {
+                                        <TelerikTextBox @bind-Value="field.Value"
+                                                        Class="form-control input-search-span-lg"
+                                                        Width="100%">
+                                        </TelerikTextBox>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+            @if (SearchTags is not null)
+            {
+                <TelerikGrid Data="SearchTags"
+                             PageSize="5"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true"
+                             ColumnVirtualization="true"
+                             Width="100%">
+                    <RowTemplate Context="response">
+                        @if (MultiSelect)
+                        {
+                            <td class="td-style">
+                                <TelerikCheckBox @bind-Value="@response.IsChoosed"
+                                                 Id="@response.ProductSerial"
+                                                 OnChange="OnToggleSelectChange">
+                                </TelerikCheckBox>
+                            </td>
+                        }
+                        <td class="td-style">@response.ProductSerial</td>
+                        <td class="td-style">@response.ProductCode</td>
+                        <td class="td-style">@response.TechnicalCode</td>
+                        <td class="td-style">@response.ProductName</td>
+                        <td class="td-style">@response.DateTime.ToNormalPersianDateTime()</td>
+                        <td class="td-style">@response.Shift</td>
+                        <td class="td-style">@response.Line</td>
+                        <td class="td-style">@response.Size</td>
+                        <td class="td-style">@response.Qc</td>
+                        <td class="td-style">@response.Warehouse</td>
+                        <td class="td-style">@response.Location</td>
+                        <td class="td-style">@response.Count</td>
+                        <td class="td-style">@response.FreezeStatus</td>
+                        <td class="td-style">@response.Type</td>
+                        <td class="td-style">@response.Group</td>
+                        <td class="td-style">@response.Brand</td>
+                        @if (!MultiSelect)
+                        {
+                            <td class="td-style">
+                                <button type="button"
+                                        class="btn-dt-1 btn-success tr-buttom btn"
+                                        style="padding:2px;"
+                                        @onclick="async () => await OnSingleSelectClick(response)">
+                                    @TextResources.APP_StringKeys_Choose
+                                </button>
+                            </td>
+                        }
+                    </RowTemplate>
+                    <GridColumns>
+                        @if (MultiSelect)
+                        {
+                            <GridCheckboxColumn Visible="true" Width="30px" HeaderClass="header-select-all">
+                                <HeaderTemplate>
+                                    @{
+                                        <TelerikCheckBox @bind-Value="@IsAllSelected"
+                                                         TabIndex="-1"
+                                                         OnChange="OnToggleSelectAll" />
+                                    }
+                                </HeaderTemplate>
+                            </GridCheckboxColumn>
+                        }
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.ProductSerial)"
+                                    Title="@TextResources.APP_StringKeys_ProductSerial"
+                                    Width="90px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.ProductCode)"
+                                    Title="@TextResources.APP_StringKeys_ProductCode"
+                                    Width="150px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.TechnicalCode)"
+                                    Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                                    Width="90px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.ProductName)"
+                                    Title="@TextResources.APP_StringKeys_ProductName"
+                                    Width="300px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.DateTime)"
+                                    Title="@TextResources.APP_StringKeys_DateTime"
+                                    Width="110px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.Shift)"
+                                    Title="@TextResources.APP_StringKeys_Chart_Shift"
+                                    Width="70px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.Line)"
+                                    Title="@TextResources.APP_StringKeys_Line"
+                                    Width="90px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.Size)"
+                                    Title="@TextResources.APP_StringKeys_Product_Size"
+                                    Width="70px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.Qc)"
+                                    Title="@TextResources.APP_StringKeys_Chart_Qc"
+                                    Width="90px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.Warehouse)"
+                                    Title="@TextResources.APP_StringKeys_Warehouse"
+                                    Width="60px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.Location)"
+                                    Title="@TextResources.APP_StringKeys_Zone"
+                                    Width="70px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.Count)"
+                                    Title="@TextResources.APP_StringKeys_Metrage"
+                                    Width="70px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.FreezeStatus)"
+                                    Title="@TextResources.APP_StringKeys_Freeze_Status"
+                                    Width="100px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.Type)"
+                                    Title="@TextResources.APP_StringKeys_ProductType"
+                                    Width="100px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.Group)"
+                                    Title="@TextResources.APP_StringKeys_Group"
+                                    Width="100px"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllProductBySerialVm.Brand)"
+                                    Title="@TextResources.APP_StringKeys_Brand"
+                                    Width="100px"></GridColumn>
+                        @if (!MultiSelect)
+                        {
+                            <GridColumn Width="70px"></GridColumn>
+                        }
+                    </GridColumns>
+
+                </TelerikGrid>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

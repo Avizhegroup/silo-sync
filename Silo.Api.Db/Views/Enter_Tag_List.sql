@@ -1,0 +1,157 @@
+﻿CREATE VIEW dbo.Enter_Tag_List
+AS
+SELECT        TOP (100) PERCENT dbo.tbl_TagsMovement.RMovementActionId AS [کد عملیات ورود], dbo.tbl_MovementActions.MovementActionDate AS [تاریخ ورود], dbo.tbl_MovementActions.MovementActionTime AS [ساعت ورود], 
+                         dbo.tbl_TagsMovement.ProductSerial AS [سریال محموله], dbo.tbl_Tags.ProductCode AS [کد کالا], dbo.tbl_Tags.ProductName AS [عنوان کالا], dbo.tbl_Tags.ProductCount AS [مقدار کالا], 
+                         CASE dbo.tbl_Tags.TagStatus WHEN 0 THEN N'بسته بندی' WHEN 1 THEN N'داخل انبار' WHEN 2 THEN N'خارج شده' END AS [وضعیت محموله], dbo.GetProductAnalyseAge(dbo.tbl_Tags.TagRegisterShamsiUnixDate) 
+                         AS [آنالیز سنی]
+FROM            dbo.tbl_TagsMovement LEFT OUTER JOIN
+                         dbo.tbl_MovementActions ON dbo.tbl_TagsMovement.RMovementActionId = dbo.tbl_MovementActions.MovementActionId LEFT OUTER JOIN
+                         dbo.tbl_Tags ON dbo.tbl_TagsMovement.ProductSerial = dbo.tbl_Tags.ProductSerial
+WHERE        (dbo.tbl_MovementActions.MovementActionTp = 1)
+ORDER BY [تاریخ ورود], [ساعت ورود]
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_DiagramPane1', @value = N'[0E232FF0-B466-11cf-A24F-00AA00A3EFFF, 1.00]
+Begin DesignProperties = 
+   Begin PaneConfigurations = 
+      Begin PaneConfiguration = 0
+         NumPanes = 4
+         Configuration = "(H (1[41] 4[20] 2[16] 3) )"
+      End
+      Begin PaneConfiguration = 1
+         NumPanes = 3
+         Configuration = "(H (1 [50] 4 [25] 3))"
+      End
+      Begin PaneConfiguration = 2
+         NumPanes = 3
+         Configuration = "(H (1 [50] 2 [25] 3))"
+      End
+      Begin PaneConfiguration = 3
+         NumPanes = 3
+         Configuration = "(H (4 [30] 2 [40] 3))"
+      End
+      Begin PaneConfiguration = 4
+         NumPanes = 2
+         Configuration = "(H (1 [56] 3))"
+      End
+      Begin PaneConfiguration = 5
+         NumPanes = 2
+         Configuration = "(H (2 [66] 3))"
+      End
+      Begin PaneConfiguration = 6
+         NumPanes = 2
+         Configuration = "(H (4 [50] 3))"
+      End
+      Begin PaneConfiguration = 7
+         NumPanes = 1
+         Configuration = "(V (3))"
+      End
+      Begin PaneConfiguration = 8
+         NumPanes = 3
+         Configuration = "(H (1[56] 4[18] 2) )"
+      End
+      Begin PaneConfiguration = 9
+         NumPanes = 2
+         Configuration = "(H (1 [75] 4))"
+      End
+      Begin PaneConfiguration = 10
+         NumPanes = 2
+         Configuration = "(H (1[66] 2) )"
+      End
+      Begin PaneConfiguration = 11
+         NumPanes = 2
+         Configuration = "(H (4 [60] 2))"
+      End
+      Begin PaneConfiguration = 12
+         NumPanes = 1
+         Configuration = "(H (1) )"
+      End
+      Begin PaneConfiguration = 13
+         NumPanes = 1
+         Configuration = "(V (4))"
+      End
+      Begin PaneConfiguration = 14
+         NumPanes = 1
+         Configuration = "(V (2))"
+      End
+      ActivePaneConfig = 0
+   End
+   Begin DiagramPane = 
+      Begin Origin = 
+         Top = 0
+         Left = 0
+      End
+      Begin Tables = 
+         Begin Table = "tbl_TagsMovement"
+            Begin Extent = 
+               Top = 0
+               Left = 313
+               Bottom = 200
+               Right = 545
+            End
+            DisplayFlags = 280
+            TopColumn = 8
+         End
+         Begin Table = "tbl_MovementActions"
+            Begin Extent = 
+               Top = 38
+               Left = 23
+               Bottom = 168
+               Right = 275
+            End
+            DisplayFlags = 280
+            TopColumn = 6
+         End
+         Begin Table = "tbl_Tags"
+            Begin Extent = 
+               Top = 6
+               Left = 598
+               Bottom = 194
+               Right = 834
+            End
+            DisplayFlags = 280
+            TopColumn = 0
+         End
+      End
+   End
+   Begin SQLPane = 
+   End
+   Begin DataPane = 
+      Begin ParameterDefaults = ""
+      End
+      Begin ColumnWidths = 9
+         Width = 284
+         Width = 1500
+         Width = 1500
+         Width = 1500
+         Width = 1500
+         Width = 1500
+         Width = 1500
+         Width = 1500
+         Width = 1500
+      End
+   End
+   Begin CriteriaPane = 
+      Begin ColumnWidths = 11
+         Column = 1440
+         Alias = 900
+         Table = 1170
+         Output = 720
+         Append = 1400
+         NewValue = 1170
+         SortType = 1350
+         SortOrder = 1410
+         GroupBy = 1350
+         Filter = 1350
+         Or = 1350
+         Or = 1350
+         Or = 1350
+      End
+   End
+End
+', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'Enter_Tag_List';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_DiagramPaneCount', @value = 1, @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'VIEW', @level1name = N'Enter_Tag_List';
+

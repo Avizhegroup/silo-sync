@@ -1,0 +1,323 @@
+@page "/gate/securityGateDoc"
+@page "/gate/securityGate"
+@inherits SiloBasePage
+@namespace Silo.Pages
+@using Silo.Application.Features;
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div>
+    <div class="row col-md-12">
+        <div class="card text-align-center col-md-12">
+            <div>
+                <h5 class="form-title card-title" style="text-align: center !important;">
+                    @PageTitle
+                </h5>
+            </div>
+        </div>
+        <div class="card text-align-center col-md-12">
+            <div>
+                <h6 class="form-title card-title">
+                    @TextResources.APP_StringKeys_Security_Tags
+                </h6>
+            </div>
+            <div class="form-search-span" style=" margin-top: -30px !important; margin-bottom:5px;">
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <label>@TextResources.APP_StringKeys_OperationCode:</label>
+                    <input id="input-op" name="op" class="form-control input-search-span" @bind-value="Operation.GateOperationCode" @onkeyup="OnGetOpKeyUp" @ref="RefOperation" />
+                    <button id="btn-op" class="btn btn-primary" style="margin-right: 4px; "
+                            type="button" title="@TextResources.APP_StringKeys_Gate_Operations"
+                            @onclick="OnGetLastActionsDataClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                    </button>
+                    <button id="btn-op" class="btn btn-secondary" style="margin-right: 4px; "
+                            type="button" title="@TextResources.APP_StringKeys_Previous_Operation"
+                            @onclick="OnGetPreviousOpClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Arrow_right"></MaterialIcon>
+                    </button>
+                    <button id="btn-op" class="btn btn-secondary" style="margin-right: 4px; "
+                            type="button" title="@TextResources.APP_StringKeys_Next_Operation"
+                            @onclick="OnGetNextOpClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Arrow_left"></MaterialIcon>
+                    </button>
+                    <button id="btn-modal" type="button" class="btn @ErrorsClass" style="margin-right: 4px;"
+                            @onclick="async()=> await ModalErrors.Open(new())">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Warning"></MaterialIcon>
+                    </button>
+                    <label style="font-size:15px;text-align: right;" id="lbl-opdate" class="text-success">
+                        @GateOperationDateTime
+                        <br />
+                        @MovementActionId
+                    </label>
+                    <label style="margin-right: 10px !important;">@TextResources.APP_StringKeys_Station:</label>
+                    <TelerikDropDownList Data="Stations"
+                                         TextField="Name"
+                                         ValueField="Code"
+                                         @bind-Value="Operation.Gate"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Class="drop-all">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 12px;">
+                        @TextResources.APP_StringKeys_To_Warehouse:
+                    </label>
+                    <TelerikDropDownList Data="Warehouses"
+                                         TextField="DestinationTitle"
+                                         ValueField="DestinationCode"
+                                         @bind-Value="Operation.DestinationWarehouseCode"
+                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                         Width="200px"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         OnChange="OnDestinationWarehouseChange"
+                                         Class="drop-all">
+                                                                     <DropDownListSettings>
+                                <DropDownListPopupSettings Class="text-align-right" />
+                            </DropDownListSettings>
+                    </TelerikDropDownList>
+                </div>
+            </div>
+            @if (GateProducts is not null)
+            {
+                <TelerikGrid Data="GateProducts"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true"
+                         OnRowRender="OnRowOpRenderHandler">
+                    <RowTemplate Context="product">
+                        <td class="td-style">@product.ProductCode</td>
+                        <td class="td-style">@product.ProductName</td>
+                        <td class="td-style">@product.SumCount</td>
+                        <td class="td-style">@product.ProductCount</td>
+                        <td class="td-style">@product.Status</td>
+                        <td class="td-style">
+                            <button @onclick="async ()=> await OnClickRowDetails(product.ProductCode)"
+                                    class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Details
+                            </button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetAllGateProductVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllGateProductVm.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllGateProductVm.ProductCount)"
+                                Title="@TextResources.APP_StringKeys_Count"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllGateProductVm.SumCount)"
+                                Title="@TextResources.APP_StringKeys_SumValue"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllGateProductVm.Status)"
+                                Title="@TextResources.APP_StringKeys_Field_Status"></GridColumn>
+                        <GridColumn Width="60px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            }
+            <br />
+        </div>
+    </div>
+    <div class="row col-md-12">
+        <div class="card text-align-center col-md-12">
+            <div>
+                <h6 class="form-title card-title">
+                    @TextResources.APP_StringKeys_Doc_Cus
+                </h6>
+            </div>
+            <div class="form-search-span" style=" margin-top: -30px !important; margin-bottom:5px;">
+                <div class=" d-flex flex-row align-items-center flex-wrap">
+                    <label>@TextResources.APP_StringKeys_DocCode:</label>
+                    <input @bind-value="DocumentCode" class="form-control input-search-span" @onkeyup="OnDocumentKeyUp" />
+                    <button id="btn-doc" class="btn btn-primary" @onclick="OnSearchDocumentClick"
+                            type="button" title="@TextResources.APP_StringKeys_Search">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Search"></MaterialIcon>
+                    </button>
+                    <label style="margin-right: 10px !important;">@TextResources.APP_StringKeys_Security_Index_Doc_required:</label>
+                    <TelerikCheckBox Value="@(Mode == SecurityPageModes.GateAndDoc)"
+                                     Enabled="false"
+                                     Title="@TextResources.APP_StringKeys_Security_Index_Doc_required">
+                    </TelerikCheckBox>
+                </div>
+            </div>
+            <TelerikGrid Data="Documents"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true"
+                         OnRowRender="OnRowDocRenderHandler">
+                <RowTemplate Context="product">
+                    <td class="td-style">@product.ProductCode</td>
+                    <td class="td-style">@product.ProductName</td>
+                    <td class="td-style">@product.SumValue</td>
+                    <td class="td-style">@product.Status</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetDocProductDataByDocKeyVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"></GridColumn>
+                    <GridColumn Field="@nameof(GetDocProductDataByDocKeyVm.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                    <GridColumn Field="@nameof(GetDocProductDataByDocKeyVm.SumValue)"
+                                Title="@TextResources.APP_StringKeys_SumValue"></GridColumn>
+                    <GridColumn Field="@nameof(GetDocProductDataByDocKeyVm.Status)"
+                                Title="@TextResources.APP_StringKeys_Field_Status"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+            <br />
+        </div>
+    </div>
+
+    <div class="row col-md-12">
+        <div class="card text-align-center col-md-12 form-search-span" style="min-height:90px;">
+            <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 0px !important;">
+                <h6 style="position:absolute; left:20px; top:10px;">
+                    @TextResources.APP_StringKeys_Movement_Property
+                </h6>
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="position:absolute; left:20px; top:35px;">
+                    <button id="btn-clear" class="btn btn-warning" style="margin-left: 5px; "
+                            type="button" title="@TextResources.APP_StringKeys_Clear" @onclick="OnClearClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    <button class="btn btn-success" style="margin-left: 5px;"
+                            type="button" title="@TextResources.APP_StringKeys_Print'">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Print"></MaterialIcon>
+                    </button>
+                    <button id="btn-send" class="btn btn-primary"
+                            type="button" title="@TextResources.APP_StringKeys_Send" @onclick="OnSaveClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                    </button>
+                </div>
+            </div>
+            <div class=" d-flex flex-row align-items-center flex-wrap col-md-10" style=" margin-bottom: 10px !important; margin-top: 10px;">
+                <label style="margin-right:15px;">@TextResources.APP_StringKeys_Description</label>
+                <input @bind-value="Operation.MovementActionDesc" class="form-control input-search-span-lg" tabindex="indexCount" style="width: 200px !important;" />
+                @{
+                    int indexCount = 1;
+                    @foreach (var field in DynamicFieldsDto)
+                    {
+                        <label style="margin-right:15px;">@field.Key</label>
+                        <input @bind-value="field.Value" class="form-control input-search-span-lg" tabindex="indexCount" style="width: 150px !important;" />
+
+                        indexCount++;
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalDetails"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="GateDetails"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style">@product.ProductCode</td>
+                    <td class="td-style">@product.ProductName</td>
+                    <td class="td-style">@product.ProductSerial</td>
+                    <td class="td-style">@product.ProductCount</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetAllGateProductDetailsVm.ProductCode)"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllGateProductDetailsVm.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllGateProductDetailsVm.ProductSerial)"
+                                Title="@TextResources.APP_StringKeys_ProductSerial"></GridColumn>
+                    <GridColumn Field="@nameof(GetAllGateProductDetailsVm.ProductCount)"
+                                Title="@TextResources.APP_StringKeys_Value"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalLastActions"
+       Size="ModalSize.Large"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="LastActions"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="action">
+                    <td class="td-style">@action.Code</td>
+                    <td class="td-style">@action.Count</td>
+                    <td class="td-style">@action.DateTime.ToNormalPersianDateTime()</td>
+                    <td class="td-style">@action.Status</td>
+                    <td class="td-style">
+                        <button @onclick="async ()=> await OnChooseLastActionClick(action.Code)"
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                            @TextResources.APP_StringKeys_Choose
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(Get100LastActionsVm.Code)"
+                                Title="@TextResources.APP_StringKeys_Code"></GridColumn>
+                    <GridColumn Field="@nameof(Get100LastActionsVm.Count)"
+                                Title="@TextResources.APP_StringKeys_Field_Count"></GridColumn>
+                    <GridColumn Field="@nameof(Get100LastActionsVm.DateTime)"
+                                Title="@TextResources.APP_StringKeys_DateTime"></GridColumn>
+                    <GridColumn Field="@nameof(Get100LastActionsVm.Status)"
+                                Title="@TextResources.APP_StringKeys_Field_Status"></GridColumn>
+                    <GridColumn Width="60px"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Error"
+       @ref="ModalErrors"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="Errors"
+                         PageSize="10"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="product">
+                    <td class="td-style">@product.ProductCode</td>
+                    <td class="td-style">@product.ProductName</td>
+                    <td class="td-style">@product.ProductSerial</td>
+                    <td class="td-style">@product.Regcode</td>
+                    <td class="td-style">@product.SumCount</td>
+                    <td class="td-style">@product.TagEpc</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GateProductErrorDto.ProductCode)" Width="150px"
+                                Title="@TextResources.APP_StringKeys_Chart_ProductCode"></GridColumn>
+                    <GridColumn Field="@nameof(GateProductErrorDto.ProductName)"
+                                Title="@TextResources.APP_StringKeys_ProductName"></GridColumn>
+                    <GridColumn Field="@nameof(GateProductErrorDto.ProductSerial)" Width="80px"
+                                Title="@TextResources.APP_StringKeys_ProductSerial"></GridColumn>
+                    <GridColumn Field="@nameof(GateProductErrorDto.Regcode)" Width="80px"
+                                Title="@TextResources.APP_StringKeys_Chart_Regcode"></GridColumn>
+                    <GridColumn Field="@nameof(GateProductErrorDto.SumCount)" Width="80px"
+                                Title="@TextResources.APP_StringKeys_Value"></GridColumn>
+                    <GridColumn Field="@nameof(GateProductErrorDto.TagEpc)"
+                                Title="@TextResources.APP_StringKeys_Field_Status"></GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+   
+<TelerikLoaderContainer LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading"
+                        Visible="IsLoading">
+</TelerikLoaderContainer>

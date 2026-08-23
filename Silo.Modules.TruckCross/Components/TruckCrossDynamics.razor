@@ -1,0 +1,77 @@
+﻿@{
+    int rowIndex = 0;
+}
+
+@foreach (var chunk in SectionDynamicFields.Chunk(2))
+{
+    string rowStyle = (RowStyles != null && RowStyles.Count > rowIndex) ? RowStyles[rowIndex] : "";
+
+    <div class="@rowStyle d-flex align-items-center flex-wrap mb-2">
+        @for (int i = 0; i < chunk.Length; i++)
+        {
+            var dynamicField = chunk[i];
+
+            string marginRight = i == 0
+            ? (LabelMarginRightsFirst != null && LabelMarginRightsFirst.Count > rowIndex ? LabelMarginRightsFirst[rowIndex] : LabelMarginRightFirst)
+            : (LabelMarginRightsSecond != null && LabelMarginRightsSecond.Count > rowIndex ? LabelMarginRightsSecond[rowIndex] : LabelMarginRightSecond);
+
+            <label style="margin-right:@marginRight;">
+                @dynamicField.Title
+                @if (dynamicField.IsRequired ?? false)
+                {
+                    <span class="text-danger">*</span>
+                }
+            </label>
+
+            @switch (dynamicField.ValueType)
+            {
+                case DynamicFieldValueType.TextBox:
+                    <div style=@($"margin-top:{RichTextMarginTop}; display:inline-block;")>
+                        <TelerikTextBox Class="text-dir-left"
+                                        Width="@FieldWidth"
+                                        @bind-Value="dynamicField.Value"
+                                        Placeholder="@dynamicField.DefaultValue"
+                                        ReadOnly="@(dynamicField.IsReadOnly ?? false)" />
+                    </div>
+                    break;
+
+
+                case DynamicFieldValueType.DropDown:
+                    <TelerikDropDownList Data="dynamicField.ValueOptionList"
+                                         @bind-Value="dynamicField.Value"
+                                         DefaultText="@(!string.IsNullOrEmpty(dynamicField.DefaultValue) ? dynamicField.DefaultValue : "انتخاب کنید")"
+                                         Width="@FieldWidth"
+                                         Filterable="true"
+                                         FilterOperator="StringFilterOperator.Contains"
+                                         ReadOnly="@(dynamicField.IsReadOnly ?? false)"
+                                         Class="drop-all text-dir-left">
+                        <DropDownListSettings>
+                            <DropDownListPopupSettings Class="text-align-right" />
+                        </DropDownListSettings>
+                    </TelerikDropDownList>
+                    break;
+
+                case DynamicFieldValueType.RichTextEditor:
+                    <div style=@($"display:inline-block; align-self:flex-start; margin-top:{RichTextMarginTop};")>
+                        <TelerikTextArea Width="@FieldWidth"
+                                         Rows="4"
+                                         Class="text-dir-left"
+                                         @bind-Value="dynamicField.Value"
+                                         Placeholder="@dynamicField.DefaultValue"
+                                         ReadOnly="@(dynamicField.IsReadOnly ?? false)" />
+                    </div>
+                    break;
+
+                case DynamicFieldValueType.Numeric:
+                    <div style=@($"display:inline-block; align-self:flex-start; margin-top:{RichTextMarginTop};")>
+                        <TelerikNumericTextBox Width="@FieldWidth"
+                                               Class="text-dir-left"
+                                               @bind-Value="dynamicField.NumericValue"
+                                               ReadOnly="@(dynamicField.IsReadOnly ?? false)" />
+                    </div>
+                    break;
+            }
+        }
+    </div>
+    rowIndex++;
+}

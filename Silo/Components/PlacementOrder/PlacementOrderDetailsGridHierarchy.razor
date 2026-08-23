@@ -1,0 +1,47 @@
+@using Silo.Application.Features;
+
+@if (PlacementOrderDetails.Any())
+{
+    <TelerikGrid Data="PlacementOrderDetails"
+             PageSize="5"
+             Navigable="true"
+             Pageable="true"
+             Sortable="true">
+        <RowTemplate Context="order">
+            <td>@order.OrderCode</td>
+            <td>@order.ProductCode</td>
+            <td>@order.RegCode</td>
+            <td>@order.ProductName</td>
+            <td>@order.Count</td>
+            <td>@order.PackRemain</td>
+            <td>@order.SumValue</td>
+            <td>@order.Zones</td>
+        </RowTemplate>
+        <GridColumns>
+            <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.OrderCode)"
+                    Title="@TextResources.APP_StringKeys_Code" 
+                    Width="60px"></GridColumn>
+            <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.ProductCode)"
+                    Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                    Width="100px"></GridColumn>
+            <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.RegCode)"
+                    Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                    Width="60px"></GridColumn>
+            <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.ProductName)"
+                    Title="@TextResources.APP_StringKeys_ProductName"
+                    Width="150px"></GridColumn>
+            <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.Count)"
+                    Title="@TextResources.APP_StringKeys_Pallet_Count"
+                    Width="60px"></GridColumn>
+            <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.PackRemain)"
+                    Title="@TextResources.APP_StringKeys_Remain"
+                    Width="60px"></GridColumn>
+            <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.SumValue)"
+                    Title="@TextResources.APP_StringKeys_SumValue"
+                    Width="60px"></GridColumn>
+            <GridColumn Field="@nameof(GetAllPlacementOrderByProductCodeVm.Zones)"
+                    Title="@TextResources.APP_StringKeys_Zones"
+                    Width="100px"></GridColumn>
+        </GridColumns>
+    </TelerikGrid>
+}

@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="Microsoft.JSInterop" />
+        <!--<PackageReference Include="Stimulsoft.Reports.Blazor" />-->
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Silo.Application\Silo.Application.Shared.csproj" />
+        <ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" /> 
+    </ItemGroup>
+
+</Project>

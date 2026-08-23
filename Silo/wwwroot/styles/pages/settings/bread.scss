@@ -1,0 +1,47 @@
+.page-settings-bread {
+    .dashboard-container {
+        padding: 1.25rem;
+    }
+
+    .page-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: $text-primary;
+    }
+
+    .category-card {
+        border-radius: 10px;
+        transition: box-shadow .2s;
+
+        .card-header {
+            background: $action-primary-bg;
+            color: $text-on-dark;
+            font-weight: 600;
+            font-size: .9rem;
+            border-radius: 10px 10px 0 0;
+            padding: .5rem .85rem;
+        }
+
+        .card-body {
+            padding: .5rem .75rem;
+        }
+    }
+
+    .bread-nav-link {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .35rem .5rem;
+        border-radius: 6px;
+        color: $text-nav-link;
+        font-size: .88rem;
+        text-decoration: none;
+        transition: background .15s, color .15s;
+
+        &:hover,
+        &.active {
+            background: $pill-version-bg;
+            color: $action-active-bg;
+        }
+    }
+}

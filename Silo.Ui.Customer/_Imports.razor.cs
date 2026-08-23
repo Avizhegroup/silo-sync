@@ -1,0 +1,10 @@
+﻿global using Microsoft.JSInterop;
+global using Microsoft.AspNetCore.Components.Web;
+global using Telerik.Blazor.Components;
+global using Telerik.Blazor;
+global using Silo.Shared;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.Components.Forms;
+global using Silo.Shared.Components;
+global using Silo.Shared.Components.Modals;
+global using Silo.Ui.Customer.Services;

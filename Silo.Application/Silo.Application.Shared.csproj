@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <ProjectReference Include="..\Silo.Domains\Silo.Domains.csproj" />
+        <ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Features\Account\Commands\UpdateUserProfile\" />
+        <Folder Include="Features\PreparedReport\Dtos\" />
+        <Folder Include="Features\Tag\Queries\GetAllRegister\Enums\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" />
+        <PackageReference Include="MediatR" />
+        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" />
+        <PackageReference Include="Newtonsoft.Json" />
+    </ItemGroup>
+
+</Project>

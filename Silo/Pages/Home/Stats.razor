@@ -1,0 +1,565 @@
+@page "/home/stats"
+@using Silo.Application.Features;
+@inherits SiloBasePage
+
+<PageTitle>@TextResources.APP_StringKeys_View_Home_Stats</PageTitle>
+
+<div class="dashboard-container">
+
+    @* ── Filter Bar ── *@
+    <div class="row g-3 mb-3">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body py-2">
+                    <div class="d-flex flex-row align-items-center flex-wrap gap-2">
+                        <label class="mb-0">@TextResources.APP_StringKeys_FromDate</label>
+                        <DatePicker @bind-Value="Request.FromDate"
+                                    InputClass="form-control input-search-span pointer" />
+                        <label class="mb-0">@TextResources.APP_StringKeys_ToDate</label>
+                        <DatePicker @bind-Value="Request.ToDate"
+                                    InputClass="form-control input-search-span pointer" />
+                        <label class="mb-0">@TextResources.APP_StringKeys_Chart_Regcode</label>
+                        <input @bind-value="Request.Regcode" class="form-control input-search-span" />
+                        <label class="mb-0">@TextResources.APP_StringKeys_Chart_Pl</label>
+                        <input @bind-value="Request.Pl" class="form-control input-search-span" />
+                        <label class="mb-0">@TextResources.APP_StringKeys_Chart_Shift</label>
+                        <input @bind-value="Request.Shift" class="form-control input-search-span" />
+                        <button class="btn btn-warning" type="button" title="@TextResources.APP_StringKeys_Search"
+                                @onclick="() => Request = new()">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Refresh" />
+                        </button>
+                        <button class="btn btn-primary" type="button"
+                                title="@TextResources.APP_StringKeys_Search"
+                                @onclick="OnGetDataClick">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Search" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── KPI Cards ── *@
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card kpi-card shadow-sm border-0">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <span class="kpi-icon bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Today" />
+                    </span>
+                    <div>
+                        <div class="kpi-label">@TextResources.APP_StringKeys_Summary_Daily</div>
+                        <div class="kpi-value fw-bold fs-4">@BriefDaily.ToString("N0")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card kpi-card shadow-sm border-0">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <span class="kpi-icon bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center">
+                        <MaterialIcon IconName="@MaterialIconsHelper.CalendarMonth" />
+                    </span>
+                    <div>
+                        <div class="kpi-label">@TextResources.APP_StringKeys_Summary_Monthly</div>
+                        <div class="kpi-value fw-bold fs-4">@BriefMonthly.ToString("N0")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card kpi-card shadow-sm border-0">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <span class="kpi-icon bg-warning-subtle text-warning rounded-circle d-flex align-items-center justify-content-center">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Insights" />
+                    </span>
+                    <div>
+                        <div class="kpi-label">@TextResources.APP_StringKeys_Summary_Yearly</div>
+                        <div class="kpi-value fw-bold fs-4">@BriefYearly.ToString("N0")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Charts Row 1: Product Code + Regcode ── *@
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent fw-semibold">@TextResources.APP_StringKeys_Report_Diff_ProductCode</div>
+                <div class="card-body p-1">
+                    <TelerikTabStrip>
+                        <TabStripTab Title="نمودار دایره‌ای">
+                            <TelerikChart Width="100%" Height="300px">
+                                <ChartLegend Position="ChartLegendPosition.Bottom" />
+                                <ChartSeriesItems>
+                                    <ChartSeries Type="ChartSeriesType.Pie"
+                                                 Data="@OnProducts"
+                                                 Field="@nameof(GetTagStatsOnProductCodeVm.Percent)"
+                                                 CategoryField="@nameof(GetTagStatsOnProductCodeVm.ProductCode)">
+                                        <ChartSeriesTooltip Visible="true" Context="item">
+                                            <Template>@item.Category</Template>
+                                        </ChartSeriesTooltip>
+                                        <ChartSeriesLabels Visible="true"
+                                                           Template="@seriesLabelTamplate"
+                                                           Position="seriesLabelPosition"
+                                                           Distance="1" />
+                                    </ChartSeries>
+                                </ChartSeriesItems>
+                            </TelerikChart>
+                        </TabStripTab>
+                        <TabStripTab Title="نمودار میله‌ای">
+                            <TelerikChart Width="100%" Height="300px">
+                                <ChartSeriesItems>
+                                    <ChartSeries Type="ChartSeriesType.Bar"
+                                                 Data="@OnProducts"
+                                                 Field="@nameof(GetTagStatsOnProductCodeVm.Percent)"
+                                                 CategoryField="@nameof(GetTagStatsOnProductCodeVm.ProductCode)"
+                                                 Style="ChartSeriesStyle.Smooth">
+                                        <ChartSeriesMarkers Visible="false" />
+                                        <ChartSeriesTooltip Visible="true" />
+                                    </ChartSeries>
+                                </ChartSeriesItems>
+                                <ChartCategoryAxes>
+                                    <ChartCategoryAxis>
+                                        <ChartCategoryAxisLabels>
+                                            <ChartCategoryAxisLabelsRotation Angle="-45" />
+                                        </ChartCategoryAxisLabels>
+                                    </ChartCategoryAxis>
+                                </ChartCategoryAxes>
+                            </TelerikChart>
+                        </TabStripTab>
+                        <TabStripTab Title="جزئیات">
+                            <TelerikGrid Data="OnProducts" PageSize="5" Pageable="true" Sortable="true">
+                                <GridToolBarTemplate>
+                                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                                        @TextResources.APP_StringKeys_ExportExcel
+                                    </GridCommandButton>
+                                </GridToolBarTemplate>
+                                <GridExport>
+                                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Report" />
+                                </GridExport>
+                                <GridColumns>
+                                    <GridColumn Field="@nameof(GetTagStatsOnProductCodeVm.ProductCode)" Title="@TextResources.APP_StringKeys_Chart_ProductCode" />
+                                    <GridColumn Field="@nameof(GetTagStatsOnProductCodeVm.ProductName)" Title="@TextResources.APP_StringKeys_ProductName" />
+                                    <GridColumn Field="@nameof(GetTagStatsOnProductCodeVm.CountSerial)" Title="@TextResources.APP_StringKeys_Count" />
+                                    <GridColumn Field="@nameof(GetTagStatsOnProductCodeVm.Percent)" Title="@TextResources.APP_StringKeys_Percent" />
+                                </GridColumns>
+                            </TelerikGrid>
+                        </TabStripTab>
+                    </TelerikTabStrip>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent fw-semibold">@TextResources.APP_StringKeys_Chart_Regcode</div>
+                <div class="card-body p-1">
+                    <TelerikTabStrip>
+                        <TabStripTab Title="نمودار دایره‌ای">
+                            <TelerikChart Width="100%" Height="300px">
+                                <ChartLegend Position="ChartLegendPosition.Bottom" />
+                                <ChartSeriesItems>
+                                    <ChartSeries Type="ChartSeriesType.Pie"
+                                                 Data="@OnRegcodes"
+                                                 Field="@nameof(GetTagStatsOnRegcodeVm.Percent)"
+                                                 CategoryField="@nameof(GetTagStatsOnRegcodeVm.RegCode)">
+                                        <ChartSeriesTooltip Visible="true" Context="item">
+                                            <Template>@item.Category</Template>
+                                        </ChartSeriesTooltip>
+                                        <ChartSeriesLabels Visible="true"
+                                                           Template="@seriesLabelTamplate"
+                                                           Position="seriesLabelPosition"
+                                                           Distance="1" />
+                                    </ChartSeries>
+                                </ChartSeriesItems>
+                            </TelerikChart>
+                        </TabStripTab>
+                        <TabStripTab Title="نمودار میله‌ای">
+                            <TelerikChart Width="100%" Height="300px">
+                                <ChartSeriesItems>
+                                    <ChartSeries Type="ChartSeriesType.Bar"
+                                                 Data="@OnRegcodes"
+                                                 Field="@nameof(GetTagStatsOnRegcodeVm.Percent)"
+                                                 CategoryField="@nameof(GetTagStatsOnRegcodeVm.RegCode)"
+                                                 Style="ChartSeriesStyle.Smooth">
+                                        <ChartSeriesMarkers Visible="false" />
+                                        <ChartSeriesTooltip Visible="true" />
+                                    </ChartSeries>
+                                </ChartSeriesItems>
+                                <ChartCategoryAxes>
+                                    <ChartCategoryAxis>
+                                        <ChartCategoryAxisLabels>
+                                            <ChartCategoryAxisLabelsRotation Angle="-45" />
+                                        </ChartCategoryAxisLabels>
+                                    </ChartCategoryAxis>
+                                </ChartCategoryAxes>
+                            </TelerikChart>
+                        </TabStripTab>
+                        <TabStripTab Title="جزئیات">
+                            <TelerikGrid Data="OnRegcodes" PageSize="5" Pageable="true" Sortable="true">
+                                <GridToolBarTemplate>
+                                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                                        @TextResources.APP_StringKeys_ExportExcel
+                                    </GridCommandButton>
+                                </GridToolBarTemplate>
+                                <GridExport>
+                                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Report" />
+                                </GridExport>
+                                <GridColumns>
+                                    <GridColumn Field="@nameof(GetTagStatsOnRegcodeVm.RegCode)" Title="@TextResources.APP_StringKeys_Chart_Regcode" />
+                                    <GridColumn Field="@nameof(GetTagStatsOnRegcodeVm.CountSerial)" Title="@TextResources.APP_StringKeys_Count" />
+                                    <GridColumn Field="@nameof(GetTagStatsOnRegcodeVm.Percent)" Title="@TextResources.APP_StringKeys_Percent" />
+                                </GridColumns>
+                            </TelerikGrid>
+                        </TabStripTab>
+                    </TelerikTabStrip>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Charts Row 2: QC + Production Line ── *@
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent fw-semibold">@TextResources.APP_StringKeys_Report_Diff_Qc</div>
+                <div class="card-body p-1">
+                    <TelerikTabStrip>
+                        <TabStripTab Title="نمودار دایره‌ای">
+                            <TelerikChart Width="100%" Height="300px">
+                                <ChartLegend Position="ChartLegendPosition.Bottom" />
+                                <ChartSeriesItems>
+                                    <ChartSeries Type="ChartSeriesType.Pie"
+                                                 Data="@OnQcs"
+                                                 Field="@nameof(GetStatsOnQcVm.Percent)"
+                                                 CategoryField="@nameof(GetStatsOnQcVm.StatusTitle)">
+                                        <ChartSeriesTooltip Visible="true" Context="item">
+                                            <Template>@item.Category</Template>
+                                        </ChartSeriesTooltip>
+                                        <ChartSeriesLabels Visible="true"
+                                                           Template="@seriesLabelTamplate"
+                                                           Position="seriesLabelPosition"
+                                                           Distance="1" />
+                                    </ChartSeries>
+                                </ChartSeriesItems>
+                            </TelerikChart>
+                        </TabStripTab>
+                        <TabStripTab Title="نمودار میله‌ای">
+                            <TelerikChart Width="100%" Height="300px">
+                                <ChartSeriesItems>
+                                    <ChartSeries Type="ChartSeriesType.Bar"
+                                                 Data="@OnQcs"
+                                                 Field="@nameof(GetStatsOnQcVm.Percent)"
+                                                 CategoryField="@nameof(GetStatsOnQcVm.StatusTitle)"
+                                                 Style="ChartSeriesStyle.Smooth">
+                                        <ChartSeriesMarkers Visible="false" />
+                                        <ChartSeriesTooltip Visible="true" />
+                                    </ChartSeries>
+                                </ChartSeriesItems>
+                                <ChartCategoryAxes>
+                                    <ChartCategoryAxis>
+                                        <ChartCategoryAxisLabels>
+                                            <ChartCategoryAxisLabelsRotation Angle="-45" />
+                                        </ChartCategoryAxisLabels>
+                                    </ChartCategoryAxis>
+                                </ChartCategoryAxes>
+                            </TelerikChart>
+                        </TabStripTab>
+                        <TabStripTab Title="جزئیات">
+                            <TelerikGrid Data="OnQcs" PageSize="5" Pageable="true" Sortable="true">
+                                <GridToolBarTemplate>
+                                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                                        @TextResources.APP_StringKeys_ExportExcel
+                                    </GridCommandButton>
+                                </GridToolBarTemplate>
+                                <GridExport>
+                                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Report" />
+                                </GridExport>
+                                <GridColumns>
+                                    <GridColumn Field="@nameof(GetStatsOnQcVm.StatusTitle)" Title="@TextResources.APP_StringKeys_Chart_Qc" />
+                                    <GridColumn Field="@nameof(GetStatsOnQcVm.CountSerial)" Title="@TextResources.APP_StringKeys_Count" />
+                                    <GridColumn Field="@nameof(GetStatsOnQcVm.Percent)" Title="@TextResources.APP_StringKeys_Percent" />
+                                </GridColumns>
+                            </TelerikGrid>
+                        </TabStripTab>
+                    </TelerikTabStrip>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent fw-semibold">@TextResources.APP_StringKeys_Report_Diff_Pl</div>
+                <div class="card-body p-1">
+                    <TelerikTabStrip>
+                        <TabStripTab Title="نمودار دایره‌ای">
+                            <TelerikChart Width="100%" Height="300px">
+                                <ChartLegend Position="ChartLegendPosition.Bottom" />
+                                <ChartSeriesItems>
+                                    <ChartSeries Type="ChartSeriesType.Pie"
+                                                 Data="@OnLines"
+                                                 Field="@nameof(GetTagStatsOnLineVm.Percent)"
+                                                 CategoryField="@nameof(GetTagStatsOnLineVm.LineTitle)">
+                                        <ChartSeriesTooltip Visible="true" Context="item">
+                                            <Template>@item.Category</Template>
+                                        </ChartSeriesTooltip>
+                                        <ChartSeriesLabels Visible="true"
+                                                           Template="@seriesLabelTamplate"
+                                                           Position="seriesLabelPosition"
+                                                           Distance="1" />
+                                    </ChartSeries>
+                                </ChartSeriesItems>
+                            </TelerikChart>
+                        </TabStripTab>
+                        <TabStripTab Title="نمودار میله‌ای">
+                            <TelerikChart Width="100%" Height="300px">
+                                <ChartSeriesItems>
+                                    <ChartSeries Type="ChartSeriesType.Bar"
+                                                 Data="@OnLines"
+                                                 Field="@nameof(GetTagStatsOnLineVm.Percent)"
+                                                 CategoryField="@nameof(GetTagStatsOnLineVm.LineTitle)"
+                                                 Style="ChartSeriesStyle.Smooth">
+                                        <ChartSeriesMarkers Visible="false" />
+                                        <ChartSeriesTooltip Visible="true" />
+                                    </ChartSeries>
+                                </ChartSeriesItems>
+                                <ChartCategoryAxes>
+                                    <ChartCategoryAxis>
+                                        <ChartCategoryAxisLabels>
+                                            <ChartCategoryAxisLabelsRotation Angle="-45" />
+                                        </ChartCategoryAxisLabels>
+                                    </ChartCategoryAxis>
+                                </ChartCategoryAxes>
+                            </TelerikChart>
+                        </TabStripTab>
+                        <TabStripTab Title="جزئیات">
+                            <TelerikGrid Data="OnLines" PageSize="5" Pageable="true" Sortable="true">
+                                <GridToolBarTemplate>
+                                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                                        @TextResources.APP_StringKeys_ExportExcel
+                                    </GridCommandButton>
+                                </GridToolBarTemplate>
+                                <GridExport>
+                                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Report" />
+                                </GridExport>
+                                <GridColumns>
+                                    <GridColumn Field="@nameof(GetTagStatsOnLineVm.LineTitle)" Title="@TextResources.APP_StringKeys_Line" />
+                                    <GridColumn Field="@nameof(GetTagStatsOnLineVm.CountSerial)" Title="@TextResources.APP_StringKeys_Count" />
+                                    <GridColumn Field="@nameof(GetTagStatsOnLineVm.SumValue)" Title="@TextResources.APP_StringKeys_SumValue" />
+                                    <GridColumn Field="@nameof(GetTagStatsOnLineVm.Percent)" Title="@TextResources.APP_StringKeys_Percent" />
+                                </GridColumns>
+                            </TelerikGrid>
+                        </TabStripTab>
+                    </TelerikTabStrip>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Charts Row 3: Shift + Date ── *@
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent fw-semibold">@TextResources.APP_StringKeys_Report_Diff_Shift</div>
+                <div class="card-body p-1">
+                    <TelerikTabStrip>
+                        <TabStripTab Title="نمودار دایره‌ای">
+                            <TelerikChart Width="100%" Height="300px">
+                                <ChartLegend Position="ChartLegendPosition.Bottom" />
+                                <ChartSeriesItems>
+                                    <ChartSeries Type="ChartSeriesType.Pie"
+                                                 Data="@OnShifts"
+                                                 Field="@nameof(GetTagsStatsOnShiftVm.Percent)"
+                                                 CategoryField="@nameof(GetTagsStatsOnShiftVm.Shift)">
+                                        <ChartSeriesTooltip Visible="true" Context="item">
+                                            <Template>@item.Category</Template>
+                                        </ChartSeriesTooltip>
+                                        <ChartSeriesLabels Visible="true"
+                                                           Template="@seriesLabelTamplate"
+                                                           Position="seriesLabelPosition"
+                                                           Distance="1" />
+                                    </ChartSeries>
+                                </ChartSeriesItems>
+                            </TelerikChart>
+                        </TabStripTab>
+                        <TabStripTab Title="نمودار میله‌ای">
+                            <TelerikChart Width="100%" Height="300px">
+                                <ChartSeriesItems>
+                                    <ChartSeries Type="ChartSeriesType.Bar"
+                                                 Data="@OnShifts"
+                                                 Field="@nameof(GetTagsStatsOnShiftVm.Percent)"
+                                                 CategoryField="@nameof(GetTagsStatsOnShiftVm.Shift)"
+                                                 Style="ChartSeriesStyle.Smooth">
+                                        <ChartSeriesMarkers Visible="false" />
+                                        <ChartSeriesTooltip Visible="true" />
+                                    </ChartSeries>
+                                </ChartSeriesItems>
+                                <ChartCategoryAxes>
+                                    <ChartCategoryAxis>
+                                        <ChartCategoryAxisLabels>
+                                            <ChartCategoryAxisLabelsRotation Angle="-45" />
+                                        </ChartCategoryAxisLabels>
+                                    </ChartCategoryAxis>
+                                </ChartCategoryAxes>
+                            </TelerikChart>
+                        </TabStripTab>
+                        <TabStripTab Title="جزئیات">
+                            <TelerikGrid Data="OnShifts" PageSize="5" Pageable="true" Sortable="true">
+                                <GridToolBarTemplate>
+                                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                                        @TextResources.APP_StringKeys_ExportExcel
+                                    </GridCommandButton>
+                                </GridToolBarTemplate>
+                                <GridExport>
+                                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Report" />
+                                </GridExport>
+                                <GridColumns>
+                                    <GridColumn Field="@nameof(GetTagsStatsOnShiftVm.Shift)" Title="@TextResources.APP_StringKeys_Chart_Shift" />
+                                    <GridColumn Field="@nameof(GetTagsStatsOnShiftVm.CountSerial)" Title="@TextResources.APP_StringKeys_Count" />
+                                    <GridColumn Field="@nameof(GetTagsStatsOnShiftVm.SumValue)" Title="@TextResources.APP_StringKeys_SumValue" />
+                                    <GridColumn Field="@nameof(GetTagsStatsOnShiftVm.Percent)" Title="@TextResources.APP_StringKeys_Percent" />
+                                </GridColumns>
+                            </TelerikGrid>
+                        </TabStripTab>
+                    </TelerikTabStrip>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent fw-semibold">@TextResources.APP_StringKeys_Report_Diff_ProductDate</div>
+                <div class="card-body p-1">
+                    <TelerikTabStrip>
+                        <TabStripTab Title="نمودار خطی">
+                            <TelerikChart Width="100%" Height="300px">
+                                <ChartSeriesItems>
+                                    <ChartSeries Type="ChartSeriesType.Area"
+                                                 Data="@OnDates"
+                                                 Field="@nameof(GetTagStatsOnProductDateVm.CountSerial)"
+                                                 CategoryField="@nameof(GetTagStatsOnProductDateVm.Date)"
+                                                 Style="ChartSeriesStyle.Smooth"
+                                                 Color="#3f7fba">
+                                        <ChartSeriesMarkers Visible="false" />
+                                        <ChartSeriesTooltip Visible="true" />
+                                    </ChartSeries>
+                                </ChartSeriesItems>
+                                <ChartCategoryAxes>
+                                    <ChartCategoryAxis>
+                                        <ChartCategoryAxisLabels>
+                                            <ChartCategoryAxisLabelsRotation Angle="-45" />
+                                        </ChartCategoryAxisLabels>
+                                    </ChartCategoryAxis>
+                                </ChartCategoryAxes>
+                            </TelerikChart>
+                        </TabStripTab>
+                        <TabStripTab Title="نمودار میله‌ای">
+                            <TelerikChart Width="100%" Height="300px">
+                                <ChartSeriesItems>
+                                    <ChartSeries Type="ChartSeriesType.Bar"
+                                                 Data="@OnDates"
+                                                 Field="@nameof(GetTagStatsOnProductDateVm.Percent)"
+                                                 CategoryField="@nameof(GetTagStatsOnProductDateVm.Date)"
+                                                 Style="ChartSeriesStyle.Smooth">
+                                        <ChartSeriesMarkers Visible="false" />
+                                        <ChartSeriesTooltip Visible="true" />
+                                    </ChartSeries>
+                                </ChartSeriesItems>
+                                <ChartCategoryAxes>
+                                    <ChartCategoryAxis>
+                                        <ChartCategoryAxisLabels>
+                                            <ChartCategoryAxisLabelsRotation Angle="-45" />
+                                        </ChartCategoryAxisLabels>
+                                    </ChartCategoryAxis>
+                                </ChartCategoryAxes>
+                            </TelerikChart>
+                        </TabStripTab>
+                        <TabStripTab Title="جزئیات">
+                            <TelerikGrid Data="OnDates" PageSize="5" Pageable="true" Sortable="true">
+                                <GridToolBarTemplate>
+                                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                                        @TextResources.APP_StringKeys_ExportExcel
+                                    </GridCommandButton>
+                                </GridToolBarTemplate>
+                                <GridExport>
+                                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Report" />
+                                </GridExport>
+                                <GridColumns>
+                                    <GridColumn Field="@nameof(GetTagStatsOnProductDateVm.Date)" Title="@TextResources.APP_StringKeys_Date" />
+                                    <GridColumn Field="@nameof(GetTagStatsOnProductDateVm.CountSerial)" Title="@TextResources.APP_StringKeys_Count" />
+                                    <GridColumn Field="@nameof(GetTagStatsOnProductDateVm.SumValue)" Title="@TextResources.APP_StringKeys_SumValue" />
+                                    <GridColumn Field="@nameof(GetTagStatsOnProductDateVm.Percent)" Title="@TextResources.APP_StringKeys_Percent" />
+                                </GridColumns>
+                            </TelerikGrid>
+                        </TabStripTab>
+                    </TelerikTabStrip>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Detail Grid ── *@
+    <div class="row g-3 mb-3">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-transparent fw-semibold">گزارش ریز تولید</div>
+                <div class="card-body p-1">
+                    <TelerikGrid Data="OnDetails" PageSize="10" Pageable="true" Sortable="true" Navigable="true">
+                        <GridToolBarTemplate>
+                            <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                                @TextResources.APP_StringKeys_ExportExcel
+                            </GridCommandButton>
+                        </GridToolBarTemplate>
+                        <GridExport>
+                            <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Report" />
+                        </GridExport>
+                        <GridColumns>
+                            <GridColumn Field="@nameof(GetTagStatsOnDetailsVm.ProductCode)" Title="@TextResources.APP_StringKeys_Chart_ProductCode" />
+                            <GridColumn Field="@nameof(GetTagStatsOnDetailsVm.ProductSerial)" Title="@TextResources.APP_StringKeys_ProductSerial" />
+                            <GridColumn Field="@nameof(GetTagStatsOnDetailsVm.ProductName)" Title="@TextResources.APP_StringKeys_ProductName" />
+                            <GridColumn Field="@nameof(GetTagStatsOnDetailsVm.Date)" Title="@TextResources.APP_StringKeys_Date" />
+                            <GridColumn Field="@nameof(GetTagStatsOnDetailsVm.LineTitle)" Title="@TextResources.APP_StringKeys_Line" />
+                            <GridColumn Field="@nameof(GetTagStatsOnDetailsVm.Username)" Title="@TextResources.APP_StringKeys_Username" />
+                            <GridColumn Field="@nameof(GetTagStatsOnDetailsVm.RegCode)" Title="@TextResources.APP_StringKeys_Chart_Regcode" />
+                            <GridColumn Field="@nameof(GetTagStatsOnDetailsVm.Shift)" Title="@TextResources.APP_StringKeys_Chart_Shift" />
+                            <GridColumn Field="@nameof(GetTagStatsOnDetailsVm.Value)" Title="@TextResources.APP_StringKeys_Value" />
+                        </GridColumns>
+                    </TelerikGrid>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<style>
+    .kpi-card {
+        border-radius: 12px;
+        transition: box-shadow .2s;
+    }
+
+        .kpi-card:hover {
+            box-shadow: 0 4px 18px rgba(0,0,0,.12) !important;
+        }
+
+    .kpi-icon {
+        width: 52px;
+        height: 52px;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .kpi-label {
+        font-size: .8rem;
+        color: #6c757d;
+    }
+
+    .kpi-value {
+        line-height: 1.2;
+    }
+</style>

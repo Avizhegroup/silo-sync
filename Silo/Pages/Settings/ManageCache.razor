@@ -1,0 +1,23 @@
+@page "/settings/cache"
+@inherits SiloBasePage
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; padding:10px;">
+        <div class="d-flex flex-row align-items-center flex-wrap" style="gap:10px;">
+            <button type="button"
+                    @onclick="OnHardRefreshClick"
+                    class="btn btn-warning">
+                <MaterialIcon IconName="@MaterialIconsHelper.Autorenew"></MaterialIcon>
+                @TextResources.APP_StringKeys_Confirm
+            </button>
+        </div>
+    </div>
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

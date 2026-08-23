@@ -1,0 +1,177 @@
+﻿@using Silo.Application.Dto
+@using Silo.Application.Dto.Chart
+@using Telerik.Blazor.Components
+@namespace Silo.Shared.Components
+
+<div class="row col-md-12">
+    <div class="card text-align-center" style="padding:5px;">
+        <div class="card card-stats text-align-center" style="padding:5px;">
+            <div class="form-search-span" style="margin-top:-10px !important;">
+                <div class="d-flex flex-row align-items-center flex-wrap" style="margin-bottom:5px!important;margin-top:15px;min-height:30px;">
+                    @if (PivotColumns.Count == 0 && AddedCalculatingColumns.Count > 1)
+                    {
+                        <label style="margin-right:10px;">@TextResources.APP_StringKeys_Columns_Calculating</label>
+                        <TelerikDropDownList @bind-Value="CalculationColumn"
+                                             Data="AddedCalculatingColumns"
+                                             TextField=""
+                                             ValueField=""
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Width="200px"
+                                             Class="drop-all">
+                        </TelerikDropDownList>
+                    }
+                </div>
+                <div class="d-flex flex-row align-items-center flex-wrap search-button-div"
+                     style="top: 64px; left:10px; right: unset; width:300px;">
+                    <button class="btn btn-primary"
+                            type="button"
+                            style="margin-left: 2px;"
+                            @onclick="OnCreateChartClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Insert_chart"></MaterialIcon>
+                    </button>
+                    @if (ChartDatas.Any() || PivotChartDatas.Any())
+                    {
+                        <button class="btn btn-success"
+                                type="button"
+                                style="margin-left: 2px;"
+                                @onclick="PrintCharts">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Print"></MaterialIcon>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (ChartDatas.Any())
+{
+    <div class="row col-md-12">
+        <div class="card text-align-center" style="padding:5px;">
+            <TelerikTabStrip>
+                <TabStripTab Title="@TextResources.APP_StringKeys_Chart_Pie">
+                    <div class="card card-stats text-align-center col-md-12" style="padding:5px;">
+                        <TelerikChart Width="100%" Class="printable-element">
+                            <ChartLegend Position="@ChartLegendPosition.Bottom"></ChartLegend>
+                            <ChartSeriesItems>
+                                <ChartSeries Type="ChartSeriesType.Pie"
+                                             Data="@ChartDatas"
+                                             Field="@nameof(TelerikDropDownItem.Value)"
+                                             CategoryField="@nameof(TelerikDropDownItem.Name)">
+                                    <ChartSeriesTooltip Visible="true" Context="item">
+                                        <Template>
+                                            @item.Category
+                                        </Template>
+                                    </ChartSeriesTooltip>
+                                    <ChartSeriesLabels Visible="true"
+                                                       Position="@seriesLabelPosition"
+                                                       Distance="1"></ChartSeriesLabels>
+                                </ChartSeries>
+                            </ChartSeriesItems>
+                        </TelerikChart>
+                    </div>
+                </TabStripTab>
+                <TabStripTab Title="@TextResources.APP_StringKeys_Chart_Bar">
+                    <div class="card card-stats text-align-center col-md-12" style="padding:5px;">
+                        <TelerikChart Width="100%" Class="printable-element">
+                            <ChartSeriesItems>
+                                <ChartSeries Type="ChartSeriesType.Column"
+                                             Data="@ChartDatas"
+                                             Field="@nameof(TelerikDropDownItem.Value)"
+                                             CategoryField="@nameof(TelerikDropDownItem.Name)">
+                                    <ChartSeriesTooltip Visible="true" Context="item">
+                                    </ChartSeriesTooltip>
+                                    <ChartSeriesLabels Visible="true"
+                                                       Position="seriesLabelPosition"></ChartSeriesLabels>
+                                </ChartSeries>
+                            </ChartSeriesItems>
+                            <ChartLegend Position="@ChartLegendPosition.Bottom" />
+                            <ChartCategoryAxes>
+                                <ChartCategoryAxis>
+                                    <ChartCategoryAxisLabels>
+                                        <ChartCategoryAxisLabelsRotation Angle="45" />
+                                    </ChartCategoryAxisLabels>
+                                </ChartCategoryAxis>
+                            </ChartCategoryAxes>
+
+                        </TelerikChart>
+                    </div>
+                </TabStripTab>
+            </TelerikTabStrip>
+        </div>
+    </div>
+}
+
+@if (PivotChartDatas.Any())
+{
+    <div class="row col-md-12">
+        <div class="card text-align-center" style="padding:5px; width:150%;">
+            <TelerikTabStrip>
+                <TabStripTab Title="@TextResources.APP_StringKeys_Chart_Bar">
+                    <div class="card card-stats text-align-center col-md-12" style="padding:5px;">
+                        <TelerikChart Width="100%" Class="printable-element">
+                            <ChartSeriesItems>
+                                @foreach (var groupedByPivotColumn in PivotChartDatas.GroupBy(p => p.PivotColumn))
+                                {
+                                    <ChartSeries Type="ChartSeriesType.Column"
+                                                 Data="@groupedByPivotColumn"
+                                                 Field="@nameof(DynamicPivotData.Value)"
+                                                 CategoryField="@nameof(DynamicPivotData.StaticColumn)">
+                                        <ChartSeriesTooltip Visible="true" Context="item">
+                                        </ChartSeriesTooltip>
+                                        <ChartSeriesLabels Visible="true"
+                                                           Template="@(groupedByPivotColumn.Key)"
+                                                           Position="ChartSeriesLabelsPosition.OutsideEnd"
+                                                           Rotation="0">
+                                        </ChartSeriesLabels>
+                                    </ChartSeries>
+                                }
+                            </ChartSeriesItems>
+
+                            <ChartLegend Position="@ChartLegendPosition.Bottom" />
+                            <ChartCategoryAxes>
+                                <ChartCategoryAxis>
+                                    <ChartCategoryAxisLabels>
+                                        <ChartCategoryAxisLabelsRotation Angle="0" />
+                                        <ChartCategoryAxisLabelsMargin Top="30"/>
+                                    </ChartCategoryAxisLabels>
+                                </ChartCategoryAxis>
+                            </ChartCategoryAxes>
+                        </TelerikChart>
+                    </div>
+                </TabStripTab>
+                <TabStripTab Title="@TextResources.APP_StringKeys_Chart_Line">
+                    <div class="card card-stats text-align-center col-md-12" style="padding:5px;">
+                        <TelerikChart Width="100%" Class="printable-element">
+                            <ChartSeriesItems>
+                                @foreach (var groupedByPivotColumn in PivotChartDatas.GroupBy(p => p.PivotColumn))
+                                {
+                                    <ChartSeries Type="ChartSeriesType.Line"
+                                                 Data="@groupedByPivotColumn"
+                                                 Field="@nameof(DynamicPivotData.Value)"
+                                                 CategoryField="@nameof(DynamicPivotData.StaticColumn)">
+                                        <ChartSeriesTooltip Visible="true" Context="item">
+                                        </ChartSeriesTooltip>
+                                        <ChartSeriesLabels Visible="true"
+                                                           Template="@(groupedByPivotColumn.Key)"
+                                                           Position="ChartSeriesLabelsPosition.Above"
+                                                           Rotation="0">
+                                        </ChartSeriesLabels>
+                                    </ChartSeries>
+                                }
+                            </ChartSeriesItems>
+                            <ChartLegend Position="@ChartLegendPosition.Bottom" />
+                            <ChartCategoryAxes>
+                                <ChartCategoryAxis>
+                                    <ChartCategoryAxisLabels>
+                                        <ChartCategoryAxisLabelsRotation Angle="0" />
+                                    </ChartCategoryAxisLabels>
+                                </ChartCategoryAxis>
+                            </ChartCategoryAxes>
+                        </TelerikChart>
+                    </div>
+                </TabStripTab>
+            </TelerikTabStrip>
+        </div>
+    </div>
+}

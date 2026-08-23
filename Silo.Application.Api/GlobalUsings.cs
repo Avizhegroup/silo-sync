@@ -1,0 +1,9 @@
+﻿global using System.Linq;
+global using System.Text.Json;
+global using AutoMapper;
+global using MediatR;
+global using Microsoft.EntityFrameworkCore;
+global using Silo.Application.Features;
+global using Silo.Domains.Entities;
+global using Silo.Domains.Services;
+global using Silo.Shared;

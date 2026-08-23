@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <ItemGroup>
+        <PackageReference Include="BuildWebCompiler2022">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="System.Text.Json" />
+        <PackageReference Include="Telerik.UI.for.Blazor" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Silo.Application\Silo.Application.Shared.csproj" />
+        <ProjectReference Include="..\Silo.Domains\Silo.Domains.csproj" />
+        <ProjectReference Include="..\Silo.Identity.Client\Silo.Identity.Client.csproj" />
+        <ProjectReference Include="..\Silo.Shared.Components\Silo.Shared.Components.csproj" />
+        <ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Telerik.Blazor" />
+        <Using Include="Telerik.Blazor.Components" />
+        <Using Include="Microsoft.AspNetCore.Components" />
+        <Using Include="Microsoft.AspNetCore.Components.Web" />
+        <Using Include="Microsoft.AspNetCore.Components.Authorization" />
+    </ItemGroup>
+
+</Project>

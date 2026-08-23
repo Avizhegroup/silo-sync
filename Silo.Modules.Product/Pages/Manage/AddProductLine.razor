@@ -1,0 +1,119 @@
+﻿@page "/product/line"
+@inherits SiloBasePage
+@namespace Silo.Modules.Product.Pages
+@using Silo.Application.Features;
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Telerik.Blazor.Components
+@using Silo.Shared.Components
+
+<PageTitle>
+    @PageTitle
+</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="margin-bottom:5px; padding:10px;">
+        <EditForm Model="Request"
+                  OnInvalidSubmit="OnInvalidSubmit"
+                  OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                <label>@TextResources.APP_StringKeys_Code</label>
+                <TelerikTextBox @bind-Value="Request.Code"
+                                Class="form-control input-search-span" />
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_Field_Title</label>
+                <TelerikTextBox @bind-Value="Request.Title"
+                                Class="form-control input-search-span"></TelerikTextBox>
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_Description</label>
+                <TelerikTextBox @bind-Value="Request.Desc"
+                                Class="form-control input-search-span" Width="400px!important"></TelerikTextBox>
+                <div style="left:5px; position:absolute;">
+                    <button type="button"
+                            class="btn btn-light"
+                            @onclick="OnOpenModalClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
+                    </button>
+                    <button type="button"
+                            class="btn btn-danger"
+                            @onclick="OnRemoveClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                    </button>
+                    <button type="button"
+                            class="btn btn-warning"
+                            @onclick="OnRefreshClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+                    </button>
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+                    </button>
+                </div>
+
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+<Modal Buttons="ModalButtons.Close"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       CloseBtnText="@TextResources.APP_StringKeys_Ignore"
+       @ref="ModalLines"
+       Size="ModalSize.ExtraLarge">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @if (Lines is not null)
+            {
+                <TelerikGrid Data="Lines"
+                             PageSize="10"
+                             Navigable="true"
+                             Pageable="true"
+                             Sortable="true">
+                    <RowTemplate Context="line">
+                        <td class="td-style">@line.Code</td>
+                        <td class="td-style">@line.Title</td>
+                        <td class="td-style">@line.Desc</td>
+                        <td class="td-style">
+                            <button @onclick="async () => await OnChooseLine(line)" type="button" class="btn btn-success tr-buttom">
+                                @TextResources.APP_StringKeys_Choose
+                            </button>
+                        </td>
+                    </RowTemplate>
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetAllLinesVm.Code)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllLinesVm.Title)"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllLinesVm.Desc)"></GridColumn>
+                        <GridColumn Width="60px"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            }
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       OkBtnText="@TextResources.APP_StringKeys_Delete"
+       OkBtnClass="btn-danger"
+       OnOkModal="OnConfirmRemove"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       @ref="ModalDelete"
+       Size="ModalSize.Normal">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @TextResources.APP_StringKeys_Message_DeleteText_Part1
+            <b>
+                @Request.Title
+            </b>
+            @TextResources.APP_StringKeys_Message_DeleteText_Part2
+            <div class="bg-danger">
+                @TextResources.APP_StringKeys_DeleteModal_SubTitle
+            </div>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

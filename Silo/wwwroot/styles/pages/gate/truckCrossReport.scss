@@ -1,0 +1,39 @@
+﻿.truck-cross-report {
+    div {
+        div {
+            div {
+                div {
+                    table {
+                        thead {
+                            tr {
+                                th[data-level="1"][data-cell-navigation-id="0"] {
+                                    background-color: rgba(31, 161, 204,0.1);
+                                    color: black;
+                                    text-align: center;
+                                    font-size: larger;
+                                    font-weight: bold;
+                                }
+
+                                th[data-level="1"][data-cell-navigation-id="16"] {
+                                    background-color: rgba(31, 161, 204,0.2);
+                                    color: black;
+                                    text-align: center;
+                                    font-size: larger;
+                                    font-weight: bold;
+                                }
+
+                                th[data-level="1"][data-cell-navigation-id="21"] {
+                                    background-color: rgba(31, 161, 204,0.3);
+                                    color: black;
+                                    text-align: center;
+                                    font-size: larger;
+                                    font-weight: bold;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

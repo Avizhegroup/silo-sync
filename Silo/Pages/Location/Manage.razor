@@ -1,0 +1,169 @@
+@page "/location/manage"
+@inherits SiloBasePage
+@namespace Silo.Pages.Location
+@using Silo.Application.Features;
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card text-align-center col-md-12">
+        <form asp-action="" asp-controller="Position" method="post" role="form" class="form-search-span" id="form-search">
+            <div class=" d-flex flex-row align-items-center flex-wrap">
+                <label>@TextResources.APP_StringKeys_Chart_ProductCode</label>
+                <input @bind-value="Request.ProductCode" name="ProductCode" class="form-control input-search-span-lg" />
+                <button type="button" class="btn btn-light" @onclick="async ()=> await ProductCodeModal.Show()">
+                    <img width="20" height="20" src="/images/Utilities/grid.png" />
+                </button>
+                <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Tagzone</label>
+                <input @bind-value="Request.ZoneCode" name="ZoneCode" class="form-control input-search-span-lg" />
+                <button type="button" class="btn btn-light" @onclick="async ()=> await LocationModal.Show()">
+                    <img width="20" height="20" src="/images/Utilities/grid.png" />
+                </button>
+                <button id="btn-search" type="button" class="btn btn-primary" style="margin-right: 15px;"
+                        title="@TextResources.APP_StringKeys_Search"
+                        @onclick="OnSubmitClick">
+                    <img width="20" height="20" src="/images/Utilities/search.png" />
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@if (Positions is not null)
+{
+    <div class="row col-md-12">
+        <div class="card text-align-center col-md-12">
+            <br />
+            <TelerikGrid Data="Positions"
+                     PageSize="10"
+                     Navigable="true"
+                     Pageable="true"
+                     Sortable="true">
+                <RowTemplate Context="position">
+                    <td class="td-style">@position.ZoneCode</td>
+                    <td class="td-style">@position.ProductCode</td>
+                    <td class="td-style">@position.TechnicalCode</td>
+                    <td class="td-style">@position.Count</td>
+                    <td class="td-style">@position.SumCount</td>
+                    <td class="td-style">@position.FirstDate.ToNormalPersianDateTime()</td>
+                    <td class="td-style">@position.LastDate.ToNormalPersianDateTime()</td>
+                    <td class="td-style">
+                        <button @onclick="async ()=> await OnClickRowDetails(position.ProductCode, position.ZoneCode)"
+                            class="btn-dt-1 btn-success tr-buttom btn">
+                            @TextResources.APP_StringKeys_Details
+                        </button>
+                    </td>
+                </RowTemplate>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@PageTitle" />
+                </GridExport>
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetProductByZoneAndProductCodeVm.ZoneCode)"
+                            Title="@TextResources.APP_StringKeys_Zone"
+                            Width="100px">
+                        <FooterTemplate>
+                            تعداد لوکیشن: @context.Count
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetProductByZoneAndProductCodeVm.ProductCode)"
+                            Title="@TextResources.APP_StringKeys_Chart_ProductCode"
+                            Width="150px">
+                        <FooterTemplate>
+                            تعداد کد کالا: @context.Count
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetProductByZoneAndProductCodeVm.TechnicalCode)"
+                            Title="@TextResources.APP_StringKeys_Chart_Regcode"></GridColumn>
+                    <GridColumn Field="@nameof(GetProductByZoneAndProductCodeVm.Count)"
+                            Title="@TextResources.APP_StringKeys_Count"
+                            Width="80px">
+                        <FooterTemplate>
+                            تعداد کل: @context.Sum
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetProductByZoneAndProductCodeVm.SumCount)"
+                            Title="@TextResources.APP_StringKeys_Summery_SumCount"
+                            Width="100px">
+                        <FooterTemplate>
+                            جمع مقدار: @context.Sum
+                        </FooterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetProductByZoneAndProductCodeVm.FirstDate)"
+                            Title="@TextResources.APP_StringKeys_FirstDate"></GridColumn>
+                    <GridColumn Field="@nameof(GetProductByZoneAndProductCodeVm.LastDate)"
+                            Title="@TextResources.APP_StringKeys_LastDate"></GridColumn>
+                    <GridColumn Width="60px"></GridColumn>
+                </GridColumns>
+                <GridAggregates>
+                    <GridAggregate Field=@nameof(GetProductByZoneAndProductCodeVm.SumCount) Aggregate="@GridAggregateType.Sum" />
+                    <GridAggregate Field=@nameof(GetProductByZoneAndProductCodeVm.Count) Aggregate="@GridAggregateType.Sum" />
+                    <GridAggregate Field=@nameof(GetProductByZoneAndProductCodeVm.ProductCode) Aggregate="@GridAggregateType.Count" />
+                    <GridAggregate Field=@nameof(GetProductByZoneAndProductCodeVm.ZoneCode) Aggregate="@GridAggregateType.Count" />
+                </GridAggregates>
+            </TelerikGrid>
+        </div>
+    </div>
+}
+
+@if (IsLoading)
+{
+    <TelerikLoaderContainer LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+    </TelerikLoaderContainer>
+}
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalDetails"
+       Size="ModalSize.ExtraLarge"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="Details"
+                         PageSize="5"
+                         Navigable="true"
+                         Pageable="true"
+                         Sortable="true">
+                <RowTemplate Context="position">
+                    <td class="td-style td-dt">@DetailsCode</td>
+                    <td class="td-style td-dt">@DetailsZone</td>
+                    <td class="td-style td-dt">@position.Count</td>
+                    <td class="td-style td-dt">@position.SumCount</td>
+                    <td class="td-style td-dt">@position.EnterDate</td>
+                </RowTemplate>
+                <GridColumns>
+                    <GridColumn Title="@TextResources.APP_StringKeys_Chart_ProductCode" Width="150px">
+                    </GridColumn>
+                    <GridColumn Title="@TextResources.APP_StringKeys_Zone" Width="80px">
+                    </GridColumn>
+                    <GridColumn Field="@nameof(GetProductDetailsByZoneAndProductCodeVm.Count)"
+                                Title="@TextResources.APP_StringKeys_Count"></GridColumn>
+                    <GridColumn Field="@nameof(GetProductDetailsByZoneAndProductCodeVm.SumCount)"
+                                Title="@TextResources.APP_StringKeys_SumValue"></GridColumn>
+                    <GridColumn Field="@nameof(GetProductDetailsByZoneAndProductCodeVm.EnterDate)"
+                                Title="@TextResources.APP_StringKeys_EnterDate"></GridColumn>
+                </GridColumns>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
+                <GridExport>
+                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Details" />
+                </GridExport>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+
+<ProductCodeModal @ref="ProductCodeModal"
+                  OnClickProductCode="OnSelectProductCode"></ProductCodeModal>
+
+<LocationModal @ref="LocationModal"
+               OnClickLocation="OnSelectLocationCode"></LocationModal>

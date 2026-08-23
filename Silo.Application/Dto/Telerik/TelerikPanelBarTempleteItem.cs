@@ -1,0 +1,8 @@
+﻿namespace Silo.Application.Dto;
+
+public class TelerikPanelBarTempleteItem
+{
+    public int Id { get; set; }
+    public string Text { get; set; }
+    public List<TelerikPanelBarTempleteItem> Items { get; set; }
+}

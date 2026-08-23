@@ -1,0 +1,27 @@
+﻿CREATE TABLE [dbo].[tbl_TagsMovement] (
+    [TagsMovementId]        INT             IDENTITY (1, 1) NOT NULL,
+    [TagEpc]                NVARCHAR (50)   NULL,
+    [ProductCode]           NVARCHAR (50)   NULL,
+    [ProductSerial]         NVARCHAR (50)   NULL,
+    [ProductCount]          DECIMAL (18, 2) NULL,
+    [HMovementActionId]     INT             NULL,
+    [HTagsMovementDate]     NVARCHAR (10)   NULL,
+    [HTagsMovementTime]     NVARCHAR (5)    NULL,
+    [HTagsMovementDateTime] DATETIME        NULL,
+    [HTagsMovementSt]       INT             CONSTRAINT [DF_tbl_TagsMovement_HTagsMovementSt] DEFAULT ((0)) NULL,
+    [RMovementActionId]     INT             NULL,
+    [RTagsMovementDate]     NVARCHAR (10)   NULL,
+    [RTagsMovementTime]     NVARCHAR (5)    NULL,
+    [RTagsMovementDateTime] DATETIME        NULL,
+    [RTagsMovementSt]       INT             NULL,
+    [MovementData]          NVARCHAR (MAX)  NULL,
+	[ApiSendStatus] [int] NULL,
+	[ApiSendUser] [nvarchar](128) NULL,
+	[ApiSendDateTime] [datetime] NULL,
+	[ApiSendData] [nvarchar](max) NULL, 
+    [RMovementActionType] INT NULL, 
+    [RMovementActionDocumentId] NVARCHAR(128) NULL, 
+    [RMovementActionUHFLogId]   NVARCHAR(256) NULL, 
+    [RMovementActionDestinationId] NVARCHAR(50) NULL
+);
+

@@ -1,0 +1,255 @@
+﻿html, body {
+    overflow: auto;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: $surface-page;
+}
+
+// ─── Login Page ──────────────────────────────────────────────────
+.login {
+    display: flex;
+    flex-direction: row-reverse;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+
+    // ── Left hero image panel ─────────────────────────────────────
+    .app-left-image {
+        flex: 0 0 56.5%;
+        min-width: 320px;
+        height: 100vh;
+        background-image: url(../images/Back/login-left.png);
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        transition: flex 300ms ease, min-width 300ms ease;
+    }
+
+    // ── Right form panel ─────────────────────────────────────────
+    .app-right {
+        flex: 1 1 43.5%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4vh 3vw;
+        box-sizing: border-box;
+        background-color: $surface-page;
+    }
+
+    // ── Login card (design-system card surface) ───────────────────
+    .login-card {
+        width: 100%;
+        max-width: 460px;
+        background-color: $surface-card;
+        border: 1px solid $border-color;
+        border-radius: 16px;
+        box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+        padding: 2.5rem 2rem 2rem;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: box-shadow .2s;
+
+        &:hover {
+            box-shadow: 0 4px 18px rgba(0, 0, 0, .12);
+        }
+    }
+
+    // ── Logo ──────────────────────────────────────────────────────
+    .app-logo {
+        display: block;
+        width: clamp(100px, 40%, 180px);
+        margin: 0 auto 1rem;
+    }
+
+    // ── Subtitle ─────────────────────────────────────────────────
+    .login-subtitle {
+        font-size: 1rem;
+        font-weight: 700;
+        color: $text-primary;
+        margin: 0 0 1.5rem;
+        text-align: center;
+    }
+
+    // ── Warning / error banner ────────────────────────────────────
+    .div-warning {
+        display: block;
+        width: 100%;
+        min-height: 50px;
+        color: $color-red;
+        border-right: solid 4px $color-red;
+        text-align: right;
+        background-color: rgba($color-red, .06);
+        border-radius: 8px;
+        padding: 10px 16px 10px 40px;
+        box-sizing: border-box;
+        margin-bottom: 1rem;
+        position: relative;
+        font-size: .875rem;
+
+        .logo-cancel {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: $color-red;
+        }
+    }
+
+    // ── Field group ───────────────────────────────────────────────
+    .login-field-group {
+        display: flex;
+        flex-direction: column;
+        gap: .75rem;
+        width: 100%;
+        margin-bottom: 1.25rem;
+    }
+
+    // ── Inputs ────────────────────────────────────────────────────
+    .login-input {
+        display: block;
+        width: 100%;
+        height: clamp(44px, 4.5vh, 52px);
+        border-radius: 10px;
+        font-size: clamp(14px, 1.8vw, 16px);
+        box-sizing: border-box;
+        transition: border-color .18s, box-shadow .18s;
+        text-align: right;
+        background-color: $surface-page;
+        color: $text-primary;
+        border: 1px solid $border-color;
+        padding: 0 48px 0 16px;
+        outline: none;
+        background-repeat: no-repeat;
+        background-size: 20px 20px;
+        background-position: calc(100% - 14px) center;
+
+        &:focus {
+            border-color: $action-accent-bg;
+            box-shadow: 0 0 0 3px rgba($color-teal, .2);
+            background-color: $surface-card;
+        }
+
+        &::placeholder {
+            color: $text-muted;
+        }
+    }
+
+    #Username {
+        background-image: url(../images/Utilities/user.svg);
+    }
+
+    #Password {
+        background-image: url(../images/Utilities/lock.svg);
+    }
+
+    // ── Password toggle ───────────────────────────────────────────
+    .password-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+    .img-pass-inside {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        transform: translateY(-50%);
+        height: 1.25rem;
+        width: auto;
+        cursor: pointer;
+        color: $text-secondary;
+        z-index: 3;
+        transition: color .15s;
+
+        &:hover {
+            color: $action-active-bg;
+        }
+    }
+
+    // ── Submit button (design-system primary action — navy) ───────
+    .login-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .5rem;
+        width: 100%;
+        height: clamp(44px, 4.5vh, 52px);
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        background-color: $action-primary-bg;
+        border: none;
+        color: $action-primary-text;
+        cursor: pointer;
+        transition: background-color .18s, box-shadow .18s;
+
+        .btn-icon {
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        &:hover {
+            background-color: darken($color-blue-navy, 6%);
+            box-shadow: 0 4px 14px rgba($color-blue-navy, .3);
+        }
+
+        &:focus,
+        &:active {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba($color-blue-navy, .2);
+        }
+    }
+
+    // ── Footer logo ───────────────────────────────────────────────
+    .app-logo-hor {
+        display: block;
+        height: 36px;
+        width: auto;
+        margin: 2rem auto 0;
+        opacity: .7;
+    }
+
+    // ── Responsive ────────────────────────────────────────────────
+    @media (max-width: 1024px) {
+        .app-left-image {
+            flex-basis: 50%;
+            min-width: 280px;
+        }
+
+        .app-right {
+            padding: 3vh 4vw;
+        }
+    }
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: stretch;
+
+        .app-left-image {
+            display: none;
+        }
+
+        .app-right {
+            flex: 1 1 auto;
+            padding: 6vh 6vw;
+        }
+
+        .login-card {
+            max-width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .app-right {
+            padding: 4vh 4vw;
+        }
+
+        .login-card {
+            border-radius: 12px;
+            padding: 2rem 1.25rem 1.5rem;
+        }
+    }
+}

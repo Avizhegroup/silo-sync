@@ -1,0 +1,51 @@
+﻿@namespace Silo.Shared.Components.Ai
+@using System.Text.Json
+@using Telerik.SvgIcons
+
+@if (Data != null && Data.Any() && Data[0] != null)
+{
+    var gridData = ParseGridData(Data[0]);
+
+    @if (gridData.Any())
+    {
+        var columns = gridData.First().Keys.ToList();
+
+        <div class="mt-3 ai-grid-wrapper">
+            <TelerikGrid Data="@gridData"
+                         Pageable="true"
+                         PageSize="10"
+                         Sortable="true"
+                         Resizable="true">
+
+                <GridToolBarTemplate>
+                    <TelerikButton OnClick="@(() => ExportToExcelAsync(Data[0]))"
+                                   Icon="@SvgIcon.FileExcel"
+                                   ThemeColor="@ThemeConstants.Button.ThemeColor.Success"
+                                   Title="دریافت فایل اکسل">
+                        دریافت فایل اکسل
+                    </TelerikButton>
+
+                    <span class="k-toolbar-spacer"></span>
+                </GridToolBarTemplate>
+
+                <GridColumns>
+                    @foreach (var col in columns)
+                    {
+                        <GridColumn Field="@col"
+                                    Title="@col"
+                                    FieldType="@(typeof(string))" />
+                    }
+                </GridColumns>
+
+            </TelerikGrid>
+        </div>
+    }
+    else
+    {
+        <div class="mt-3">
+            <p class="bg-warning p-2 rounded text-dark">
+                نتیجه‌ای برای نمایش وجود ندارد.
+            </p>
+        </div>
+    }
+}

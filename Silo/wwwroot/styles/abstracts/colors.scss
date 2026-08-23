@@ -1,0 +1,115 @@
+﻿// ─────────────────────────────────────────────────────────────────
+// Silo Design-System — Colour Tokens
+// ─────────────────────────────────────────────────────────────────
+//
+// PRIMITIVE palette  (never use these directly in component rules;
+//                     always reference a semantic token below)
+// -----------------------------------------------------------------
+
+$color-white:           #ffffff;
+$color-black:           #000000;
+
+// Greys
+$color-grey-100:        #f3f3f3;   // lightest surface tint
+$color-grey-200:        #f2f2f2;   // card / panel background (legacy)
+$color-grey-300:        #e8e8e8;   // hover state background
+$color-grey-400:        #d0d0d0;   // borders, dividers
+$color-grey-400-alpha:  #d0d0d040; // translucent divider
+$color-grey-500:        #b8b8b8;   // disabled element tint
+$color-grey-600:        #707070;   // muted / secondary text
+$color-grey-700:        #3c4043;   // dark label text
+
+// Brand — teal / blue
+$color-teal:            #97DCE1;   // primary brand accent
+$color-teal-alpha:      #97DCE120; // ghost / translucent brand
+$color-blue-light:      #0CCAEA;   // profile name highlight
+$color-blue-primary:    #1a73e8;   // active state, links (design-system)
+$color-blue-navy:       #003e81;   // header BG, primary button, thead
+
+// Brand — purple
+$color-purple:          #7E6CC0;   // secondary actions, nav links, logout btn
+
+// Semantic — status
+$color-red:             #B00020;   // error / danger
+$color-green:           #28a745;   // success, Excel export button
+$color-green-light:     #5AEC4F;   // lime / live indicator
+$color-orange:          #fd7e14;   // chart accent (line chart)
+$color-orange-button:   #f36b16;   // PDF export button
+$color-yellow:          #FFCC00;   // warning
+
+// ─────────────────────────────────────────────────────────────────
+// SEMANTIC tokens  (use these everywhere in component rules)
+// -----------------------------------------------------------------
+
+// Surfaces
+$surface-page:          #f5f5f5;   // body background
+$surface-card:          $color-white;
+$surface-panel:         $color-grey-200;
+$surface-sidebar:       #f8f9fa;   // light sidebar / category bg
+
+// Borders
+$border-color:          #e8eaed;   // design-system border (navbar, cards)
+$border-color-legacy:   $color-grey-400; // older component borders
+$border-color-strong:   $color-black;
+
+// Text
+$text-primary:          #202124;
+$text-secondary:        $color-grey-600;
+$text-muted:            #80868b;
+$text-on-dark:          $color-white;
+$text-link:             #0366d6;
+$text-nav-link:         $color-purple;
+
+// Interactive — primary action (navy → used for buttons, headers)
+$action-primary-bg:     $color-blue-navy;
+$action-primary-text:   $color-white;
+
+// Interactive — brand accent (teal)
+$action-accent-bg:      $color-teal;
+$action-accent-text:    $color-white;
+
+// Interactive — active / selected (design-system blue)
+$action-active-bg:      $color-blue-primary;
+$action-active-text:    $color-white;
+
+// Navbar
+$navbar-height:         56px;
+$navbar-bg:             $color-white;
+$navbar-border:         $border-color;
+$navbar-icon-hover-bg:  #f1f3f4;
+
+// Pill badges
+$pill-date-bg:          #e6f4ea;
+$pill-date-text:        #1e7e34;
+$pill-version-bg:       #e8f0fe;
+$pill-version-text:     $color-blue-primary;
+
+// KPI cards
+$kpi-icon-size:         52px;
+$kpi-label-size:        .8rem;
+
+// Table / grid
+$thead-bg:              $color-blue-navy;
+$thead-text:            $color-white;
+$tbody-row-bg:          #f5fdff;
+$tbody-row-alt-bg:      #c8e1fd;
+
+// Backdrop
+$backdrop-bg:           rgba(0, 0, 0, .35);
+
+// ─────────────────────────────────────────────────────────────────
+// LEGACY aliases  (kept for backward-compat with existing partials)
+// -----------------------------------------------------------------
+$greyWithOp:            $color-grey-400-alpha;
+$grey:                  $color-grey-400;
+$greyLight:             $color-grey-100;
+$greyDark:              $color-grey-600;
+$red:                   $color-red;
+$blueLight:             $color-blue-light;
+$purple:                $color-purple;
+$blueVeryLight:         $color-teal;
+$blueVeryLightTransparent: $color-teal-alpha;
+$limeGreen:             $color-green-light;
+$warningYellow:         $color-yellow;
+$white:                 $color-white;
+$cornFlowerBlue:        $color-blue-navy;

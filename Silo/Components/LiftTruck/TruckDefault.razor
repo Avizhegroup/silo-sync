@@ -1,0 +1,56 @@
+﻿@using Silo.Pages.LiftTruck;
+
+@if (IsComponentShown)
+{
+    <div class="app-center row col-md-12">
+        @if (Cargo is not null)
+        {
+            if (Cargo.Products is not null)
+            {
+                @if (Cargo.Products.Count == 1)
+                {
+                    <OneCargo Product="Cargo.Products.First()"></OneCargo>
+                }
+
+                @if (Cargo.Products.Count == 2)
+                {
+                    <OneCargo Product="Cargo.Products.First()"
+                          WidthCols="4"></OneCargo>
+
+                    <OneCargo Product="Cargo.Products.Skip(1).First()"
+                          WidthCols="4"></OneCargo>
+                }
+            }
+
+            <LocationCard Cargo="Cargo"></LocationCard>
+        }
+    </div>
+
+    <div class="div-footer text-align-center">
+        <TruckButton OnClick="()=>OnChangePageActiveModeClick(TruckIndexMode.Settings)">
+            <MaterialIcon IconName="settings"
+                      Style="font-size:50px; color:white;"></MaterialIcon>
+        </TruckButton>
+        <TruckButton OnClick="()=>OnChangePageActiveModeClick(TruckIndexMode.List)">
+            <MaterialIcon IconName="list"
+                      Style="font-size:50px; color:white;"></MaterialIcon>
+        </TruckButton>
+        <TruckButton OnClick="()=>OnChangePageActiveModeClick(TruckIndexMode.Keyboard)">
+            <MaterialIcon IconName="keyboard"
+                      Style="font-size:50px; color:white;"></MaterialIcon>
+        </TruckButton>
+        <TruckButton OnClick="()=>OnChangePageActiveModeClick(TruckIndexMode.Rfid)">
+            <img src="/images/Utilities/rfid-logo-white.png" width="35" height="50" />
+        </TruckButton>
+
+        @if (IsVerifyButtonShown)
+        {
+            <TruckButton OnClick="OnActionVerifyClick"
+                 Style="margin-left:5px;"
+                 Class="btn-verify">
+                <MaterialIcon IconName="done"
+                      Style="font-size:50px; color:white;"></MaterialIcon>
+            </TruckButton>
+        }
+    </div>
+}

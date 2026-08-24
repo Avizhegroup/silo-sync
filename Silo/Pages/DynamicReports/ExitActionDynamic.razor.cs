@@ -1101,17 +1101,36 @@ public partial class ExitActionDynamic
                         IsFilterShown = field != null ? (field.ActionType == 0 && field.FieldShowColumn) : false,
                         IsLikeCheckboxShown = false,
                         AdditionalData = new Dictionary<string, string>()
-                    {
-                        { "FilterType", "Dynamic"},
-                        { "FilterId", field.Id.ToString()},
-                        { "DynamicFilterActionType", field.ActionType is not null ? field.ActionType.Value.ToString() : string.Empty }
-                    }
+                        {
+                            { "FilterType", "Dynamic"},
+                            { "FilterId", field.Id.ToString()},
+                            { "DynamicFilterActionType", field.ActionType is not null ? field.ActionType.Value.ToString() : string.Empty }
+                        }
                     });
                 }
                 catch (Exception ex)
                 {
 
                 }
+            }
+            else if (field.ValueType == DynamicFieldValueType.Plaque)
+            {
+                Filters.Add(new()
+                {
+                    Id = FilterCount++,
+                    Label = field.Title,
+                    FieldName = field.Title,
+                    Type = FilterType.Dynamic,
+                    Component = FilterComponent.Plaque,
+                    IsFilterShown = field != null ? (field.FieldShowColumn && (field.ActionType == 0)) : false,
+                    IsLikeCheckboxShown = true,
+                    AdditionalData = new Dictionary<string, string>()
+                        {
+                            { "FilterType", "Dynamic"},
+                            { "FilterId", field.Id.ToString()},
+                            { "DynamicFilterActionType", field.ActionType is not null ? field.ActionType.Value.ToString() : string.Empty }
+                        }
+                });
             }
         }
     }

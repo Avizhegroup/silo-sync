@@ -3,7 +3,6 @@ using Silo.Application.Dto;
 using Silo.Application.Dto.DynamicField;
 
 namespace Silo.Components.DynamicField;
-
 public partial class DynamicFieldFillValue
 {
     [Parameter][EditorRequired] public List<DynamicFieldWithValueDto> DynamicFieldsDto { get; set; }

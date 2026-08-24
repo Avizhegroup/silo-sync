@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.Components.Web
 @using Newtonsoft.Json.Linq;
 @using Silo.Application.Features;
+@using Silo.Components.DynamicField
 @using Silo.Modules.Product.Components
 @using Silo.Shared.Components
 @using Silo.Shared.Components.Print
@@ -177,16 +178,7 @@
                                 @TextResources.APP_StringKeys_OtherInformation
                             </h6>
                             <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
-                                @if (ProductProperties is not null)
-                                {
-                                    @foreach (JProperty item in ProductProperties)
-                                    {
-                                        <span class="tech-item" style="margin-left:10px">
-                                            <label>@item.Name</label>
-                                            <input type="text" readonly class="form-control input-search-span" value="@item.Value" style="width:200px!important;" />
-                                        </span>
-                                    }
-                                }
+                                <DynamicFieldFillValue DynamicFieldsDto="DynamicFields"></DynamicFieldFillValue>
                             </div>
                         </div>
                     }

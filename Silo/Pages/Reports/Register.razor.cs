@@ -544,6 +544,22 @@ public partial class Register
                         }
                     });
                 }
+                else if (field.ValueType == DynamicFieldValueType.Plaque)
+                {
+                    Filters.Add(new()
+                    {
+                        Id = FilterCount++,
+                        Label = field.Title,
+                        FieldName = field.Title,
+                        Type = FilterType.Dynamic,
+                        Component = FilterComponent.Plaque,
+                        IsLikeCheckboxShown = true,
+                        AdditionalData = new Dictionary<string, string>()
+                        {
+                            { "DynamicFilterActionType", field.ActionType is not null ? field.ActionType.Value.ToString() : string.Empty }
+                        }
+                    });
+                }
             }
 
             Filters = Filters.OrderBy(p => p.Type).ToList();

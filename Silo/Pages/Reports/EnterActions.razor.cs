@@ -1008,6 +1008,23 @@ public partial class EnterActions
                         }
                     });
                 }
+                else if (field.ValueType == DynamicFieldValueType.Plaque)
+                {
+                    Filters.Add(new()
+                    {
+                        Id = FilterCount++,
+                        Label = field.Title,
+                        FieldName = field.Title,
+                        Type = FilterType.Dynamic,
+                        Component = FilterComponent.Plaque,
+                        IsFilterShown = field != null ? (field.FieldShowColumn && (field.ActionType == 0)) : false,
+                        IsLikeCheckboxShown = true,
+                        AdditionalData = new Dictionary<string, string>()
+                        {
+                            { "DynamicFilterActionType", field.ActionType is not null ? field.ActionType.Value.ToString() : string.Empty }
+                        }
+                    });
+                }
             }
 
             Filters = Filters.OrderBy(p => p.Type).ToList();

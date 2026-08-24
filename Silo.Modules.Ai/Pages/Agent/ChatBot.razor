@@ -3,7 +3,6 @@
 @namespace Silo.Modules.Ai.Pages.Agent
 @using Silo.Application.Features
 @using Microsoft.AspNetCore.Components
-@using Silo.Shared.Components.Ai;
 @inherits SiloBasePage
 
 <PageTitle>@PageTitle</PageTitle>
@@ -66,9 +65,6 @@
                                         else
                                         {
                                             @((MarkupString)ConvertMarkdownToHtml(message.Text))
-
-                                            <AiResultGrid Data="@message.SqlCommandsResults" />
-                                                   
                                         }
                                        
                                     </div>
@@ -206,7 +202,7 @@
             <label class="chat-mode-label">
                 لطفاً حالت مورد نظر را انتخاب کنید:
             </label>
-            <TelerikRadioGroup Data="@(Enum.GetValues<RagDocType>())"
+            <TelerikRadioGroup Data="@(Enum.GetValues<RagDocType>().ToList().Where(p=> (int)p <= 1))"
                                @bind-Value="@selectedMode"
                                Layout="RadioGroupLayout.Horizontal">
                 <ItemTemplate Context="mode">

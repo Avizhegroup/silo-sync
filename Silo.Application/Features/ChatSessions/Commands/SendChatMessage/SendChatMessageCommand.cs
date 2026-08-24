@@ -6,5 +6,4 @@ public class SendChatMessageCommand : IRequest<SendChatMessageVm>
     public int SessionId { get; set; }
     public string Message { get; set; }
     public RagDocType Mode { get; set; }
-    public List<string> PromptKeys { get; set; } = new();
 }

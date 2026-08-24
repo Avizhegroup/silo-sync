@@ -1,0 +1,97 @@
+﻿// Variables
+$plaque-border-color: #14213d;
+$plaque-height: 32px;
+$plaque-strip-width: 20px;
+$plaque-flag-green: #239f40;
+$plaque-flag-white: #ffffff;
+$plaque-flag-red: #da0000;
+$plaque-text-color: #14213d;
+
+.iranian-plaque {
+    display: inline-flex;
+    align-items: stretch;
+    border: 2px solid $plaque-border-color;
+    border-radius: 4px;
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    height: $plaque-height;
+    width: fit-content;
+
+    &-strip {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1px;
+        width: $plaque-strip-width;
+        background: $plaque-border-color;
+        padding: 1px 0;
+        border-radius: 2px 0 0 2px;
+    }
+
+    &-flag {
+        display: flex;
+        flex-direction: column;
+        width: 11px;
+        height: 8px;
+        border-radius: 1px;
+        overflow: hidden;
+
+        &-green {
+            flex: 1;
+            background: $plaque-flag-green;
+        }
+
+        &-white {
+            flex: 1;
+            background: $plaque-flag-white;
+        }
+
+        &-red {
+            flex: 1;
+            background: $plaque-flag-red;
+        }
+    }
+
+    &-ir {
+        color: #ffffff;
+        font-size: 7px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+    }
+
+    &-fields {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        padding: 1px 4px;
+        background: #ffffff;
+        height: 100%;
+    }
+
+    &-part,
+    &-char {
+        input,
+        .k-input-value-text,
+        .k-input-inner {
+            text-align: center;
+            font-weight: 700;
+            font-size: 13px;
+            color: $plaque-text-color;
+            font-family: 'Arial', sans-serif;
+        }
+    }
+
+    &-dash {
+        font-weight: 700;
+        font-size: 13px;
+        color: $plaque-text-color;
+    }
+
+    &-city {
+        input {
+            font-size: 12px;
+        }
+    }
+}
+

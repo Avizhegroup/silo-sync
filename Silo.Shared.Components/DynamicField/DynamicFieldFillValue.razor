@@ -1,4 +1,4 @@
-@namespace Silo.Components.DynamicField
+﻿@namespace Silo.Components.DynamicField
 @using Silo.Application.Features
 @using Silo.Shared.Components
 
@@ -49,6 +49,12 @@
                                            ReadOnly="@field.IsReadOnly">
                     </TelerikNumericTextBox>
                 }
+                else if (field.ValueType == DynamicFieldValueType.Plaque)
+                {
+                    <IranPlaque @bind-Value="field.EffectiveValue"
+                                ReadOnly="field.IsReadOnly"
+                                TabIndex="indexCount" />
+                }
                 @if (field.IsReadOnly)
                 {
                     <MaterialIcon IconName="@MaterialIconsHelper.Block" />
@@ -58,3 +64,4 @@
         }
     }
 </div>
+

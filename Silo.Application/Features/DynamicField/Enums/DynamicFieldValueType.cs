@@ -4,5 +4,6 @@ public enum DynamicFieldValueType
     TextBox,
     DropDown,
     RichTextEditor,
-    Numeric
+    Numeric,
+    Plaque
 }

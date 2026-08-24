@@ -117,7 +117,7 @@ BEGIN
                     i.TagRegisterDateTime, i.ReProduct,
                     JSON_QUERY(CASE WHEN ISJSON(i.fld_LastInspectResult) = 1 THEN i.fld_LastInspectResult END) AS fld_LastInspectResult,
                     i.fld_ProductGroup, i.fld_ProductBrand, i.fld_InspectActionId,
-                    i.fld_ProductSubGroup, i.fld_ProductClass, i.Temp, i.TagTreeParentsEpc,
+                    i.fld_ProductSubGroup, i.fld_ProductClass, i.TagTreeParentsEpc,
                     i.TagTreeParentSerial, i.TagEpc2
                 FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
             ),

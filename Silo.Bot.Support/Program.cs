@@ -1,26 +1,33 @@
 ﻿using Serilog;
-using Silo.Bot.Support.Services;
 
-var webApplicationOptions = new WebApplicationOptions()
+namespace Silo.Bot.Support;
+public static partial class Program
 {
-    ContentRootPath = AppContext.BaseDirectory,
-    Args = args,
-    ApplicationName = System.Diagnostics.Process.GetCurrentProcess().ProcessName
-};
+    static void Main(string[] args)
+    {
+        var webApplicationOptions = new WebApplicationOptions()
+        {
+            ContentRootPath = AppContext.BaseDirectory,
+            Args = args,
+            ApplicationName = System.Diagnostics.Process.GetCurrentProcess().ProcessName
+        };
 
-var builder = WebApplication.CreateBuilder(webApplicationOptions);
+        var builder = WebApplication.CreateBuilder(webApplicationOptions);
 
-builder.Host
-       .UseWindowsService(config =>
-       {
-           config.ServiceName = "Silo Support Service";
-       })
-       .ConfigureServices((context, services) =>
-       {
-           services.AddSiloSupportBotServices(context.Configuration);
-       })
-       .UseSerilog();
+        builder.Host
+               .UseWindowsService(config =>
+               {
+                   config.ServiceName = "Silo Support Service";
+               })
+               .ConfigureServices((context, services) =>
+               {
+                   services.AddSiloSupportBotServices(context.Configuration);
+               })
+               .UseSerilog();
 
-var app = builder.Build();
 
-app.Run();
+        var app = builder.Build();
+
+        app.Run();
+    }
+}

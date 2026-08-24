@@ -8,7 +8,7 @@ public class SendChatMessageHandler(
     ILogger<SendChatMessageHandler> logger)
     : IRequestHandler<SendChatMessageCommand, SendChatMessageVm>
 {
-    private const string FallbackErrorMessage = ".متأسفانه در حال حاضر امکان پاسخگویی وجود ندارد. لطفاً کمی بعد دوباره تلاش کنید";
+    private const string FallbackErrorMessage = ".متأسفانه در حال حاضر امکان پاسخگویی وجود ندارد. لطفاً کمی بعد دوباره تلاش کنید.";
 
     public async Task<SendChatMessageVm> Handle(SendChatMessageCommand request, CancellationToken cancellationToken)
     {

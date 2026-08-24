@@ -16,4 +16,7 @@ public class RagChatResponse
 
     [JsonPropertyName("tokenUsage")]
     public ChatTokenUsageDto? TokenUsage { get; set; }
+
+    [JsonPropertyName("priceUsage")]
+    public decimal? PriceUsage { get; set; }
 }

@@ -46,6 +46,8 @@ public class SendChatMessageHandler(
             };
         }
 
+        var priceUsage = result.PriceUsage;
+
         state.ConversationId = result.ConversationId;
 
         state.Messages.Add(new ChatMessageDto { Text = request.Message, IsUser = true, Datetime = DateTime.Now });
@@ -62,6 +64,7 @@ public class SendChatMessageHandler(
                 UserId = request.UserId,
                 SessionData = updatedJson,
                 TokenUsage = JsonSerializer.Serialize(result.TokenUsage ?? new ChatTokenUsageDto()),
+                PriceUsage = priceUsage,
                 Mode = (int)request.Mode,
                 CreatedDate = DateTime.Now,
                 LastUpdated = DateTime.Now
@@ -97,6 +100,8 @@ public class SendChatMessageHandler(
 
                 existingSession.TokenUsage = JsonSerializer.Serialize(usage);
             }
+
+            existingSession.PriceUsage += priceUsage;
 
             existingSession.LastUpdated = DateTime.Now;
 

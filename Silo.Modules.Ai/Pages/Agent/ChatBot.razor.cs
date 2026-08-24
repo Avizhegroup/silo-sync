@@ -18,7 +18,7 @@ public partial class ChatBot : SiloBasePage
     private ElementReference chatMessagesElement;
     private readonly Markdig.MarkdownPipeline markdownPipeline;
     private bool ShowModeSelectionDialog = false;
-    private RagDocType selectedMode = RagDocType.PageAgent;
+    private RagDocType selectedMode = RagDocType.GeneralChat;
     private bool isSidebarExpanded = false;
     private List<ChatHistoryDto> chatHistories = new();
     private int currentChatId = 0;
@@ -127,10 +127,7 @@ public partial class ChatBot : SiloBasePage
         return mode switch
         {
             RagDocType.Report => "گزارش‌گیری",
-            RagDocType.PageAgent => "دستیار هوشمند",
-            RagDocType.GeneralChat => "گفتگوی عمومی",
-            RagDocType.Image => "تصویر",
-            _ => mode.ToString()
+            RagDocType.GeneralChat => "گفتگوی عمومی"
         };
     }
 
@@ -139,7 +136,7 @@ public partial class ChatBot : SiloBasePage
         return mode switch
         {
             RagDocType.Report => MaterialIconsHelper.InsertChart2,
-            RagDocType.PageAgent => MaterialIconsHelper.SmartToy,
+            RagDocType.GeneralChat => MaterialIconsHelper.SmartToy,
             _ => MaterialIconsHelper.Info
         };
     }

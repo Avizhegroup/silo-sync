@@ -78,6 +78,11 @@
   <Folder Name="/Solution Items/Docs/AI/">
     <File Path="Docs/RAG-Chat-Guide.md" />
   </Folder>
+  <Folder Name="/Solution Items/Docs/Pages/" />
+  <Folder Name="/Solution Items/Docs/Pages/Warehouse/" />
+  <Folder Name="/Solution Items/Docs/Pages/Warehouse/ImageAnalize/">
+    <File Path="Docs/ImageAnalize.md" />
+  </Folder>
   <Folder Name="/Solution Items/Instructions/" Id="e0e4cc51-b0da-7568-b131-ce88e8f54da0">
     <File Path=".github/copilot-instructions.md" />
     <File Path=".github/ui-design-system.md" />

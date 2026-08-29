@@ -19,4 +19,6 @@ public class RagChatResponse
 
     [JsonPropertyName("priceUsage")]
     public decimal? PriceUsage { get; set; }
+
+    public int? StatusCode { get; set; }
 }

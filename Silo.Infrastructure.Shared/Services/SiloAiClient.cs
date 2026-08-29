@@ -70,7 +70,11 @@ public class SiloAiClient : ISiloAiClient
                 _logger.LogWarning(
                     "Silo AI request failed with status code {StatusCode}",
                     (int)response.StatusCode);
-                return null;
+
+                return new RagChatResponse
+                {
+                    StatusCode = (int)response.StatusCode
+                };
             }
 
             return await response.Content.ReadFromJsonAsync<RagChatResponse>(cancellationToken: cancellationToken);

@@ -6,20 +6,17 @@
 // ─────────────────────────────────────────────────────────────────
 
 [data-bs-theme="dark"] {
-
     // ── Base surfaces ──────────────────────────────────────────────
     body {
         background: #1a1a2e !important;
         color: #e8eaed !important;
     }
-
     // ── Cards ──────────────────────────────────────────────────────
     .card {
         background-color: #252536 !important;
         border-color: #3a3a55 !important;
         color: #e8eaed !important;
     }
-
     // ── Navbar / header ────────────────────────────────────────────
     .silo-navbar {
         background: #1e1e30 !important;
@@ -31,10 +28,10 @@
         color: #bdc1c6 !important;
     }
 
-    .nav-icon-btn:hover {
-        background: #2d2d44 !important;
-        color: #e8eaed !important;
-    }
+        .nav-icon-btn:hover {
+            background: #2d2d44 !important;
+            color: #e8eaed !important;
+        }
 
     .nav-icon-btn--active {
         background: #1a3050 !important;
@@ -68,7 +65,6 @@
         background: #252536 !important;
         border-color: #97DCE1 !important;
     }
-
     // ── Mega-menu drawer ───────────────────────────────────────────
     .silo-menu-drawer {
         background: #1e1e30 !important;
@@ -85,10 +81,10 @@
         color: #bdc1c6 !important;
     }
 
-    .menu-cat-btn:hover {
-        background: #2d2d44 !important;
-        color: #e8eaed !important;
-    }
+        .menu-cat-btn:hover {
+            background: #2d2d44 !important;
+            color: #e8eaed !important;
+        }
 
     .menu-cat-btn--active {
         background: #1a3050 !important;
@@ -104,16 +100,15 @@
         color: #97DCE1 !important;
     }
 
-    .menu-nav-link:hover {
-        background: #2d2d44 !important;
-        color: #e8eaed !important;
-    }
+        .menu-nav-link:hover {
+            background: #2d2d44 !important;
+            color: #e8eaed !important;
+        }
 
-    .menu-nav-link.active {
-        background: #1a3050 !important;
-        color: #8ab4f8 !important;
-    }
-
+        .menu-nav-link.active {
+            background: #1a3050 !important;
+            color: #8ab4f8 !important;
+        }
     // ── Tables / grids ─────────────────────────────────────────────
     .thead {
         background-color: #1a3050 !important;
@@ -129,7 +124,6 @@
         background-color: #1e2d45 !important;
         color: #e8eaed !important;
     }
-
     // ── Telerik / Kendo overrides ──────────────────────────────────
     .k-grid {
         background-color: #1e1e30 !important;
@@ -137,38 +131,38 @@
         border-color: #3a3a55 !important;
     }
 
-    .k-grid .k-grid-header {
-        background-color: #1a3050 !important;
-        color: #e8eaed !important;
-        border-color: #3a3a55 !important;
-    }
+        .k-grid .k-grid-header {
+            background-color: #1a3050 !important;
+            color: #e8eaed !important;
+            border-color: #3a3a55 !important;
+        }
 
-    .k-grid .k-grid-header .k-table-th {
-        background-color: #1a3050 !important;
-        color: #e8eaed !important;
-    }
+            .k-grid .k-grid-header .k-table-th {
+                background-color: #1a3050 !important;
+                color: #e8eaed !important;
+            }
 
-    .k-grid td, .k-grid .k-table-td {
-        background-color: #1e2535 !important;
-        color: #e8eaed !important;
-        border-color: #3a3a55 !important;
-    }
+        .k-grid td, .k-grid .k-table-td {
+            background-color: #1e2535 !important;
+            color: #e8eaed !important;
+            border-color: #3a3a55 !important;
+        }
 
-    .k-grid tr:nth-child(even) td,
-    .k-grid tr:nth-child(even) .k-table-td {
-        background-color: #1a2030 !important;
-    }
+        .k-grid tr:nth-child(even) td,
+        .k-grid tr:nth-child(even) .k-table-td {
+            background-color: #1a2030 !important;
+        }
 
-    .k-grid tr:hover td,
-    .k-grid tr:hover .k-table-td {
-        background-color: #243050 !important;
-    }
+        .k-grid tr:hover td,
+        .k-grid tr:hover .k-table-td {
+            background-color: #243050 !important;
+        }
 
-    .k-grid .k-pager {
-        background-color: #1e1e30 !important;
-        color: #bdc1c6 !important;
-        border-top-color: #3a3a55 !important;
-    }
+        .k-grid .k-pager {
+            background-color: #1e1e30 !important;
+            color: #bdc1c6 !important;
+            border-top-color: #3a3a55 !important;
+        }
 
     .k-listview-content {
         background-color: #1e2535 !important;
@@ -234,7 +228,6 @@
     .k-loader-canvas .k-arc {
         stroke: #97DCE1 !important;
     }
-
     // ── Forms / Bootstrap inputs ───────────────────────────────────
     .form-control, .form-select {
         background-color: #2d2d44 !important;
@@ -242,16 +235,15 @@
         color: #e8eaed !important;
     }
 
-    .form-control::placeholder {
-        color: #9aa0a6 !important;
-    }
+        .form-control::placeholder {
+            color: #9aa0a6 !important;
+        }
 
     .input-group-text {
         background-color: #2d2d44 !important;
         border-color: #4a4a66 !important;
         color: #e8eaed !important;
     }
-
     // ── Modal ──────────────────────────────────────────────────────
     .modal-content {
         background-color: #252536 !important;
@@ -262,18 +254,22 @@
     .modal-header, .modal-footer {
         border-color: #3a3a55 !important;
     }
-
     // ── Dividers / borders ─────────────────────────────────────────
     hr {
         border-color: #3a3a55 !important;
     }
 
-    .border-top    { border-top-color:    #3a3a55 !important; }
-    .border-bottom { border-bottom-color: #3a3a55 !important; }
+    .border-top {
+        border-top-color: #3a3a55 !important;
+    }
 
+    .border-bottom {
+        border-bottom-color: #3a3a55 !important;
+    }
     // ── Links ──────────────────────────────────────────────────────
-    a { color: #8ab4f8 !important; }
-
+    a {
+        color: #8ab4f8 !important;
+    }
     // ── Misc helpers ───────────────────────────────────────────────
     .div-bar-save {
         background-color: #1a3050 !important;
@@ -283,7 +279,6 @@
         background-color: #1a3050 !important;
         color: #8ab4f8 !important;
     }
-
     // ── Scrollbars ─────────────────────────────────────────────────
     ::-webkit-scrollbar {
         width: 8px;
@@ -299,10 +294,9 @@
         border-radius: 4px;
     }
 
-    ::-webkit-scrollbar-thumb:hover {
-        background: #4a4a66;
-    }
-
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a4a66;
+        }
     // ── AppErrorBoundary ──────────────────────────────────────────────────────
 
     .eb-overlay {
@@ -347,5 +341,180 @@
         border-top-color: #3a3a55;
         color: #5f6368;
     }
-}
+    // ── ChatBot ──────────────────────────────────────────────────────
 
+    .chat-messages {
+        background-color: #1e1e30 !important;
+    }
+
+    .bot-message {
+        .message-content {
+            background-color: #252536 !important;
+            border-color: #3a3a55 !important;
+            color: #e8eaed !important;
+        }
+
+        .message-sender {
+            color: #97DCE1 !important;
+        }
+    }
+
+    .user-message {
+        .message-content {
+            background-color: #1a3050 !important;
+            border-color: #3a3a55 !important;
+            color: #e8eaed !important;
+        }
+
+        .message-sender {
+            color: #8ab4f8 !important;
+        }
+    }
+
+    .message-time {
+        color: #9aa0a6 !important;
+    }
+
+    .btn-copy-message {
+        color: #bdc1c6 !important;
+
+        &:hover {
+            background-color: #2d2d44 !important;
+            color: #e8eaed !important;
+        }
+    }
+
+    .chat-card {
+        background-color: #1a1a2e !important;
+
+        .card-header, .card-footer {
+            background-color: #1e1e30 !important;
+            border-color: #3a3a55 !important;
+        }
+    }
+
+    .chat-history-sidebar {
+        background-color: #1e1e30 !important;
+        border-right-color: #3a3a55 !important;
+
+        .history-item {
+            background-color: #252536 !important;
+            color: #e8eaed !important;
+
+            &:hover {
+                background-color: #2d2d44 !important;
+            }
+
+            &.active {
+                background-color: #1a3050 !important;
+                border-color: #8ab4f8 !important;
+            }
+        }
+    }
+
+    .chat-layout, .chat-main-container, .chat-container {
+        background-color: #1a1a2e !important;
+    }
+
+    .chat-card {
+        background-color: #1a1a2e !important;
+        border-color: #2d2d44 !important;
+
+        .card-body {
+            background-color: #161625 !important;
+        }
+
+        .card-header, .card-footer {
+            background-color: #1e1e30 !important;
+            border-color: #2d2d44 !important;
+        }
+    }
+
+    .chat-messages {
+        background-color: #202032 !important;
+        border: 1px solid #2d2d44 !important;
+        border-radius: 8px;
+    }
+
+    .chat-header {
+        color: #ffffff !important;
+    }
+
+    .chat-mode-dialog-body {
+        color: #e8eaed !important;
+
+        .chat-mode-label {
+            color: #bdc1c6 !important;
+        }
+    }
+
+    .k-radio-group,
+    .k-radio-item,
+    .k-radio-label {
+        color: #e8eaed !important;
+    }
+
+    .k-radio {
+        background-color: #2d2d44 !important;
+        border-color: #4a4a66 !important;
+
+        &:checked {
+            background-color: #ff5252 !important;
+            border-color: #ff5252 !important;
+        }
+    }
+
+    .chat-history-sidebar,
+    .chat-sidebar {
+        background-color: #1a1a2e !important;
+        border-right-color: #2d2d44 !important;
+        border-left-color: #2d2d44 !important;
+
+        .sidebar-header,
+        .chat-history-header,
+        h5, h6 {
+            color: #ffffff !important;
+            background-color: #1a1a2e !important;
+        }
+
+        .sidebar-body,
+        .history-list {
+            background-color: #1a1a2e !important;
+        }
+
+        .history-item {
+            background-color: #202032 !important;
+            border-color: #2d2d44 !important;
+            color: #e8eaed !important;
+
+            .history-title,
+            .conversation-title,
+            span, p {
+                color: #e8eaed !important;
+            }
+
+            .history-date,
+            .history-time {
+                color: #9aa0a6 !important;
+            }
+
+            .btn-delete,
+            i, svg {
+                color: #bdc1c6 !important;
+            }
+
+            &:hover {
+                background-color: #2a2a42 !important;
+            }
+
+            &.active {
+                background-color: #1e3a5f !important;
+                border-color: #8ab4f8 !important;
+
+                .history-title, span {
+                    color: #ffffff !important;
+                }
+            }
+        }
+    }
+}

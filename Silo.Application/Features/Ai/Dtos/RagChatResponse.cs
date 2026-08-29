@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Net;
+using System.Text.Json.Serialization;
 
 namespace Silo.Application;
 
@@ -20,5 +21,5 @@ public class RagChatResponse
     [JsonPropertyName("priceUsage")]
     public decimal? PriceUsage { get; set; }
 
-    public int? StatusCode { get; set; }
+    public HttpStatusCode? StatusCode { get; set; }
 }

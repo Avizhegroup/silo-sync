@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Net;
+using Microsoft.Extensions.Logging;
 using Silo.Application.Contracts;
 using Silo.Shared.Tools;
 
@@ -49,7 +50,7 @@ public class SendChatMessageHandler(
             };
         }
 
-        if (result.StatusCode == 402)
+        if (result.StatusCode == HttpStatusCode.PaymentRequired)
         {
             return new SendChatMessageVm
             {

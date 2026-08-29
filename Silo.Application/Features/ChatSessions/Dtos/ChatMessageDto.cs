@@ -5,4 +5,6 @@ public class ChatMessageDto
     public string Text { get; set; }
     public bool IsUser { get; set; }
     public DateTime Datetime { get; set; }
+    public List<List<object>> SqlCommandsResults { get; set; } = new();
+
 }

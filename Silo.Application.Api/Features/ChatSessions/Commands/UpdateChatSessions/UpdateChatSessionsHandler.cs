@@ -39,6 +39,8 @@ public class UpdateChatSessionsHandler(WmsApiContext context)
             existing.TokenUsage = JsonSerializer.Serialize(usage);
         }
 
+        existing.PriceUsage += request.PriceUsage;
+
         existing.LastUpdated = DateTime.Now;
 
         await context.SaveChangesAsync(cancellationToken);

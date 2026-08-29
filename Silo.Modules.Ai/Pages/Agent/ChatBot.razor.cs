@@ -303,6 +303,16 @@ public partial class ChatBot : SiloBasePage
                 }
             );
 
+            if (sendResult?.Value?.StatusCode == 402)
+            {
+                await Dialog.AlertAsync(
+                    "اعتبار استفاده از دستیار هوشمند شما به پایان رسیده است.",
+                    "هشدار"
+                );
+
+                return;
+            }
+
             ChatMessageDto response = new()
             {
                 Text = sendResult?.Value?.ResponseText ?? string.Empty,
@@ -313,6 +323,11 @@ public partial class ChatBot : SiloBasePage
             if (currentChatId == 0 && sendResult?.Value?.SessionId > 0)
             {
                 currentChatId = sendResult.Value.SessionId;
+            }
+
+            if (sendResult?.Value?.SqlCommandsResults is { Count: > 0 })
+            {
+                response.SqlCommandsResults = sendResult.Value.SqlCommandsResults;
             }
 
             chatMessages.Add(response);

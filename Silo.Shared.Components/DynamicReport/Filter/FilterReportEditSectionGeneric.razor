@@ -141,6 +141,10 @@
                                  Width="300px">
                 </TelerikNumericTextBox>
             }
+            else if (filter.Component == FilterComponent.Plaque)
+            {
+                <IranPlaque @bind-Value="filter.Value"></IranPlaque>
+            }
             @if (filter.IsLike)
             {
                 <label style="margin-right:10px">@TextResources.APP_StringKeys_Like:</label>
@@ -151,7 +155,6 @@
         </span>
     }
 </div>
-
 <TelerikContextMenu @ref="ContextMenuRef"
                     Data="@MenuItems"
                     TextField="@nameof(TelerikContextMenuItem.Text)"

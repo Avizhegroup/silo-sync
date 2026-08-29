@@ -36,7 +36,7 @@ public partial class TagHistory
     public JToken ProductProperties;
     public JToken MovementActionData;
     public List<GetAllInspectElementVm> InspectElements;
-    public List<DynamicFieldWithValueDto> DynamicFieldDtos = new();
+    public List<DynamicFieldWithValueDto> DynamicFields = new();
     public List<GetGpsLogDto> GpsLogs = new();
 
     public Gallery GalleryRef { get; set; }
@@ -146,6 +146,20 @@ public partial class TagHistory
     protected override async Task SiloInitializer()
     {
         UserId = (await AuthState.GetAuthenticationStateAsync()).User.GetUserId();
+
+        var dynamicFields = (await Api.PostAsyncByUri<List<GetAllDynamicFieldVm>>("wms/document", "SGetDynamicFieldsByActionTypeId",
+                             new KeyValuePair<string, object>("actionTypeId", 0))).Value;
+
+        DynamicFields = dynamicFields.DistinctBy(p => p.Title)
+                                        .Select(p => new DynamicFieldWithValueDto()
+                                        {
+                                            Title = p.Title,
+                                            DefaultValue = p.DefaultValue,
+                                            Value = p.DefaultValue,
+                                            ValueOptions = p.ValueOptionList,
+                                            ValueType = p.ValueType,
+                                            IsReadOnly = true
+                                        }).ToList();
 
         if (ProductSerial.HasValue())
         {
@@ -397,6 +411,20 @@ public partial class TagHistory
                 if (ProductInfos[0].ProductProperties.HasValue())
                 {
                     ProductProperties = JToken.Parse(ProductInfos[0].ProductProperties);
+
+                    foreach (var dynamicFields in DynamicFields)
+                    {
+                        var value = ProductProperties.Value<string?>(dynamicFields.Title);
+
+                        if (value.HasValue())
+                        {
+                            dynamicFields.Value = value;
+                        }
+                        else
+                        {
+                            dynamicFields.Value = string.Empty;
+                        }
+                    }
                 }
 
                 if (ProductInfos[0].ProductGalleryId.NotEquals(0))

@@ -127,6 +127,10 @@
                                    Width="300px">
             </TelerikNumericTextBox>
         }
+        else if (Request.Component == FilterComponent.Plaque)
+        {
+            <IranPlaque @bind-Value="Request.Value"></IranPlaque>
+        }
         @if (Request.IsLikeCheckboxShown)
         {
             <label style="margin-right:10px">@TextResources.APP_StringKeys_Like:</label>

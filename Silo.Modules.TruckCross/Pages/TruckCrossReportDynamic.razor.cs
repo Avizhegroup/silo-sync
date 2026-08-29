@@ -11,6 +11,7 @@ using Silo.Identity.Client;
 using Silo.Shared.Components.Report;
 
 namespace Silo.Modules.TruckCross.Pages;
+
 public partial class TruckCrossReportDynamic
 {
     #region Private Fields
@@ -89,26 +90,26 @@ public partial class TruckCrossReportDynamic
                 applicationUsers.Where(p => p.IsActive).ToList());
 
         TruckTypes = (await Api.PostAsyncByUri<List<GetAllTruckTypesVm>>("wms/TruckCross", "SGetTruckType")).Value;
-        
+
         Causes = (await Api.PostAsyncByUri<List<GetAllTruckCrossPresentCauseVm>>("wms/TruckCross", "SGetTruckPresentCause")).Value;
-        
+
         OperationTypes = (await Api.PostAsyncByUri<List<GetAllTruckCrossOperationTypesVm>>("wms/TruckCross", "SGetAllTruckCrossOperationType")).Value;
-       
+
         Shipments = (await Api.PostAsyncByUri<List<GetAllTruckCrossShipmentVm>>("wms/TruckCross", "SGetAllTruckCrossShipment")).Value;
-       
+
         Customers = (await Api.PostAsyncByUri<List<GetAllTruckCrossCustomerVm>>("wms/TruckCross", "SGetAllTruckCrossCustomer")).Value;
-       
+
         OperationDestinations = (await Api.PostAsyncByUri<List<GetAllTruckCrossOperationDestinationsVm>>("wms/TruckCross", "SGetAllTruckCrossOperationDestination")).Value;
 
         DynamicFieldsSections = (await Api.PostAsyncByUri<List<GetAllDynamicFieldSectionsVm>>(
             "wms/Document",
             "GetAllDynamicFieldSections")).Value;
-        
+
         DynamicFieldsSections = DynamicFieldsSections.Where(p => p.DynamicFieldType >= (int)DynamicFieldType.TruckCrossPresent)
                                                      .ToList();
 
         DynamicFields = (await Api.PostAsyncByUri<List<GetAllDynamicFieldVm>>("wms/document", "SGetAllDynamicFields")).Value;
-       
+
         DynamicFields = DynamicFields.Where(p => p.FieldType >= DynamicFieldType.TruckCrossPresent)
                                      .OrderBy(p => p.Id)
                                      .ToList();
@@ -161,13 +162,13 @@ public partial class TruckCrossReportDynamic
         if (!AddedDataColumns.Any())
         {
             Notification.Show(TextResources.APP_StringKeys_Validation_Dynamic_Column, "error");
-          
-            
+
+
             return;
         }
 
         IsLoading = true;
-       
+
         TotalSum = 0;
 
         var filters = AggregateFilterValues();
@@ -851,6 +852,25 @@ public partial class TruckCrossReportDynamic
                     Component = FilterComponent.Numeric,
                     IsFilterShown = true,
                     IsLikeCheckboxShown = false,
+                    AdditionalData = new Dictionary<string, string>()
+                    {
+                        { "FilterType", "Dynamic"},
+                        { "FilterId", field.Id.ToString()},
+                        { "DynamicFieldType", field.FieldType.ToString() }
+                    }
+                });
+            }
+            else if (field.ValueType == DynamicFieldValueType.Plaque)
+            {
+                Filters.Add(new()
+                {
+                    Id = FilterCount++,
+                    Label = field.Title,
+                    FieldName = field.Title,
+                    Type = FilterType.Dynamic,
+                    Component = FilterComponent.Plaque,
+                    IsFilterShown = field != null ? (field.FieldShowColumn && (field.ActionType == 0)) : false,
+                    IsLikeCheckboxShown = true,
                     AdditionalData = new Dictionary<string, string>()
                     {
                         { "FilterType", "Dynamic"},

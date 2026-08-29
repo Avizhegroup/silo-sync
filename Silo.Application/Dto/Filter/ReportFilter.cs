@@ -53,7 +53,8 @@ public enum FilterComponent
     LocationModal,
     Time,
     RichTextEditor,
-    Numeric
+    Numeric,
+    Plaque
 }
 
 public enum FilterType

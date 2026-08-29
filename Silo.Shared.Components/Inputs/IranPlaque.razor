@@ -1,0 +1,40 @@
+﻿@namespace Silo.Shared.Components
+
+<div class="iranian-plaque" dir="ltr">
+    <div class="iranian-plaque-strip">
+        <span class="iranian-plaque-flag">
+            <span class="iranian-plaque-flag-green"></span>
+            <span class="iranian-plaque-flag-white"></span>
+            <span class="iranian-plaque-flag-red"></span>
+        </span>
+        <span class="iranian-plaque-ir">IR</span>
+    </div>
+    <div class="iranian-plaque-fields" dir="rtl">
+        <TelerikTextBox @bind-Value="CityPart"
+                        Class="form-control iranian-plaque-part iranian-plaque-city"
+                        Width="28px"
+                        MaxLength="2"
+                        TabIndex="TabIndex"
+                        ReadOnly="ReadOnly" />
+        <span class="iranian-plaque-dash">ایران</span>
+        <TelerikTextBox @bind-Value="SecondPart"
+                        Class="form-control iranian-plaque-part"
+                        Width="38px"
+                        MaxLength="3"
+                        TabIndex="TabIndex"
+                        ReadOnly="ReadOnly" />
+        <TelerikDropDownList Data="IranianAlphabets"
+                             @bind-Value="Character"
+                             Class="drop-all iranian-plaque-char"
+                             Width="100px"
+                             DefaultText=""
+                             TabIndex="TabIndex"
+                             ReadOnly="ReadOnly" />
+        <TelerikTextBox @bind-Value="FirstPart"
+                        Class="form-control iranian-plaque-part"
+                        Width="28px"
+                        MaxLength="2"
+                        TabIndex="TabIndex"
+                        ReadOnly="ReadOnly" />
+    </div>
+</div>

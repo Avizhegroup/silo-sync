@@ -53,7 +53,7 @@ public partial class AiResultGrid
 
         var columns = rows.First().EnumerateObject().Select(p => p.Name).ToList();
 
-        string fileName = $"Silo_AI_Report_{DateTime.Now:yyyyMMdd_HHmm}";
+        string fileName = $"گزارش هوش مصنوعی_{PersianCalendarTools.GregorianToPersianWithManualSeprator(DateTime.Now, "")}";
 
         await ExcelExporter.ExportJsonData(fileName, rawData, columns);
 

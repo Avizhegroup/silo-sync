@@ -1,12 +1,12 @@
 ﻿using Silo.Application;
 
 namespace Silo.Pages.Warehouse;
-public partial class WarehousesAndZones : IAsyncDisposable
+public partial class ImageAnalize : IAsyncDisposable
 {
     private bool IsLoading = true;
     private IJSObjectReference? _module;
     private bool _3DInitialized = false;
-    private DotNetObjectReference<WarehousesAndZones>? _dotNetRef;
+    private DotNetObjectReference<ImageAnalize>? _dotNetRef;
     private bool _dataLoadedAfterInit = false;
     private bool IsCorridorDrawMode = false;
     private bool IsCorridorRelocateMode = false;
@@ -28,7 +28,7 @@ public partial class WarehousesAndZones : IAsyncDisposable
     [Inject] public RfidConnectApi Api { get; set; }
     [Inject] public IFormalDataCache FormalCache { get; set; }
     [Inject] public IJSRuntime JSRuntime { get; set; }
-    [Inject] public ILogger<WarehousesAndZones> Logger { get; set; }
+    [Inject] public ILogger<ImageAnalize> Logger { get; set; }
 
     [CascadingParameter] public DialogFactory Dialog { get; set; }
 

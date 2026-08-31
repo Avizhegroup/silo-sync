@@ -16,6 +16,12 @@
             </button>
             <div style="left:5px; position:absolute;">
                 <button type="button"
+                        @onclick="OnAddClick"
+                        class="btn btn-info"
+                        style="margin-right:5px">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Add"></MaterialIcon>
+                </button>
+                <button type="button"
                         @onclick="OnSaveClick"
                         class="btn btn-primary">
                     <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
@@ -28,23 +34,44 @@
 <div class="row col-md-12">
     <div class="card card-stats col-md-12 text-align-center">
         <br />
-        <TelerikGrid Data="SearchedStrings"
+        <TelerikGrid TItem="StringResourceModel"
+                     Data="SearchedStrings"
                      PageSize="10"
                      Navigable="true"
                      Pageable="true"
                      Sortable="true">
             <RowTemplate Context="context">
-                <td class="td-style">@context.Name</td>
+                <td class="td-style">
+                    @if (context.IsNew)
+                    {
+                        <input type="text"
+                               class="form-control input-search-span"
+                               @bind-value="context.Key"
+                               style="width:80% !important" />
+                    }
+                    else
+                    {
+                        @context.Key
+                    }
+                </td>
                 <td class="td-style">
                     <input type="text"
                            class="form-control input-search-span"
                            @bind-value="context.Value"
                            style="width:80% !important" />
                 </td>
+                <td class="td-style">
+                    <button type="button"
+                            @onclick="() => OnDeleteClick(context)"
+                            class="btn btn-danger">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
+                    </button>
+                </td>
             </RowTemplate>
             <GridColumns>
                 <GridColumn Title="کلید"></GridColumn>
                 <GridColumn Title="مقدار"></GridColumn>
+                <GridColumn Title="عملیات"></GridColumn>
             </GridColumns>
         </TelerikGrid>
     </div>

@@ -62,6 +62,5 @@ public static partial class Program
             .Configure<BrotliCompressionProviderOptions>(opt => opt.Level = CompressionLevel.Fastest)
             .Configure<GzipCompressionProviderOptions>(opt => opt.Level = CompressionLevel.Fastest);
 
-        ResourceManager.Initialize(configuration);
-    }
-}
+            }
+        }

@@ -123,6 +123,20 @@ public partial class FormalDataCache(IMemoryCache memoryCache
            , new GetShiftObjectContext())).Value
         );
 
+    public async Task<List<GetAllTextResourcesVm>> GetTextResources() =>
+        await GetOrCreateAsync(
+            FormalCacheKeyManager.Cache_Key_TextResources,
+            async api => (await api.SendAsyncObjectByUri<List<GetAllTextResourcesVm>>(
+                HttpMethod.Get,
+                "TextResource/ReadAll",
+                null,
+                new GetAllTextResourcesVmContext()
+            )).Value
+        );
+
+    public async Task UpdateTextResources(List<GetAllTextResourcesVm> textResources) =>
+        memoryCache.Set(FormalCacheKeyManager.Cache_Key_TextResources, textResources, _cacheEntryOptions);
+
     public async Task HardRefreshCache()
     {
         await _cacheLock.WaitAsync();
@@ -141,7 +155,8 @@ public partial class FormalDataCache(IMemoryCache memoryCache
                 GetSubGroups(),
                 GetProductClass(),
                 GetTypes(),
-                GetShifts()
+                GetShifts(),
+                GetTextResources()
             );
 
             memoryCache.Set(
@@ -201,6 +216,7 @@ public partial class FormalDataCache(IMemoryCache memoryCache
         memoryCache.Remove(FormalCacheKeyManager.Cache_Key_ProductClass);
         memoryCache.Remove(FormalCacheKeyManager.Cache_Key_Types);
         memoryCache.Remove(FormalCacheKeyManager.Cache_Key_Shifts);
+        memoryCache.Remove(FormalCacheKeyManager.Cache_Key_TextResources);
         memoryCache.Remove(FormalCacheKeyManager.Cache_Key_Dates);
     }
 

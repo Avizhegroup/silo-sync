@@ -22,5 +22,7 @@ public interface IFormalDataCache
     Task<List<GetAllProductTypeVm>> GetTypes();
     Task UpdateType(List<GetAllProductTypeVm> types);
     Task<List<GetAllShiftsVm>> GetShifts();
+    Task<List<GetAllTextResourcesVm>> GetTextResources();
+    Task UpdateTextResources(List<GetAllTextResourcesVm> textResources);
     Task HardRefreshCache();
 }

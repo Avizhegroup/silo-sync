@@ -78,6 +78,7 @@ public partial class WmsApiContext(IConfiguration configuration
     public DbSet<PrintFormat> PrintFormats { get; set; }
     public DbSet<TablesChangeLog> TagChangeLog { get; set; }
     public DbSet<GPSLogs> GpsLogs { get; set; }
+    public DbSet<TextResource> TextResources { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -89,6 +90,12 @@ public partial class WmsApiContext(IConfiguration configuration
             entity.HasOne(p => p.User)
                   .WithMany(p => p.ChangeLogs)
                   .HasForeignKey(p => p.UserId);
+        });
+
+        modelBuilder.Entity<TextResource>(entity =>
+        {
+            entity.HasIndex(e => e.Key)
+                  .IsUnique();
         });
 
         modelBuilder.Entity<ChatSessions>(entity =>

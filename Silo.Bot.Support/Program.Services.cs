@@ -7,6 +7,8 @@ public static partial class Program
 {
     public static void AddSiloSupportBotServices(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSiloSerilogForWindowsServices(configuration);
+
         services.AddOptions<BaleOptions>()
             .Bind(configuration.GetSection(BaleOptions.SectionName));
 

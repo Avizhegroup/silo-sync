@@ -8,7 +8,7 @@ public static class Startup
     public static void ConfigureServices( this IServiceCollection services
         , IConfiguration configuration)
     {
-        services.AddSiloSerilogForWindowsServices();
+        services.AddSiloSerilogForWindowsServices(configuration);
 
         services.AddSingleton<Api>();
 

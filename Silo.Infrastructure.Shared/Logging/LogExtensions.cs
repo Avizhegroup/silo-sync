@@ -51,7 +51,8 @@ public static class LogExtensions
         });
     }
 
-    public static void AddSiloSerilogForWindowsServices(this IServiceCollection services)
+    public static void AddSiloSerilogForWindowsServices(this IServiceCollection services
+        , IConfiguration appConfig)
     {
         services.AddLogging(config =>
         {
@@ -62,23 +63,31 @@ public static class LogExtensions
 #if DEBUG
             customLogger.WriteTo.Console();
 #else
-            customLogger
-                .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
-                .WriteTo.Logger(lc => lc
-                    .Filter.ByIncludingOnly(evt => evt.Level == Serilog.Events.LogEventLevel.Warning)
-                    .WriteTo.File($"{AppDomain.CurrentDomain.BaseDirectory}/Logs/Exceptions/Log-{PersianCalendarTools.GregorianToPersianWithManualSeprator(DateTime.Now, "")}.log"
-                    , outputTemplate: @"-------------------Exception Begin----------------------
+            if (appConfig["Seq:Url"].HasValue())
+            {
+                customLogger
+                .WriteTo.Seq(appConfig["Seq:Url"].ToString());
+            }
+            else
+            {
+                customLogger
+                    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+                    .WriteTo.Logger(lc => lc
+                        .Filter.ByIncludingOnly(evt => evt.Level == Serilog.Events.LogEventLevel.Warning)
+                        .WriteTo.File($"{AppDomain.CurrentDomain.BaseDirectory}/Logs/Exceptions/Log-{PersianCalendarTools.GregorianToPersianWithManualSeprator(DateTime.Now, "")}.log"
+                        , outputTemplate: @"-------------------Exception Begin----------------------
                                 {NewLine}Exception Occure Time:{Timestamp:o}
                                 {NewLine}Exception Message:{Message}
                                 {NewLine}Exception Base:{Exception}
                                 {NewLine}-------------------Exception End----------------------{NewLine}"))
-                .WriteTo.Logger(lc => lc
-                    .Filter.ByIncludingOnly(evt => evt.Level <= Serilog.Events.LogEventLevel.Information)
-                    .WriteTo.File($"{AppDomain.CurrentDomain.BaseDirectory}/Logs/InfoLogs/Log-{PersianCalendarTools.GregorianToPersianWithManualSeprator(DateTime.Now, "")}.log"
-                    , outputTemplate: @"-------------------Log Begin----------------------
+                    .WriteTo.Logger(lc => lc
+                        .Filter.ByIncludingOnly(evt => evt.Level <= Serilog.Events.LogEventLevel.Information)
+                        .WriteTo.File($"{AppDomain.CurrentDomain.BaseDirectory}/Logs/InfoLogs/Log-{PersianCalendarTools.GregorianToPersianWithManualSeprator(DateTime.Now, "")}.log"
+                        , outputTemplate: @"-------------------Log Begin----------------------
                                 {NewLine}Occure Time:{Timestamp:o}
                                 {NewLine}Message:{Message}
                                 {NewLine}-------------------Log End----------------------{NewLine}"));
+            }
 #endif
             Log.Logger =
                    customLogger.CreateBootstrapLogger();

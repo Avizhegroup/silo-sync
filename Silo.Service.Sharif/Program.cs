@@ -20,7 +20,7 @@ builder
     })
     .ConfigureServices((context, services) =>
     {
-        services.AddSiloSerilogForWindowsServices();
+        services.AddSiloSerilogForWindowsServices(context.Configuration);
 
         services.AddSingleton<RfidConnectApiForSharif>();
         services.AddSingleton<RfidReaderService>();

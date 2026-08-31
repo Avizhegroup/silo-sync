@@ -1,6 +1,4 @@
-﻿
-namespace Silo.Application.Features;
-
+﻿namespace Silo.Application.Api.Features;
 public class GetAllTextResourcesHandler(WmsApiContext context)
     : IRequestHandler<GetAllTextResourcesQuery, List<GetAllTextResourcesVm>>
 {

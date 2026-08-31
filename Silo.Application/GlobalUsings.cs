@@ -1,5 +1,6 @@
 ﻿global using MediatR;
 global using AutoMapper;
+global using Microsoft.EntityFrameworkCore;
 global using Silo.Domains.Entities;
 global using Silo.Domains.Services;
 global using System.Text.Json;

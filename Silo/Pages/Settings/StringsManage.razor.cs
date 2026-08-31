@@ -1,49 +1,72 @@
-﻿using Microsoft.Extensions.Configuration;
-
-namespace Silo.Pages.Settings;
+﻿namespace Silo.Pages.Settings;
 
 public partial class StringsManage
 {
     public bool IsLoading = true;
-    public List<TelerikDropDownItem> Strings;
-    public List<TelerikDropDownItem> SearchedStrings;
+    public List<StringResourceModel> Strings = new();
+    public List<StringResourceModel> SearchedStrings = new();
     public string SearchText;
-    public bool IsEdited = false;
 
-    [Inject] public IConfiguration Configuration { get; set; }
+    [Inject] public RfidConnectApi Api { get; set; }
+    [Inject] public IFormalDataCache Cache { get; set; }
 
     protected override async Task SiloInitializer()
     {
-        Strings = TextResourceTools.GetTextResourceList(Configuration)
-                                   .Select(p=> new TelerikDropDownItem()
-                                   {
-                                       Name = p.Key,
-                                       Value = p.Value
-                                   })
-                                   .ToList();
+        var resources = await Cache.GetTextResources();
+
+        Strings = resources
+            .Select(x => new StringResourceModel
+            {
+                Id = x.Id,
+                Key = x.Key,
+                Value = x.Value
+            })
+            .ToList();
 
         SearchedStrings = Strings;
 
         IsLoading = false;
     }
-    
+
     public async Task OnSaveClick(MouseEventArgs e)
     {
         IsLoading = true;
 
-        foreach (var item in SearchedStrings)
+        var command = new SaveTextResourcesCommand
         {
-            var stringItem = Strings.FirstOrDefault(p => p.Name.Equals(item.Name));
+            Items = Strings
+                .Where(x => !x.IsDeleted)
+                .Select(x => new TextResourceDto
+                {
+                    Id = x.Id,
+                    Key = x.Key,
+                    Value = x.Value
+                })
+                .ToList(),
+            DeletedIds = Strings
+                .Where(x => x.IsDeleted && x.Id > 0)
+                .Select(x => x.Id)
+                .ToList()
+        };
 
-            if (stringItem is null)
-            {
-                return;
-            }
+        var result = await Api.SendAsyncObjectByUri<SaveTextResourcesVm>(HttpMethod.Post
+            , "TextResource/Save", command, new SaveTextResourcesVmContext());
 
-            stringItem.Value = item.Value;
+        if (result.Successful && result.Value is { Result: true })
+        {
+            var updated = await Cache.RefreshTextResources();
+
+            Strings = updated
+                .Select(x => new StringResourceModel
+                {
+                    Id = x.Id,
+                    Key = x.Key,
+                    Value = x.Value
+                })
+                .ToList();
+
+            SearchedStrings = Strings;
         }
-
-        TextResourceTools.SaveDictionaryToXml(Strings.ToDictionary(p=>p.Name,p=> p.Value), Configuration);
 
         Notification.Show(TextResources.APP_StringKeys_Alert_Success, "success");
 
@@ -58,7 +81,29 @@ public partial class StringsManage
         }
         else
         {
-            SearchedStrings = Strings.Where(p => p.Name.Contains(SearchText) || p.Value.Contains(SearchText)).ToList();
+            SearchedStrings = Strings
+                .Where(p => (p.Key.Contains(SearchText) || p.Value.Contains(SearchText)) && !p.IsDeleted)
+                .ToList();
         }
+    }
+
+    public void OnAddClick(MouseEventArgs e)
+    {
+        var newItem = new StringResourceModel
+        {
+            Id = 0,
+            Key = string.Empty,
+            Value = string.Empty,
+            IsNew = true
+        };
+
+        Strings.Add(newItem);
+        SearchedStrings = Strings.Where(x => !x.IsDeleted).ToList();
+    }
+
+    public void OnDeleteClick(StringResourceModel item)
+    {
+        item.IsDeleted = true;
+        SearchedStrings = Strings.Where(x => !x.IsDeleted).ToList();
     }
 }

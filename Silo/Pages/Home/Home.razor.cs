@@ -3,6 +3,7 @@
 public partial class Home
 {
     public bool IsLoading = true;
+    public bool IsDashboardShown = false;
     public decimal BriefDaily = 0;
     public decimal BriefMonthly = 0;
     public decimal BriefYearly = 0;
@@ -20,16 +21,15 @@ public partial class Home
 
     [Inject] public RfidConnectApi Api { get; set; }
     [Inject] public IClaimManager ClaimManager { get; set; }
+    [Inject] public IConfiguration Configuration { get; set; }
 
     public TelerikContextMenu<TelerikContextMenuItem> QuickAccessContextMenuRef { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        //SiloContext.NavbarFilterClicked = null;
+        IsDashboardShown = bool.Parse(Configuration["DashboardShown"].ToString());
 
-        //SiloContext.QuickAccessChanged = OnQuickAccessChange;
-
-        if (false)
+        if (IsDashboardShown)
         {
             QuickAccessLinks = await ClaimManager.GetQuickAccessLinks();
 

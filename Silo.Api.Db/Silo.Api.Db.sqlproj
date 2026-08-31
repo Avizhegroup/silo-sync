@@ -190,6 +190,7 @@
     <Build Include="Tables\tbl_TablesChangeLog.sql" />
     <Build Include="Tables\tbl_WarehouseCorridor.sql" />
     <Build Include="Tables\tbl_UserQuickAccess.sql" />
+    <Build Include="Tables\tbl_TextResources.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Silo.Api.Db.refactorlog" />

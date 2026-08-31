@@ -1,4 +1,7 @@
-﻿namespace Silo;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+
+namespace Silo;
+
 public static partial class Program
 {
     static void Main(string[] args)
@@ -9,7 +12,7 @@ public static partial class Program
 
         var app = builder.Build();
 
-        app.Configure();
+              app.Configure();
 
         app.Run();
     }

@@ -65,23 +65,25 @@ public class SiloAiClient : ISiloAiClient
         try
         {
             var response = await _httpClient.PostAsJsonAsync(SendEndpoint, request, cancellationToken);
+           
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning(
                     "Silo AI request failed with status code {StatusCode}",
                     (int)response.StatusCode);
-                return null;
+
+                return new RagChatResponse
+                {
+                    StatusCode = response.StatusCode
+                };
             }
 
             return await response.Content.ReadFromJsonAsync<RagChatResponse>(cancellationToken: cancellationToken);
         }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception calling Silo AI RAG chat endpoint");
+
             return null;
         }
     }

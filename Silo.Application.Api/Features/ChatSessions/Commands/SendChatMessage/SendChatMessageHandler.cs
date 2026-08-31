@@ -1,14 +1,18 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Net;
+using Microsoft.Extensions.Logging;
+using Silo.Application.Contracts;
+using Silo.Shared.Tools;
 
 namespace Silo.Application.Api.Features;
 
 public class SendChatMessageHandler(
     WmsApiContext context,
     ISiloAiClient siloAiClient,
+    IDataAccess dataAccess,
     ILogger<SendChatMessageHandler> logger)
     : IRequestHandler<SendChatMessageCommand, SendChatMessageVm>
 {
-    private const string FallbackErrorMessage = "متأسفانه در حال حاضر امکان پاسخگویی وجود ندارد. لطفاً کمی بعد دوباره تلاش کنید.";
+    private const string FallbackErrorMessage = ".متأسفانه در حال حاضر امکان پاسخگویی وجود ندارد. لطفاً کمی بعد دوباره تلاش کنید.";
 
     public async Task<SendChatMessageVm> Handle(SendChatMessageCommand request, CancellationToken cancellationToken)
     {
@@ -46,10 +50,54 @@ public class SendChatMessageHandler(
             };
         }
 
+        if (result.StatusCode == HttpStatusCode.PaymentRequired)
+        {
+            return new SendChatMessageVm
+            {
+                StatusCode = 402,
+                SessionId = request.SessionId
+            };
+        }
+
+        var priceUsage = result.PriceUsage;
+
+        var sqlCommands = new List<string>();
+
+        var cleanResponseText = AiCommandTools.StripSqlBlocks(result.ResponseText ?? string.Empty, sqlCommands);
+
+        var configCommands = new List<string>();
+
+        cleanResponseText = AiCommandTools.StripConfigBlocks(cleanResponseText,configCommands);
+
+        var sqlResults = new List<List<object>>();
+
+        if (sqlCommands.Count > 0)
+        {
+            try
+            {
+                var data = DataTableTools.DataTableToObjects(dataAccess.SqlDataAdapter(sqlCommands[0]));
+
+                sqlResults.Add(data);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Failed to execute SQL command from AI response for user {UserId}", request.UserId);
+            }
+        }
+
+        if (configCommands.Count > 0)
+        {
+            logger.LogInformation(
+                "Received {ConfigCommandCount} CONFIG command(s) from AI for user {UserId}",
+                configCommands.Count,
+                request.UserId);
+        }
+
         state.ConversationId = result.ConversationId;
 
         state.Messages.Add(new ChatMessageDto { Text = request.Message, IsUser = true, Datetime = DateTime.Now });
-        state.Messages.Add(new ChatMessageDto { Text = result.ResponseText ?? string.Empty, IsUser = false, Datetime = DateTime.Now });
+
+        state.Messages.Add(new ChatMessageDto { Text = cleanResponseText, IsUser = false, Datetime = DateTime.Now });
 
         var updatedJson = JsonSerializer.Serialize(state);
 
@@ -62,6 +110,7 @@ public class SendChatMessageHandler(
                 UserId = request.UserId,
                 SessionData = updatedJson,
                 TokenUsage = JsonSerializer.Serialize(result.TokenUsage ?? new ChatTokenUsageDto()),
+                PriceUsage = priceUsage,
                 Mode = (int)request.Mode,
                 CreatedDate = DateTime.Now,
                 LastUpdated = DateTime.Now
@@ -98,6 +147,8 @@ public class SendChatMessageHandler(
                 existingSession.TokenUsage = JsonSerializer.Serialize(usage);
             }
 
+            existingSession.PriceUsage += priceUsage;
+
             existingSession.LastUpdated = DateTime.Now;
 
             await context.SaveChangesAsync(cancellationToken);
@@ -105,8 +156,9 @@ public class SendChatMessageHandler(
 
         return new SendChatMessageVm
         {
-            ResponseText = result.ResponseText ?? string.Empty,
-            SessionId = sessionId
+            ResponseText = cleanResponseText,
+            SessionId = sessionId,
+            SqlCommandsResults = sqlResults
         };
     }
 }

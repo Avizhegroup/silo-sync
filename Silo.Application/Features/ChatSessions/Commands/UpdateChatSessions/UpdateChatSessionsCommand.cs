@@ -6,5 +6,6 @@ public class UpdateChatSessionsCommand : IRequest<UpdateChatSessionsVm>
     public string UserId { get; set; }
     public string? SessionData { get; set; }
     public ChatTokenUsageDto? TokenUsage { get; set; }
+    public decimal? PriceUsage { get; set; }
 
 }

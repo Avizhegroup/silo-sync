@@ -14,10 +14,16 @@ public static partial class Program
 
         try
         {
-            var cache = app.Services.GetRequiredService<IFormalDataCache>();
-            var textResources = cache.GetTextResources().GetAwaiter().GetResult();
+            // IFormalDataCache is registered as scoped, so it must be resolved from a
+            // dedicated DI scope rather than the root provider (which throws when
+            // scope validation is enabled, e.g. in the Development environment).
+            using var scope = app.Services.CreateScope();
 
-            ResourceManager.Load(textResources.ToDictionary(x => x.Key, x => x.Value));
+            var cache = scope.ServiceProvider.GetRequiredService<IFormalDataCache>();
+
+            // GetTextResources() fetches (and caches) the text resources from the API and
+            // loads them into the static ResourceManager used by TextResources.
+            cache.GetTextResources().GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {

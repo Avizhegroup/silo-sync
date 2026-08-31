@@ -9,7 +9,10 @@ public partial class FormalDataCache(IMemoryCache memoryCache
     , RfidConnectApi api) : IFormalDataCache
 {
     private readonly SemaphoreSlim _cacheLock = new(1, 1);
-    private readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new();
+    // Static because FormalDataCache is registered as scoped (a new instance per request/circuit)
+    // while the underlying IMemoryCache is a singleton; the locks must be shared across all
+    // instances so concurrent requests for the same key still serialize into a single API call.
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new();
     private static readonly MemoryCacheEntryOptions _cacheEntryOptions = new MemoryCacheEntryOptions()
         .SetAbsoluteExpiration(TimeSpan.FromDays(1))
         .SetPriority(CacheItemPriority.Normal)
@@ -123,8 +126,9 @@ public partial class FormalDataCache(IMemoryCache memoryCache
            , new GetShiftObjectContext())).Value
         );
 
-    public async Task<List<GetAllTextResourcesVm>> GetTextResources() =>
-        await GetOrCreateAsync(
+    public async Task<List<GetAllTextResourcesVm>> GetTextResources()
+    {
+        var textResources = await GetOrCreateAsync(
             FormalCacheKeyManager.Cache_Key_TextResources,
             async api => (await api.SendAsyncObjectByUri<List<GetAllTextResourcesVm>>(
                 HttpMethod.Get,
@@ -134,8 +138,40 @@ public partial class FormalDataCache(IMemoryCache memoryCache
             )).Value
         );
 
-    public async Task UpdateTextResources(List<GetAllTextResourcesVm> textResources) =>
+        SyncResourceManager(textResources);
+
+        return textResources;
+    }
+
+    public async Task<List<GetAllTextResourcesVm>> RefreshTextResources()
+    {
+        memoryCache.Remove(FormalCacheKeyManager.Cache_Key_TextResources);
+
+        return await GetTextResources();
+    }
+
+    public async Task UpdateTextResources(List<GetAllTextResourcesVm> textResources)
+    {
         memoryCache.Set(FormalCacheKeyManager.Cache_Key_TextResources, textResources, _cacheEntryOptions);
+
+        SyncResourceManager(textResources);
+    }
+
+    /// <summary>
+    /// Keeps the in-memory <see cref="ResourceManager"/> (used by the static
+    /// <see cref="TextResources"/> accessors) in sync with the cached text resources,
+    /// so every refresh path (startup, hard refresh, manual save) reflects immediately
+    /// without requiring an application restart.
+    /// </summary>
+    private static void SyncResourceManager(List<GetAllTextResourcesVm> textResources)
+    {
+        if (textResources is null)
+        {
+            return;
+        }
+
+        ResourceManager.Load(textResources.ToDictionary(x => x.Key, x => x.Value));
+    }
 
     public async Task HardRefreshCache()
     {
@@ -181,13 +217,17 @@ public partial class FormalDataCache(IMemoryCache memoryCache
             return cachedValue;
         }
 
-        ///TODO: Must check commented codes in release mode
-
-        //var keyLock = _keyLocks.GetOrAdd(cacheKey, _ => new SemaphoreSlim(1, 1));
-        //await keyLock.WaitAsync();
+        // Guard against a cache stampede: only one caller per key should hit the API,
+        // any other concurrent caller for the same key waits and reuses the cached result.
+        var keyLock = _keyLocks.GetOrAdd(cacheKey, _ => new SemaphoreSlim(1, 1));
+        await keyLock.WaitAsync();
 
         try
         {
+            if (memoryCache.TryGetValue(cacheKey, out cachedValue))
+            {
+                return cachedValue;
+            }
 
             var data = await fetchData(api);
 
@@ -197,7 +237,7 @@ public partial class FormalDataCache(IMemoryCache memoryCache
         }
         finally
         {
-          //  keyLock.Release();
+            keyLock.Release();
         }
     }
 

@@ -54,9 +54,7 @@ public partial class StringsManage
 
         if (result.Successful && result.Value is { Result: true })
         {
-            var updated = await Cache.GetTextResources();
-            await Cache.UpdateTextResources(updated);
-            ResourceManager.Load(updated.ToDictionary(x => x.Key, x => x.Value));
+            var updated = await Cache.RefreshTextResources();
 
             Strings = updated
                 .Select(x => new StringResourceModel

@@ -1,5 +1,4 @@
 ﻿namespace Silo.Pages.Settings;
-
 public partial class StringsManage
 {
     public bool IsLoading = true;
@@ -30,9 +29,14 @@ public partial class StringsManage
 
     public async Task OnSaveClick(MouseEventArgs e)
     {
+        if (!IsValidForSave())
+        {
+            return;
+        }
+
         IsLoading = true;
 
-        var command = new SaveTextResourcesCommand
+        SaveTextResourcesCommand command = new()
         {
             Items = Strings
                 .Where(x => !x.IsDeleted)
@@ -89,21 +93,51 @@ public partial class StringsManage
 
     public void OnAddClick(MouseEventArgs e)
     {
-        var newItem = new StringResourceModel
+        StringResourceModel newItem = new()
         {
             Id = 0,
-            Key = string.Empty,
+            Key = "APP_StringKeys_",
             Value = string.Empty,
             IsNew = true
         };
 
-        Strings.Add(newItem);
+        Strings.Insert(0, newItem);
+
         SearchedStrings = Strings.Where(x => !x.IsDeleted).ToList();
     }
 
     public void OnDeleteClick(StringResourceModel item)
     {
         item.IsDeleted = true;
+
         SearchedStrings = Strings.Where(x => !x.IsDeleted).ToList();
+    }
+
+    public bool IsValidForSave()
+    {
+        var activeStrings = new List<StringResourceModel>();
+
+        foreach (var item in Strings.Where(x => !x.IsDeleted))
+        {
+            item.Key = item.Key.Trim();
+
+            if (item.Key.HasNoValue())
+            {
+                Notification.Show(TextResources.APP_StringKeys_Validation_Empty, "error");
+
+                return false;
+            }
+
+            if (activeStrings.Any(x => x.Key.Equals(item.Key, StringComparison.Ordinal)))
+            {
+                Notification.Show(string.Format(TextResources.APP_StringKeys_Validation_Remote, item.Key), "error");
+
+                return false;
+            }
+
+            activeStrings.Add(item);
+        }
+
+        return true;
     }
 }

@@ -131,9 +131,9 @@ public partial class FormalDataCache(IMemoryCache memoryCache
         var textResources = await GetOrCreateAsync(
             FormalCacheKeyManager.Cache_Key_TextResources,
             async api => (await api.SendAsyncObjectByUri<List<GetAllTextResourcesVm>>(
-                HttpMethod.Get,
+                HttpMethod.Post,
                 "TextResource/ReadAll",
-                null,
+                new GetAllTextResourcesQuery(),
                 new GetAllTextResourcesVmContext()
             )).Value
         );

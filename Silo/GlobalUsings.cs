@@ -1,4 +1,5 @@
 ﻿global using Silo.Application.Features;
+global using Silo.Application;
 global using Microsoft.JSInterop;
 global using Microsoft.AspNetCore.Components.Web;
 global using Telerik.Blazor.Components;

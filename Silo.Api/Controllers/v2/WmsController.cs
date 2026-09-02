@@ -125,8 +125,6 @@ public class WmsController : SiloBaseControllerVersion2
             })
             .ToList();
 
-        var lst = TextResourceTools.GetTextResourceList(configuration);
-
         context.DeleteData();
 
         var tags = ((WmsBusiness)business).SGetAllTag().Select().ToList();
@@ -343,7 +341,7 @@ public class WmsController : SiloBaseControllerVersion2
                         })
                         .ToList();
 
-        var textResources = TextResourceTools.GetTextResourceList(configuration).Select(p => new TextResourceEntity()
+        var textResources = apiContext.TextResources.ToList().Select(p => new TextResourceEntity()
         {
             Key = p.Key,
             Value = p.Value
@@ -687,8 +685,6 @@ public class WmsController : SiloBaseControllerVersion2
             })
             .ToList();
 
-        var lst = TextResourceTools.GetTextResourceList(configuration);
-
         context.DeleteData();
 
         var tags = ((WmsBusiness)business).SGetAllTag().Select().ToList();
@@ -903,7 +899,7 @@ public class WmsController : SiloBaseControllerVersion2
                         })
                         .ToList();
 
-        var textResources = TextResourceTools.GetTextResourceList(configuration).Select(p => new TextResourceEntity()
+        var textResources = apiContext.TextResources.ToList().Select(p => new TextResourceEntity()
         {
             Key = p.Key,
             Value = p.Value

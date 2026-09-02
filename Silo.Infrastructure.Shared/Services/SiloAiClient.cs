@@ -25,34 +25,16 @@ public class SiloAiClient : ISiloAiClient
 
     public async Task<Guid?> StartNewSessionAsync(CancellationToken cancellationToken)
     {
-        try
-        {
-            var response = await _httpClient.PostAsJsonAsync(NewSessionEndpoint, new { }, cancellationToken);
-            if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogWarning(
-                    "Silo AI new-session request failed with status code {StatusCode}",
-                    (int)response.StatusCode);
-                return null;
-            }
+        var response = await _httpClient.PostAsJsonAsync(NewSessionEndpoint, new { }, cancellationToken);
 
-            var result = await response.Content.ReadFromJsonAsync<RagChatResponse>(cancellationToken: cancellationToken);
-            return result?.ConversationId;
-        }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Exception calling Silo AI new-session endpoint");
-            return null;
-        }
+        var result = await response.Content.ReadFromJsonAsync<RagChatResponse>(cancellationToken: cancellationToken);
+     
+        return result?.ConversationId;
     }
 
     public async Task<RagChatResponse?> SendAsync(Guid? conversationId, string message, CancellationToken cancellationToken, RagDocType? docType = null)
     {
-        var request = new RagChatRequest
+        RagChatRequest request = new()
         {
             ConversationId = conversationId,
             Message = message,
@@ -62,29 +44,20 @@ public class SiloAiClient : ISiloAiClient
             Key = _options.Key
         };
 
-        try
+        var response = await _httpClient.PostAsJsonAsync(SendEndpoint, request, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
         {
-            var response = await _httpClient.PostAsJsonAsync(SendEndpoint, request, cancellationToken);
-           
-            if (!response.IsSuccessStatusCode)
+            _logger.LogWarning(
+                "Silo AI request failed with status code {StatusCode}",
+                (int)response.StatusCode);
+
+            return new()
             {
-                _logger.LogWarning(
-                    "Silo AI request failed with status code {StatusCode}",
-                    (int)response.StatusCode);
-
-                return new RagChatResponse
-                {
-                    StatusCode = response.StatusCode
-                };
-            }
-
-            return await response.Content.ReadFromJsonAsync<RagChatResponse>(cancellationToken: cancellationToken);
+                StatusCode = response.StatusCode
+            };
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Exception calling Silo AI RAG chat endpoint");
 
-            return null;
-        }
+        return await response.Content.ReadFromJsonAsync<RagChatResponse>(cancellationToken: cancellationToken);
     }
 }

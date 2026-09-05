@@ -1,0 +1,42 @@
+@page "/sync/failures"
+@inherits SiloBasePage
+@namespace Silo.Pages.Sync
+
+<PageTitle>Sync Failures</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="padding:10px;">
+        <h5 class="card-title">Sync Failures</h5>
+    </div>
+
+    @if (Failures is not null)
+    {
+        <div class="card card-stats text-align-center col-md-12" style="margin-top:5px;padding:5px;">
+            <TelerikGrid Data="Failures"
+                         PageSize="10"
+                         Pageable="true"
+                         Sortable="true"
+                         Width="100%">
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetOpenSyncFailuresVm.SourceKey)" Title="Source Key" />
+                    <GridColumn Field="@nameof(GetOpenSyncFailuresVm.RowKey)" Title="Row Key" />
+                    <GridColumn Field="@nameof(GetOpenSyncFailuresVm.ErrorCategory)" Title="Category" />
+                    <GridColumn Field="@nameof(GetOpenSyncFailuresVm.ErrorMessage)" Title="Message" />
+                    <GridColumn Field="@nameof(GetOpenSyncFailuresVm.AttemptCount)" Title="Attempts" />
+                    <GridColumn Field="@nameof(GetOpenSyncFailuresVm.NextAttemptAt)" Title="Next Retry" />
+                    <GridTemplateColumn Title="Actions">
+                        <Template>
+                            <button class="btn btn-sm btn-primary" disabled="@IsRetrying" @onclick="async () => await OnRetryClick(context as GetOpenSyncFailuresVm)">Retry</button>
+                        </Template>
+                    </GridTemplateColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    }
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

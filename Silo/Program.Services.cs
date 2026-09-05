@@ -38,6 +38,8 @@ public static partial class Program
 
         services.AddInfrastructureWebServices(configuration);
 
+        services.AddScoped<SyncAdminApiClient>();
+
         services.AddAiModuleServices();
 
         services.AddOptions();

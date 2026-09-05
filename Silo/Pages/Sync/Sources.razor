@@ -1,0 +1,48 @@
+@page "/sync/sources"
+@inherits SiloBasePage
+@namespace Silo.Pages.Sync
+
+<PageTitle>Sync Sources</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="padding:10px;">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title">Sync Sources</h5>
+            <button class="btn btn-primary" @onclick="OnAddClick">
+                @TextResources.APP_StringKeys_Add
+            </button>
+        </div>
+    </div>
+
+    @if (Sources is not null)
+    {
+        <div class="card card-stats text-align-center col-md-12" style="margin-top:5px;padding:5px;">
+            <TelerikGrid Data="Sources"
+                         PageSize="10"
+                         Pageable="true"
+                         Sortable="true"
+                         Width="100%">
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetSyncSourcesVm.SourceKey)" Title="Source Key" />
+                    <GridColumn Field="@nameof(GetSyncSourcesVm.DisplayName)" Title="Display Name" />
+                    <GridColumn Field="@nameof(GetSyncSourcesVm.SourceType)" Title="Type" />
+                    <GridColumn Field="@nameof(GetSyncSourcesVm.IntervalSeconds)" Title="Interval (s)" />
+                    <GridColumn Field="@nameof(GetSyncSourcesVm.IsEnabled)" Title="Enabled" />
+                    <GridTemplateColumn Title="Actions">
+                        <Template>
+                            <button class="btn btn-sm btn-light" @onclick="async () => await OnEditClick(context as GetSyncSourcesVm)">@TextResources.APP_StringKeys_Edit</button>
+                            <button class="btn btn-sm btn-danger" @onclick="async () => await OnDeleteClick(context as GetSyncSourcesVm)">@TextResources.APP_StringKeys_Delete</button>
+                            <button class="btn btn-sm btn-info" @onclick="async () => await OnTestClick(context as GetSyncSourcesVm)">Test</button>
+                        </Template>
+                    </GridTemplateColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    }
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

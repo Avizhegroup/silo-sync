@@ -1,0 +1,38 @@
+@page "/sync/runs"
+@inherits SiloBasePage
+@namespace Silo.Pages.Sync
+
+<PageTitle>Sync Run History</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="padding:10px;">
+        <h5 class="card-title">Sync Run History</h5>
+    </div>
+
+    @if (Runs is not null)
+    {
+        <div class="card card-stats text-align-center col-md-12" style="margin-top:5px;padding:5px;">
+            <TelerikGrid Data="Runs"
+                         PageSize="10"
+                         Pageable="true"
+                         Sortable="true"
+                         Width="100%">
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetSyncRunHistoryVm.SourceKey)" Title="Source Key" />
+                    <GridColumn Field="@nameof(GetSyncRunHistoryVm.StartedAt)" Title="Started" />
+                    <GridColumn Field="@nameof(GetSyncRunHistoryVm.FinishedAt)" Title="Finished" />
+                    <GridColumn Field="@nameof(GetSyncRunHistoryVm.RowsFetched)" Title="Fetched" />
+                    <GridColumn Field="@nameof(GetSyncRunHistoryVm.RowsSucceeded)" Title="Succeeded" />
+                    <GridColumn Field="@nameof(GetSyncRunHistoryVm.RowsFailed)" Title="Failed" />
+                    <GridColumn Field="@nameof(GetSyncRunHistoryVm.Status)" Title="Status" />
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    }
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

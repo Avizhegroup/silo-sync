@@ -2,15 +2,42 @@
 
 namespace Silo.Sync.Core;
 
+/// <summary>
+/// Represents the ErrorCategorizer class.
+/// </summary>
 public static class ErrorCategorizer
 {
+    /// <summary>
+    /// Gets or sets the SyntaxError.
+    /// </summary>
     public const string SyntaxError = "SyntaxError";
+    /// <summary>
+    /// Gets or sets the Truncation.
+    /// </summary>
     public const string Truncation = "Truncation";
+    /// <summary>
+    /// Gets or sets the DuplicateKey.
+    /// </summary>
     public const string DuplicateKey = "DuplicateKey";
+    /// <summary>
+    /// Gets or sets the NotNullViolation.
+    /// </summary>
     public const string NotNullViolation = "NotNullViolation";
+    /// <summary>
+    /// Gets or sets the ConversionError.
+    /// </summary>
     public const string ConversionError = "ConversionError";
+    /// <summary>
+    /// Gets or sets the Timeout.
+    /// </summary>
     public const string Timeout = "Timeout";
+    /// <summary>
+    /// Gets or sets the Deadlock.
+    /// </summary>
     public const string Deadlock = "Deadlock";
+    /// <summary>
+    /// Gets or sets the Other.
+    /// </summary>
     public const string Other = "Other";
 
     public static string Categorize(Exception exception)

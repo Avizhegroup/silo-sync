@@ -7,6 +7,9 @@ using Silo.Sync.Core.Models;
 
 namespace Silo.Sync.Core.Fetching;
 
+/// <summary>
+/// Represents the SourceProductFetcher class.
+/// </summary>
 public sealed class SourceProductFetcher(ILogger<SourceProductFetcher> logger) : ISourceProductFetcher
 {
     public async Task<IReadOnlyList<ProductRow>> FetchAsync(SyncSourceConfigDto source, DateTime? checkpoint, CancellationToken cancellationToken = default)

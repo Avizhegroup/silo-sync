@@ -3,8 +3,14 @@ using Silo.Domains.Services;
 
 namespace Silo.Sync.Core.RunLogging;
 
+/// <summary>
+/// Represents the SyncRunLogger class.
+/// </summary>
 public sealed class SyncRunLogger(WmsApiContext context) : ISyncRunLogger
 {
+    /// <summary>
+    /// StartRunAsync operation.
+    /// </summary>
     public async Task<SyncRunLog> StartRunAsync(string sourceKey, CancellationToken cancellationToken = default)
     {
         var runLog = new SyncRunLog
@@ -20,6 +26,9 @@ public sealed class SyncRunLogger(WmsApiContext context) : ISyncRunLogger
         return runLog;
     }
 
+    /// <summary>
+    /// CompleteRunAsync operation.
+    /// </summary>
     public async Task CompleteRunAsync(SyncRunLog runLog, int rowsFetched, int rowsSucceeded, int rowsFailed, string status, string? errorSummary = null, CancellationToken cancellationToken = default)
     {
         runLog.RowsFetched = rowsFetched;

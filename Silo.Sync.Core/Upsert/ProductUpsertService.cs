@@ -5,8 +5,14 @@ using Silo.Sync.Core.Models;
 
 namespace Silo.Sync.Core.Upsert;
 
+/// <summary>
+/// Represents the ProductUpsertService class.
+/// </summary>
 public sealed class ProductUpsertService(ILogger<ProductUpsertService> logger) : IProductUpsertService
 {
+    /// <summary>
+    /// UpsertOneAsync operation.
+    /// </summary>
     public async Task<UpsertResult> UpsertOneAsync(SaveProductCommand command, string connectionString, CancellationToken cancellationToken = default)
     {
         var validationError = ValidateLengths(command);

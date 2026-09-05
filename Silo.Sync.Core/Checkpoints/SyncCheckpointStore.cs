@@ -4,8 +4,14 @@ using Silo.Domains.Services;
 
 namespace Silo.Sync.Core.Checkpoints;
 
+/// <summary>
+/// Represents the SyncCheckpointStore class.
+/// </summary>
 public sealed class SyncCheckpointStore(WmsApiContext context) : ISyncCheckpointStore
 {
+    /// <summary>
+    /// GetCheckpointAsync operation.
+    /// </summary>
     public async Task<DateTime?> GetCheckpointAsync(string sourceKey, CancellationToken cancellationToken = default)
     {
         var entity = await context.SyncCheckpoints
@@ -15,6 +21,9 @@ public sealed class SyncCheckpointStore(WmsApiContext context) : ISyncCheckpoint
         return entity?.LastCheckpointValue;
     }
 
+    /// <summary>
+    /// AdvanceCheckpointAsync operation.
+    /// </summary>
     public async Task AdvanceCheckpointAsync(string sourceKey, DateTime checkpointValue, CancellationToken cancellationToken = default)
     {
         var entity = await context.SyncCheckpoints

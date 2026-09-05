@@ -2,9 +2,15 @@
 
 namespace Silo.Sync.Core.Encryption;
 
+/// <summary>
+/// Represents the DataProtectionSyncConnectionStringProtector class.
+/// </summary>
 public sealed class DataProtectionSyncConnectionStringProtector(IDataProtector dataProtector)
     : ISyncConnectionStringProtector
 {
+    /// <summary>
+    /// Encrypt operation.
+    /// </summary>
     public string Encrypt(string plainText)
     {
         if (string.IsNullOrWhiteSpace(plainText))
@@ -15,6 +21,9 @@ public sealed class DataProtectionSyncConnectionStringProtector(IDataProtector d
         return Convert.ToBase64String(dataProtector.Protect(System.Text.Encoding.UTF8.GetBytes(plainText)));
     }
 
+    /// <summary>
+    /// Decrypt operation.
+    /// </summary>
     public string Decrypt(string cipherText)
     {
         if (string.IsNullOrWhiteSpace(cipherText))

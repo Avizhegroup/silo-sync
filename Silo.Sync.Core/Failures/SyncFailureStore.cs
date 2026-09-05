@@ -6,8 +6,14 @@ using Silo.Sync.Core.Retry;
 
 namespace Silo.Sync.Core.Failures;
 
+/// <summary>
+/// Represents the SyncFailureStore class.
+/// </summary>
 public sealed class SyncFailureStore(WmsApiContext context, IRetryScheduler retryScheduler) : ISyncFailureStore
 {
+    /// <summary>
+    /// RecordFailureAsync operation.
+    /// </summary>
     public async Task RecordFailureAsync(string sourceKey, string rowKey, string? rawPayload, UpsertResult result, int? runLogId, CancellationToken cancellationToken = default)
     {
         var failure = await context.SyncRowFailures
@@ -46,6 +52,9 @@ public sealed class SyncFailureStore(WmsApiContext context, IRetryScheduler retr
         await context.SaveChangesAsync(cancellationToken);
     }
 
+    /// <summary>
+    /// ResolveFailureAsync operation.
+    /// </summary>
     public async Task ResolveFailureAsync(string sourceKey, string rowKey, CancellationToken cancellationToken = default)
     {
         var failure = await context.SyncRowFailures
@@ -62,6 +71,9 @@ public sealed class SyncFailureStore(WmsApiContext context, IRetryScheduler retr
         await context.SaveChangesAsync(cancellationToken);
     }
 
+    /// <summary>
+    /// CanAutoRetryAsync operation.
+    /// </summary>
     public async Task<bool> CanAutoRetryAsync(string sourceKey, string rowKey, CancellationToken cancellationToken = default)
     {
         var failure = await context.SyncRowFailures

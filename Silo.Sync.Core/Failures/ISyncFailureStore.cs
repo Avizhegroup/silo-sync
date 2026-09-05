@@ -2,6 +2,9 @@
 
 namespace Silo.Sync.Core.Failures;
 
+/// <summary>
+/// Defines operations for ISyncFailureStore.
+/// </summary>
 public interface ISyncFailureStore
 {
     Task RecordFailureAsync(string sourceKey, string rowKey, string? rawPayload, UpsertResult result, int? runLogId, CancellationToken cancellationToken = default);

@@ -6,9 +6,15 @@ using Silo.Sync.Core.Models;
 
 namespace Silo.Sync.Core.Configuration;
 
+/// <summary>
+/// Represents the SyncSourceConfigProvider class.
+/// </summary>
 public sealed class SyncSourceConfigProvider(WmsApiContext context, ISyncConnectionStringProtector protector)
     : ISyncSourceConfigProvider
 {
+    /// <summary>
+    /// GetBySourceKeyAsync operation.
+    /// </summary>
     public async Task<SyncSourceConfigDto?> GetBySourceKeyAsync(string sourceKey, CancellationToken cancellationToken = default)
     {
         var entity = await context.SyncSourceConfigs

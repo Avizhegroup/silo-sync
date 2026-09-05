@@ -2,6 +2,9 @@
 
 namespace Silo.Sync.Core.RunLogging;
 
+/// <summary>
+/// Defines operations for ISyncRunLogger.
+/// </summary>
 public interface ISyncRunLogger
 {
     Task<SyncRunLog> StartRunAsync(string sourceKey, CancellationToken cancellationToken = default);

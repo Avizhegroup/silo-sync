@@ -10,6 +10,9 @@ using Silo.Sync.Core.Upsert;
 
 namespace Silo.Sync.Core;
 
+/// <summary>
+/// Represents the ProductSyncOrchestrator class.
+/// </summary>
 public sealed class ProductSyncOrchestrator(
     ILogger<ProductSyncOrchestrator> logger,
     IConfiguration configuration,
@@ -20,6 +23,9 @@ public sealed class ProductSyncOrchestrator(
     ISourceProductFetcher fetcher,
     IProductUpsertService upsertService)
 {
+    /// <summary>
+    /// RunAsync operation.
+    /// </summary>
     public async Task<SyncRunResult> RunAsync(string sourceKey, bool ignoreBackoff = false, CancellationToken cancellationToken = default)
     {
         var runLog = await runLogger.StartRunAsync(sourceKey, cancellationToken);
@@ -144,12 +150,30 @@ public sealed class ProductSyncOrchestrator(
         };
     }
 
+    /// <summary>
+    /// Represents the SyncRunResult record.
+    /// </summary>
     public sealed record SyncRunResult
     {
+        /// <summary>
+        /// Gets or sets the init.
+        /// </summary>
         public required bool Success { get; init; }
+        /// <summary>
+        /// RowsFetched operation.
+        /// </summary>
         public int RowsFetched { get; init; }
+        /// <summary>
+        /// RowsSucceeded operation.
+        /// </summary>
         public int RowsSucceeded { get; init; }
+        /// <summary>
+        /// RowsFailed operation.
+        /// </summary>
         public int RowsFailed { get; init; }
+        /// <summary>
+        /// Gets or sets the init.
+        /// </summary>
         public string? ErrorSummary { get; init; }
     }
 }

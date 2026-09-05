@@ -53,4 +53,46 @@ public sealed class SyncSourceConfigProvider(WmsApiContext context, ISyncConnect
             IsEnabled = entity.IsEnabled
         };
     }
+
+    public async Task<IReadOnlyList<SyncSourceConfigDto>> GetAllEnabledAsync(CancellationToken cancellationToken = default)
+    {
+        var entities = await context.SyncSourceConfigs
+            .AsNoTracking()
+            .Where(x => x.IsEnabled)
+            .OrderBy(x => x.SourceKey)
+            .ToListAsync(cancellationToken);
+
+        var results = new List<SyncSourceConfigDto>(entities.Count);
+        foreach (var entity in entities)
+        {
+            string? connectionString = null;
+            if (!string.IsNullOrWhiteSpace(entity.ConnectionStringEncrypted))
+            {
+                try
+                {
+                    connectionString = protector.Decrypt(entity.ConnectionStringEncrypted);
+                }
+                catch (CryptographicException)
+                {
+                    connectionString = null;
+                }
+            }
+
+            results.Add(new SyncSourceConfigDto
+            {
+                SourceKey = entity.SourceKey,
+                DisplayName = entity.DisplayName,
+                SourceType = entity.SourceType,
+                ConnectionString = connectionString,
+                Command = entity.Command,
+                FieldKey = entity.FieldKey,
+                FieldCheck = entity.FieldCheck,
+                FieldOrder = entity.FieldOrder,
+                IntervalSeconds = entity.IntervalSeconds,
+                IsEnabled = entity.IsEnabled
+            });
+        }
+
+        return results;
+    }
 }

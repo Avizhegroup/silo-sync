@@ -8,4 +8,6 @@ namespace Silo.Sync.Core.Configuration;
 public interface ISyncSourceConfigProvider
 {
     Task<SyncSourceConfigDto?> GetBySourceKeyAsync(string sourceKey, CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<SyncSourceConfigDto>> GetAllEnabledAsync(CancellationToken cancellationToken = default);
 }

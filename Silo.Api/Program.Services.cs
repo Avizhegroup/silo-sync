@@ -11,6 +11,7 @@ using Silo.Domains;
 using Silo.Domains.Android;
 using Silo.Identity.Server;
 using Silo.Infrastructure.Shared;
+using Silo.Sync.Core;
 
 namespace Silo.Api;
 public static partial class Program
@@ -60,6 +61,8 @@ public static partial class Program
         services.AddSingleton<IDataAccess, SqlDataAccess>();
 
         services.AddDomainsServices(configuration);
+
+        services.AddSyncCoreServices(configuration, registerDbContext: false);
 
         services.AddDomainsAndroidServices();
 

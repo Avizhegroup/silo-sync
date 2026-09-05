@@ -22,6 +22,7 @@
         <ProjectReference Include="..\Silo.Infrastructure.Shared\Silo.Infrastructure.Shared.csproj" />
         <ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
         <ProjectReference Include="..\Silo.Domains.Android\Silo.Domains.Android.csproj" />
+        <ProjectReference Include="..\Silo.Sync.Core\Silo.Sync.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -31,7 +32,7 @@
     </ItemGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <DocumentationFile>/bin/Silo.xml</DocumentationFile>
+        <DocumentationFile>$(OutputPath)Silo.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

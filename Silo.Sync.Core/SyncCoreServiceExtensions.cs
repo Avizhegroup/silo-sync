@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Silo.Domains.Services;
-using Silo.Sync.Core.Encryption;
 using Silo.Sync.Core.Checkpoints;
 using Silo.Sync.Core.Configuration;
 using Silo.Sync.Core.Encryption;
@@ -21,12 +20,17 @@ namespace Silo.Sync.Core;
 public static class SyncCoreServiceExtensions
 {
     /// <summary>
-    /// Adds Silo.Sync.Core services and the WmsApiContext to the service collection.
+    /// Adds Silo.Sync.Core services and optionally the WmsApiContext to the service collection.
     /// </summary>
-    public static IServiceCollection AddSyncCoreServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddSyncCoreServices(this IServiceCollection services, IConfiguration configuration, bool registerDbContext = true)
     {
-        services.AddDbContext<WmsApiContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("SqlDefaultConnectionString")));
+        if (registerDbContext)
+        {
+            services.AddDbContext<WmsApiContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("SqlDefaultConnectionString")));
+        }
+
+        services.AddDataProtection();
 
         services.AddSingleton<ISyncConnectionStringProtector>(sp =>
         {

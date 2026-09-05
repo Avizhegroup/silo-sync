@@ -1,8 +1,167 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <doc>
     <assembly>
         <name>Silo.Api</name>
     </assembly>
     <members>
+        <member name="M:Silo.Api.Business.NotificationBusiness.FindDataParameter(System.String,System.String,System.String)">
+            <summary>
+            Method to find data mining elements (DME) or sql parameters of a DME command. 
+            DME are strings that are enclosed in passed chars.
+            </summary>
+            <returns>List of found DMEs or parameters</returns>
+        </member>
+        <member name="M:Silo.Api.Business.WmsBusiness.SGetProductsInfoByEpcsForAction(System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String},System.String,System.String,System.String,System.String,System.Boolean,System.Boolean,System.Nullable{System.DateTime})">
+            <summary>
+            
+            </summary>
+            <param name="epcList"></param>
+            <param name="serialList"></param>
+            <param name="userToken"></param>
+            <param name="ActionId"></param>
+            <param name="ActionType"></param>
+            <param name="DeviceId"></param>
+            <param name="IsSaveUHF"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Silo.Api.Business.WmsBusiness.SSaveMovementAction2(System.String,System.String,System.String,System.String,System.String,System.String,Newtonsoft.Json.Linq.JToken,System.String,System.String,System.String,System.String,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.Int32},System.Nullable{System.DateTime})">
+            <summary>
+            این متد یا از طریق کد عملیات شناسایی، یا از طریق لیست تگ های قرائت شده 
+            و یا از طریق لیست سریال ها به همراه عملیات های مربوط به این سریال ها استفاده میشوند.
+            LogGateActionId: میتواند بدون مقدار باشد که با -1 پر میشود، میتواند با یک مقدار و میتواند با چند مقدار به کمک , از هم جدا شده اند پر شده باشد
+            </summary>
+            <param name="LogGateActionId"></param>
+            <param name="ActionSourceLocation"></param>
+            <param name="ActionDestinationLocation"></param>
+            <param name="GateCode"></param>
+            <param name="ActionUser"></param>
+            <param name="PMCode"></param>
+            <param name="ActionData"></param>
+            <param name="ActionDestinationZoneCode"></param>
+            <param name="MovementActionDesc"></param>
+            <param name="MovementActionDocumentId"></param>
+            <param name="MovementActionTruckCrossId"></param>
+            <param name="Serials"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Silo.Api.Business.WmsBusiness.SGetProduct(System.String)">
+            <summary>
+            0TagEpc  ,1ProductSerial,  2ProductCode,   3ProductCount,   4ProductName,  5ProductTypeTitle,  6ProductStatusTitle,7TagStatus,   8TagRegisterShamsiUnixDate,   9RegCode,10fld_ProductPropertyATitle,   11fld_ProductPropertyBTitle,  12ProductProperties,13ProductENTitle,   14ProductPackWeight,   15ProductPackVolume,16ProductCountInPack,  17ProductValue,   18ProductSize,19ProductUnit
+            /// </summary>
+            <param name="epc"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Silo.Api.Business.WmsBusiness.GetUnExitedTruck">
+            <summary>
+            Dont Delete method for windows app!
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Silo.Api.Controllers.v1.WmsController.Post(Silo.Application.Dto.ApiRequest)">
+            <summary>
+            Send request object for execute it's method from specified business
+            1- Sort parameters and their datatypes. Method is not sensetive to parameter name spell
+            2- Http status code meanings:
+            HttpStatusCode.ServiceUnavailable: SqlException
+            HttpStatusCode.BadGateway: SqliteException
+            HttpStatusCode.NotFound: MethodNotFoundException
+            HttpStatusCode.BadRequest: Unhandled Exception
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Silo.Api.Controllers.v1.WmsController.PostObject(Silo.Application.Dto.ApiRequest)">
+            <summary>
+            Send request object for execute it's method from specified business
+            1- Sort parameters and their datatypes. Method is not case-sensetiveS
+            2- Http status code meanings:
+            HttpStatusCode.ServiceUnavailable: SqlException
+            HttpStatusCode.BadGateway: SqliteException
+            HttpStatusCode.NotFound: MethodNotFoundException
+            HttpStatusCode.BadRequest: Unhandled Exception
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Silo.Api.Controllers.v1.WmsController.Notification(Silo.Application.Dto.ApiRequest)">
+            <summary>
+            Send request object for execute methods of Notification business 
+            1- Sort parameters and their datatypes. Method is not case-sensetive
+            2- Http status code meanings:
+            HttpStatusCode.ServiceUnavailable: SqlException
+            HttpStatusCode.BadGateway: SqliteException
+            HttpStatusCode.NotFound: MethodNotFoundException
+            HttpStatusCode.BadRequest: Unhandled Exception
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Silo.Api.Controllers.v2.WmsController.Document(Silo.Application.Dto.ApiRequest)">
+            <summary>
+            Send request object for execute methods of Document business 
+            1- Sort parameters and their datatypes. Method is not case-sensetive
+            2- Http status code meanings:
+            HttpStatusCode.ServiceUnavailable: SqlException
+            HttpStatusCode.BadGateway: SqliteException
+            HttpStatusCode.NotFound: MethodNotFoundException
+            HttpStatusCode.BadRequest: Unhandled Exception
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Silo.Api.Controllers.v2.WmsController.UploadExcelDynamic(Microsoft.AspNetCore.Http.IFormFile,System.String,System.String,System.String,System.Int32)">
+            <summary>
+            Upload Excel file for dynamic processing
+            </summary>
+            <param name="file">Excel file to upload</param>
+            <param name="type">Processing type for the uploaded file</param>
+            <param name="fileName">Original file name</param>
+            <param name="documentType">Type of document being processed</param>
+            <param name="documentCheckType">Document check type (default: 1)</param>
+            <returns>API response indicating success or failure</returns>
+        </member>
+        <member name="M:Silo.Api.Controllers.v2.WmsController.InputExcelFile(Microsoft.AspNetCore.Http.IFormFile,System.String,System.String)">
+            <summary>
+            Upload Excel file for processing
+            </summary>
+            <param name="file">Excel file to upload</param>
+            <param name="type">Processing type for the uploaded file</param>
+            <param name="userToken">User authentication token</param>
+            <returns>API response indicating success or failure</returns>
+        </member>
+        <member name="M:Silo.Api.Controllers.v2.WmsController.InputExcelFilePlace(Microsoft.AspNetCore.Http.IFormFile,System.String,System.String,System.String)">
+            <summary>
+            Upload Excel file for place processing
+            </summary>
+            <param name="file">Excel file to upload</param>
+            <param name="sourceWarehouseCode">Source warehouse code</param>
+            <param name="logGateActionId">Log gate action identifier</param>
+            <param name="userToken">User authentication token</param>
+            <returns>API response with serials or validation errors</returns>
+        </member>
+        <member name="T:Silo.Api.Filters.Swagger.IgnoreFormFileSchemaFilter">
+            <summary>
+            Schema filter to prevent Swashbuckle from generating schemas for types containing IFormFile.
+            This allows the FileUploadOperationFilter to handle these types properly.
+            </summary>
+        </member>
+        <member name="T:Silo.Api.Services.AiApiHttpClient">
+            <summary>
+            HTTP client that calls Silo.Api.AI endpoints.
+            The X-Api-Key header and base address are configured at registration time in Program.Services.cs.
+            </summary>
+        </member>
+        <member name="M:Silo.Api.Services.AiApiHttpClient.#ctor(System.Net.Http.HttpClient)">
+            <summary>
+            HTTP client that calls Silo.Api.AI endpoints.
+            The X-Api-Key header and base address are configured at registration time in Program.Services.cs.
+            </summary>
+        </member>
+        <member name="T:Silo.Base.Controllers.Base.SiloBaseController">
+            <summary>
+            In .net 7 because of json serializing cannot serialize utf-8 char at serialization
+            Skip and Use newtonsoft
+            </summary>
+        </member>
     </members>
 </doc>

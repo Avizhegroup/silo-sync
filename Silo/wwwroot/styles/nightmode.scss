@@ -8,12 +8,14 @@
 [data-bs-theme="dark"] {
 
     // ── Base surfaces ──────────────────────────────────────────────
+
     body {
         background: #1a1a2e !important;
         color: #e8eaed !important;
     }
 
     // ── Cards ──────────────────────────────────────────────────────
+
     .card {
         background-color: #252536 !important;
         border-color: #3a3a55 !important;
@@ -21,6 +23,7 @@
     }
 
     // ── Navbar / header ────────────────────────────────────────────
+
     .silo-navbar {
         background: #1e1e30 !important;
         border-bottom-color: #3a3a55 !important;
@@ -31,10 +34,10 @@
         color: #bdc1c6 !important;
     }
 
-    .nav-icon-btn:hover {
-        background: #2d2d44 !important;
-        color: #e8eaed !important;
-    }
+        .nav-icon-btn:hover {
+            background: #2d2d44 !important;
+            color: #e8eaed !important;
+        }
 
     .nav-icon-btn--active {
         background: #1a3050 !important;
@@ -70,6 +73,7 @@
     }
 
     // ── Mega-menu drawer ───────────────────────────────────────────
+
     .silo-menu-drawer {
         background: #1e1e30 !important;
         border-top-color: #3a3a55 !important;
@@ -85,10 +89,10 @@
         color: #bdc1c6 !important;
     }
 
-    .menu-cat-btn:hover {
-        background: #2d2d44 !important;
-        color: #e8eaed !important;
-    }
+        .menu-cat-btn:hover {
+            background: #2d2d44 !important;
+            color: #e8eaed !important;
+        }
 
     .menu-cat-btn--active {
         background: #1a3050 !important;
@@ -104,17 +108,18 @@
         color: #97DCE1 !important;
     }
 
-    .menu-nav-link:hover {
-        background: #2d2d44 !important;
-        color: #e8eaed !important;
-    }
+        .menu-nav-link:hover {
+            background: #2d2d44 !important;
+            color: #e8eaed !important;
+        }
 
-    .menu-nav-link.active {
-        background: #1a3050 !important;
-        color: #8ab4f8 !important;
-    }
+        .menu-nav-link.active {
+            background: #1a3050 !important;
+            color: #8ab4f8 !important;
+        }
 
     // ── Tables / grids ─────────────────────────────────────────────
+
     .thead {
         background-color: #1a3050 !important;
         color: #e8eaed !important;
@@ -131,6 +136,7 @@
     }
 
     // ── Telerik / Kendo overrides ──────────────────────────────────
+
     .k-grid {
         background-color: #1e1e30 !important;
         color: #e8eaed !important;
@@ -159,16 +165,16 @@
         background-color: #1a2030 !important;
     }
 
-    .k-grid tr:hover td,
-    .k-grid tr:hover .k-table-td {
-        background-color: #243050 !important;
+   .k-grid tr:hover td,
+   .k-grid tr:hover .k-table-td {
+       background-color: #243050 !important;
     }
 
-    .k-grid .k-pager {
-        background-color: #1e1e30 !important;
-        color: #bdc1c6 !important;
-        border-top-color: #3a3a55 !important;
-    }
+   .k-grid .k-pager {
+       background-color: #1e1e30 !important;
+       color: #bdc1c6 !important;
+       border-top-color: #3a3a55 !important;
+   }
 
     .k-listview-content {
         background-color: #1e2535 !important;
@@ -236,6 +242,7 @@
     }
 
     // ── Forms / Bootstrap inputs ───────────────────────────────────
+
     .form-control, .form-select {
         background-color: #2d2d44 !important;
         border-color: #4a4a66 !important;
@@ -253,6 +260,7 @@
     }
 
     // ── Modal ──────────────────────────────────────────────────────
+
     .modal-content {
         background-color: #252536 !important;
         border-color: #3a3a55 !important;
@@ -264,17 +272,27 @@
     }
 
     // ── Dividers / borders ─────────────────────────────────────────
+
     hr {
         border-color: #3a3a55 !important;
     }
 
-    .border-top    { border-top-color:    #3a3a55 !important; }
-    .border-bottom { border-bottom-color: #3a3a55 !important; }
+    .border-top {
+        border-top-color: #3a3a55 !important;
+    }
+
+    .border-bottom {
+        border-bottom-color: #3a3a55 !important;
+    }
 
     // ── Links ──────────────────────────────────────────────────────
-    a { color: #8ab4f8 !important; }
+
+    a {
+        color: #8ab4f8 !important;
+    }
 
     // ── Misc helpers ───────────────────────────────────────────────
+
     .div-bar-save {
         background-color: #1a3050 !important;
     }
@@ -285,6 +303,7 @@
     }
 
     // ── Scrollbars ─────────────────────────────────────────────────
+
     ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
@@ -300,7 +319,7 @@
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        background: #4a4a66;
+       background: #4a4a66;
     }
 
     // ── AppErrorBoundary ──────────────────────────────────────────────────────
@@ -347,5 +366,491 @@
         border-top-color: #3a3a55;
         color: #5f6368;
     }
-}
 
+    // ── ChatBot ──────────────────────────────────────────────────────
+
+    .chat-messages {
+        background-color: #1e1e30 !important;
+    }
+
+    .bot-message {
+        .message-content {
+            background-color: #252536 !important;
+            border-color: #3a3a55 !important;
+            color: #e8eaed !important;
+        }
+
+        .message-sender {
+            color: #97DCE1 !important;
+        }
+    }
+
+    .user-message {
+        .message-content {
+            background-color: #1a3050 !important;
+            border-color: #3a3a55 !important;
+            color: #e8eaed !important;
+        }
+
+        .message-sender {
+            color: #8ab4f8 !important;
+        }
+    }
+
+    .message-time {
+        color: #9aa0a6 !important;
+    }
+
+    .btn-copy-message {
+        color: #bdc1c6 !important;
+
+        &:hover {
+            background-color: #2d2d44 !important;
+            color: #e8eaed !important;
+        }
+    }
+
+    .chat-card {
+        background-color: #1a1a2e !important;
+
+        .card-header, .card-footer {
+            background-color: #1e1e30 !important;
+            border-color: #3a3a55 !important;
+        }
+    }
+
+    .chat-history-sidebar {
+        background-color: #1e1e30 !important;
+        border-right-color: #3a3a55 !important;
+
+        .history-item {
+            background-color: #252536 !important;
+            color: #e8eaed !important;
+
+            &:hover {
+                background-color: #2d2d44 !important;
+            }
+
+            &.active {
+                background-color: #1a3050 !important;
+                border-color: #8ab4f8 !important;
+            }
+        }
+    }
+
+    .chat-layout, .chat-main-container, .chat-container {
+        background-color: #1a1a2e !important;
+    }
+
+    .chat-card {
+        background-color: #1a1a2e !important;
+        border-color: #2d2d44 !important;
+
+        .card-body {
+            background-color: #161625 !important;
+        }
+
+        .card-header, .card-footer {
+            background-color: #1e1e30 !important;
+            border-color: #2d2d44 !important;
+        }
+    }
+
+    .chat-messages {
+        background-color: #202032 !important;
+        border: 1px solid #2d2d44 !important;
+        border-radius: 8px;
+    }
+
+    .chat-header {
+        color: #ffffff !important;
+    }
+
+    .chat-mode-dialog-body {
+        color: #e8eaed !important;
+
+        .chat-mode-label {
+            color: #bdc1c6 !important;
+        }
+    }
+
+    .k-radio-group,
+    .k-radio-item,
+    .k-radio-label {
+        color: #e8eaed !important;
+    }
+
+    .k-radio {
+        background-color: #2d2d44 !important;
+        border-color: #4a4a66 !important;
+
+        &:checked {
+            background-color: #ff5252 !important;
+            border-color: #ff5252 !important;
+        }
+    }
+
+    .chat-history-sidebar,
+    .chat-sidebar {
+        background-color: #1a1a2e !important;
+        border-right-color: #2d2d44 !important;
+        border-left-color: #2d2d44 !important;
+
+        .sidebar-header,
+        .chat-history-header,
+        h5, h6 {
+            color: #ffffff !important;
+            background-color: #1a1a2e !important;
+        }
+
+        .sidebar-body,
+        .history-list {
+            background-color: #1a1a2e !important;
+        }
+
+        .history-item {
+            background-color: #202032 !important;
+            border-color: #2d2d44 !important;
+            color: #e8eaed !important;
+
+            .history-title,
+            .conversation-title,
+            span, p {
+                color: #e8eaed !important;
+            }
+
+            .history-date,
+            .history-time {
+                color: #9aa0a6 !important;
+            }
+
+            .btn-delete,
+            i, svg {
+                color: #bdc1c6 !important;
+            }
+
+            &:hover {
+                background-color: #2a2a42 !important;
+            }
+
+            &.active {
+                background-color: #1e3a5f !important;
+                border-color: #8ab4f8 !important;
+
+                .history-title, span {
+                    color: #ffffff !important;
+                }
+            }
+        }
+    }
+
+    // ── ClockPicker Dark Mode ─────────────────────────────────────
+
+    .clockpicker-cls {
+        background-color: #2d2d44 !important;
+        color: #e8eaed !important;
+        border: 1px solid #4a4a66 !important;
+    }
+
+    input.clockpicker-cls {
+        background-color: #2d2d44 !important;
+        color: #e8eaed !important;
+        border-color: #4a4a66 !important;
+    }
+
+    .clockpicker-plate {
+        background-color: #252536 !important;
+        border: 1px solid #4a4a66 !important;
+        border-radius: 50% !important;
+    }
+
+    .clockpicker-tick {
+        color: #e8eaed !important;
+    }
+
+    .clockpicker-tick:hover {
+       background-color: #2d2d44 !important;
+       color: #ffffff !important;
+    }
+
+    .clockpicker-canvas-bg {
+        fill: #2d2d44 !important;
+    }
+
+    .clockpicker-canvas-fg {
+        fill: #97DCE1 !important;
+    }
+
+    .clockpicker-canvas line {
+        stroke: #97DCE1 !important;
+    }
+
+    .clockpicker-display {
+        background-color: #252536 !important;
+        color: #e8eaed !important;
+    }
+
+        .clockpicker-display .clockpicker-display-current {
+            color: #8ab4f8 !important;
+        }
+
+        .clockpicker-display .clockpicker-display-current-time {
+            color: #e8eaed !important;
+        }
+
+    .clockpicker-popover,
+    .clockpicker-popover .popover-title,
+    .clockpicker-popover .popover-content {
+        background-color: #252536 !important;
+        color: #e8eaed !important;
+        border-color: #3a3a55 !important;
+    }
+
+    .popover {
+        background-color: #252536 !important;
+        border-color: #3a3a55 !important;
+    }
+
+    .popover-title {
+        background-color: #252536 !important;
+        color: #e8eaed !important;
+        border-bottom-color: #3a3a55 !important;
+    }
+
+    .popover-content {
+        background-color: #252536 !important;
+    }
+
+    .clockpicker-popover .popover-title {
+        background: #252536 !important;
+        color: #e8eaed !important;
+    }
+
+    .clockpicker-popover button {
+        background-color: #1a3050 !important;
+        color: #e8eaed !important;
+        border-color: #3a3a55 !important;
+    }
+
+        .clockpicker-popover button:hover {
+            background-color: #243b5a !important;
+            color: #ffffff !important;
+        }
+
+    // ── Custom DatePicker ──────────────────────────────────────────
+
+    .date-picker-container .date-picker-input, input.date-picker-input,
+    .date-picker-input.input-search-span-lg.pointer {
+        background-color: #2d2d44 !important;
+        border: 1px solid #4a4a66 !important;
+        color: #e8eaed !important;
+    }
+
+    .date-picker-input::placeholder {
+        color: #9aa0a6 !important;
+    }
+
+    .date-picker {
+        background-color: #252536 !important;
+        color: #e8eaed !important;
+        border: 1px solid #3a3a55 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+    }
+
+        .date-picker .header {
+            color: #e8eaed !important;
+        }
+
+        .date-picker table,
+        .date-picker th,
+        .date-picker td {
+            background-color: transparent !important;
+            color: #e8eaed !important;
+        }
+
+        .date-picker thead th,
+        .date-picker th {
+            color: #9aa0a6 !important;
+        }
+
+        .date-picker td.date {
+            color: #e8eaed !important;
+            background-color: transparent !important;
+        }
+
+            .date-picker td.date:hover {
+                background-color: #2d2d44 !important;
+                color: #fff !important;
+            }
+
+            .date-picker td.date.today-day {
+                background-color: #1a3050 !important;
+                color: #8ab4f8 !important;
+                border-radius: 50%;
+            }
+
+            .date-picker td.date.other-month {
+                color: #6b7280 !important;
+            }
+
+    // ── Dark Mode for List Group ─────────────────────
+
+    .list-group,
+    .list-group .list-group-item {
+        background-color: #252536 !important;
+        color: #e8eaed !important;
+        border-color: #3a3a55 !important;
+    }
+
+    .list-group-item {
+        background-color: #252536 !important;
+        color: #e8eaed !important;
+    }
+
+    .list-group-item:hover {
+       background-color: #2d2d44 !important;
+       color: #e8eaed !important;
+    }
+
+   .list-group-item.active,
+   .list-group-item.active:hover {
+        background-color: #1a3050 !important;
+        color: #8ab4f8 !important;
+   }
+
+   .list-group-item .list-group-item {
+        background-color: #252536 !important;
+   }
+
+    // ── Truck Cross Stepper ───────────────────────────────────────
+
+    .tc-stepper {
+        background-color: transparent !important;
+
+        .tc-step {
+            background-color: #252536 !important;
+            border: 1px solid #3a3a55 !important;
+            color: #e8eaed !important;
+
+            .tc-step-icon,
+            .tc-step-label {
+                color: #e8eaed !important;
+            }
+
+            &:hover {
+                background-color: #2d2d44 !important;
+            }
+
+            &.active,
+            &.done {
+                background-color: #022415 !important;
+                border-color: #8ab4f8 !important;
+
+                .tc-step-icon,
+                .tc-step-label {
+                    color: #8ab4f8 !important;
+                }
+            }
+        }
+
+        .tc-step-divider {
+            color: #3a3a55 !important;
+        }
+    }
+
+    // ── Telerik TabStrip & Inner Forms Dark Mode ───────────────────
+
+    .k-tabstrip {
+        background-color: transparent !important;
+        border-color: #3a3a55 !important;
+
+        .k-tabstrip-items-wrapper {
+            background-color: #1e1e30 !important;
+            border-bottom-color: #3a3a55 !important;
+
+            .k-item {
+                background-color: #252536 !important;
+                color: #bdc1c6 !important;
+                border-color: #3a3a55 !important;
+
+                &:hover {
+                    background-color: #2d2d44 !important;
+                    color: #e8eaed !important;
+                }
+
+                &.k-active, &.k-selected {
+                    background-color: #1a3050 !important;
+                    color: #8ab4f8 !important;
+                    border-bottom-color: #8ab4f8 !important;
+                }
+            }
+        }
+
+        .k-tabstrip-content {
+            background-color: #252536 !important;
+            color: #e8eaed !important;
+            border-color: #3a3a55 !important;
+
+            &, & *, .tc-form-section, .card, div[class*="content"] {
+                background-color: #252536 !important;
+                color: #e8eaed !important;
+            }
+
+            .tc-form-section-header, .tc-form-section-title, h1, h2, h3, h4, h5, h6, label {
+                color: #e8eaed !important;
+
+                i, svg, .material-icons {
+                    color: #97DCE1 !important;
+                }
+            }
+        }
+    }
+
+    // ── Bootstrap Modal & Form Sections Dark Mode ────────────────
+
+    .modal-content {
+        background-color: #1e1e30 !important;
+        border-color: #3a3a55 !important;
+        color: #e8eaed !important;
+
+        .modal-header {
+            background-color: #252536 !important;
+            border-bottom-color: #3a3a55 !important;
+            color: #e8eaed !important;
+
+            .btn-close {
+                filter: invert(1) grayscale(100%) brightness(200%);
+            }
+        }
+
+        .modal-body {
+            background-color: #1e1e30 !important;
+        }
+
+        .modal-footer {
+            background-color: #252536 !important;
+            border-top-color: #3a3a55 !important;
+        }
+    }
+
+    // ── Global Custom Form Section Fix ───────────────────────────
+
+    .tc-form-section {
+        background-color: #252536 !important;
+        border-color: #3a3a55 !important;
+        color: #e8eaed !important;
+
+        .tc-form-section-title,
+        .tc-form-section-header,
+        label {
+            color: #e8eaed !important;
+        }
+
+            .tc-form-section-title i,
+            .tc-form-section-title svg,
+            .tc-form-section-header i,
+            .tc-form-section-header svg {
+                color: #8ab4f8 !important;
+            }
+    }
+}

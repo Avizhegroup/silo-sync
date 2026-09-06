@@ -1,5 +1,6 @@
-﻿using Silo.Application.Features;
-using Silo.Services;
+﻿using System.Net.Http;
+using Silo.Application.Features;
+using Silo.Infrastructure.Web;
 
 namespace Silo.Pages.Sync;
 
@@ -7,8 +8,13 @@ public partial class Sources
 {
     public bool IsLoading = true;
     public List<GetSyncSourcesVm> SourceList { get; set; } = new();
+    public CreateSyncSourceCommand Request { get; set; } = new();
+    public Modal SourceModal { get; set; } = null!;
+    public string SourceModalTitle { get; set; } = "Add Sync Source";
 
-    [Inject] public SyncAdminApiClient SyncClient { get; set; } = null!;
+    private int? _editingId;
+
+    [Inject] public RfidConnectApi Api { get; set; } = null!;
     [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
 
     protected override async Task SiloInitializer()
@@ -20,24 +26,79 @@ public partial class Sources
     private async Task LoadSourcesAsync()
     {
         IsLoading = true;
-        SourceList = await SyncClient.GetSourcesAsync();
+        var response = await Api.SendAsyncObjectByUri<ApiResponse<List<GetSyncSourcesVm>>>(HttpMethod.Get, "SyncAdmin/sources");
+        SourceList = response?.Value ?? new List<GetSyncSourcesVm>();
         IsLoading = false;
     }
 
-    private async Task OnAddClick()
+    private void OnAddClick()
     {
-        // Placeholder for add modal; minimal implementation for build
-        await JsRuntime.InvokeVoidAsync("alert", "Add source dialog not yet implemented.");
+        _editingId = null;
+        Request = new CreateSyncSourceCommand();
+        SourceModalTitle = "Add Sync Source";
+        SourceModal.Open(new());
     }
 
-    private async Task OnEditClick(GetSyncSourcesVm? source)
+    private void OnEditClick(GetSyncSourcesVm? source)
     {
         if (source is null)
         {
             return;
         }
 
-        await JsRuntime.InvokeVoidAsync("alert", "Edit source dialog not yet implemented.");
+        _editingId = source.Id;
+        Request = new CreateSyncSourceCommand
+        {
+            SourceKey = source.SourceKey,
+            DisplayName = source.DisplayName,
+            SourceType = source.SourceType,
+            Command = source.Command,
+            FieldKey = source.FieldKey,
+            FieldCheck = source.FieldCheck,
+            FieldOrder = source.FieldOrder,
+            IntervalSeconds = source.IntervalSeconds ?? 60,
+            IsEnabled = source.IsEnabled,
+            ConnectionString = null
+        };
+        SourceModalTitle = "Edit Sync Source";
+        SourceModal.Open(new());
+    }
+
+    private async Task OnSaveSubmit()
+    {
+        IsLoading = true;
+
+        if (_editingId.HasValue)
+        {
+            var update = new UpdateSyncSourceCommand
+            {
+                Id = _editingId.Value,
+                SourceKey = Request.SourceKey,
+                DisplayName = Request.DisplayName,
+                SourceType = Request.SourceType,
+                Command = Request.Command,
+                FieldKey = Request.FieldKey,
+                FieldCheck = Request.FieldCheck,
+                FieldOrder = Request.FieldOrder,
+                IntervalSeconds = Request.IntervalSeconds,
+                IsEnabled = Request.IsEnabled,
+                ConnectionString = Request.ConnectionString
+            };
+            await Api.SendAsyncObjectByUri<ApiResponse<UpdateSyncSourceVm>>(HttpMethod.Put, "SyncAdmin/sources/" + _editingId.Value, update);
+        }
+        else
+        {
+            await Api.SendAsyncObjectByUri<ApiResponse<CreateSyncSourceVm>>(HttpMethod.Post, "SyncAdmin/sources", Request);
+        }
+
+        await SourceModal.Close(new());
+        await LoadSourcesAsync();
+        IsLoading = false;
+    }
+
+    private async Task OnCancelClick()
+    {
+        await SourceModal.Close(new());
     }
 
     private async Task OnDeleteClick(GetSyncSourcesVm? source)
@@ -47,8 +108,10 @@ public partial class Sources
             return;
         }
 
-        await SyncClient.DeleteSourceAsync(source.Id);
+        IsLoading = true;
+        await Api.SendAsyncObjectByUri<ApiResponse<DeleteSyncSourceVm>>(HttpMethod.Delete, "SyncAdmin/sources/" + source.Id, new DeleteSyncSourceCommand { Id = source.Id });
         await LoadSourcesAsync();
+        IsLoading = false;
     }
 
     private async Task OnTestClick(GetSyncSourcesVm? source)
@@ -59,12 +122,26 @@ public partial class Sources
         }
 
         IsLoading = true;
-        var result = await SyncClient.TestSourceAsync(source.Id);
+        var result = await Api.SendAsyncObjectByUri<ApiResponse<TestSyncSourceQueryVm>>(HttpMethod.Post, $"SyncAdmin/sources/{source.Id}/test-query", new TestSyncSourceQueryCommand { Id = source.Id });
         IsLoading = false;
 
-        var message = result.Success
-            ? $"Test succeeded. Columns: {string.Join(", ", result.Columns)}"
-            : $"Test failed: {result.ErrorMessage}";
+        var message = result?.Value?.Success == true
+            ? $"Test succeeded. Columns: {string.Join(", ", result.Value.Columns ?? new List<string>())}"
+            : $"Test failed: {result?.Value?.ErrorMessage ?? result?.Message}";
         await JsRuntime.InvokeVoidAsync("alert", message);
+    }
+
+    private async Task OnToggleEnabledClick(GetSyncSourcesVm? source)
+    {
+        if (source is null)
+        {
+            return;
+        }
+
+        IsLoading = true;
+        var action = source.IsEnabled ? "disable" : "enable";
+        await Api.SendAsyncObjectByUri<ApiResponse<EnableDisableSyncSourceVm>>(HttpMethod.Post, $"SyncAdmin/sources/{source.Id}/{action}");
+        await LoadSourcesAsync();
+        IsLoading = false;
     }
 }

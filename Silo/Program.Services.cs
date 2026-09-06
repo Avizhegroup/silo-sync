@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.ResponseCompression;
 using Silo.Modules.Ai;
 using Silo.Profiles;
-using Silo.Services;
 using Microsoft.FeatureManagement;
 
 namespace Silo;
@@ -38,8 +37,6 @@ public static partial class Program
         services.AddAuthenticationCore();
 
         services.AddInfrastructureWebServices(configuration);
-
-        services.AddScoped<SyncAdminApiClient>();
 
         services.AddAiModuleServices();
 

@@ -1,18 +1,31 @@
 @page "/sync/runs"
 @inherits SiloBasePage
 @namespace Silo.Pages.Sync
+@using System.Net.Http
 
 <PageTitle>Sync Run History</PageTitle>
 
 <div class="row col-md-12">
     <div class="card card-stats col-md-12 text-align-center" style="padding:10px;">
-        <h5 class="card-title">Sync Run History</h5>
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <h5 class="card-title">Sync Run History</h5>
+            <div class="d-flex align-items-center flex-wrap">
+                <label class="mr-2">Source Key:</label>
+                <TelerikTextBox @bind-Value="Filter.SourceKey" Class="form-control mr-2" Width="180px" />
+                <label class="mr-2">From:</label>
+                <TelerikDatePicker @bind-Value="Filter.From" Class="mr-2" Width="160px" />
+                <label class="mr-2">To:</label>
+                <TelerikDatePicker @bind-Value="Filter.To" Class="mr-2" Width="160px" />
+                <button class="btn btn-primary" @onclick="OnFilterClick">@TextResources.APP_StringKeys_Filter</button>
+                <button class="btn btn-warning ml-2" @onclick="OnClearClick">@TextResources.APP_StringKeys_Clear</button>
+            </div>
+        </div>
     </div>
 
-    @if (Runs is not null)
+    @if (RunList is not null)
     {
         <div class="card card-stats text-align-center col-md-12" style="margin-top:5px;padding:5px;">
-            <TelerikGrid Data="Runs"
+            <TelerikGrid Data="RunList"
                          PageSize="10"
                          Pageable="true"
                          Sortable="true"
@@ -25,6 +38,7 @@
                     <GridColumn Field="@nameof(GetSyncRunHistoryVm.RowsSucceeded)" Title="Succeeded" />
                     <GridColumn Field="@nameof(GetSyncRunHistoryVm.RowsFailed)" Title="Failed" />
                     <GridColumn Field="@nameof(GetSyncRunHistoryVm.Status)" Title="Status" />
+                    <GridColumn Field="@nameof(GetSyncRunHistoryVm.ErrorSummary)" Title="Error Summary" />
                 </GridColumns>
             </TelerikGrid>
         </div>

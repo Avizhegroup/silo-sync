@@ -81,7 +81,7 @@
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
     <PackageVersion Include="System.IO.Ports" Version="$(AspNetCoreVersion)" />
     <PackageVersion Include="System.Management" Version="$(AspNetCoreVersion)" />
-    <PackageVersion Include="System.Text.Json" Version="10.0.3" />
+    <PackageVersion Include="System.Text.Json" Version="10.0.4" />
     <PackageVersion Include="xunit" Version="2.9.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
     <PackageVersion Include="Telerik.UI.for.Blazor" Version="9.0.0" />

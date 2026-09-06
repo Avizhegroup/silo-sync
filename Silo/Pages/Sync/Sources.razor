@@ -1,0 +1,110 @@
+@page "/sync/sources"
+@inherits SiloBasePage
+@namespace Silo.Pages.Sync
+@using System.Net.Http
+
+<PageTitle>Sync Sources</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats col-md-12 text-align-center" style="padding:10px;">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title">Sync Sources</h5>
+            <button class="btn btn-primary" @onclick="OnAddClick">
+                @TextResources.APP_StringKeys_Add
+            </button>
+        </div>
+    </div>
+
+    @if (SourceList is not null)
+    {
+        <div class="card card-stats text-align-center col-md-12" style="margin-top:5px;padding:5px;">
+            <TelerikGrid Data="SourceList"
+                         PageSize="10"
+                         Pageable="true"
+                         Sortable="true"
+                         Width="100%">
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetSyncSourcesVm.SourceKey)" Title="Source Key" />
+                    <GridColumn Field="@nameof(GetSyncSourcesVm.DisplayName)" Title="Display Name" />
+                    <GridColumn Field="@nameof(GetSyncSourcesVm.SourceType)" Title="Type" />
+                    <GridColumn Field="@nameof(GetSyncSourcesVm.IntervalSeconds)" Title="Interval (s)" />
+                    <GridColumn Field="@nameof(GetSyncSourcesVm.IsEnabled)" Title="Enabled" />
+                    <GridColumn Title="Actions">
+                        <Template>
+                            @{
+                                var item = context as GetSyncSourcesVm;
+                                <button class="btn btn-sm btn-light" @onclick="() => OnEditClick(item)">@TextResources.APP_StringKeys_Edit</button>
+                                <button class="btn btn-sm btn-danger" @onclick="async () => await OnDeleteClick(item)">@TextResources.APP_StringKeys_Delete</button>
+                                <button class="btn btn-sm btn-info" @onclick="async () => await OnTestClick(item)">Test</button>
+                                <button class="btn btn-sm @(item?.IsEnabled == true ? "btn-warning" : "btn-success")" @onclick="async () => await OnToggleEnabledClick(item)">
+                                    @(item?.IsEnabled == true ? "Disable" : "Enable")
+                                </button>
+                            }
+                        </Template>
+                    </GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    }
+</div>
+
+<Modal Buttons="ModalButtons.No"
+       @ref="SourceModal"
+       ModalTitle="@SourceModalTitle"
+       Size="ModalSize.Large">
+    <ModalBodyContentHtml>
+        <EditForm Model="Request" OnValidSubmit="OnSaveSubmit">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Source Key</label>
+                <TelerikTextBox @bind-Value="Request.SourceKey" Class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Display Name</label>
+                <TelerikTextBox @bind-Value="Request.DisplayName" Class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Type</label>
+                <TelerikTextBox @bind-Value="Request.SourceType" Class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Command</label>
+                <TelerikTextBox @bind-Value="Request.Command" Class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Key Field</label>
+                <TelerikTextBox @bind-Value="Request.FieldKey" Class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Check Field</label>
+                <TelerikTextBox @bind-Value="Request.FieldCheck" Class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Order Field</label>
+                <TelerikTextBox @bind-Value="Request.FieldOrder" Class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Interval (seconds)</label>
+                <TelerikNumericTextBox @bind-Value="Request.IntervalSeconds" Class="form-control" />
+            </div>
+            <div class="form-group">
+                <TelerikCheckBox @bind-Value="Request.IsEnabled" />
+                <label>Enabled</label>
+            </div>
+            <div class="form-group">
+                <label>Connection String</label>
+                <TelerikTextBox @bind-Value="Request.ConnectionString" Class="form-control" />
+            </div>
+            <ModalFooterHtmlWhitoutCloseBtn>
+                <button type="submit" class="btn btn-primary">@TextResources.APP_StringKeys_Save</button>
+                <button type="button" class="btn btn-secondary" @onclick="OnCancelClick">Cancel</button>
+            </ModalFooterHtmlWhitoutCloseBtn>
+        </EditForm>
+    </ModalBodyContentHtml>
+</Modal>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

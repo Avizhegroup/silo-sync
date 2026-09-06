@@ -4,7 +4,7 @@
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="AutoMapper" Version="15.1.0" />
+    <PackageVersion Include="AutoMapper" Version="15.1.1" />
     <PackageVersion Include="BuildBundlerMinifier2022" Version="2.9.11" />
     <PackageVersion Include="BuildWebCompiler2022" Version="1.14.15" />
     <PackageVersion Include="ClosedXML" Version="0.105.0" />
@@ -48,14 +48,16 @@
     <PackageVersion Include="Microsoft.Extensions.Caching.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="$(AspNetCoreVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.WindowsServices" Version="$(AspNetCoreVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Http" Version="$(AspNetCoreVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Identity.Core" Version="$(AspNetCoreVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Identity.Stores" Version="$(AspNetCoreVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="$(AspNetCoreVersion)" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="$(AspNetCoreVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Primitives" Version="10.0.0" />
     <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.4.0" />
     <PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.14.0" />
     <PackageVersion Include="Microsoft.JSInterop" Version="$(AspNetCoreVersion)" />

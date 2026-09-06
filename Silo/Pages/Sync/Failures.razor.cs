@@ -27,7 +27,7 @@ public partial class Failures
     {
         IsLoading = true;
         var status = SelectedStatus == "All" ? null : SelectedStatus;
-        var response = await Api.SendAsyncObjectByUri<ApiResponse<List<GetOpenSyncFailuresVm>>>(HttpMethod.Get
+        var response = await Api.SendAsyncObjectByUri<List<GetOpenSyncFailuresVm>>(HttpMethod.Get
             , $"SyncAdmin/failures?status={Uri.EscapeDataString(status ?? "Pending")}");
         FailureList = response?.Value ?? new List<GetOpenSyncFailuresVm>();
         SelectedFailures = new List<GetOpenSyncFailuresVm>();
@@ -47,7 +47,7 @@ public partial class Failures
         }
 
         IsRetrying = true;
-        var result = await Api.SendAsyncObjectByUri<ApiResponse<RetrySyncRowFailureVm>>(HttpMethod.Post
+        var result = await Api.SendAsyncObjectByUri<RetrySyncRowFailureVm>(HttpMethod.Post
             , $"SyncAdmin/failures/{failure.Id}/retry");
         IsRetrying = false;
 
@@ -57,7 +57,7 @@ public partial class Failures
         }
         else
         {
-            await JsRuntime.InvokeVoidAsync("alert", $"Retry failed: {result?.Value?.ErrorMessage ?? result?.Message}");
+            await JsRuntime.InvokeVoidAsync("alert", $"Retry failed: {result?.Value?.ErrorMessage ?? result?.Messages?.FirstOrDefault()}");
             await LoadFailuresAsync();
         }
     }
@@ -72,7 +72,7 @@ public partial class Failures
         IsRetrying = true;
         foreach (var failure in SelectedFailures)
         {
-            await Api.SendAsyncObjectByUri<ApiResponse<RetrySyncRowFailureVm>>(HttpMethod.Post
+            await Api.SendAsyncObjectByUri<RetrySyncRowFailureVm>(HttpMethod.Post
                 , $"SyncAdmin/failures/{failure.Id}/retry");
         }
         IsRetrying = false;

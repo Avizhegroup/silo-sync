@@ -42,7 +42,7 @@ public partial class RunHistory
             uri += "?" + string.Join("&", query);
         }
 
-        var response = await Api.SendAsyncObjectByUri<ApiResponse<List<GetSyncRunHistoryVm>>>(HttpMethod.Get, uri);
+        var response = await Api.SendAsyncObjectByUri<List<GetSyncRunHistoryVm>>(HttpMethod.Get, uri);
         RunList = response?.Value ?? new List<GetSyncRunHistoryVm>();
         IsLoading = false;
     }

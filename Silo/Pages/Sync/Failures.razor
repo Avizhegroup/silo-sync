@@ -16,7 +16,7 @@
                                      Width="160px"
                                      Class="mr-2">
                 </TelerikDropDownList>
-                <button class="btn btn-primary" @onclick="OnFilterClick">@TextResources.APP_StringKeys_Filter</button>
+                <button class="btn btn-primary" @onclick="OnFilterClick">Filter</button>
                 <button class="btn btn-success ml-2" disabled="@IsRetrying" @onclick="OnBulkRetryClick">Bulk Retry</button>
             </div>
         </div>
@@ -45,11 +45,8 @@
                     <GridColumn Field="@nameof(GetOpenSyncFailuresVm.NextAttemptAt)" Title="Next Retry" />
                     <GridColumn Field="@nameof(GetOpenSyncFailuresVm.Status)" Title="Status" />
                     <GridTemplateColumn Title="Actions">
-                        <Template>
-                            @{
-                                var item = context as GetOpenSyncFailuresVm;
-                                <button class="btn btn-sm btn-primary" disabled="@IsRetrying" @onclick="async () => await OnRetryClick(item)">Retry</button>
-                            }
+                        <Template Context="failure">
+                            <button class="btn btn-sm btn-primary" disabled="@IsRetrying" @onclick="async () => await OnRetryClick(failure as GetOpenSyncFailuresVm)">Retry</button>
                         </Template>
                     </GridTemplateColumn>
                 </GridColumns>

@@ -26,7 +26,7 @@ public partial class Sources
     private async Task LoadSourcesAsync()
     {
         IsLoading = true;
-        var response = await Api.SendAsyncObjectByUri<ApiResponse<List<GetSyncSourcesVm>>>(HttpMethod.Get, "SyncAdmin/sources");
+        var response = await Api.SendAsyncObjectByUri<List<GetSyncSourcesVm>>(HttpMethod.Get, "SyncAdmin/sources");
         SourceList = response?.Value ?? new List<GetSyncSourcesVm>();
         IsLoading = false;
     }
@@ -84,21 +84,21 @@ public partial class Sources
                 IsEnabled = Request.IsEnabled,
                 ConnectionString = Request.ConnectionString
             };
-            await Api.SendAsyncObjectByUri<ApiResponse<UpdateSyncSourceVm>>(HttpMethod.Put, "SyncAdmin/sources/" + _editingId.Value, update);
+            await Api.SendAsyncObjectByUri<UpdateSyncSourceVm>(HttpMethod.Put, "SyncAdmin/sources/" + _editingId.Value, update);
         }
         else
         {
-            await Api.SendAsyncObjectByUri<ApiResponse<CreateSyncSourceVm>>(HttpMethod.Post, "SyncAdmin/sources", Request);
+            await Api.SendAsyncObjectByUri<CreateSyncSourceVm>(HttpMethod.Post, "SyncAdmin/sources", Request);
         }
 
-        await SourceModal.Close(new());
+        SourceModal.Close(new());
         await LoadSourcesAsync();
         IsLoading = false;
     }
 
-    private async Task OnCancelClick()
+    private void OnCancelClick()
     {
-        await SourceModal.Close(new());
+        SourceModal.Close(new());
     }
 
     private async Task OnDeleteClick(GetSyncSourcesVm? source)
@@ -109,7 +109,7 @@ public partial class Sources
         }
 
         IsLoading = true;
-        await Api.SendAsyncObjectByUri<ApiResponse<DeleteSyncSourceVm>>(HttpMethod.Delete, "SyncAdmin/sources/" + source.Id, new DeleteSyncSourceCommand { Id = source.Id });
+        await Api.SendAsyncObjectByUri<DeleteSyncSourceVm>(HttpMethod.Delete, "SyncAdmin/sources/" + source.Id, new DeleteSyncSourceCommand { Id = source.Id });
         await LoadSourcesAsync();
         IsLoading = false;
     }
@@ -122,12 +122,13 @@ public partial class Sources
         }
 
         IsLoading = true;
-        var result = await Api.SendAsyncObjectByUri<ApiResponse<TestSyncSourceQueryVm>>(HttpMethod.Post, $"SyncAdmin/sources/{source.Id}/test-query", new TestSyncSourceQueryCommand { Id = source.Id });
+        var response = await Api.SendAsyncObjectByUri<TestSyncSourceQueryVm>(HttpMethod.Post, $"SyncAdmin/sources/{source.Id}/test-query", new TestSyncSourceQueryCommand { Id = source.Id });
         IsLoading = false;
 
-        var message = result?.Value?.Success == true
-            ? $"Test succeeded. Columns: {string.Join(", ", result.Value.Columns ?? new List<string>())}"
-            : $"Test failed: {result?.Value?.ErrorMessage ?? result?.Message}";
+        var result = response?.Value;
+        var message = result?.Success == true
+            ? $"Test succeeded. Columns: {string.Join(", ", result.Columns ?? new List<string>())}"
+            : $"Test failed: {result?.ErrorMessage ?? response?.Messages?.FirstOrDefault()}";
         await JsRuntime.InvokeVoidAsync("alert", message);
     }
 
@@ -140,7 +141,7 @@ public partial class Sources
 
         IsLoading = true;
         var action = source.IsEnabled ? "disable" : "enable";
-        await Api.SendAsyncObjectByUri<ApiResponse<EnableDisableSyncSourceVm>>(HttpMethod.Post, $"SyncAdmin/sources/{source.Id}/{action}");
+        await Api.SendAsyncObjectByUri<EnableDisableSyncSourceVm>(HttpMethod.Post, $"SyncAdmin/sources/{source.Id}/{action}");
         await LoadSourcesAsync();
         IsLoading = false;
     }

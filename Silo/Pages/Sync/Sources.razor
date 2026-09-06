@@ -28,13 +28,13 @@
                     <GridColumn Field="@nameof(GetSyncSourcesVm.SourceType)" Title="Type" />
                     <GridColumn Field="@nameof(GetSyncSourcesVm.IntervalSeconds)" Title="Interval (s)" />
                     <GridColumn Field="@nameof(GetSyncSourcesVm.IsEnabled)" Title="Enabled" />
-                    <GridTemplateColumn Title="Actions">
+                    <GridColumn Title="Actions">
                         <Template>
                             <button class="btn btn-sm btn-light" @onclick="async () => await OnEditClick(context as GetSyncSourcesVm)">@TextResources.APP_StringKeys_Edit</button>
                             <button class="btn btn-sm btn-danger" @onclick="async () => await OnDeleteClick(context as GetSyncSourcesVm)">@TextResources.APP_StringKeys_Delete</button>
                             <button class="btn btn-sm btn-info" @onclick="async () => await OnTestClick(context as GetSyncSourcesVm)">Test</button>
                         </Template>
-                    </GridTemplateColumn>
+                    </GridColumn>
                 </GridColumns>
             </TelerikGrid>
         </div>

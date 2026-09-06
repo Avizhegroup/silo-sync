@@ -125,7 +125,7 @@ public static partial class Program
         services.AddHttpClient(SiloAiClient.HttpClientName, client =>
         {
             client.BaseAddress = new Uri(siloAiOptions.BaseUrl.HasValue() ? siloAiOptions.BaseUrl : "http://localhost:5100/");
-            client.Timeout = TimeSpan.FromSeconds(30);
+            client.Timeout = TimeSpan.FromSeconds(60);
 
             if (siloAiOptions.ApiKey.HasValue())
             {

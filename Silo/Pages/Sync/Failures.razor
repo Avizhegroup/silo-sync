@@ -44,11 +44,11 @@
                     <GridColumn Field="@nameof(GetOpenSyncFailuresVm.AttemptCount)" Title="Attempts" />
                     <GridColumn Field="@nameof(GetOpenSyncFailuresVm.NextAttemptAt)" Title="Next Retry" />
                     <GridColumn Field="@nameof(GetOpenSyncFailuresVm.Status)" Title="Status" />
-                    <GridTemplateColumn Title="Actions">
+                    <GridColumn Title="Actions">
                         <Template Context="failure">
                             <button class="btn btn-sm btn-primary" disabled="@IsRetrying" @onclick="async () => await OnRetryClick(failure as GetOpenSyncFailuresVm)">Retry</button>
                         </Template>
-                    </GridTemplateColumn>
+                    </GridColumn>
                 </GridColumns>
             </TelerikGrid>
         </div>

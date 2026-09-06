@@ -7,7 +7,7 @@ public partial class Failures
 {
     public bool IsLoading = true;
     public bool IsRetrying = false;
-    public List<GetOpenSyncFailuresVm> Failures { get; set; } = new();
+    public List<GetOpenSyncFailuresVm> FailureList { get; set; } = new();
 
     [Inject] public SyncAdminApiClient SyncClient { get; set; } = null!;
     [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
@@ -21,7 +21,7 @@ public partial class Failures
     private async Task LoadFailuresAsync()
     {
         IsLoading = true;
-        Failures = await SyncClient.GetFailuresAsync("Pending");
+        FailureList = await SyncClient.GetFailuresAsync("Pending");
         IsLoading = false;
     }
 
@@ -44,7 +44,7 @@ public partial class Failures
         {
             await JsRuntime.InvokeVoidAsync("alert", $"Retry failed: {result.ErrorMessage}");
             var updated = await SyncClient.GetFailuresAsync("Pending");
-            Failures = updated;
+            FailureList = updated;
         }
     }
 }

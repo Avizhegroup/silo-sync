@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.ResponseCompression;
 using Silo.Modules.Ai;
 using Silo.Profiles;
+using Silo.Services;
 using Microsoft.FeatureManagement;
 
 namespace Silo;

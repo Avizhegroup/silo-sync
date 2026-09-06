@@ -9,10 +9,10 @@
         <h5 class="card-title">Sync Failures</h5>
     </div>
 
-    @if (Failures is not null)
+    @if (FailureList is not null)
     {
         <div class="card card-stats text-align-center col-md-12" style="margin-top:5px;padding:5px;">
-            <TelerikGrid Data="Failures"
+            <TelerikGrid Data="FailureList"
                          PageSize="10"
                          Pageable="true"
                          Sortable="true"

@@ -6,7 +6,7 @@ namespace Silo.Pages.Sync;
 public partial class Sources
 {
     public bool IsLoading = true;
-    public List<GetSyncSourcesVm> Sources { get; set; } = new();
+    public List<GetSyncSourcesVm> SourceList { get; set; } = new();
 
     [Inject] public SyncAdminApiClient SyncClient { get; set; } = null!;
     [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
@@ -20,7 +20,7 @@ public partial class Sources
     private async Task LoadSourcesAsync()
     {
         IsLoading = true;
-        Sources = await SyncClient.GetSourcesAsync();
+        SourceList = await SyncClient.GetSourcesAsync();
         IsLoading = false;
     }
 

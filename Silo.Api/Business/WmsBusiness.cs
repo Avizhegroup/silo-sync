@@ -2647,40 +2647,47 @@ WHERE        (tbl_Tags.TagEpc IN ({string.Join(", ", epcList.ToArray())} )) ";
         // CheckResultType =0 >>> Ignore   
         // CheckResultType =1 >>> True   
         // CheckResultType =2 >>> False   
-        if ((epcList is not null && epcList.Count > 0) || (serialList is not null && serialList.Count > 0))
+        if ((epcList is not null && epcList.Count > 0) || (serialList is not null && serialList.Count > 0) || ActionType == "_SHOW_GATE_READ_EPCS_")
         {
+            var where = string.Empty;
 
-            foreach(string _tempEpcForLengthCheck in epcList)
+            if ((epcList is not null && epcList.Count > 0) || (serialList is not null && serialList.Count > 0))
             {
-                if (_tempEpcForLengthCheck.Length > 24)
+
+                foreach (string _tempEpcForLengthCheck in epcList)
                 {
-                    _tempEpcForLengthCheck.Replace(_tempEpcForLengthCheck,_tempEpcForLengthCheck.Substring(0, 24));
+                    if (_tempEpcForLengthCheck.Length > 24)
+                    {
+                        _tempEpcForLengthCheck.Replace(_tempEpcForLengthCheck, _tempEpcForLengthCheck.Substring(0, 24));
+                    }
+                }
+                if (epcList is not null && epcList.Count > 0)
+                {
+                    where = @$"((tbl_Tags.TagEpc IN ({((epcList != null) ? "'" + string.Join("','", epcList.ToArray()) + "'" : "''")})) ) OR (tbl_Tags.TagEpc2 IN ({((epcList != null) ? "'" + string.Join("','", epcList.ToArray()) + "'" : "''")})) and (tbl_Tags.TagEpc <>'')";
+                }
+                else if (serialList is not null && serialList.Any() && serialList[0] != "")
+                {
+                    where = @$"(tbl_Tags.ProductSerial IN ({((serialList != null) ? "'" + string.Join("','", serialList.ToArray()) + "'" : "''")}))";
+                }
+
+                if (GetProductByParentEPC)
+                {
+                    if (where.HasValue())
+                    {
+                        where += " OR ";
+                    }
+
+                    where += @$" (tbl_Tags.TagTreeParentsEpc IN ({((epcList != null) ? "'" + string.Join("','", epcList.ToArray()) + "'" : "''")}))  ";
                 }
             }
-            var where = string.Empty;
-            if (epcList is not null && epcList.Count>0)
-            {
-                where = @$"((tbl_Tags.TagEpc IN ({((epcList != null) ? "'" + string.Join("','", epcList.ToArray()) + "'" : "''")})) ) OR (tbl_Tags.TagEpc2 IN ({((epcList != null) ? "'" + string.Join("','", epcList.ToArray()) + "'" : "''")})) and (tbl_Tags.TagEpc <>'')";
-            }
-            else if (serialList is not null && serialList.Any() && serialList[0] != "")
-            {
-                where = @$"(tbl_Tags.ProductSerial IN ({((serialList != null) ? "'" + string.Join("','", serialList.ToArray()) + "'" : "''")}))";
-            }
 
-            if (GetProductByParentEPC)
+            if (where.HasValue() || ActionType == "_SHOW_GATE_READ_EPCS_")
             {
+                string command = "";
                 if (where.HasValue())
                 {
-                    where += " OR ";
-                }
-
-                where += @$" (tbl_Tags.TagTreeParentsEpc IN ({((epcList != null) ? "'" + string.Join("','", epcList.ToArray()) + "'" : "''")}))  ";
-            }
-
-            if (where.HasValue())
-            {
-                // Get Product Info By Epc OR Serial
-                var command = @$"SELECT        ProductSerial, ProductCode, TagEpc, ProductCount, ProductName, ProductType, RegCode, ProductStatus, TagStatus, TagInDestinationId, Lock, fld_ProductPropertyAId AS ProductLine, fld_ProductPropertyBId AS ProductShift, 
+                    // Get Product Info By Epc OR Serial
+                    command = @$"SELECT        ProductSerial, ProductCode, TagEpc, ProductCount, ProductName, ProductType, RegCode, ProductStatus, TagStatus, TagInDestinationId, Lock, fld_ProductPropertyAId AS ProductLine, fld_ProductPropertyBId AS ProductShift, 
                          ContractStatus AS DocumentId, Freeze, COALESCE (DeviceIp, N'') AS ProductOldSerial, COALESCE (fld_LastInspectResult, N'[]') AS LastInspectResult, TagRegisterDateTime, TagRegisterShamsiUnixDate, TagRegisterUser, 
                          ProductProperties, Username, DeviceId, DeviceIp, Deactivate, fld_ProductPropertyCId, COALESCE (TagZone, N'0') AS TagZone, TagRegisterDateTime AS Expr1, fld_ProductGroup, fld_ProductBrand, fld_InspectActionId, 
                          COALESCE (TagInDestinationId, N'0') AS WarehouseCode, '' AS ProductStatusTitle, '' AS ProductTypeTitle, CAST(COALESCE (Freeze, 0) AS NVARCHAR) AS FreezeStatus, CASE WHEN (fld_InspectActionId = 0) 
@@ -2688,6 +2695,32 @@ WHERE        (tbl_Tags.TagEpc IN ({string.Join(", ", epcList.ToArray())} )) ";
                          '0' AS CheckActionStatus, '' AS ExceptionMessage, TagTreeParentsEpc, fld_ProductClass, fld_ProductSubGroup  
 FROM            tbl_Tags
                       {(where.HasValue() ? "WHERE " + where : string.Empty)}";
+                }
+                else if (ActionType == "_SHOW_GATE_READ_EPCS_")
+                {
+                    IsSaveUHF = false;
+
+                    string GateCode = ActionId;
+                    string TempLatestGateinvCod = GetLatestInvCodeByGateCode(GateCode);
+                    if (TempLatestGateinvCod != "-1")
+                    {
+
+                        ActionId = TempLatestGateinvCod.Split('*')[0];
+                        ActionType = TempLatestGateinvCod.Split('*')[1];
+                        ActionTypeCodeForSelectInfo = TempLatestGateinvCod.Split('*')[1];
+                    }
+                        command = $@"SELECT DISTINCT
+                  tbl_Tags.ProductSerial, tbl_Tags.ProductCode, tbl_Tags.TagEpc, tbl_Tags.ProductCount, tbl_Tags.ProductName, tbl_Tags.ProductType, tbl_Tags.RegCode, tbl_Tags.ProductStatus, tbl_Tags.TagStatus, tbl_Tags.TagInDestinationId, tbl_Tags.Lock, 
+                  tbl_Tags.fld_ProductPropertyAId AS ProductLine, tbl_Tags.fld_ProductPropertyBId AS ProductShift, tbl_Tags.ContractStatus AS DocumentId, tbl_Tags.Freeze, COALESCE(tbl_Tags.DeviceIp, N'') AS ProductOldSerial, COALESCE (tbl_Tags.fld_LastInspectResult, N'[]') AS LastInspectResult,
+                  tbl_Tags.TagRegisterDateTime, tbl_Tags.TagRegisterShamsiUnixDate, tbl_Tags.TagRegisterUser, tbl_Tags.ProductProperties, tbl_Tags.Username, tbl_Tags.DeviceId, tbl_Tags.DeviceIp, tbl_Tags.Deactivate, tbl_Tags.fld_ProductPropertyCId, COALESCE(tbl_Tags.TagZone, N'0')
+                  AS TagZone, tbl_Tags.TagRegisterDateTime AS Expr1, tbl_Tags.fld_ProductGroup, tbl_Tags.fld_ProductBrand, tbl_Tags.fld_InspectActionId, COALESCE(tbl_Tags.TagInDestinationId, N'0') AS WarehouseCode, '' AS ProductStatusTitle, '' AS ProductTypeTitle,
+                  CAST(COALESCE(tbl_Tags.Freeze, 0) AS NVARCHAR) AS FreezeStatus, CASE WHEN(fld_InspectActionId = 0) THEN N'0' WHEN(tbl_Tags.Lock = 0 AND fld_InspectActionId<> 0) THEN N'1' WHEN(tbl_Tags.Lock = 1 AND fld_InspectActionId<> 0) THEN N'2' ELSE N'0' END AS InspectStatus, 
+                  '0' AS CheckResultType, '0' AS CheckActionStatus, '' AS ExceptionMessage, tbl_Tags.TagTreeParentsEpc, tbl_Tags.fld_ProductClass, tbl_Tags.fld_ProductSubGroup
+FROM        tbl_Tags RIGHT OUTER JOIN
+                  tbl_UHF_ReaderLog ON tbl_Tags.ProductSerial = tbl_UHF_ReaderLog.fld_ProductSerial
+WHERE(tbl_UHF_ReaderLog.fld_InventoryId = {ActionId}) ";
+
+                }
 
                 DataTable _dtResult = dataAccess.SqlDataAdapter(command);
 
@@ -2937,6 +2970,7 @@ FROM            tbl_Tags
         {
             return null;
         }
+     
     }
 
 
@@ -3321,7 +3355,7 @@ where ( TagEpc  in (" + TagEpcListForSelect + ")) ";
                          tbl_Tags_1.TagRegisterDateTime
 FROM            tbl_UHF_ReaderLog AS tbl_UHF_ReaderLog_1 LEFT OUTER JOIN
                          tbl_Tags AS tbl_Tags_1 ON tbl_UHF_ReaderLog_1.fld_TagSerial = tbl_Tags_1.TagEpc
-WHERE         (tbl_UHF_ReaderLog_1.ActionStatus=0) AND  (tbl_UHF_ReaderLog_1.fld_Reader_Gate = " + GateNumber + @") AND (tbl_UHF_ReaderLog_1.fld_InventoryId = " + actionId + @")   ";
+WHERE         (tbl_UHF_ReaderLog_1.ActionStatus=0) AND  (tbl_UHF_ReaderLog_1.fld_Reader_Gate = " + GateNumber + @") AND (tbl_UHF_ReaderLog_1.fld_InventoryId = " + actionId + @")  and tbl_Tags_1.ProductSerial is not null  ";
         dtGateResult = dataAccess.SqlDataAdapter(command);
         int RowIndex = 1;
 

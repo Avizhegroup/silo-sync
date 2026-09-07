@@ -23,16 +23,21 @@ public class SiloAiClient : ISiloAiClient
         _logger = logger;
     }
 
-    public async Task<Guid?> StartNewSessionAsync(CancellationToken cancellationToken)
+    public async Task<Guid?> StartNewSessionAsync(RagDocType docType, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.PostAsJsonAsync(NewSessionEndpoint, new { }, cancellationToken);
+        RagChatRequest request = new()
+        {
+            DocType = docType 
+        };
+
+        var response = await _httpClient.PostAsJsonAsync(NewSessionEndpoint, request, cancellationToken);
 
         var result = await response.Content.ReadFromJsonAsync<RagChatResponse>(cancellationToken: cancellationToken);
      
         return result?.ConversationId;
     }
 
-    public async Task<RagChatResponse?> SendAsync(Guid? conversationId, string message, CancellationToken cancellationToken, RagDocType? docType = null)
+    public async Task<RagChatResponse?> SendAsync(Guid? conversationId, string message, RagDocType docType, CancellationToken cancellationToken)
     {
         RagChatRequest request = new()
         {
@@ -40,7 +45,7 @@ public class SiloAiClient : ISiloAiClient
             Message = message,
             TopK = _options.TopK,
             IsMainChat = true,
-            DocType = docType ?? _options.DocType,
+            DocType = docType,
             Key = _options.Key
         };
 

@@ -6,7 +6,7 @@ public class NewChatSessionHandler(
 {
     public async Task<NewChatSessionVm> Handle(NewChatSessionCommand request, CancellationToken cancellationToken)
     {
-        var conversationId = await siloAiClient.StartNewSessionAsync(cancellationToken);
+        var conversationId = await siloAiClient.StartNewSessionAsync(request.Mode, cancellationToken);
 
         var state = new ChatSessionStateDto
         {

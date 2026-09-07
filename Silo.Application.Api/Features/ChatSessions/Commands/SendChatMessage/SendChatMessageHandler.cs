@@ -37,7 +37,7 @@ public class SendChatMessageHandler(
             }
         }
 
-        var result = await siloAiClient.SendAsync(state.ConversationId, request.Message, cancellationToken, request.Mode);
+        var result = await siloAiClient.SendAsync(state.ConversationId, request.Message, request.Mode, cancellationToken);
 
         if (result is null)
         {

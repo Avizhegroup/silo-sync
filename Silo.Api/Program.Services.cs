@@ -11,6 +11,7 @@ using Silo.Domains;
 using Silo.Domains.Android;
 using Silo.Identity.Server;
 using Silo.Infrastructure.Shared;
+using Silo.Sync.Core;
 
 namespace Silo.Api;
 public static partial class Program
@@ -60,6 +61,8 @@ public static partial class Program
         services.AddSingleton<IDataAccess, SqlDataAccess>();
 
         services.AddDomainsServices(configuration);
+
+        services.AddSyncCoreServices(configuration, registerDbContext: false);
 
         services.AddDomainsAndroidServices();
 
@@ -122,7 +125,7 @@ public static partial class Program
         services.AddHttpClient(SiloAiClient.HttpClientName, client =>
         {
             client.BaseAddress = new Uri(siloAiOptions.BaseUrl.HasValue() ? siloAiOptions.BaseUrl : "http://localhost:5100/");
-            client.Timeout = TimeSpan.FromSeconds(30);
+            client.Timeout = TimeSpan.FromSeconds(60);
 
             if (siloAiOptions.ApiKey.HasValue())
             {

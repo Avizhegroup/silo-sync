@@ -191,6 +191,10 @@
     <Build Include="Tables\tbl_WarehouseCorridor.sql" />
     <Build Include="Tables\tbl_UserQuickAccess.sql" />
     <Build Include="Tables\tbl_TextResources.sql" />
+    <Build Include="Tables\tbl_SyncSourceConfig.sql" />
+    <Build Include="Tables\tbl_SyncCheckpoint.sql" />
+    <Build Include="Tables\tbl_SyncRunLog.sql" />
+    <Build Include="Tables\tbl_SyncRowFailure.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Silo.Api.Db.refactorlog" />

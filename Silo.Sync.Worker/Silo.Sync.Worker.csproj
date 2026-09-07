@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <UserSecretsId>8f7e6d5c-4b3a-4921-8d5e-1a2b3c4d5e6f</UserSecretsId>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Authors>Avizhe Group</Authors>
+    <Company>Avizhe Group</Company>
+    <Description>Silo product sync worker using Hangfire and Polly.</Description>
+    <Product>Silo Sync Worker</Product>
+    <Copyright>Avizhe Group</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hangfire.AspNetCore" />
+    <PackageReference Include="Hangfire.Core" />
+    <PackageReference Include="Hangfire.SqlServer" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" />
+    <PackageReference Include="Polly" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Extensions.Hosting" />
+    <PackageReference Include="Serilog.Sinks.File" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Silo.Domains\Silo.Domains.csproj" />
+    <ProjectReference Include="..\Silo.Infrastructure.Shared\Silo.Infrastructure.Shared.csproj" />
+    <ProjectReference Include="..\Silo.Sync.Core\Silo.Sync.Core.csproj" />
+  </ItemGroup>
+
+</Project>

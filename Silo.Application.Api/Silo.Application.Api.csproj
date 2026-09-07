@@ -5,6 +5,7 @@
         <ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
         <ProjectReference Include="..\Silo.Application\Silo.Application.Shared.csproj" />
         <ProjectReference Include="..\Silo.Identity.Server\Silo.Identity.Server.csproj" />
+        <ProjectReference Include="..\Silo.Sync.Core\Silo.Sync.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>

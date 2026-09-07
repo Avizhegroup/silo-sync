@@ -79,6 +79,10 @@ public partial class WmsApiContext(IConfiguration configuration
     public DbSet<TablesChangeLog> TagChangeLog { get; set; }
     public DbSet<GPSLogs> GpsLogs { get; set; }
     public DbSet<TextResource> TextResources { get; set; }
+    public DbSet<SyncSourceConfig> SyncSourceConfigs { get; set; }
+    public DbSet<SyncCheckpoint> SyncCheckpoints { get; set; }
+    public DbSet<SyncRunLog> SyncRunLogs { get; set; }
+    public DbSet<SyncRowFailure> SyncRowFailures { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -18,6 +18,10 @@
     <Project Path="Silo.Application.Api/Silo.Application.Api.csproj" Id="3291f43c-71e4-4744-be36-bf76ecde3114" />
     <Project Path="Silo.Application/Silo.Application.Shared.csproj" />
   </Folder>
+  <Folder Name="/src/Core/Sync/">
+    <Project Path="Silo.Sync.Core/Silo.Sync.Core.csproj" Id="a1b2c3d4-e5f6-7890-abcd-ef1234567890" />
+    <Project Path="Silo.Sync.Core.Tests/Silo.Sync.Core.Tests.csproj" Id="b2c3d4e5-f6a7-8901-bcde-f12345678901" />
+  </Folder>
   <Folder Name="/src/Core/Domains/">
     <Project Path="Silo.Domains.Android/Silo.Domains.Android.csproj" />
     <Project Path="Silo.Domains/Silo.Domains.csproj" />
@@ -46,6 +50,7 @@
     <Project Path="Silo.Bot.Support/Silo.Bot.Support.csproj" Id="71e575c3-51c7-429f-a6f0-746470a3ebce" />
     <Project Path="Silo.Jobs.Win/Silo.Jobs.Win.csproj" />
     <Project Path="Silo.Service.Sharif/Silo.Service.Sharif.csproj" Id="61cba309-bcd5-4e05-8e93-2135a590e69f" />
+    <Project Path="Silo.Sync.Worker/Silo.Sync.Worker.csproj" Id="c3d4e5f6-a7b8-9012-cdef-123456789012" />
   </Folder>
   <Folder Name="/src/Presentation/Service/Customer Care/">
     <Project Path="Silo.Ui.Customer/Silo.Ui.Customer.csproj" />

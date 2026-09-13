@@ -8,6 +8,7 @@ public class GetReportFormatByIdVm
     public string Path { get; set; }
     public string Name { get; set; }
     public string Details { get; set; }
+
     public List<ReportFormatDetail> DetailsList =>
     string.IsNullOrWhiteSpace(Details)
         ? new List<ReportFormatDetail>()
@@ -31,7 +32,6 @@ public partial class GetReportFormatByIdVmContext : JsonSerializerContext
 public class GetAiReportDataVm
 {
     public string Name { get; set; }
-    //public string AiQuery { get; set; }
     public List<List<object>> Data { get; set; } = new();
     public int QueryReferenceId { get; set; }
 }

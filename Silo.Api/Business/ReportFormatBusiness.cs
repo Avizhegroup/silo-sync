@@ -132,20 +132,9 @@ public class ReportFormatBusiness : ProjectBusiness
         return format.Id;
     }
 
-    public class SaveAiReportCommand
-    {
-        public string ReportName { get; set; }
-        public string Mode { get; set; }
-        public int QueryId { get; set; }
-    }
-
-
     public bool SSaveAiReportLink(int reportFormatId, string reportName, List<string> userIds)
     {
-        var aiParentMenu = apiContext.MenuLinks
-            .FirstOrDefault(x =>
-                x.Level == 2 &&
-                x.Title == "گزارشات مربوط به AI");
+        var aiParentMenu = apiContext.MenuLinks.FirstOrDefault(x => x.Level == 2 && x.Title == "گزارشات مربوط به AI");
 
         if (aiParentMenu is null)
             return false;
@@ -182,10 +171,7 @@ public class ReportFormatBusiness : ProjectBusiness
 
     public GetAiReportDataVm SGetAiReportData(GetReportFormatByIdQuery query)
     {
-        var report = apiContext.ReportFormats
-            .FirstOrDefault(x =>
-                x.Id == query.FormatId &&
-                x.Type == (int)ReportFormatTypes.AiReport);
+        var report = apiContext.ReportFormats.FirstOrDefault(x => x.Id == query.FormatId && x.Type == (int)ReportFormatTypes.AiReport);
 
         if (report == null)
             return null;
@@ -196,17 +182,14 @@ public class ReportFormatBusiness : ProjectBusiness
             QueryReferenceId = report.QueryId ?? 0
         };
 
-        var aiQuery = apiContext.AiGeneratedQueries
-            .FirstOrDefault(x => x.Id == report.QueryId);
+        var aiQuery = apiContext.AiGeneratedQueries.FirstOrDefault(x => x.Id == report.QueryId);
 
         if (aiQuery == null || string.IsNullOrWhiteSpace(aiQuery.QueryText))
             return result;
 
         var dataTable = dataAccess.SqlDataAdapter(aiQuery.QueryText);
 
-        result.Data.Add(
-            DataTableTools.DataTableToObjects(dataTable)
-        );
+        result.Data.Add(DataTableTools.DataTableToObjects(dataTable));
 
         return result;
     }
@@ -221,8 +204,7 @@ public class ReportFormatBusiness : ProjectBusiness
 
     public bool SDeleteAiReport(int id)
     {
-        var report = apiContext.ReportFormats
-            .FirstOrDefault(x => x.Id == id && x.Type == (int)ReportFormatTypes.AiReport);
+        var report = apiContext.ReportFormats.FirstOrDefault(x => x.Id == id && x.Type == (int)ReportFormatTypes.AiReport);
 
         if (report == null)
             return false;
@@ -230,23 +212,15 @@ public class ReportFormatBusiness : ProjectBusiness
         var urlWithoutSlash = $"ai/reports/{id}";
         var urlWithSlash = $"/{urlWithoutSlash}";
 
-        // حذف لینک منو
-        var menuLink = apiContext.MenuLinks
-            .FirstOrDefault(x => x.IsDedicated == true &&
-                                (x.Url == urlWithoutSlash || x.Url == urlWithSlash));
+        var menuLink = apiContext.MenuLinks.FirstOrDefault(x => x.IsDedicated == true && (x.Url == urlWithoutSlash || x.Url == urlWithSlash));
 
         if (menuLink != null)
             apiContext.MenuLinks.Remove(menuLink);
 
-        // حذف دسترسی کاربران
-        var claims = apiContext.UserClaims
-            .Where(x => x.ClaimType == ClaimTypes.Authentication &&
-                       (x.ClaimValue == urlWithSlash || x.ClaimValue == urlWithoutSlash))
-            .ToList();
+        var claims = apiContext.UserClaims.Where(x => x.ClaimType == ClaimTypes.Authentication &&(x.ClaimValue == urlWithSlash || x.ClaimValue == urlWithoutSlash)).ToList();
 
         apiContext.UserClaims.RemoveRange(claims);
 
-        // حذف خود گزارش
         apiContext.ReportFormats.Remove(report);
 
         return apiContext.SaveChanges() > 0;

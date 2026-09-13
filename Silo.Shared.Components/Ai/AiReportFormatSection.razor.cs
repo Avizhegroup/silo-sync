@@ -69,7 +69,6 @@ public partial class AiReportFormatSection
         }
 
         IsSaving = true;
-        IsLoading = true;
 
         try
         {
@@ -82,9 +81,7 @@ public partial class AiReportFormatSection
                 new KeyValuePair<string, object>("command", FormatCommand))).Value;
 
             if (saveResult > 0)
-            {
-                // لینک اولیه بدون کاربر (کاربر بعداً از صفحه دسترسی اضافه می‌شود)
-                var linkResult = (await Api.PostAsyncByUri<bool>(
+            {                var linkResult = (await Api.PostAsyncByUri<bool>(
                     "wms/ReportFormat",
                     "SSaveAiReportLink",
                     new KeyValuePair<string, object>("reportFormatId", saveResult),
@@ -108,7 +105,6 @@ public partial class AiReportFormatSection
         finally
         {
             IsSaving = false;
-            IsLoading = false;
         }
     }
 

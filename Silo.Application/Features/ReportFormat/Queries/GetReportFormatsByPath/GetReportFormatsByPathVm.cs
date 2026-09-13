@@ -32,11 +32,7 @@ public class GetReportFormatsByPathVm
     public string User { get; set; }
 
     public string Details { get; set; }
-    //public List<ReportFormatDetail> DetailsList     
-    //{
-    //    get => JsonSerializer.Deserialize<List<ReportFormatDetail>>(Details);
-    //}
-
+ 
     public List<ReportFormatDetail> DetailsList =>
     string.IsNullOrWhiteSpace(Details)
         ? new()

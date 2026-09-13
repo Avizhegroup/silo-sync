@@ -14,8 +14,8 @@ public class AiGeneratedQueries
     public int? SessionId { get; set; }
 
     [Column("QueryText")]
-    public string QueryText { get; set; } = string.Empty;
+    public string? QueryText { get; set; } = string.Empty;
 
     [Column("CreatedDate")]
-    public DateTime CreatedDate { get; set; }
+    public DateTime? CreatedDate { get; set; }
 }

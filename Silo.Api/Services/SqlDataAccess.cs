@@ -44,7 +44,7 @@ public partial class SqlDataAccess(ILogger<SqlDataAccess> Logger
             Logger.LogWarning(exception, currentCommand?.CommandText, currentCommand?.Parameters);
             sqlTran.Rollback();
 #if DEBUG
-            Debugger.Break();
+           Debugger.Break();
 #endif
             result = 0;
         }

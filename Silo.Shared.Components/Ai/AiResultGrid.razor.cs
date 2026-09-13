@@ -7,7 +7,7 @@ namespace Silo.Shared.Components.Ai;
 public partial class AiResultGrid
 {
     public bool IsLoading = true;
-    public SaveAiReportModal? SaveModal { get; set; }
+    public Modal? FormatModal { get; set; }
 
     [Parameter] public List<List<object>> Data { get; set; } = new();
     [Parameter] public string Mode { get; set; } = string.Empty;
@@ -68,33 +68,6 @@ public partial class AiResultGrid
         StateHasChanged();
 
     }
-
-    //[Parameter]
-    //public EventCallback OnSaveReport { get; set; }
-
-    //private async Task OnSaveReportClick(MouseEventArgs e)
-    //{
-    //    Notification.Show($"QUERY = {QueryReferenceId}", "info");
-
-
-    //    if (Data == null || !Data.Any() || Data[0] == null)
-    //    {
-    //        Notification.Show("گزارشی برای ذخیره وجود ندارد", "error");
-    //        return;
-    //    }
-
-    //    await SaveModal.Open(e);
-    //}
-
-    //private async Task OnSaveSuccess(bool success)
-    //{
-    //    if (success)
-    //    {
-    //        await OnSaveReport.InvokeAsync();
-    //    }
-    //}
-
-    public Modal? FormatModal { get; set; }
 
     private async Task OnSaveReportClick(MouseEventArgs e)
     {

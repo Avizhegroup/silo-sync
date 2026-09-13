@@ -21,9 +21,9 @@
 /// </summary>
 public class AiCommandTools
 {
-    private const string SqlStart = "<<SQL";
+    private const string SqlStart = "<>";
     private const string ConfigStart = "<<CONFIG";
-    private const string BlockEnd = ">>";
+    private const string BlockEnd = "<>";
 
     /// <summary>
     /// Strips all <c>&lt;&lt;SQL ... &gt;&gt;</c> blocks from

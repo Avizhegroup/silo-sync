@@ -27,9 +27,6 @@ public class ReportFormat
     [Column("fld_ReportFormatDetails")]
     public string? Details { get; set; }
 
-    [Column("fld_ReportFormatAiQuery")]
-    public string? AiQuery { get; set; }
-
     [Column("fld_ReportFormatQueryId")]
     public int? QueryId { get; set; }
 }

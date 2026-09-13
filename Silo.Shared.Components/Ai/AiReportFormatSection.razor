@@ -41,14 +41,12 @@
             <td class="td-style">
                 @if (DeleteFormat.Id != format.Id)
                 {
-                    @* ۱. مشاهده گزارش *@
                     <a href="@($"/ai/reports/{format.Id}")"
                        class="btn-dt-1 btn-success tr-buttom btn"
                        title="مشاهده گزارش">
                         <MaterialIcon IconName="@MaterialIconsHelper.Check_box"></MaterialIcon>
                     </a>
 
-                    @* ۲. حذف *@
                     <button type="button"
                             class="btn-dt-1 btn-danger tr-buttom btn"
                             @onclick="async () => await OnDeleteFormatClick(format)"
@@ -56,7 +54,6 @@
                         <MaterialIcon IconName="@MaterialIconsHelper.Delete"></MaterialIcon>
                     </button>
 
-                    @* ۳. تعریف دسترسی *@
                     <a href="@($"/settings/reportlinks/ai,reports,{format.Id}/{format.Id}")"
                        target="_blank"
                        class="btn-dt-1 btn-success tr-buttom btn"

@@ -130,13 +130,13 @@ public class BaleBotWorker : BackgroundService
         if (conversationId is null)
         {
             _logger.LogInformation("Starting new Silo AI conversation for chat {ChatId}", chatId);
-            conversationId = await _siloAiClient.StartNewSessionAsync(stoppingToken);
+            conversationId = await _siloAiClient.StartNewSessionAsync(RagDocType.GeneralChat, stoppingToken);
             if (conversationId is not null)
                 _chatConversations[chatId] = conversationId;
         }
 
         _logger.LogInformation("Sending request to Silo AI");
-        var response = await _siloAiClient.SendAsync(conversationId, text, stoppingToken);
+        var response = await _siloAiClient.SendAsync(conversationId, text, RagDocType.GeneralChat, stoppingToken);
 
         if (response is null || string.IsNullOrWhiteSpace(response.ResponseText))
         {

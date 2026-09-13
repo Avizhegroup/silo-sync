@@ -97,7 +97,10 @@ public class SendChatMessageHandler(
 
         state.Messages.Add(new ChatMessageDto { Text = request.Message, IsUser = true, Datetime = DateTime.Now });
 
-        state.Messages.Add(new ChatMessageDto { Text = cleanResponseText, IsUser = false, Datetime = DateTime.Now });
+        state.Messages.Add(new ChatMessageDto { 
+            Text = cleanResponseText,
+            IsUser = false,
+            Datetime = DateTime.Now});
 
         var updatedJson = JsonSerializer.Serialize(state);
 
@@ -154,11 +157,29 @@ public class SendChatMessageHandler(
             await context.SaveChangesAsync(cancellationToken);
         }
 
+        AiGeneratedQueries? aiQuery = null;
+
+        if (sqlCommands.Count > 0)
+        {
+            aiQuery = new AiGeneratedQueries
+            {
+                UserId = request.UserId,
+                SessionId = sessionId,
+                QueryText = sqlCommands[0],
+                CreatedDate = DateTime.Now
+            };
+
+            context.AiGeneratedQueries.Add(aiQuery);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
         return new SendChatMessageVm
         {
             ResponseText = cleanResponseText,
             SessionId = sessionId,
-            SqlCommandsResults = sqlResults
+            SqlCommandsResults = sqlResults,
+            QueryReferenceId = aiQuery?.Id
         };
     }
 }

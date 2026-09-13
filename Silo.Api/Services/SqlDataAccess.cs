@@ -362,7 +362,7 @@ public partial class SqlDataAccess(ILogger<SqlDataAccess> Logger
         {
             Logger.LogWarning(exception, cmd.CommandText);
             #if DEBUG 
-            Debugger.Break();
+             Debugger.Break();
             #endif
         }
 

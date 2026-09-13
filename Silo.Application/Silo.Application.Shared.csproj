@@ -7,6 +7,8 @@
 
     <ItemGroup>
         <Folder Include="Features\Account\Commands\UpdateUserProfile\" />
+        <Folder Include="Features\AiReport\Commands\SaveAiReport\" />
+        <Folder Include="Features\AiReport\Queries\GetAiReportById\" />
         <Folder Include="Features\PreparedReport\Dtos\" />
         <Folder Include="Features\Tag\Queries\GetAllRegister\Enums\" />
     </ItemGroup>

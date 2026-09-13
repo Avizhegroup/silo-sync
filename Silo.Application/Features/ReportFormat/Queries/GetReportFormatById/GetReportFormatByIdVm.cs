@@ -11,11 +11,27 @@ public class GetReportFormatByIdVm
     public List<ReportFormatDetail> DetailsList
     {
         get => JsonSerializer.Deserialize<List<ReportFormatDetail>>(Details);
+
     }
+    public string AiQuery { get; set; }
 }
 
 [JsonSerializable(typeof(ApiResponse<GetReportFormatByIdVm>))]
+[JsonSerializable(typeof(GetReportFormatByIdVm))]
+[JsonSerializable(typeof(ReportFormatDetail))]
+[JsonSerializable(typeof(GetAiReportDataVm))]
+[JsonSerializable(typeof(ApiResponse<GetAiReportDataVm>))]
+[JsonSerializable(typeof(List<List<object>>))]
+[JsonSerializable(typeof(List<object>))]
 public partial class GetReportFormatByIdVmContext : JsonSerializerContext
 {
 
+}
+
+public class GetAiReportDataVm
+{
+    public string Name { get; set; }
+    //public string AiQuery { get; set; }
+    public List<List<object>> Data { get; set; } = new();
+    public int QueryReferenceId { get; set; }
 }

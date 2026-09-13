@@ -1,0 +1,38 @@
+@page "/ai/reports/{ReportId:int}"
+@inherits SiloBasePage
+@namespace Silo.Modules.Ai.Pages
+@using Silo.Shared.Components.Ai
+
+<PageTitle>@PageTitle</PageTitle>
+
+@if (IsLoading)
+{
+    <TelerikLoaderContainer Visible="true"
+                            LoaderPosition="@LoaderPosition.End"
+                            LoaderType="LoaderType.InfiniteSpinner"
+                            Text="@TextResources.APP_StringKeys_Loading">
+    </TelerikLoaderContainer>
+}
+else if (ReportData.Any() && ReportData[0] != null)
+{
+    <div class="container-fluid">
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <h3>@ReportName</h3>
+            </div>
+        </div>
+
+        <CascadingValue Value="Notification">
+            <AiResultGrid Data="ReportData"
+                          Mode="ReportMode"
+                          QueryReferenceId="@ReportQueryReferenceId">
+            </AiResultGrid>
+        </CascadingValue>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning" role="alert">
+        @TextResources.APP_StringKeys_Validation_Empty
+    </div>
+}

@@ -12,6 +12,7 @@ public partial class AiResultGrid
     [Parameter] public List<List<object>> Data { get; set; } = new();
     [Parameter] public string Mode { get; set; } = string.Empty;
     [Parameter] public int? QueryReferenceId { get; set; }
+    [Parameter] public bool ShowSaveButton { get; set; } = true;
 
     [Inject] public IExcelExport ExcelExporter { get; set; }
     [CascadingParameter] public TelerikNotification Notification { get; set; }
@@ -68,28 +69,54 @@ public partial class AiResultGrid
 
     }
 
-    [Parameter]
-    public EventCallback OnSaveReport { get; set; }
+    //[Parameter]
+    //public EventCallback OnSaveReport { get; set; }
+
+    //private async Task OnSaveReportClick(MouseEventArgs e)
+    //{
+    //    Notification.Show($"QUERY = {QueryReferenceId}", "info");
+
+
+    //    if (Data == null || !Data.Any() || Data[0] == null)
+    //    {
+    //        Notification.Show("گزارشی برای ذخیره وجود ندارد", "error");
+    //        return;
+    //    }
+
+    //    await SaveModal.Open(e);
+    //}
+
+    //private async Task OnSaveSuccess(bool success)
+    //{
+    //    if (success)
+    //    {
+    //        await OnSaveReport.InvokeAsync();
+    //    }
+    //}
+
+    public Modal? FormatModal { get; set; }
 
     private async Task OnSaveReportClick(MouseEventArgs e)
     {
-        Notification.Show($"QUERY = {QueryReferenceId}", "info");
-
-
         if (Data == null || !Data.Any() || Data[0] == null)
         {
-            Notification.Show("گزارشی برای ذخیره وجود ندارد", "error");
+            Notification?.Show("گزارشی برای ذخیره وجود ندارد", "error");
             return;
         }
 
-        await SaveModal.Open(e);
+        if (QueryReferenceId is null or <= 0)
+        {
+            Notification?.Show("شناسه کوئری معتبر نیست", "error");
+            return;
+        }
+
+        if (FormatModal is not null)
+            await FormatModal.Open(e);
     }
 
-    private async Task OnSaveSuccess(bool success)
+    private async Task OnFormatSaved()
     {
-        if (success)
-        {
-            await OnSaveReport.InvokeAsync();
-        }
+        if (FormatModal is not null)
+            await FormatModal.Close(null);
     }
 }

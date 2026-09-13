@@ -8,11 +8,11 @@ public class GetReportFormatByIdVm
     public string Path { get; set; }
     public string Name { get; set; }
     public string Details { get; set; }
-    public List<ReportFormatDetail> DetailsList
-    {
-        get => JsonSerializer.Deserialize<List<ReportFormatDetail>>(Details);
+    public List<ReportFormatDetail> DetailsList =>
+    string.IsNullOrWhiteSpace(Details)
+        ? new List<ReportFormatDetail>()
+        : JsonSerializer.Deserialize<List<ReportFormatDetail>>(Details)!;
 
-    }
     public string AiQuery { get; set; }
 }
 

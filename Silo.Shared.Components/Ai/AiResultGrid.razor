@@ -1,6 +1,7 @@
 ﻿@namespace Silo.Shared.Components.Ai
 @using System.Text.Json
 @using Telerik.SvgIcons
+@using Silo.Shared.Components.Modals
 
 @if (Data != null && Data.Any() && Data[0] != null)
 {
@@ -18,7 +19,6 @@
                          Resizable="true">
 
                 <GridToolBarTemplate>
-
                     <TelerikButton OnClick="@(() => ExportToExcelAsync(Data[0]))"
                                    Icon="@SvgIcon.FileExcel"
                                    ThemeColor="@ThemeConstants.Button.ThemeColor.Success"
@@ -26,15 +26,17 @@
                         دریافت فایل اکسل
                     </TelerikButton>
 
-                    <TelerikButton OnClick="@OnSaveReportClick"
-                                   Icon="@SvgIcon.Save"
-                                   ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
-                                   Title="ثبت گزارش">
-                        ثبت گزارش
-                    </TelerikButton>
+                    @if (ShowSaveButton)
+                    {
+                        <TelerikButton OnClick="@OnSaveReportClick"
+                                       Icon="@SvgIcon.Save"
+                                       ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
+                                       Title="ثبت گزارش">
+                            ثبت گزارش
+                        </TelerikButton>
+                    }
 
                     <span class="k-toolbar-spacer"></span>
-
                 </GridToolBarTemplate>
 
                 <GridColumns>
@@ -45,7 +47,6 @@
                                     FieldType="@(typeof(string))" />
                     }
                 </GridColumns>
-
             </TelerikGrid>
         </div>
     }
@@ -58,14 +59,18 @@
         </div>
     }
 
-    <AiReportFormatSection Mode="@Mode"
-                           QueryReferenceId="@QueryReferenceId" />
-
-    @* <SaveAiReportModal @ref="SaveModal"
-                       ReportData="@Data[0]"
-                       Mode="@Mode"
-                       QueryReferenceId="@QueryReferenceId"
-                       OnSaveSuccess="OnSaveSuccess">
-    </SaveAiReportModal> *@
+    @if (ShowSaveButton)
+    {
+        <Modal Buttons="ModalButtons.No"
+               ModalTitle="@TextResources.APP_StringKeys_Save"
+               @ref="FormatModal"
+               Size="ModalSize.Large"
+               CloseBtnText="@TextResources.APP_StringKeys_Close">
+            <ModalBodyContentHtml>
+                <AiReportFormatSection Mode="@Mode"
+                                       QueryReferenceId="@QueryReferenceId"
+                                       OnSaved="OnFormatSaved" />
+            </ModalBodyContentHtml>
+        </Modal>
+    }
 }
-

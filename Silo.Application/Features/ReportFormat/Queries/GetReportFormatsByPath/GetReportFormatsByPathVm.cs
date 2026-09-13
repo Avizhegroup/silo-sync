@@ -16,7 +16,8 @@ public class GetReportFormatsByPathVm
             return Type switch
             {
                 ReportFormatTypes.Column => TextResources.APP_StringKeys_Columns_Data,
-                ReportFormatTypes.Filter => TextResources.APP_StringKeys_Filters
+                ReportFormatTypes.Filter => TextResources.APP_StringKeys_Filters,
+                ReportFormatTypes.AiReport => "گزارش هوش مصنوعی"
             };
         }
     }
@@ -31,10 +32,15 @@ public class GetReportFormatsByPathVm
     public string User { get; set; }
 
     public string Details { get; set; }
-    public List<ReportFormatDetail> DetailsList     
-    {
-        get => JsonSerializer.Deserialize<List<ReportFormatDetail>>(Details);
-    }
+    //public List<ReportFormatDetail> DetailsList     
+    //{
+    //    get => JsonSerializer.Deserialize<List<ReportFormatDetail>>(Details);
+    //}
+
+    public List<ReportFormatDetail> DetailsList =>
+    string.IsNullOrWhiteSpace(Details)
+        ? new()
+        : (JsonSerializer.Deserialize<List<ReportFormatDetail>>(Details) ?? new());
 }
 
 public class ReportFormatDetail

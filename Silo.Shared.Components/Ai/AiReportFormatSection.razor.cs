@@ -17,7 +17,7 @@ public partial class AiReportFormatSection
     [Parameter] public int? QueryReferenceId { get; set; }
     [Parameter] public EventCallback OnSaved { get; set; }
 
-    [CascadingParameter] public RfidConnectApi Api { get; set; }
+    [Inject] public RfidConnectApi Api { get; set; }
     [CascadingParameter] public bool IsLoading { get; set; }
     [CascadingParameter] public TelerikNotification Notification { get; set; }
 
@@ -122,15 +122,25 @@ public partial class AiReportFormatSection
 
     private async Task ReloadFormats()
     {
-        IsLoading = true;
+        try
+        {
+            if (Api is null)
+            {
+                ReportFormats = new();
+                return;
+            }
 
-        ReportFormats = (await Api.PostAsyncByUriAndContext<List<GetReportFormatsByPathVm>>(
-            "wms/ReportFormat",
-            "SGetAiReportFormats",
-            new GetReportFormatsByPathVmContext()
-        )).Value ?? new();
+            var response = await Api.PostAsyncByUri<List<GetReportFormatsByPathVm>>(
+                "wms/ReportFormat",
+                "SGetAiReportFormats");
 
-        IsLoading = false;
+            ReportFormats = response?.Value ?? new();
+        }
+        catch (Exception ex)
+        {
+            ReportFormats = new();
+            Notification?.Show($"خطا در دریافت لیست گزارش‌ها: {ex.Message}", "error");
+        }
     }
 }
 

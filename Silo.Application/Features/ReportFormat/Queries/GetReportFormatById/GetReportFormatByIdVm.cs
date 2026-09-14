@@ -8,14 +8,30 @@ public class GetReportFormatByIdVm
     public string Path { get; set; }
     public string Name { get; set; }
     public string Details { get; set; }
-    public List<ReportFormatDetail> DetailsList
-    {
-        get => JsonSerializer.Deserialize<List<ReportFormatDetail>>(Details);
-    }
+
+    public List<ReportFormatDetail> DetailsList =>
+    string.IsNullOrWhiteSpace(Details)
+        ? new List<ReportFormatDetail>()
+        : JsonSerializer.Deserialize<List<ReportFormatDetail>>(Details)!;
+
+    public string AiQuery { get; set; }
 }
 
 [JsonSerializable(typeof(ApiResponse<GetReportFormatByIdVm>))]
+[JsonSerializable(typeof(GetReportFormatByIdVm))]
+[JsonSerializable(typeof(ReportFormatDetail))]
+[JsonSerializable(typeof(GetAiReportDataVm))]
+[JsonSerializable(typeof(ApiResponse<GetAiReportDataVm>))]
+[JsonSerializable(typeof(List<List<object>>))]
+[JsonSerializable(typeof(List<object>))]
 public partial class GetReportFormatByIdVmContext : JsonSerializerContext
 {
 
+}
+
+public class GetAiReportDataVm
+{
+    public string Name { get; set; }
+    public List<List<object>> Data { get; set; } = new();
+    public int QueryReferenceId { get; set; }
 }

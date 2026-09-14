@@ -1,6 +1,7 @@
 ﻿@namespace Silo.Shared.Components.Ai
 @using System.Text.Json
 @using Telerik.SvgIcons
+@using Silo.Shared.Components.Modals
 
 @if (Data != null && Data.Any() && Data[0] != null)
 {
@@ -25,6 +26,16 @@
                         دریافت فایل اکسل
                     </TelerikButton>
 
+                    @if (ShowSaveButton)
+                    {
+                        <TelerikButton OnClick="@OnSaveReportClick"
+                                       Icon="@SvgIcon.Save"
+                                       ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
+                                       Title="ثبت گزارش">
+                            ثبت گزارش
+                        </TelerikButton>
+                    }
+
                     <span class="k-toolbar-spacer"></span>
                 </GridToolBarTemplate>
 
@@ -36,7 +47,6 @@
                                     FieldType="@(typeof(string))" />
                     }
                 </GridColumns>
-
             </TelerikGrid>
         </div>
     }
@@ -47,5 +57,20 @@
                 نتیجه‌ای برای نمایش وجود ندارد.
             </p>
         </div>
+    }
+
+    @if (ShowSaveButton)
+    {
+        <Modal Buttons="ModalButtons.No"
+               ModalTitle="@TextResources.APP_StringKeys_Save"
+               @ref="FormatModal"
+               Size="ModalSize.Large"
+               CloseBtnText="@TextResources.APP_StringKeys_Close">
+            <ModalBodyContentHtml>
+                <AiReportFormatSection Mode="@Mode"
+                                       QueryReferenceId="@QueryReferenceId"
+                                       OnSaved="OnFormatSaved" />
+            </ModalBodyContentHtml>
+        </Modal>
     }
 }

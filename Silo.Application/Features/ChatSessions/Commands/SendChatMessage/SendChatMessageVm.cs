@@ -6,4 +6,5 @@ public class SendChatMessageVm
     public int SessionId { get; set; }
     public int? StatusCode { get; set; }
     public List<List<object>> SqlCommandsResults { get; set; } = new();
+    public int? QueryReferenceId { get; set; }
 }

@@ -7,6 +7,7 @@
 
     <ItemGroup>
         <Folder Include="Features\Account\Commands\UpdateUserProfile\" />
+        <Folder Include="Features\AiReport\Queries\" />
         <Folder Include="Features\PreparedReport\Dtos\" />
         <Folder Include="Features\Tag\Queries\GetAllRegister\Enums\" />
     </ItemGroup>

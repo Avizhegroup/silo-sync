@@ -1,15 +1,21 @@
 ﻿using System.Text.Json;
 using Silo.Application;
+using Telerik.Blazor.Components;
 
 namespace Silo.Shared.Components.Ai;
 
 public partial class AiResultGrid
 {
     public bool IsLoading = true;
+    public Modal? FormatModal { get; set; }
 
     [Parameter] public List<List<object>> Data { get; set; } = new();
+    [Parameter] public string Mode { get; set; } = string.Empty;
+    [Parameter] public int? QueryReferenceId { get; set; }
+    [Parameter] public bool ShowSaveButton { get; set; } = true;
 
     [Inject] public IExcelExport ExcelExporter { get; set; }
+    [CascadingParameter] public TelerikNotification Notification { get; set; }
 
     private List<IDictionary<string, object>> ParseGridData(List<object> data)
     {
@@ -61,5 +67,29 @@ public partial class AiResultGrid
 
         StateHasChanged();
 
+    }
+
+    private async Task OnSaveReportClick(MouseEventArgs e)
+    {
+        if (Data == null || !Data.Any() || Data[0] == null)
+        {
+            Notification?.Show("گزارشی برای ذخیره وجود ندارد", "error");
+            return;
+        }
+
+        if (QueryReferenceId is null or <= 0)
+        {
+            Notification?.Show("شناسه کوئری معتبر نیست", "error");
+            return;
+        }
+
+        if (FormatModal is not null)
+            await FormatModal.Open(e);
+    }
+
+    private async Task OnFormatSaved()
+    {
+        if (FormatModal is not null)
+            await FormatModal.Close(null);
     }
 }

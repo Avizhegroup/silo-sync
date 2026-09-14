@@ -6,5 +6,5 @@ public class ChatMessageDto
     public bool IsUser { get; set; }
     public DateTime Datetime { get; set; }
     public List<List<object>> SqlCommandsResults { get; set; } = new();
-
+    public int? QueryReferenceId { get; set; }
 }

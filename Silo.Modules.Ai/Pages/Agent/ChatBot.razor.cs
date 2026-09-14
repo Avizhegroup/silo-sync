@@ -317,7 +317,9 @@ public partial class ChatBot : SiloBasePage
             {
                 Text = sendResult?.Value?.ResponseText ?? string.Empty,
                 IsUser = false,
-                Datetime = DateTime.Now
+                Datetime = DateTime.Now,
+                QueryReferenceId = sendResult?.Value?.QueryReferenceId ?? 0
+
             };
 
             if (currentChatId == 0 && sendResult?.Value?.SessionId > 0)

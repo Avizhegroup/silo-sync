@@ -113,9 +113,11 @@ public class ReportFormatBusiness : ProjectBusiness
 
     public bool SSaveLinkForAiReportFormat(SaveMenuLinkOfDynamicReportCommand request)
     {
-        var (url, claimValue) = NormalizeUrl(request.Url);
+        var url = NormalizeUrl(request.Url);
+        var claimValue = "/" + url;
 
         UpsertDedicatedMenuLink(url, claimValue, request.Title, request.SelectedCategoryId.Value);
+
         ReplaceAuthenticationClaims(url, claimValue, request.UserIds.Distinct());
 
         return apiContext.SaveChanges() > 0;
@@ -123,7 +125,9 @@ public class ReportFormatBusiness : ProjectBusiness
 
     public GetMenuLinkOfDynamicReportVm SGetLinkForAiReportFormat(GetMenuLinkOfDynamicReportQuery query)
     {
-        var (url, claimValue) = NormalizeUrl(query.FullUrl);
+        var url = NormalizeUrl(query.FullUrl);
+        var claimValue = "/" + url;
+
         var link = FindDedicatedMenuLink(url, claimValue);
 
         var vm = new GetMenuLinkOfDynamicReportVm();
@@ -168,7 +172,9 @@ public class ReportFormatBusiness : ProjectBusiness
         if (aiParentMenu is null)
             return false;
 
-        var (url, claimValue) = NormalizeUrl($"ai/reports/{reportFormatId}");
+        var url = NormalizeUrl($"ai/reports/{reportFormatId}");
+        var claimValue = "/" + url;
+
         var currentUserId = httpContext.User.GetUserId();
 
         UpsertDedicatedMenuLink(url, claimValue, reportName, aiParentMenu.Id);
@@ -248,7 +254,8 @@ public class ReportFormatBusiness : ProjectBusiness
         if (report == null)
             return false;
 
-        var (url, claimValue) = NormalizeUrl($"ai/reports/{id}");
+        var url = NormalizeUrl($"ai/reports/{id}");
+        var claimValue = "/" + url;
 
         var menuLink = FindDedicatedMenuLink(url, claimValue);
         if (menuLink != null)
@@ -262,10 +269,9 @@ public class ReportFormatBusiness : ProjectBusiness
 
     // --- Shared Ai helpers  ---
 
-    private (string Url, string ClaimValue) NormalizeUrl(string rawUrl)
+    private string NormalizeUrl(string rawUrl)
     {
-        var url = rawUrl.Replace('-', '/').TrimStart('/');
-        return (url, "/" + url);
+        return rawUrl.Replace('-', '/').TrimStart('/');
     }
 
     private MenuLink FindDedicatedMenuLink(string url, string claimValue)

@@ -29,4 +29,5 @@ public class ReportFormat
 
     [Column("fld_ReportFormatQueryId")]
     public int? QueryId { get; set; }
+    public AiGeneratedQueries? AiGeneratedQuery { get; set; }
 }

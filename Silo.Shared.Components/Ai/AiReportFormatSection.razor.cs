@@ -14,7 +14,7 @@ public partial class AiReportFormatSection
     public bool IsSaving { get; set; }
 
     [Parameter] public string Mode { get; set; } = string.Empty;
-    [Parameter] public int? QueryReferenceId { get; set; }
+    [Parameter][EditorRequired] public int QueryId { get; set; }
     [Parameter] public EventCallback OnSaved { get; set; }
 
     [Inject] public RfidConnectApi Api { get; set; }
@@ -26,7 +26,70 @@ public partial class AiReportFormatSection
         await ReloadFormats();
     }
 
-    public async Task OnDeleteFormatClick(GetReportFormatsByPathVm format)
+    public async Task OnValidSubmit(EditContext context)
+    {
+        if (string.IsNullOrWhiteSpace(FormatCommand.ReportName))
+        {
+            Notification.Show(TextResources.APP_StringKeys_Validation_Empty, "error");
+            return;
+        }
+
+        if (QueryId <= 0)
+        {
+            Notification.Show("شناسه کوئری معتبر نیست", "error");
+            return;
+        }
+
+        IsSaving = true;
+
+         FormatCommand.Mode = Mode;
+            FormatCommand.QueryId = QueryId;
+
+            var saveResult = (await Api.PostAsyncByUri<int>(
+                "wms/ReportFormat",
+                "SSaveAiReport",
+                new KeyValuePair<string, object>("command", FormatCommand))).Value;
+
+        if (saveResult > 0)
+        {
+            var linkResult = (await Api.PostAsyncByUri<bool>(
+                "wms/ReportFormat",
+                "SSaveAiReportLink",
+                new KeyValuePair<string, object>("reportFormatId", saveResult),
+                new KeyValuePair<string, object>("reportName", FormatCommand.ReportName),
+                new KeyValuePair<string, object>("userIds", new List<string>()))).Value;
+
+            FormatCommand = new();
+
+            await ReloadFormats();
+
+            IsSaving = false;
+
+            Notification.Show(TextResources.APP_StringKeys_Alert_Success, "success");
+
+            await OnSaved.InvokeAsync();
+        }
+        else
+        {
+            IsSaving = false;
+
+            Notification.Show(
+                TextResources.APP_StringKeys_Alert_Fail,
+                "error");
+        }
+    }
+      
+    
+
+    public Task OnInvalidSubmit(EditContext context)
+    {
+        foreach (var message in context.GetValidationMessages())
+            Notification.Show(message, "error");
+
+        return Task.CompletedTask;
+    }
+
+    public void OnDeleteFormatClick(GetReportFormatsByPathVm format)
     {
         DeleteFormat = format;
     }
@@ -54,72 +117,8 @@ public partial class AiReportFormatSection
         DeleteFormat = new();
     }
 
-    public async Task OnValidSubmit(EditContext context)
-    {
-        if (string.IsNullOrWhiteSpace(FormatCommand.ReportName))
-        {
-            Notification.Show(TextResources.APP_StringKeys_Validation_Empty, "error");
-            return;
-        }
-
-        if (QueryReferenceId is null or <= 0)
-        {
-            Notification.Show("شناسه کوئری معتبر نیست", "error");
-            return;
-        }
-
-        IsSaving = true;
-
-        try
-        {
-            FormatCommand.Mode = Mode;
-            FormatCommand.QueryId = QueryReferenceId.Value;
-
-            var saveResult = (await Api.PostAsyncByUri<int>(
-                "wms/ReportFormat",
-                "SSaveAiReport",
-                new KeyValuePair<string, object>("command", FormatCommand))).Value;
-
-            if (saveResult > 0)
-            {                var linkResult = (await Api.PostAsyncByUri<bool>(
-                    "wms/ReportFormat",
-                    "SSaveAiReportLink",
-                    new KeyValuePair<string, object>("reportFormatId", saveResult),
-                    new KeyValuePair<string, object>("reportName", FormatCommand.ReportName),
-                    new KeyValuePair<string, object>("userIds", new List<string>()))).Value;
-
-                Notification.Show(TextResources.APP_StringKeys_Alert_Success, "success");
-                FormatCommand = new();
-                await ReloadFormats();
-                await OnSaved.InvokeAsync();
-            }
-            else
-            {
-                Notification.Show(TextResources.APP_StringKeys_Alert_Fail, "error");
-            }
-        }
-        catch (Exception ex)
-        {
-            Notification.Show($"خطا: {ex.Message}", "error");
-        }
-        finally
-        {
-            IsSaving = false;
-        }
-    }
-
-    public Task OnInvalidSubmit(EditContext context)
-    {
-        foreach (var message in context.GetValidationMessages())
-            Notification.Show(message, "error");
-
-        return Task.CompletedTask;
-    }
-
     private async Task ReloadFormats()
     {
-        try
-        {
             if (Api is null)
             {
                 ReportFormats = new();
@@ -131,18 +130,6 @@ public partial class AiReportFormatSection
                 "SGetAiReportFormats");
 
             ReportFormats = response?.Value ?? new();
-        }
-        catch (Exception ex)
-        {
-            ReportFormats = new();
-            Notification?.Show($"خطا در دریافت لیست گزارش‌ها: {ex.Message}", "error");
-        }
     }
 }
 
-public class SaveAiReportCommand
-{
-    public string ReportName { get; set; } = string.Empty;
-    public string Mode { get; set; } = string.Empty;
-    public int QueryId { get; set; }
-}

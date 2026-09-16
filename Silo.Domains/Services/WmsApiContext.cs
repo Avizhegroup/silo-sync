@@ -83,6 +83,11 @@ public partial class WmsApiContext(IConfiguration configuration
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<ReportFormat>()
+          .HasOne(x => x.AiGeneratedQuery)
+          .WithMany(x => x.ReportFormats)
+          .HasForeignKey(x => x.QueryId);
+
         modelBuilder.Entity<TablesChangeLog>(entity =>
         {
             entity.Property(x => x.CreatedAt)

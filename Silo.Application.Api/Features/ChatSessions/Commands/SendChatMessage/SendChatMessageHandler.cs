@@ -179,7 +179,7 @@ public class SendChatMessageHandler(
             ResponseText = cleanResponseText,
             SessionId = sessionId,
             SqlCommandsResults = sqlResults,
-            QueryReferenceId = aiQuery?.Id
+            QueryId = aiQuery?.Id
         };
     }
 }

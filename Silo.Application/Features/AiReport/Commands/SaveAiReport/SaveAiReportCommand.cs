@@ -1,4 +1,4 @@
-﻿namespace Silo.Application;
+﻿namespace Silo.Application.Features;
 
 public class SaveAiReportCommand
 {

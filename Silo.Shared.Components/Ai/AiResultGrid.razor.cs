@@ -11,7 +11,7 @@ public partial class AiResultGrid
 
     [Parameter] public List<List<object>> Data { get; set; } = new();
     [Parameter] public string Mode { get; set; } = string.Empty;
-    [Parameter] public int? QueryReferenceId { get; set; }
+    [Parameter][EditorRequired] public int QueryId { get; set; }
     [Parameter] public bool ShowSaveButton { get; set; } = true;
 
     [Inject] public IExcelExport ExcelExporter { get; set; }
@@ -73,11 +73,11 @@ public partial class AiResultGrid
     {
         if (Data == null || !Data.Any() || Data[0] == null)
         {
-            Notification?.Show("گزارشی برای ذخیره وجود ندارد", "error");
+            Notification.Show("گزارشی برای ذخیره وجود ندارد", "error");
             return;
         }
 
-        if (QueryReferenceId is null or <= 0)
+        if (QueryId is <= 0)
         {
             Notification?.Show("شناسه کوئری معتبر نیست", "error");
             return;

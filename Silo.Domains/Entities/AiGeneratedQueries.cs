@@ -18,4 +18,6 @@ public class AiGeneratedQueries
 
     [Column("CreatedDate")]
     public DateTime? CreatedDate { get; set; }
+
+    public ICollection<ReportFormat> ReportFormats { get; set; } = new List<ReportFormat>();
 }

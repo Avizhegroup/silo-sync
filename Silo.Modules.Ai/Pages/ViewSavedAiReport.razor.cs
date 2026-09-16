@@ -10,21 +10,18 @@ public partial class ViewSavedAiReport
     public List<List<object>> ReportData = new();
     public string ReportName = string.Empty;
     public string ReportMode = string.Empty;
-    public int ReportQueryReferenceId { get; set; }
+    public int ReportQueryId { get; set; }
 
-    private int _loadedReportId = -1;
-    private CancellationTokenSource? _cts;
-    private bool _isLoadingInProgress = false;
+    private int loadedReportId = -1;
 
     [Parameter] public int ReportId { get; set; }
 
     [Inject] public RfidConnectApi Api { get; set; }
     [Inject] public IMapper Mapper { get; set; }
 
-
     protected override async Task OnParametersSetAsync()
     {
-        if (ReportId == _loadedReportId || ReportId <= 0)
+        if (ReportId <= 0 || ReportId == loadedReportId)
             return;
 
         await LoadReportAsync();
@@ -32,78 +29,49 @@ public partial class ViewSavedAiReport
 
     private async Task LoadReportAsync()
     {
-        if (_isLoadingInProgress)
+        IsLoading = true;
+
+        ReportData = new();
+        ReportName = string.Empty;
+        ReportMode = string.Empty;
+        ReportQueryId = 0;
+
+        StateHasChanged();
+
+        var requestedReportId = ReportId;
+
+        var report = (await Api.PostAsyncByUriAndContext<GetAiReportDataVm>(
+            "wms/ReportFormat",
+            "SGetAiReportData",
+            new GetReportFormatByIdVmContext(),
+            new KeyValuePair<string, object>(
+                "query",
+                new GetReportFormatByIdQuery
+                {
+                    FormatId = requestedReportId
+                })
+        )).Value;
+
+        if (ReportId != requestedReportId)
             return;
 
-        _isLoadingInProgress = true;
-
-        _cts?.Cancel();
-        _cts = new CancellationTokenSource();
-        var token = _cts.Token;
-
-        IsLoading = true;
-        ReportData = new();          
-        StateHasChanged();           
-
-        try
+        if (report != null)
         {
-            var report = (await Api.PostAsyncByUriAndContext<GetAiReportDataVm>(
-                "wms/ReportFormat",
-                "SGetAiReportData",
-                new GetReportFormatByIdVmContext(),
-                new KeyValuePair<string, object>(
-                    "query",
-                    new GetReportFormatByIdQuery
-                    {
-                        FormatId = ReportId
-                    })
-            )).Value;
+            ReportName = report.Name;
+            ReportData = report.Data ?? new();
+            ReportQueryId = report.QueryId;
+            PageTitle = ReportName;
 
-            if (token.IsCancellationRequested)
-                return;
-
-            if (report != null)
-            {
-                ReportName = report.Name;
-                ReportData = report.Data ?? new();
-                ReportQueryReferenceId = report.QueryReferenceId;
-                PageTitle = ReportName;
-
-                _loadedReportId = ReportId;    
-            }
-            else
-            {
-                Notification.Show("گزارش یافت نشد", "error");
-                ReportData = new();
-            }
+            loadedReportId = requestedReportId;
         }
-        catch (OperationCanceledException)
+        else
         {
-        }
-        catch (Exception ex)
-        {
-            if (!token.IsCancellationRequested)
-                Notification.Show($"خطا در اجرای گزارش: {ex.Message}", "error");
-
+            Notification.Show("گزارش یافت نشد", "error");
             ReportData = new();
         }
-        finally
-        {
-            _isLoadingInProgress = false;
-            IsLoading = false;
-            StateHasChanged();
-        }
-    }
 
-    public void Dispose()
-    {
-        _cts?.Cancel();
-        _cts?.Dispose();
+        IsLoading = false;
+
+        StateHasChanged();
     }
 }
-
-public class GetReportFormatByIdQuery
-{
-    public int FormatId { get; set; }
-}
-

@@ -5,16 +5,8 @@
 
 <PageTitle>@PageTitle</PageTitle>
 
-@if (IsLoading)
-{
-    <TelerikLoaderContainer Visible="true"
-                            LoaderPosition="@LoaderPosition.End"
-                            LoaderType="LoaderType.InfiniteSpinner"
-                            Text="@TextResources.APP_StringKeys_Loading">
-    </TelerikLoaderContainer>
-}
-else if (ReportData.Any() && ReportData[0] != null)
-{
+ @if (ReportData.Any() && ReportData[0] != null)
+   {
     <div class="container-fluid">
         <div class="row mb-3">
             <div class="col-md-12">
@@ -25,15 +17,15 @@ else if (ReportData.Any() && ReportData[0] != null)
         <CascadingValue Value="Notification">
             <AiResultGrid Data="ReportData"
                           Mode="ReportMode"
-                          QueryReferenceId="@ReportQueryReferenceId"
+                          QueryId="@ReportQueryId"
                           ShowSaveButton="false">
             </AiResultGrid>
         </CascadingValue>
     </div>
-}
-else
-{
-    <div class="alert alert-warning" role="alert">
-        @TextResources.APP_StringKeys_Validation_Empty
-    </div>
-}
+    }
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

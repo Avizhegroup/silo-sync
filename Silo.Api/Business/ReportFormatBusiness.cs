@@ -58,6 +58,60 @@ public class ReportFormatBusiness : ProjectBusiness
 
     public bool SSaveLinkForReportFormat(SaveMenuLinkOfDynamicReportCommand request)
     {
+        MenuLink newLink = new()
+        {
+            Id = apiContext.MenuLinks.Max(p => p.Id) + 1,
+            Level = 3,
+            Title = request.Title,
+            Url = request.Url.Replace('-', '/'),
+            ParentId = request.SelectedCategoryId,
+            IsShown = true,
+            IsDedicated = true
+        };
+
+        apiContext.MenuLinks.Add(newLink);
+
+        foreach (var userId in request.UserIds)
+        {
+            UserClaim claim = new()
+            {
+                UserId = userId,
+                ClaimType = ClaimTypes.Authentication,
+                ClaimValue = $"/{request.Url.Replace('-', '/')}"
+            };
+
+            apiContext.UserClaims.Add(claim);
+        }
+
+        return apiContext.SaveChanges() > 0;
+    }
+
+    public GetMenuLinkOfDynamicReportVm SGetLinkForReportFormat(GetMenuLinkOfDynamicReportQuery query)
+    {
+        GetMenuLinkOfDynamicReportVm vm = new();
+
+        var link = apiContext.MenuLinks.FirstOrDefault(p => (bool)p.IsDedicated
+                                                                              && p.Level == 3
+                                                                              && p.Url == query.FullUrl);
+
+        if (link is not null)
+        {
+            vm.Title = link.Title;
+
+            vm.CategoryId = link.ParentId;
+        }
+
+        vm.UserIds = apiContext.UserClaims.Where(p => p.ClaimType == ClaimTypes.Authentication
+                                                           && p.ClaimValue == query.FullUrl)
+                                          .Select(p => p.UserId)
+                                          .ToList();
+
+        return vm;
+    }
+
+    public bool SSaveLinkForAiReportFormat(
+    SaveMenuLinkOfDynamicReportCommand request)
+    {
         var url = request.Url.Replace('-', '/').TrimStart('/');
         var claimValue = "/" + url;
 
@@ -88,7 +142,8 @@ public class ReportFormatBusiness : ProjectBusiness
 
         var oldClaims = apiContext.UserClaims
             .Where(p => p.ClaimType == ClaimTypes.Authentication &&
-                       (p.ClaimValue == claimValue || p.ClaimValue == url))
+                        (p.ClaimValue == claimValue ||
+                         p.ClaimValue == url))
             .ToList();
 
         apiContext.UserClaims.RemoveRange(oldClaims);
@@ -106,34 +161,38 @@ public class ReportFormatBusiness : ProjectBusiness
         return apiContext.SaveChanges() > 0;
     }
 
-    public GetMenuLinkOfDynamicReportVm SGetLinkForReportFormat(GetMenuLinkOfDynamicReportQuery query)
+    public GetMenuLinkOfDynamicReportVm SGetLinkForAiReportFormat(
+      GetMenuLinkOfDynamicReportQuery query)
     {
         GetMenuLinkOfDynamicReportVm vm = new();
 
-        var link = apiContext.MenuLinks.FirstOrDefault(p => (bool)p.IsDedicated
-                                                                              && p.Level == 3
-                                                                              && p.Url == query.FullUrl);
+        var url = query.FullUrl.Replace('-', '/').TrimStart('/');
+        var claimValue = "/" + url;
+
+        var link = apiContext.MenuLinks.FirstOrDefault(p =>
+            p.IsDedicated == true &&
+            p.Level == 3 &&
+            (p.Url == url || p.Url == claimValue));
 
         if (link is not null)
         {
             vm.Title = link.Title;
-
             vm.CategoryId = link.ParentId;
         }
 
-        vm.UserIds = apiContext.UserClaims.Where(p => p.ClaimType == ClaimTypes.Authentication
-                                                           && p.ClaimValue == query.FullUrl)
-                                          .Select(p=>p.UserId)
-                                          .ToList();
+        vm.UserIds = apiContext.UserClaims
+            .Where(p => p.ClaimType == ClaimTypes.Authentication &&
+                        (p.ClaimValue == claimValue ||
+                         p.ClaimValue == url))
+            .Select(p => p.UserId)
+            .ToList();
 
         return vm;
     }
 
     public int SSaveAiReport(SaveAiReportCommand command)
     {
-        var aiQuery = apiContext.AiGeneratedQueries.FirstOrDefault(x => x.Id == command.QueryId);
-
-        if (string.IsNullOrWhiteSpace(command.ReportName))
+        if (command.ReportName.HasNoValue())
             throw new Exception("نام گزارش نمی‌تواند خالی باشد");
 
         var format = new ReportFormat
@@ -215,7 +274,11 @@ public class ReportFormatBusiness : ProjectBusiness
 
     public GetAiReportDataVm SGetAiReportData(GetReportFormatByIdQuery query)
     {
-        var report = apiContext.ReportFormats.FirstOrDefault(x => x.Id == query.FormatId && x.Type == (int)ReportFormatTypes.AiReport);
+        var report = apiContext.ReportFormats
+            .Include(x => x.AiGeneratedQuery)
+            .FirstOrDefault(x =>
+                x.Id == query.FormatId &&
+                x.Type == (int)ReportFormatTypes.AiReport);
 
         if (report == null)
             return null;
@@ -223,15 +286,16 @@ public class ReportFormatBusiness : ProjectBusiness
         var result = new GetAiReportDataVm
         {
             Name = report.Name,
-            QueryReferenceId = report.QueryId ?? 0
+            QueryId = report.QueryId ?? 0
         };
 
-        var aiQuery = apiContext.AiGeneratedQueries.FirstOrDefault(x => x.Id == report.QueryId);
+        if (report.AiGeneratedQuery == null || report.AiGeneratedQuery.QueryText.HasNoValue())
 
-        if (aiQuery == null || string.IsNullOrWhiteSpace(aiQuery.QueryText))
+        {
             return result;
+        }
 
-        var dataTable = dataAccess.SqlDataAdapter(aiQuery.QueryText);
+        var dataTable = dataAccess.SqlDataAdapter(report.AiGeneratedQuery.QueryText);
 
         result.Data.Add(DataTableTools.DataTableToObjects(dataTable));
 

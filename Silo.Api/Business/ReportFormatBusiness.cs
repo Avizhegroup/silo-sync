@@ -60,10 +60,10 @@ public class ReportFormatBusiness : ProjectBusiness
     {
         MenuLink newLink = new()
         {
-            Id = apiContext.MenuLinks.Max(p => p.Id) + 1,
+            Id = apiContext.MenuLinks.Max(p =>p.Id) + 1,
             Level = 3,
             Title = request.Title,
-            Url = request.Url.Replace('-', '/'),
+            Url = request.Url.Replace('-','/'),
             ParentId = request.SelectedCategoryId,
             IsShown = true,
             IsDedicated = true
@@ -103,76 +103,30 @@ public class ReportFormatBusiness : ProjectBusiness
 
         vm.UserIds = apiContext.UserClaims.Where(p => p.ClaimType == ClaimTypes.Authentication
                                                            && p.ClaimValue == query.FullUrl)
-                                          .Select(p => p.UserId)
+                                          .Select(p =>p.UserId)
                                           .ToList();
 
         return vm;
     }
 
-    public bool SSaveLinkForAiReportFormat(
-    SaveMenuLinkOfDynamicReportCommand request)
+    // --- Public Ai methods ---
+
+    public bool SSaveLinkForAiReportFormat(SaveMenuLinkOfDynamicReportCommand request)
     {
-        var url = request.Url.Replace('-', '/').TrimStart('/');
-        var claimValue = "/" + url;
+        var (url, claimValue) = NormalizeUrl(request.Url);
 
-        var existingLink = apiContext.MenuLinks.FirstOrDefault(p =>
-            p.IsDedicated == true &&
-            p.Level == 3 &&
-            (p.Url == url || p.Url == claimValue));
-
-        if (existingLink is not null)
-        {
-            existingLink.Title = request.Title;
-            existingLink.ParentId = request.SelectedCategoryId;
-            existingLink.IsShown = true;
-        }
-        else
-        {
-            apiContext.MenuLinks.Add(new MenuLink
-            {
-                Id = apiContext.MenuLinks.Max(p => p.Id) + 1,
-                Level = 3,
-                Title = request.Title,
-                Url = url,
-                ParentId = request.SelectedCategoryId,
-                IsShown = true,
-                IsDedicated = true
-            });
-        }
-
-        var oldClaims = apiContext.UserClaims
-            .Where(p => p.ClaimType == ClaimTypes.Authentication &&
-                        (p.ClaimValue == claimValue ||
-                         p.ClaimValue == url))
-            .ToList();
-
-        apiContext.UserClaims.RemoveRange(oldClaims);
-
-        foreach (var userId in request.UserIds.Distinct())
-        {
-            apiContext.UserClaims.Add(new UserClaim
-            {
-                UserId = userId,
-                ClaimType = ClaimTypes.Authentication,
-                ClaimValue = claimValue
-            });
-        }
+        UpsertDedicatedMenuLink(url, claimValue, request.Title, request.SelectedCategoryId.Value);
+        ReplaceAuthenticationClaims(url, claimValue, request.UserIds.Distinct());
 
         return apiContext.SaveChanges() > 0;
     }
 
-    public GetMenuLinkOfDynamicReportVm SGetLinkForAiReportFormat(
-      GetMenuLinkOfDynamicReportQuery query)
+    public GetMenuLinkOfDynamicReportVm SGetLinkForAiReportFormat(GetMenuLinkOfDynamicReportQuery query)
     {
-        GetMenuLinkOfDynamicReportVm vm = new();
+        var (url, claimValue) = NormalizeUrl(query.FullUrl);
+        var link = FindDedicatedMenuLink(url, claimValue);
 
-        var url = query.FullUrl.Replace('-', '/').TrimStart('/');
-        var claimValue = "/" + url;
-
-        var link = apiContext.MenuLinks.FirstOrDefault(p =>
-            p.IsDedicated == true &&
-            p.Level == 3 &&
-            (p.Url == url || p.Url == claimValue));
+        var vm = new GetMenuLinkOfDynamicReportVm();
 
         if (link is not null)
         {
@@ -180,10 +134,7 @@ public class ReportFormatBusiness : ProjectBusiness
             vm.CategoryId = link.ParentId;
         }
 
-        vm.UserIds = apiContext.UserClaims
-            .Where(p => p.ClaimType == ClaimTypes.Authentication &&
-                        (p.ClaimValue == claimValue ||
-                         p.ClaimValue == url))
+        vm.UserIds = AuthenticationClaimsFor(url, claimValue)
             .Select(p => p.UserId)
             .ToList();
 
@@ -205,7 +156,6 @@ public class ReportFormatBusiness : ProjectBusiness
         };
 
         apiContext.ReportFormats.Add(format);
-
         apiContext.SaveChanges();
 
         return format.Id;
@@ -213,61 +163,22 @@ public class ReportFormatBusiness : ProjectBusiness
 
     public bool SSaveAiReportLink(int reportFormatId, string reportName, List<string> userIds)
     {
-        var aiParentMenu = apiContext.MenuLinks
-            .FirstOrDefault(x => x.Level == 2 && x.Title == "گزارشات مربوط به AI");
+        var aiParentMenu = apiContext.MenuLinks.FirstOrDefault(x => x.Level == 2 && x.Title == "گزارشات مربوط به AI");
 
         if (aiParentMenu is null)
             return false;
 
-        var url = $"ai/reports/{reportFormatId}";
-        var claimValue = "/" + url;
+        var (url, claimValue) = NormalizeUrl($"ai/reports/{reportFormatId}");
         var currentUserId = httpContext.User.GetUserId();
 
-        var existingLink = apiContext.MenuLinks.FirstOrDefault(p =>
-            p.IsDedicated == true &&
-            p.Level == 3 &&
-            (p.Url == url || p.Url == claimValue));
-
-        if (existingLink is not null)
-        {
-            existingLink.Title = reportName;
-            existingLink.ParentId = aiParentMenu.Id;
-            existingLink.IsShown = true;
-        }
-        else
-        {
-            apiContext.MenuLinks.Add(new MenuLink
-            {
-                Id = apiContext.MenuLinks.Max(p => p.Id) + 1,
-                Level = 3,
-                Title = reportName,
-                Url = url,
-                ParentId = aiParentMenu.Id,
-                IsShown = true,
-                IsDedicated = true
-            });
-        }
-
-        var oldClaims = apiContext.UserClaims
-            .Where(p => p.ClaimType == ClaimTypes.Authentication &&
-                       (p.ClaimValue == claimValue || p.ClaimValue == url))
-            .ToList();
-        apiContext.UserClaims.RemoveRange(oldClaims);
+        UpsertDedicatedMenuLink(url, claimValue, reportName, aiParentMenu.Id);
 
         var finalUserIds = (userIds ?? new List<string>()).ToList();
 
-        if (!string.IsNullOrEmpty(currentUserId) && !finalUserIds.Contains(currentUserId))
+        if (currentUserId.HasValue() && !finalUserIds.Contains(currentUserId))
             finalUserIds.Add(currentUserId);
 
-        foreach (var userId in finalUserIds.Distinct())
-        {
-            apiContext.UserClaims.Add(new UserClaim
-            {
-                UserId = userId,
-                ClaimType = ClaimTypes.Authentication,
-                ClaimValue = claimValue
-            });
-        }
+        ReplaceAuthenticationClaims(url, claimValue, finalUserIds);
 
         return apiContext.SaveChanges() > 0;
     }
@@ -290,13 +201,9 @@ public class ReportFormatBusiness : ProjectBusiness
         };
 
         if (report.AiGeneratedQuery == null || report.AiGeneratedQuery.QueryText.HasNoValue())
-
-        {
             return result;
-        }
 
         var dataTable = dataAccess.SqlDataAdapter(report.AiGeneratedQuery.QueryText);
-
         result.Data.Add(DataTableTools.DataTableToObjects(dataTable));
 
         return result;
@@ -305,26 +212,20 @@ public class ReportFormatBusiness : ProjectBusiness
     public List<GetReportFormatsByPathVm> SGetAiReportFormats()
     {
         var userId = httpContext.User.GetUserId();
-        var isAdmin = httpContext.User.IsInRole("Admin"); 
+        var isAdmin = httpContext.User.IsInRole("Admin");
 
         IQueryable<ReportFormat> query = apiContext.ReportFormats
             .Where(x => x.Type == (int)ReportFormatTypes.AiReport);
 
         if (!isAdmin)
         {
-            var allowedUrls = apiContext.UserClaims
+            var allowedIds = apiContext.UserClaims
                 .Where(c => c.UserId == userId
                          && c.ClaimType == ClaimTypes.Authentication
                          && (c.ClaimValue.StartsWith("/ai/reports/") || c.ClaimValue.StartsWith("ai/reports/")))
-                .Select(c => c.ClaimValue.TrimStart('/'))
-                .ToList();
-
-            var allowedIds = allowedUrls
-                .Select(u =>
-                {
-                    var part = u.Replace("ai/reports/", "");
-                    return int.TryParse(part, out var id) ? id : (int?)null;
-                })
+                .Select(c => c.ClaimValue.TrimStart('/').Replace("ai/reports/", ""))
+                .ToList()
+                .Select(part => int.TryParse(part, out var id) ? id : (int?)null)
                 .Where(id => id.HasValue)
                 .Select(id => id!.Value)
                 .ToHashSet();
@@ -347,20 +248,78 @@ public class ReportFormatBusiness : ProjectBusiness
         if (report == null)
             return false;
 
-        var urlWithoutSlash = $"ai/reports/{id}";
-        var urlWithSlash = $"/{urlWithoutSlash}";
+        var (url, claimValue) = NormalizeUrl($"ai/reports/{id}");
 
-        var menuLink = apiContext.MenuLinks.FirstOrDefault(x => x.IsDedicated == true && (x.Url == urlWithoutSlash || x.Url == urlWithSlash));
-
+        var menuLink = FindDedicatedMenuLink(url, claimValue);
         if (menuLink != null)
             apiContext.MenuLinks.Remove(menuLink);
 
-        var claims = apiContext.UserClaims.Where(x => x.ClaimType == ClaimTypes.Authentication &&(x.ClaimValue == urlWithSlash || x.ClaimValue == urlWithoutSlash)).ToList();
-
-        apiContext.UserClaims.RemoveRange(claims);
-
+        apiContext.UserClaims.RemoveRange(AuthenticationClaimsFor(url, claimValue).ToList());
         apiContext.ReportFormats.Remove(report);
 
         return apiContext.SaveChanges() > 0;
+    }
+
+    // --- Shared Ai helpers  ---
+
+    private (string Url, string ClaimValue) NormalizeUrl(string rawUrl)
+    {
+        var url = rawUrl.Replace('-', '/').TrimStart('/');
+        return (url, "/" + url);
+    }
+
+    private MenuLink FindDedicatedMenuLink(string url, string claimValue)
+    {
+        return apiContext.MenuLinks.FirstOrDefault(p =>
+            p.IsDedicated == true &&
+            p.Level == 3 &&
+            (p.Url == url || p.Url == claimValue));
+    }
+
+    private void UpsertDedicatedMenuLink(string url, string claimValue, string title, int parentId)
+    {
+        var link = FindDedicatedMenuLink(url, claimValue);
+
+        if (link is not null)
+        {
+            link.Title = title;
+            link.ParentId = parentId;
+            link.IsShown = true;
+        }
+        else
+        {
+            apiContext.MenuLinks.Add(new MenuLink
+            {
+                Id = apiContext.MenuLinks.Max(p => p.Id) + 1,
+                Level = 3,
+                Title = title,
+                Url = url,
+                ParentId = parentId,
+                IsShown = true,
+                IsDedicated = true
+            });
+        }
+    }
+
+    private IQueryable<UserClaim> AuthenticationClaimsFor(string url, string claimValue)
+    {
+        return apiContext.UserClaims.Where(p =>
+            p.ClaimType == ClaimTypes.Authentication &&
+            (p.ClaimValue == claimValue || p.ClaimValue == url));
+    }
+
+    private void ReplaceAuthenticationClaims(string url, string claimValue, IEnumerable<string> userIds)
+    {
+        apiContext.UserClaims.RemoveRange(AuthenticationClaimsFor(url, claimValue).ToList());
+
+        foreach (var userId in userIds.Distinct())
+        {
+            apiContext.UserClaims.Add(new UserClaim
+            {
+                UserId = userId,
+                ClaimType = ClaimTypes.Authentication,
+                ClaimValue = claimValue
+            });
+        }
     }
 }

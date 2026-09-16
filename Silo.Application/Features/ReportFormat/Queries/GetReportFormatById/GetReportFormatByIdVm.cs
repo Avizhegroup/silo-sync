@@ -18,20 +18,9 @@ public class GetReportFormatByIdVm
 }
 
 [JsonSerializable(typeof(ApiResponse<GetReportFormatByIdVm>))]
-[JsonSerializable(typeof(GetReportFormatByIdVm))]
-[JsonSerializable(typeof(ReportFormatDetail))]
-[JsonSerializable(typeof(GetAiReportDataVm))]
 [JsonSerializable(typeof(ApiResponse<GetAiReportDataVm>))]
-[JsonSerializable(typeof(List<List<object>>))]
-[JsonSerializable(typeof(List<object>))]
 public partial class GetReportFormatByIdVmContext : JsonSerializerContext
 {
 
 }
 
-public class GetAiReportDataVm
-{
-    public string Name { get; set; }
-    public List<List<object>> Data { get; set; } = new();
-    public int QueryId { get; set; }
-}

@@ -67,7 +67,10 @@
                                         {
                                             @((MarkupString)ConvertMarkdownToHtml(message.Text))
 
-                                            <AiResultGrid Data="@message.SqlCommandsResults" />
+                                            <AiResultGrid Data="@message.SqlCommandsResults"
+                                                          QueryId="@message.QueryId"
+                                                          Mode="@Mode?.ToString()"
+                                                          ShowSaveButton="true" />
 
                                         }
                                        

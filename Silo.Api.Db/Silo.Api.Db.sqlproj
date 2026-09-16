@@ -191,6 +191,7 @@
     <Build Include="Tables\tbl_WarehouseCorridor.sql" />
     <Build Include="Tables\tbl_UserQuickAccess.sql" />
     <Build Include="Tables\tbl_TextResources.sql" />
+    <Build Include="Tables\tbl_AiGeneratedQueries.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Silo.Api.Db.refactorlog" />

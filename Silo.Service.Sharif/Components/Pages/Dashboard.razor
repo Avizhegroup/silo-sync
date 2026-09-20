@@ -1,0 +1,101 @@
+@page "/"
+
+<PageTitle>@TextResources.SharifUi_Dashboard</PageTitle>
+
+<h1>@TextResources.SharifUi_Dashboard</h1>
+
+<div class="dashboard-cards">
+    <div class="card">
+        <div class="card-title">@TextResources.SharifUi_ConnectionStatus</div>
+        <div class="card-value @(State.IsConnected ? "status-ok" : "status-error")">
+            @(State.IsConnected ? TextResources.SharifUi_Connected : TextResources.SharifUi_Disconnected)
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-title">@TextResources.SharifUi_InventoryStatus</div>
+        <div class="card-value @(State.IsInventoryRunning ? "status-ok" : "status-error")">
+            @(State.IsInventoryRunning ? TextResources.SharifUi_Running : TextResources.SharifUi_Stopped)
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-title">@TextResources.SharifUi_ReaderPower</div>
+        <div class="card-value">@State.CurrentPower dBm</div>
+    </div>
+    <div class="card">
+        <div class="card-title">@TextResources.SharifUi_StationCode</div>
+        <div class="card-value">@StationCode</div>
+    </div>
+    <div class="card">
+        <div class="card-title">@TextResources.SharifUi_GateType</div>
+        <div class="card-value">@GateType</div>
+    </div>
+    <div class="card">
+        <div class="card-title">@TextResources.SharifUi_LastReadTagCount</div>
+        <div class="card-value">@State.TagCount</div>
+    </div>
+    <div class="card">
+        <div class="card-title">@TextResources.SharifUi_ApiSuccessCount</div>
+        <div class="card-value status-ok">@State.SuccessCount</div>
+    </div>
+    <div class="card">
+        <div class="card-title">@TextResources.SharifUi_ApiFailureCount</div>
+        <div class="card-value @(State.FailureCount > 0 ? "status-error" : "status-ok")">@State.FailureCount</div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(State.LastApiError) || State.LastApiCallUtc.HasValue)
+{
+    <div class="card">
+        <div class="card-title">
+            @TextResources.SharifUi_LastApiCall
+            @if (State.LastApiCallUtc.HasValue)
+            {
+                <span class="text-muted">(@State.LastApiCallUtc.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"))</span>
+            }
+        </div>
+        @if (!string.IsNullOrEmpty(State.LastApiError))
+        {
+            <div class="status-error">@State.LastApiError</div>
+        }
+        else
+        {
+            <div class="status-ok">@TextResources.SharifUi_LastApiCallOk</div>
+        }
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(State.LastError))
+{
+    <div class="card">
+        <div class="card-title">@TextResources.SharifUi_LastError</div>
+        <div class="status-error">@State.LastError</div>
+    </div>
+}
+
+<div class="card">
+    <TelerikButton OnClick="OnConnectClick"
+                   Enabled="!State.IsConnected"
+                   ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">
+        @TextResources.SharifUi_Connect
+    </TelerikButton>
+    <TelerikButton OnClick="OnDisconnectClick"
+                   Enabled="State.IsConnected"
+                   ThemeColor="@ThemeConstants.Button.ThemeColor.Error">
+        @TextResources.SharifUi_Disconnect
+    </TelerikButton>
+    <TelerikButton OnClick="OnStartInventoryClick"
+                   Enabled="State.IsConnected && !State.IsInventoryRunning"
+                   ThemeColor="@ThemeConstants.Button.ThemeColor.Success">
+        @TextResources.SharifUi_StartInventory
+    </TelerikButton>
+    <TelerikButton OnClick="OnStopInventoryClick"
+                   Enabled="State.IsInventoryRunning"
+                   ThemeColor="@ThemeConstants.Button.ThemeColor.Warning">
+        @TextResources.SharifUi_StopInventory
+    </TelerikButton>
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="@LoaderType.InfiniteSpinner"
+                        Text="@TextResources.SharifUi_PleaseWait" />

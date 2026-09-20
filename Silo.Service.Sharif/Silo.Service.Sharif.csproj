@@ -1,17 +1,27 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <PlatformTarget>x86</PlatformTarget>
     </PropertyGroup>
 
     <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" />
         <PackageReference Include="Microsoft.Extensions.Hosting" />
+        <PackageReference Include="System.Text.Json" />
+        <PackageReference Include="Telerik.UI.for.Blazor" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
         <ProjectReference Include="..\Silo.Infrastructure.Shared\Silo.Infrastructure.Shared.csproj" />
+        <ProjectReference Include="..\Silo.Shared.Components\Silo.Shared.Components.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Telerik.Blazor" />
+        <Using Include="Telerik.Blazor.Components" />
+        <Using Include="Microsoft.AspNetCore.Components.Web" />
     </ItemGroup>
 
     <ItemGroup>

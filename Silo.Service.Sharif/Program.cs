@@ -1,4 +1,8 @@
 ﻿using Silo.Service.Sharif;
+using Silo.Service.Sharif.Components;
+using Silo.Service.Sharif.Configuration;
+using Silo.Service.Sharif.Services;
+using Silo.Service.Sharif.State;
 using Silo.Infrastructure.Shared;
 using Serilog;
 
@@ -11,23 +15,40 @@ if (!Directory.Exists(logsPath))
     Directory.CreateDirectory(Path.Combine(logsPath, "Exceptions"));
 }
 
-var builder = Host.CreateDefaultBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-builder
-    .UseWindowsService(config =>
-    {
-        config.ServiceName = "SiloSharifService";
-    })
-    .ConfigureServices((context, services) =>
-    {
-        services.AddSiloSerilogForWindowsServices(context.Configuration);
+builder.Host.UseWindowsService(config =>
+{
+    config.ServiceName = "SiloSharifService";
+});
 
-        services.AddSingleton<RfidConnectApiForSharif>();
-        services.AddSingleton<RfidReaderService>();
+builder.WebHost.UseUrls(builder.Configuration["Ui:Url"] ?? "http://localhost:5005");
 
-        services.AddHostedService<Worker>();
-    })
-    .UseSerilog();
+builder.Host.UseSerilog();
 
-var host = builder.Build();
-host.Run();
+builder.Services.AddSiloSerilogForWindowsServices(builder.Configuration);
+
+builder.Services.Configure<RfidWorkerOptions>(builder.Configuration.GetSection("RfidWorker"));
+
+builder.Services.AddSingleton<ReaderStateStore>();
+builder.Services.AddSingleton<RfidReaderService>();
+builder.Services.AddSingleton<ReaderControlService>();
+builder.Services.AddSingleton<WorkerSettingsWriter>();
+builder.Services.AddSingleton<LogTailService>();
+
+builder.Services.AddSingleton<RfidConnectApiForSharif>();
+
+builder.Services.AddHostedService<Worker>();
+
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+builder.Services.AddTelerikBlazor();
+
+var app = builder.Build();
+
+app.UseStaticFiles();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+
+app.Run();

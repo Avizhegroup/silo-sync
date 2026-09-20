@@ -1,0 +1,42 @@
+@page "/logs"
+
+<PageTitle>@TextResources.SharifUi_Logs</PageTitle>
+
+<h1>@TextResources.SharifUi_Logs</h1>
+
+<div class="card">
+    <div class="form-row">
+        <label>@TextResources.SharifUi_LogType</label>
+        <TelerikDropDownList Data="LogKinds"
+                             @bind-Value="SelectedKind"
+                             TextField="Text"
+                             ValueField="Kind"
+                             OnChange="OnLogKindChange" />
+    </div>
+    <div class="form-row">
+        <label>@TextResources.SharifUi_LogFile</label>
+        <TelerikDropDownList Data="LogFiles"
+                             @bind-Value="SelectedFile"
+                             TextField="Name"
+                             ValueField="Path"
+                             OnChange="OnRefreshClick" />
+    </div>
+    <div class="form-row">
+        <label>@TextResources.SharifUi_LineCount</label>
+        <TelerikNumericTextBox @bind-Value="LineCount" Min="10" Max="5000" Step="50" />
+    </div>
+
+    <TelerikButton OnClick="OnRefreshClick"
+                   ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">
+        @TextResources.SharifUi_Refresh
+    </TelerikButton>
+    <TelerikCheckBox @bind-Value="AutoRefresh" Id="auto-refresh" />
+    <label for="auto-refresh">@TextResources.SharifUi_AutoRefresh</label>
+</div>
+
+<pre class="pre-wrap">@LogContent</pre>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="@LoaderType.InfiniteSpinner"
+                        Text="@TextResources.SharifUi_PleaseWait" />

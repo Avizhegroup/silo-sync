@@ -1,0 +1,85 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.page {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 220px;
+    background: #1f2937;
+    color: #fff;
+}
+
+.nav-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-menu li a {
+    display: block;
+    padding: 1rem;
+    color: #d1d5db;
+    text-decoration: none;
+}
+
+.nav-menu li a.active,
+.nav-menu li a:hover {
+    background: #374151;
+    color: #fff;
+}
+
+main {
+    flex: 1;
+    padding: 1rem;
+    background: #f3f4f6;
+}
+
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.card {
+    background: #fff;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.card-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.status-ok {
+    color: #16a34a;
+}
+
+.status-error {
+    color: #dc2626;
+}
+
+.pre-wrap {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background: #fff;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    max-height: 60vh;
+    overflow: auto;
+    font-family: Consolas, monospace;
+}

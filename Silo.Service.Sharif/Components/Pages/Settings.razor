@@ -1,0 +1,54 @@
+@page "/settings"
+
+<PageTitle>@TextResources.SharifUi_Settings</PageTitle>
+
+<h1>@TextResources.SharifUi_Settings</h1>
+
+<EditForm Model="Model" OnValidSubmit="OnSaveSubmit">
+    <DataAnnotationsValidator />
+    <TelerikValidationSummary />
+
+    <div class="card">
+        <div class="form-row">
+            <label>@TextResources.SharifUi_StationCode</label>
+            <TelerikTextBox @bind-Value="Model.StationCode" />
+            <ValidationMessage For="() => Model.StationCode" />
+        </div>
+        <div class="form-row">
+            <label>@TextResources.SharifUi_GateType</label>
+            <TelerikTextBox @bind-Value="Model.GateType" />
+            <ValidationMessage For="() => Model.GateType" />
+        </div>
+        <div class="form-row">
+            <label>@TextResources.SharifUi_ReaderPower</label>
+            <TelerikNumericTextBox @bind-Value="Model.ReaderPower"
+                                   Min="@((byte)1)"
+                                   Max="@((byte)30)"
+                                   Step="@((byte)1)" />
+            <ValidationMessage For="() => Model.ReaderPower" />
+        </div>
+        <div class="form-row">
+            <label>@TextResources.SharifUi_IdleDelay</label>
+            <TelerikNumericTextBox @bind-Value="Model.IdleDelayMilliseconds"
+                                   Min="@(100)"
+                                   Step="@(100)" />
+            <ValidationMessage For="() => Model.IdleDelayMilliseconds" />
+        </div>
+
+        <TelerikButton ButtonType="@ButtonType.Submit"
+                       ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">
+            @TextResources.SharifUi_Save
+        </TelerikButton>
+        <TelerikButton OnClick="OnClearClick"
+                       ThemeColor="@ThemeConstants.Button.ThemeColor.Secondary">
+            @TextResources.SharifUi_Reset
+        </TelerikButton>
+    </div>
+</EditForm>
+
+<TelerikNotification @ref="Notification" />
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="@LoaderType.InfiniteSpinner"
+                        Text="@TextResources.SharifUi_PleaseWait" />

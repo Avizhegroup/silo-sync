@@ -1,69 +1,90 @@
-﻿using Silo.Application.Features;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Options;
+using Silo.Application.Features;
+using Silo.Service.Sharif.Configuration;
+using Silo.Service.Sharif.Services;
+using Silo.Service.Sharif.State;
 
 namespace Silo.Service.Sharif;
 
 public class Worker : BackgroundService
 {
-    private readonly IConfiguration _configuration;
     private readonly ILogger<Worker> _logger;
-    private readonly RfidReaderService _rfid;
     private readonly RfidConnectApiForSharif _api;
+    private readonly ReaderControlService _readerControl;
+    private readonly ReaderStateStore _state;
+    private readonly IOptionsMonitor<RfidWorkerOptions> _options;
 
-    public Worker(ILogger<Worker> logger, RfidReaderService rfid, IConfiguration configuration, RfidConnectApiForSharif api)
+    public Worker(
+        ILogger<Worker> logger,
+        RfidConnectApiForSharif api,
+        ReaderControlService readerControl,
+        ReaderStateStore state,
+        IOptionsMonitor<RfidWorkerOptions> options)
     {
         _logger = logger;
-        _rfid = rfid;
-        _configuration = configuration;
         _api = api;
+        _readerControl = readerControl;
+        _state = state;
+        _options = options;
     }
 
     public override async Task StartAsync(CancellationToken token)
     {
-        _rfid.ConnectUsb();
+        await _readerControl.ConnectAsync(token);
 
-        var powerStr = _configuration["RfidWorker:ReaderPower"];
+        var power = _options.CurrentValue.ReaderPower;
+        await _readerControl.SetPowerAsync(power, token);
 
-        if (!byte.TryParse(powerStr, out var powerValue))
-            throw new InvalidOperationException($"Invalid Power Configuration: {powerStr}");
+        _state.SetInventoryRunning(true);
 
-        _rfid.SetPower(0, powerValue);
-
-        _logger.LogInformation("RFID reader initialized successfully. USB connection established, power set to {Power}, inventory started.");
+        _logger.LogInformation(
+            "RFID worker initialized. Connected={Connected}, Power={Power}, Station={Station}, GateType={GateType}.",
+            _state.IsConnected,
+            power,
+            _options.CurrentValue.StationCode,
+            _options.CurrentValue.GateType);
 
         await base.StartAsync(token);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var idleDelayStr = _configuration["RfidWorker:IdleDelayMilliseconds"];
-        int idleDelay = int.Parse(idleDelayStr!);
-        var stationCode = _configuration["RfidWorker:StationCode"];
-        var gateType = _configuration["RfidWorker:GateType"];
-
-        await Task.Delay(2000);
+        await Task.Delay(2000, stoppingToken);
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            _rfid.StartInventory();
+            var options = _options.CurrentValue;
+            var idleDelay = options.IdleDelayMilliseconds;
 
-            var tag = _rfid.ReadTag();
-
-            if (tag != null)
+            if (!_state.IsInventoryRunning)
             {
-                _logger.LogInformation($"Read tag with {tag.Epc}");
-               
-                await _api.SendAsyncObjectByUri<CreateSharifTagVm>(HttpMethod.Post,"Sharif/SendTag",
-                 new
-                 {
-                     EPC = tag.Epc,
-                     StationCode = stationCode,
-                     GateType = gateType
-
-                 });
-
+                await Task.Delay(Math.Max(idleDelay, 100), stoppingToken);
+                continue;
             }
 
-            await Task.Delay(500);
+            try
+            {
+                var tag = await _readerControl.ReadTagAsync(stoppingToken);
+
+                if (tag != null)
+                {
+                    _logger.LogInformation("Read tag with {Epc}", tag.Epc);
+                    await SendTagAsync(tag, options, stoppingToken);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected when the service is stopping.
+                break;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error in RFID worker loop.");
+                _state.SetLastError($"{TextResources.SharifUi_WorkerLoopError}: {ex.Message}");
+            }
+
+            await Task.Delay(500, stoppingToken);
         }
 
         _logger.LogInformation("RFID tag reading loop exited gracefully.");
@@ -71,13 +92,115 @@ public class Worker : BackgroundService
 
     public override async Task StopAsync(CancellationToken token)
     {
-        _rfid.StopInventory();
+        _state.SetInventoryRunning(false);
 
-        _rfid.Disconnect();
+        await _readerControl.StopInventoryAsync(token);
+        await _readerControl.DisconnectAsync(token);
 
         _logger.LogInformation("RFID reader stopped and disconnected successfully.");
 
         await base.StopAsync(token);
+    }
+
+    private async Task SendTagAsync(Silo.Service.Sharif.Dtos.UHFTAGInfo tag, RfidWorkerOptions options, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var json = await _api.SendAsyncObjectByUri<CreateSharifTagVm>(
+                HttpMethod.Post,
+                "Sharif/SendTag",
+                new
+                {
+                    EPC = tag.Epc,
+                    options.StationCode,
+                    options.GateType
+                });
+
+            var succeeded = IsSuccessResponse(json);
+            var message = succeeded ? null : (ExtractMessage(json) ?? json);
+            _state.RecordApiResult(succeeded, message);
+
+            _state.AddTag(new TagReadEntry
+            {
+                Epc = tag.Epc,
+                ReadUtc = DateTime.UtcNow,
+                StationCode = options.StationCode,
+                GateType = options.GateType,
+                PostSucceeded = succeeded,
+                ErrorMessage = message
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send tag {Epc} to API.", tag.Epc);
+            _state.RecordApiResult(false, ex.Message);
+
+            _state.AddTag(new TagReadEntry
+            {
+                Epc = tag.Epc,
+                ReadUtc = DateTime.UtcNow,
+                StationCode = options.StationCode,
+                GateType = options.GateType,
+                PostSucceeded = false,
+                ErrorMessage = ex.Message
+            });
+        }
+    }
+
+    private static bool IsSuccessResponse(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return false;
+        }
+
+        try
+        {
+            using var document = JsonDocument.Parse(json);
+            if (document.RootElement.TryGetProperty("successful", out var successProperty))
+            {
+                return successProperty.GetBoolean();
+            }
+
+            if (document.RootElement.TryGetProperty("Successful", out var successProp2))
+            {
+                return successProp2.GetBoolean();
+            }
+        }
+        catch
+        {
+            // Treat malformed responses as failures.
+        }
+
+        return false;
+    }
+
+    private static string? ExtractMessage(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return null;
+        }
+
+        try
+        {
+            using var document = JsonDocument.Parse(json);
+            if (document.RootElement.TryGetProperty("message", out var message) && message.GetString() is { } m)
+            {
+                return m;
+            }
+
+            if (document.RootElement.TryGetProperty("Message", out var message2) && message2.GetString() is { } m2)
+            {
+                return m2;
+            }
+        }
+        catch
+        {
+            // Ignore parse errors; caller can show raw JSON.
+        }
+
+        return null;
     }
 }
 

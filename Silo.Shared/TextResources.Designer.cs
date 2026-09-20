@@ -16576,5 +16576,290 @@ namespace Silo.Shared
                 return ResourceManager.GetString("APP_StringKeys_Column_Duplicate");
             }
         }
+
+        public static string SharifUi_AppTitle
+        {
+            get { return ResourceManager.GetString("SharifUi_AppTitle"); }
+        }
+
+        public static string SharifUi_Dashboard
+        {
+            get { return ResourceManager.GetString("SharifUi_Dashboard"); }
+        }
+
+        public static string SharifUi_LiveTags
+        {
+            get { return ResourceManager.GetString("SharifUi_LiveTags"); }
+        }
+
+        public static string SharifUi_Settings
+        {
+            get { return ResourceManager.GetString("SharifUi_Settings"); }
+        }
+
+        public static string SharifUi_Logs
+        {
+            get { return ResourceManager.GetString("SharifUi_Logs"); }
+        }
+
+        public static string SharifUi_ConnectionStatus
+        {
+            get { return ResourceManager.GetString("SharifUi_ConnectionStatus"); }
+        }
+
+        public static string SharifUi_Connected
+        {
+            get { return ResourceManager.GetString("SharifUi_Connected"); }
+        }
+
+        public static string SharifUi_Disconnected
+        {
+            get { return ResourceManager.GetString("SharifUi_Disconnected"); }
+        }
+
+        public static string SharifUi_InventoryStatus
+        {
+            get { return ResourceManager.GetString("SharifUi_InventoryStatus"); }
+        }
+
+        public static string SharifUi_Running
+        {
+            get { return ResourceManager.GetString("SharifUi_Running"); }
+        }
+
+        public static string SharifUi_Stopped
+        {
+            get { return ResourceManager.GetString("SharifUi_Stopped"); }
+        }
+
+        public static string SharifUi_ReaderPower
+        {
+            get { return ResourceManager.GetString("SharifUi_ReaderPower"); }
+        }
+
+        public static string SharifUi_StationCode
+        {
+            get { return ResourceManager.GetString("SharifUi_StationCode"); }
+        }
+
+        public static string SharifUi_GateType
+        {
+            get { return ResourceManager.GetString("SharifUi_GateType"); }
+        }
+
+        public static string SharifUi_LastReadTagCount
+        {
+            get { return ResourceManager.GetString("SharifUi_LastReadTagCount"); }
+        }
+
+        public static string SharifUi_ApiSuccessCount
+        {
+            get { return ResourceManager.GetString("SharifUi_ApiSuccessCount"); }
+        }
+
+        public static string SharifUi_ApiFailureCount
+        {
+            get { return ResourceManager.GetString("SharifUi_ApiFailureCount"); }
+        }
+
+        public static string SharifUi_LastApiCall
+        {
+            get { return ResourceManager.GetString("SharifUi_LastApiCall"); }
+        }
+
+        public static string SharifUi_LastApiCallOk
+        {
+            get { return ResourceManager.GetString("SharifUi_LastApiCallOk"); }
+        }
+
+        public static string SharifUi_LastError
+        {
+            get { return ResourceManager.GetString("SharifUi_LastError"); }
+        }
+
+        public static string SharifUi_Connect
+        {
+            get { return ResourceManager.GetString("SharifUi_Connect"); }
+        }
+
+        public static string SharifUi_Disconnect
+        {
+            get { return ResourceManager.GetString("SharifUi_Disconnect"); }
+        }
+
+        public static string SharifUi_StartInventory
+        {
+            get { return ResourceManager.GetString("SharifUi_StartInventory"); }
+        }
+
+        public static string SharifUi_StopInventory
+        {
+            get { return ResourceManager.GetString("SharifUi_StopInventory"); }
+        }
+
+        public static string SharifUi_PleaseWait
+        {
+            get { return ResourceManager.GetString("SharifUi_PleaseWait"); }
+        }
+
+        public static string SharifUi_Epc
+        {
+            get { return ResourceManager.GetString("SharifUi_Epc"); }
+        }
+
+        public static string SharifUi_ReadTime
+        {
+            get { return ResourceManager.GetString("SharifUi_ReadTime"); }
+        }
+
+        public static string SharifUi_PostResult
+        {
+            get { return ResourceManager.GetString("SharifUi_PostResult"); }
+        }
+
+        public static string SharifUi_Success
+        {
+            get { return ResourceManager.GetString("SharifUi_Success"); }
+        }
+
+        public static string SharifUi_Failed
+        {
+            get { return ResourceManager.GetString("SharifUi_Failed"); }
+        }
+
+        public static string SharifUi_ErrorMessage
+        {
+            get { return ResourceManager.GetString("SharifUi_ErrorMessage"); }
+        }
+
+        public static string SharifUi_Clear
+        {
+            get { return ResourceManager.GetString("SharifUi_Clear"); }
+        }
+
+        public static string SharifUi_ExportExcel
+        {
+            get { return ResourceManager.GetString("SharifUi_ExportExcel"); }
+        }
+
+        public static string SharifUi_Save
+        {
+            get { return ResourceManager.GetString("SharifUi_Save"); }
+        }
+
+        public static string SharifUi_Reset
+        {
+            get { return ResourceManager.GetString("SharifUi_Reset"); }
+        }
+
+        public static string SharifUi_SettingsSaved
+        {
+            get { return ResourceManager.GetString("SharifUi_SettingsSaved"); }
+        }
+
+        public static string SharifUi_SettingsSaveFailed
+        {
+            get { return ResourceManager.GetString("SharifUi_SettingsSaveFailed"); }
+        }
+
+        public static string SharifUi_IdleDelay
+        {
+            get { return ResourceManager.GetString("SharifUi_IdleDelay"); }
+        }
+
+        public static string SharifUi_LogType
+        {
+            get { return ResourceManager.GetString("SharifUi_LogType"); }
+        }
+
+        public static string SharifUi_LogFile
+        {
+            get { return ResourceManager.GetString("SharifUi_LogFile"); }
+        }
+
+        public static string SharifUi_LineCount
+        {
+            get { return ResourceManager.GetString("SharifUi_LineCount"); }
+        }
+
+        public static string SharifUi_Refresh
+        {
+            get { return ResourceManager.GetString("SharifUi_Refresh"); }
+        }
+
+        public static string SharifUi_AutoRefresh
+        {
+            get { return ResourceManager.GetString("SharifUi_AutoRefresh"); }
+        }
+
+        public static string SharifUi_LogKind_Info
+        {
+            get { return ResourceManager.GetString("SharifUi_LogKind_Info"); }
+        }
+
+        public static string SharifUi_LogKind_Exception
+        {
+            get { return ResourceManager.GetString("SharifUi_LogKind_Exception"); }
+        }
+
+        public static string SharifUi_StationCode_Required
+        {
+            get { return ResourceManager.GetString("SharifUi_StationCode_Required"); }
+        }
+
+        public static string SharifUi_GateType_Required
+        {
+            get { return ResourceManager.GetString("SharifUi_GateType_Required"); }
+        }
+
+        public static string SharifUi_ReaderPower_Range
+        {
+            get { return ResourceManager.GetString("SharifUi_ReaderPower_Range"); }
+        }
+
+        public static string SharifUi_IdleDelay_Range
+        {
+            get { return ResourceManager.GetString("SharifUi_IdleDelay_Range"); }
+        }
+
+        public static string Reader_ConnectFailed
+        {
+            get { return ResourceManager.GetString("Reader_ConnectFailed"); }
+        }
+
+        public static string Reader_DisconnectFailed
+        {
+            get { return ResourceManager.GetString("Reader_DisconnectFailed"); }
+        }
+
+        public static string Reader_StartInventoryFailed
+        {
+            get { return ResourceManager.GetString("Reader_StartInventoryFailed"); }
+        }
+
+        public static string Reader_StopInventoryFailed
+        {
+            get { return ResourceManager.GetString("Reader_StopInventoryFailed"); }
+        }
+
+        public static string Reader_SetPowerFailed
+        {
+            get { return ResourceManager.GetString("Reader_SetPowerFailed"); }
+        }
+
+        public static string Reader_PowerRangeError
+        {
+            get { return ResourceManager.GetString("Reader_PowerRangeError"); }
+        }
+
+        public static string Reader_ReadTagFailed
+        {
+            get { return ResourceManager.GetString("Reader_ReadTagFailed"); }
+        }
+
+        public static string SharifUi_WorkerLoopError
+        {
+            get { return ResourceManager.GetString("SharifUi_WorkerLoopError"); }
+        }
     }
 }

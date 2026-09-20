@@ -4638,4 +4638,175 @@
   <data name="APP_StringKeys_Variety_ProductCode" xml:space="preserve">
     <value>تنوع کدکالا</value>
   </data>
+  <data name="SharifUi_AppTitle" xml:space="preserve">
+    <value>داشبورد سرویس شریف</value>
+  </data>
+  <data name="SharifUi_Dashboard" xml:space="preserve">
+    <value>داشبورد</value>
+  </data>
+  <data name="SharifUi_LiveTags" xml:space="preserve">
+    <value>تگ‌های خوانده‌شده</value>
+  </data>
+  <data name="SharifUi_Settings" xml:space="preserve">
+    <value>تنظیمات</value>
+  </data>
+  <data name="SharifUi_Logs" xml:space="preserve">
+    <value>لاگ‌ها</value>
+  </data>
+  <data name="SharifUi_ConnectionStatus" xml:space="preserve">
+    <value>وضعیت اتصال</value>
+  </data>
+  <data name="SharifUi_Connected" xml:space="preserve">
+    <value>متصل</value>
+  </data>
+  <data name="SharifUi_Disconnected" xml:space="preserve">
+    <value>قطع</value>
+  </data>
+  <data name="SharifUi_InventoryStatus" xml:space="preserve">
+    <value>وضعیت خواندن</value>
+  </data>
+  <data name="SharifUi_Running" xml:space="preserve">
+    <value>در حال اجرا</value>
+  </data>
+  <data name="SharifUi_Stopped" xml:space="preserve">
+    <value>متوقف</value>
+  </data>
+  <data name="SharifUi_ReaderPower" xml:space="preserve">
+    <value>توان آنتن</value>
+  </data>
+  <data name="SharifUi_StationCode" xml:space="preserve">
+    <value>کد ایستگاه</value>
+  </data>
+  <data name="SharifUi_GateType" xml:space="preserve">
+    <value>نوع گیت</value>
+  </data>
+  <data name="SharifUi_LastReadTagCount" xml:space="preserve">
+    <value>تعداد تگ‌های اخیر</value>
+  </data>
+  <data name="SharifUi_ApiSuccessCount" xml:space="preserve">
+    <value>تعداد ارسال موفق</value>
+  </data>
+  <data name="SharifUi_ApiFailureCount" xml:space="preserve">
+    <value>تعداد ارسال ناموفق</value>
+  </data>
+  <data name="SharifUi_LastApiCall" xml:space="preserve">
+    <value>آخرین ارسال به سرور</value>
+  </data>
+  <data name="SharifUi_LastApiCallOk" xml:space="preserve">
+    <value>آخرین ارسال موفق بود</value>
+  </data>
+  <data name="SharifUi_LastError" xml:space="preserve">
+    <value>آخرین خطا</value>
+  </data>
+  <data name="SharifUi_Connect" xml:space="preserve">
+    <value>اتصال</value>
+  </data>
+  <data name="SharifUi_Disconnect" xml:space="preserve">
+    <value>قطع اتصال</value>
+  </data>
+  <data name="SharifUi_StartInventory" xml:space="preserve">
+    <value>شروع خواندن</value>
+  </data>
+  <data name="SharifUi_StopInventory" xml:space="preserve">
+    <value>توقف خواندن</value>
+  </data>
+  <data name="SharifUi_PleaseWait" xml:space="preserve">
+    <value>لطفاً صبر کنید...</value>
+  </data>
+  <data name="SharifUi_Epc" xml:space="preserve">
+    <value>EPC</value>
+  </data>
+  <data name="SharifUi_ReadTime" xml:space="preserve">
+    <value>زمان خواندن</value>
+  </data>
+  <data name="SharifUi_PostResult" xml:space="preserve">
+    <value>نتیجه ارسال</value>
+  </data>
+  <data name="SharifUi_Success" xml:space="preserve">
+    <value>موفق</value>
+  </data>
+  <data name="SharifUi_Failed" xml:space="preserve">
+    <value>ناموفق</value>
+  </data>
+  <data name="SharifUi_ErrorMessage" xml:space="preserve">
+    <value>پیام خطا</value>
+  </data>
+  <data name="SharifUi_Clear" xml:space="preserve">
+    <value>پاک کردن</value>
+  </data>
+  <data name="SharifUi_ExportExcel" xml:space="preserve">
+    <value>خروجی اکسل</value>
+  </data>
+  <data name="SharifUi_Save" xml:space="preserve">
+    <value>ذخیره</value>
+  </data>
+  <data name="SharifUi_Reset" xml:space="preserve">
+    <value>بازنشانی</value>
+  </data>
+  <data name="SharifUi_SettingsSaved" xml:space="preserve">
+    <value>تنظیمات با موفقیت ذخیره شد.</value>
+  </data>
+  <data name="SharifUi_SettingsSaveFailed" xml:space="preserve">
+    <value>ذخیره تنظیمات با خطا مواجه شد.</value>
+  </data>
+  <data name="SharifUi_IdleDelay" xml:space="preserve">
+    <value>تأخیر میان خوانش (میلی‌ثانیه)</value>
+  </data>
+  <data name="SharifUi_LogType" xml:space="preserve">
+    <value>نوع لاگ</value>
+  </data>
+  <data name="SharifUi_LogFile" xml:space="preserve">
+    <value>فایل لاگ</value>
+  </data>
+  <data name="SharifUi_LineCount" xml:space="preserve">
+    <value>تعداد خطوط</value>
+  </data>
+  <data name="SharifUi_Refresh" xml:space="preserve">
+    <value>به‌روزرسانی</value>
+  </data>
+  <data name="SharifUi_AutoRefresh" xml:space="preserve">
+    <value>به‌روزرسانی خودکار هر ۵ ثانیه</value>
+  </data>
+  <data name="SharifUi_LogKind_Info" xml:space="preserve">
+    <value>اطلاعات</value>
+  </data>
+  <data name="SharifUi_LogKind_Exception" xml:space="preserve">
+    <value>خطاها</value>
+  </data>
+  <data name="SharifUi_StationCode_Required" xml:space="preserve">
+    <value>کد ایستگاه الزامی است.</value>
+  </data>
+  <data name="SharifUi_GateType_Required" xml:space="preserve">
+    <value>نوع گیت الزامی است.</value>
+  </data>
+  <data name="SharifUi_ReaderPower_Range" xml:space="preserve">
+    <value>توان آنتن باید بین ۱ تا ۳۰ باشد.</value>
+  </data>
+  <data name="SharifUi_IdleDelay_Range" xml:space="preserve">
+    <value>تأخیر میان خوانش حداقل ۱۰۰ میلی‌ثانیه باید باشد.</value>
+  </data>
+  <data name="Reader_ConnectFailed" xml:space="preserve">
+    <value>اتصال به RFID با خطا مواجه شد</value>
+  </data>
+  <data name="Reader_DisconnectFailed" xml:space="preserve">
+    <value>قطع اتصال RFID با خطا مواجه شد</value>
+  </data>
+  <data name="Reader_StartInventoryFailed" xml:space="preserve">
+    <value>شروع خواندن RFID با خطا مواجه شد</value>
+  </data>
+  <data name="Reader_StopInventoryFailed" xml:space="preserve">
+    <value>توقف خواندن RFID با خطا مواجه شد</value>
+  </data>
+  <data name="Reader_SetPowerFailed" xml:space="preserve">
+    <value>تنظیم توان RFID با خطا مواجه شد</value>
+  </data>
+  <data name="Reader_PowerRangeError" xml:space="preserve">
+    <value>توان آنتن باید بین ۱ تا ۳۰ dBm باشد.</value>
+  </data>
+  <data name="Reader_ReadTagFailed" xml:space="preserve">
+    <value>خطا در خواندن برچسب RFID</value>
+  </data>
+  <data name="SharifUi_WorkerLoopError" xml:space="preserve">
+    <value>خطا در حلقه پردازش RFID</value>
+  </data>
 </root>

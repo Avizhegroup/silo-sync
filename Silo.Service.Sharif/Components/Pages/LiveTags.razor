@@ -1,0 +1,46 @@
+@page "/live-tags"
+
+<PageTitle>@TextResources.SharifUi_LiveTags</PageTitle>
+
+<h1>@TextResources.SharifUi_LiveTags</h1>
+
+<TelerikGrid Data="Tags"
+             Sortable="true"
+             FilterMode="@GridFilterMode.FilterRow"
+             Pageable="true"
+             PageSize="25"
+             @ref="GridRef">
+    <GridToolBarTemplate>
+        <TelerikButton Title="@TextResources.SharifUi_Clear"
+                       ThemeColor="@ThemeConstants.Button.ThemeColor.Error"
+                       OnClick="OnClearClick">
+            @TextResources.SharifUi_Clear
+        </TelerikButton>
+        <TelerikButton Title="@TextResources.SharifUi_ExportExcel"
+                       OnClick="OnExportExcelClick">
+            @TextResources.SharifUi_ExportExcel
+        </TelerikButton>
+    </GridToolBarTemplate>
+    <GridColumns>
+        <GridColumn Field="@nameof(TagReadEntry.Epc)" Title="@TextResources.SharifUi_Epc" />
+        <GridColumn Field="@nameof(TagReadEntry.ReadUtc)" Title="@TextResources.SharifUi_ReadTime" DisplayFormat="{0:yyyy-MM-dd HH:mm:ss.fff}" />
+        <GridColumn Field="@nameof(TagReadEntry.StationCode)" Title="@TextResources.SharifUi_StationCode" />
+        <GridColumn Field="@nameof(TagReadEntry.GateType)" Title="@TextResources.SharifUi_GateType" />
+        <GridColumn Field="@nameof(TagReadEntry.PostSucceeded)" Title="@TextResources.SharifUi_PostResult">
+            <Template>
+                @{
+                    var entry = (TagReadEntry)context;
+                    <span class="@(entry.PostSucceeded ? "status-ok" : "status-error")">
+                        @(entry.PostSucceeded ? TextResources.SharifUi_Success : TextResources.SharifUi_Failed)
+                    </span>
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@nameof(TagReadEntry.ErrorMessage)" Title="@TextResources.SharifUi_ErrorMessage" />
+    </GridColumns>
+</TelerikGrid>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="@LoaderType.InfiniteSpinner"
+                        Text="@TextResources.SharifUi_PleaseWait" />

@@ -20,12 +20,17 @@ public sealed class RfidWorkerOptions
     [Display(Name = "تأخیر میان خوانش (میلی‌ثانیه)")]
     public int IdleDelayMilliseconds { get; set; }
 
+    [Range(1, int.MaxValue, ErrorMessage = "زمان بررسی باید حداقل ۱ ثانیه باشد.")]
+    [Display(Name = "زمان بررسی (ثانیه)")]
+    public int CheckTimeSeconds { get; set; }
+
     public RfidWorkerOptions Clone()
         => new()
         {
             StationCode = StationCode,
             GateType = GateType,
             ReaderPower = ReaderPower,
-            IdleDelayMilliseconds = IdleDelayMilliseconds
+            IdleDelayMilliseconds = IdleDelayMilliseconds,
+            CheckTimeSeconds = CheckTimeSeconds
         };
 }

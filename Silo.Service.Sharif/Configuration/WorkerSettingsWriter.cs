@@ -38,6 +38,7 @@ public sealed class WorkerSettingsWriter
             workerNode[nameof(options.GateType)] = options.GateType;
             workerNode[nameof(options.ReaderPower)] = options.ReaderPower.ToString();
             workerNode[nameof(options.IdleDelayMilliseconds)] = options.IdleDelayMilliseconds.ToString();
+            workerNode[nameof(options.CheckTimeSeconds)] = options.CheckTimeSeconds.ToString();
 
             var options1 = new JsonSerializerOptions
             {

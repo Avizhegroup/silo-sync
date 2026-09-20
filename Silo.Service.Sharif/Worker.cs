@@ -14,6 +14,9 @@ public class Worker : BackgroundService
     private readonly ReaderControlService _readerControl;
     private readonly ReaderStateStore _state;
     private readonly IOptionsMonitor<RfidWorkerOptions> _options;
+    private readonly List<Silo.Service.Sharif.Dtos.UHFTAGInfo> _pendingTags = new();
+    private readonly object _pendingLock = new();
+    private Timer? _checkTimer;
 
     public Worker(
         ILogger<Worker> logger,
@@ -70,7 +73,7 @@ public class Worker : BackgroundService
                 if (tag != null)
                 {
                     _logger.LogInformation("Read tag with {Epc}", tag.Epc);
-                    //await SendTagAsync(tag, options, stoppingToken);
+                    BufferTag(tag, options, stoppingToken);
                 }
             }
             catch (OperationCanceledException)
@@ -94,6 +97,12 @@ public class Worker : BackgroundService
     {
         _state.SetInventoryRunning(false);
 
+        lock (_pendingLock)
+        {
+            _checkTimer?.Dispose();
+            _checkTimer = null;
+        }
+
         await _readerControl.StopInventoryAsync(token);
         await _readerControl.DisconnectAsync(token);
 
@@ -102,7 +111,44 @@ public class Worker : BackgroundService
         await base.StopAsync(token);
     }
 
-    private async Task SendTagAsync(Silo.Service.Sharif.Dtos.UHFTAGInfo tag, RfidWorkerOptions options, CancellationToken cancellationToken)
+    private void BufferTag(Silo.Service.Sharif.Dtos.UHFTAGInfo tag, RfidWorkerOptions options, CancellationToken stoppingToken)
+    {
+        lock (_pendingLock)
+        {
+            _pendingTags.Add(tag);
+
+            var checkTime = TimeSpan.FromSeconds(Math.Max(options.CheckTimeSeconds, 1));
+            _checkTimer?.Dispose();
+            _checkTimer = new Timer(_ => FlushPendingTags(options, stoppingToken), null, checkTime, Timeout.InfiniteTimeSpan);
+        }
+    }
+
+    private void FlushPendingTags(RfidWorkerOptions options, CancellationToken stoppingToken)
+    {
+        List<Silo.Service.Sharif.Dtos.UHFTAGInfo> tagsToSend;
+
+        lock (_pendingLock)
+        {
+            if (_pendingTags.Count == 0)
+            {
+                return;
+            }
+
+            tagsToSend = new List<Silo.Service.Sharif.Dtos.UHFTAGInfo>(_pendingTags);
+            _pendingTags.Clear();
+
+            _checkTimer?.Dispose();
+            _checkTimer = null;
+        }
+
+        _ = Task.Run(async () =>
+        {
+          
+                await SendTagAsync(tagsToSend, options, stoppingToken);
+        }, CancellationToken.None);
+    }
+
+    private async Task SendTagAsync(List<Silo.Service.Sharif.Dtos.UHFTAGInfo> tags, RfidWorkerOptions options, CancellationToken cancellationToken)
     {
         try
         {
@@ -111,7 +157,7 @@ public class Worker : BackgroundService
                 "Sharif/SendTag",
                 new
                 {
-                    EPC = tag.Epc,
+                    EPC = tags.Select(t => t.Epc),
                     options.StationCode,
                     options.GateType
                 });
@@ -120,30 +166,23 @@ public class Worker : BackgroundService
             var message = succeeded ? null : (ExtractMessage(json) ?? json);
             _state.RecordApiResult(succeeded, message);
 
-            _state.AddTag(new TagReadEntry
+            foreach (var tag in tags)
             {
-                Epc = tag.Epc,
-                ReadUtc = DateTime.UtcNow,
-                StationCode = options.StationCode,
-                GateType = options.GateType,
-                PostSucceeded = succeeded,
-                ErrorMessage = message
-            });
+                _state.AddTag(new TagReadEntry
+                {
+                    Epc = tag.Epc,
+                    ReadUtc = DateTime.UtcNow,
+                    StationCode = options.StationCode,
+                    GateType = options.GateType,
+                    PostSucceeded = succeeded,
+                    ErrorMessage = message
+                });
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send tag {Epc} to API.", tag.Epc);
+            _logger.LogError(ex, "Failed to send tag to API.");
             _state.RecordApiResult(false, ex.Message);
-
-            _state.AddTag(new TagReadEntry
-            {
-                Epc = tag.Epc,
-                ReadUtc = DateTime.UtcNow,
-                StationCode = options.StationCode,
-                GateType = options.GateType,
-                PostSucceeded = false,
-                ErrorMessage = ex.Message
-            });
         }
     }
 

@@ -34,6 +34,13 @@
                                    Step="@(100)" />
             <ValidationMessage For="() => Model.IdleDelayMilliseconds" />
         </div>
+        <div class="form-row">
+            <label>زمان بررسی (ثانیه)</label>
+            <TelerikNumericTextBox @bind-Value="Model.CheckTimeSeconds"
+                                   Min="@(1)"
+                                   Step="@(1)" />
+            <ValidationMessage For="() => Model.CheckTimeSeconds" />
+        </div>
 
         <TelerikButton ButtonType="@ButtonType.Submit"
                        ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">

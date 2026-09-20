@@ -1,8 +1,8 @@
 @page "/settings"
 
-<PageTitle>@TextResources.SharifUi_Settings</PageTitle>
+<PageTitle>تنظیمات</PageTitle>
 
-<h1>@TextResources.SharifUi_Settings</h1>
+<h1>تنظیمات</h1>
 
 <EditForm Model="Model" OnValidSubmit="OnSaveSubmit">
     <DataAnnotationsValidator />
@@ -10,17 +10,17 @@
 
     <div class="card">
         <div class="form-row">
-            <label>@TextResources.SharifUi_StationCode</label>
+            <label>کد ایستگاه</label>
             <TelerikTextBox @bind-Value="Model.StationCode" />
             <ValidationMessage For="() => Model.StationCode" />
         </div>
         <div class="form-row">
-            <label>@TextResources.SharifUi_GateType</label>
+            <label>نوع گیت</label>
             <TelerikTextBox @bind-Value="Model.GateType" />
             <ValidationMessage For="() => Model.GateType" />
         </div>
         <div class="form-row">
-            <label>@TextResources.SharifUi_ReaderPower</label>
+            <label>توان آنتن</label>
             <TelerikNumericTextBox @bind-Value="Model.ReaderPower"
                                    Min="@((byte)1)"
                                    Max="@((byte)30)"
@@ -28,7 +28,7 @@
             <ValidationMessage For="() => Model.ReaderPower" />
         </div>
         <div class="form-row">
-            <label>@TextResources.SharifUi_IdleDelay</label>
+            <label>تأخیر میان خوانش (میلی‌ثانیه)</label>
             <TelerikNumericTextBox @bind-Value="Model.IdleDelayMilliseconds"
                                    Min="@(100)"
                                    Step="@(100)" />
@@ -37,11 +37,11 @@
 
         <TelerikButton ButtonType="@ButtonType.Submit"
                        ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">
-            @TextResources.SharifUi_Save
+            ذخیره
         </TelerikButton>
         <TelerikButton OnClick="OnClearClick"
                        ThemeColor="@ThemeConstants.Button.ThemeColor.Secondary">
-            @TextResources.SharifUi_Reset
+            بازنشانی
         </TelerikButton>
     </div>
 </EditForm>
@@ -51,4 +51,4 @@
 <TelerikLoaderContainer Visible="IsLoading"
                         LoaderPosition="@LoaderPosition.End"
                         LoaderType="@LoaderType.InfiniteSpinner"
-                        Text="@TextResources.SharifUi_PleaseWait" />
+                        Text="لطفاً صبر کنید..." />

@@ -4,20 +4,20 @@ namespace Silo.Service.Sharif.Configuration;
 
 public sealed class RfidWorkerOptions
 {
-    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.SharifUi_StationCode_Required))]
-    [Display(ResourceType = typeof(TextResources), Name = nameof(TextResources.SharifUi_StationCode))]
+    [Required(ErrorMessage = "کد ایستگاه الزامی است.")]
+    [Display(Name = "کد ایستگاه")]
     public string StationCode { get; set; } = string.Empty;
 
-    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.SharifUi_GateType_Required))]
-    [Display(ResourceType = typeof(TextResources), Name = nameof(TextResources.SharifUi_GateType))]
+    [Required(ErrorMessage = "نوع گیت الزامی است.")]
+    [Display(Name = "نوع گیت")]
     public string GateType { get; set; } = string.Empty;
 
-    [Range(1, 30, ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.SharifUi_ReaderPower_Range))]
-    [Display(ResourceType = typeof(TextResources), Name = nameof(TextResources.SharifUi_ReaderPower))]
+    [Range(1, 30, ErrorMessage = "توان آنتن باید بین ۱ تا ۳۰ باشد.")]
+    [Display(Name = "توان آنتن")]
     public byte ReaderPower { get; set; }
 
-    [Range(100, int.MaxValue, ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.SharifUi_IdleDelay_Range))]
-    [Display(ResourceType = typeof(TextResources), Name = nameof(TextResources.SharifUi_IdleDelay))]
+    [Range(100, int.MaxValue, ErrorMessage = "تأخیر میان خوانش حداقل ۱۰۰ میلی‌ثانیه باید باشد.")]
+    [Display(Name = "تأخیر میان خوانش (میلی‌ثانیه)")]
     public int IdleDelayMilliseconds { get; set; }
 
     public RfidWorkerOptions Clone()

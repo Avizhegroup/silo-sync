@@ -31,12 +31,12 @@ public class Worker : BackgroundService
 
     public override async Task StartAsync(CancellationToken token)
     {
-        await _readerControl.ConnectAsync(token);
+        //await _readerControl.ConnectAsync(token);
 
         var power = _options.CurrentValue.ReaderPower;
-        await _readerControl.SetPowerAsync(power, token);
+        //await _readerControl.SetPowerAsync(power, token);
 
-        _state.SetInventoryRunning(true);
+       // _state.SetInventoryRunning(true);
 
         _logger.LogInformation(
             "RFID worker initialized. Connected={Connected}, Power={Power}, Station={Station}, GateType={GateType}.",
@@ -70,7 +70,7 @@ public class Worker : BackgroundService
                 if (tag != null)
                 {
                     _logger.LogInformation("Read tag with {Epc}", tag.Epc);
-                    await SendTagAsync(tag, options, stoppingToken);
+                    //await SendTagAsync(tag, options, stoppingToken);
                 }
             }
             catch (OperationCanceledException)
@@ -81,7 +81,7 @@ public class Worker : BackgroundService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unexpected error in RFID worker loop.");
-                _state.SetLastError($"{TextResources.SharifUi_WorkerLoopError}: {ex.Message}");
+                _state.SetLastError($"خطا در حلقه پردازش RFID: {ex.Message}");
             }
 
             await Task.Delay(500, stoppingToken);

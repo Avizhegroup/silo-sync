@@ -31,7 +31,7 @@ public sealed class ReaderControlService : IDisposable
         catch (Exception ex)
         {
             _logger.LogError(ex, "RFID reader USB connect failed.");
-            _state.SetLastError($"{TextResources.Reader_ConnectFailed}: {ex.Message}");
+            _state.SetLastError($"اتصال به RFID با خطا مواجه شد: {ex.Message}");
             _state.SetConnectionState(false);
             return false;
         }
@@ -55,7 +55,7 @@ public sealed class ReaderControlService : IDisposable
         catch (Exception ex)
         {
             _logger.LogError(ex, "RFID reader disconnect failed.");
-            _state.SetLastError($"{TextResources.Reader_DisconnectFailed}: {ex.Message}");
+            _state.SetLastError($"قطع اتصال RFID با خطا مواجه شد: {ex.Message}");
             return false;
         }
         finally
@@ -77,7 +77,7 @@ public sealed class ReaderControlService : IDisposable
         catch (Exception ex)
         {
             _logger.LogError(ex, "RFID inventory start failed.");
-            _state.SetLastError($"{TextResources.Reader_StartInventoryFailed}: {ex.Message}");
+            _state.SetLastError($"شروع خواندن RFID با خطا مواجه شد: {ex.Message}");
             _state.SetInventoryRunning(false);
             return false;
         }
@@ -100,7 +100,7 @@ public sealed class ReaderControlService : IDisposable
         catch (Exception ex)
         {
             _logger.LogError(ex, "RFID inventory stop failed.");
-            _state.SetLastError($"{TextResources.Reader_StopInventoryFailed}: {ex.Message}");
+            _state.SetLastError($"توقف خواندن RFID با خطا مواجه شد: {ex.Message}");
             return false;
         }
         finally
@@ -116,7 +116,7 @@ public sealed class ReaderControlService : IDisposable
         {
             if (power is < 1 or > 30)
             {
-                throw new ArgumentOutOfRangeException(nameof(power), TextResources.Reader_PowerRangeError);
+                throw new ArgumentOutOfRangeException(nameof(power), "توان آنتن باید بین ۱ تا ۳۰ dBm باشد.");
             }
 
             _reader.SetPower(0, power);
@@ -128,7 +128,7 @@ public sealed class ReaderControlService : IDisposable
         catch (Exception ex)
         {
             _logger.LogError(ex, "RFID set power failed.");
-            _state.SetLastError($"{TextResources.Reader_SetPowerFailed}: {ex.Message}");
+            _state.SetLastError($"تنظیم توان RFID با خطا مواجه شد: {ex.Message}");
             return false;
         }
         finally
@@ -147,7 +147,7 @@ public sealed class ReaderControlService : IDisposable
         catch (Exception ex)
         {
             _logger.LogError(ex, "RFID ReadTag failed.");
-            _state.SetLastError($"{TextResources.Reader_ReadTagFailed}: {ex.Message}");
+            _state.SetLastError($"خطا در خواندن برچسب RFID: {ex.Message}");
             return null;
         }
         finally

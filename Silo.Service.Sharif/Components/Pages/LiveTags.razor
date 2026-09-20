@@ -1,8 +1,8 @@
 @page "/live-tags"
 
-<PageTitle>@TextResources.SharifUi_LiveTags</PageTitle>
+<PageTitle>تگ‌های خوانده‌شده</PageTitle>
 
-<h1>@TextResources.SharifUi_LiveTags</h1>
+<h1>تگ‌های خوانده‌شده</h1>
 
 <TelerikGrid Data="Tags"
              Sortable="true"
@@ -11,36 +11,36 @@
              PageSize="25"
              @ref="GridRef">
     <GridToolBarTemplate>
-        <TelerikButton Title="@TextResources.SharifUi_Clear"
+        <TelerikButton Title="پاک کردن"
                        ThemeColor="@ThemeConstants.Button.ThemeColor.Error"
                        OnClick="OnClearClick">
-            @TextResources.SharifUi_Clear
+            پاک کردن
         </TelerikButton>
-        <TelerikButton Title="@TextResources.SharifUi_ExportExcel"
+        <TelerikButton Title="خروجی اکسل"
                        OnClick="OnExportExcelClick">
-            @TextResources.SharifUi_ExportExcel
+            خروجی اکسل
         </TelerikButton>
     </GridToolBarTemplate>
     <GridColumns>
-        <GridColumn Field="@nameof(TagReadEntry.Epc)" Title="@TextResources.SharifUi_Epc" />
-        <GridColumn Field="@nameof(TagReadEntry.ReadUtc)" Title="@TextResources.SharifUi_ReadTime" DisplayFormat="{0:yyyy-MM-dd HH:mm:ss.fff}" />
-        <GridColumn Field="@nameof(TagReadEntry.StationCode)" Title="@TextResources.SharifUi_StationCode" />
-        <GridColumn Field="@nameof(TagReadEntry.GateType)" Title="@TextResources.SharifUi_GateType" />
-        <GridColumn Field="@nameof(TagReadEntry.PostSucceeded)" Title="@TextResources.SharifUi_PostResult">
+        <GridColumn Field="@nameof(TagReadEntry.Epc)" Title="EPC" />
+        <GridColumn Field="@nameof(TagReadEntry.ReadUtc)" Title="زمان خواندن" DisplayFormat="{0:yyyy-MM-dd HH:mm:ss.fff}" />
+        <GridColumn Field="@nameof(TagReadEntry.StationCode)" Title="کد ایستگاه" />
+        <GridColumn Field="@nameof(TagReadEntry.GateType)" Title="نوع گیت" />
+        <GridColumn Field="@nameof(TagReadEntry.PostSucceeded)" Title="نتیجه ارسال">
             <Template>
                 @{
                     var entry = (TagReadEntry)context;
                     <span class="@(entry.PostSucceeded ? "status-ok" : "status-error")">
-                        @(entry.PostSucceeded ? TextResources.SharifUi_Success : TextResources.SharifUi_Failed)
+                        @(entry.PostSucceeded ? "موفق" : "ناموفق")
                     </span>
                 }
             </Template>
         </GridColumn>
-        <GridColumn Field="@nameof(TagReadEntry.ErrorMessage)" Title="@TextResources.SharifUi_ErrorMessage" />
+        <GridColumn Field="@nameof(TagReadEntry.ErrorMessage)" Title="پیام خطا" />
     </GridColumns>
 </TelerikGrid>
 
 <TelerikLoaderContainer Visible="IsLoading"
                         LoaderPosition="@LoaderPosition.End"
                         LoaderType="@LoaderType.InfiniteSpinner"
-                        Text="@TextResources.SharifUi_PleaseWait" />
+                        Text="لطفاً صبر کنید..." />

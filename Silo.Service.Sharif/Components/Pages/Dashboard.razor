@@ -1,44 +1,44 @@
 @page "/"
 
-<PageTitle>@TextResources.SharifUi_Dashboard</PageTitle>
+<PageTitle>داشبورد</PageTitle>
 
-<h1>@TextResources.SharifUi_Dashboard</h1>
+<h1>داشبورد</h1>
 
 <div class="dashboard-cards">
     <div class="card">
-        <div class="card-title">@TextResources.SharifUi_ConnectionStatus</div>
+        <div class="card-title">وضعیت اتصال</div>
         <div class="card-value @(State.IsConnected ? "status-ok" : "status-error")">
-            @(State.IsConnected ? TextResources.SharifUi_Connected : TextResources.SharifUi_Disconnected)
+            @(State.IsConnected ? "متصل" : "قطع")
         </div>
     </div>
     <div class="card">
-        <div class="card-title">@TextResources.SharifUi_InventoryStatus</div>
+        <div class="card-title">وضعیت خواندن</div>
         <div class="card-value @(State.IsInventoryRunning ? "status-ok" : "status-error")">
-            @(State.IsInventoryRunning ? TextResources.SharifUi_Running : TextResources.SharifUi_Stopped)
+            @(State.IsInventoryRunning ? "در حال اجرا" : "متوقف")
         </div>
     </div>
     <div class="card">
-        <div class="card-title">@TextResources.SharifUi_ReaderPower</div>
+        <div class="card-title">توان آنتن</div>
         <div class="card-value">@State.CurrentPower dBm</div>
     </div>
     <div class="card">
-        <div class="card-title">@TextResources.SharifUi_StationCode</div>
+        <div class="card-title">کد ایستگاه</div>
         <div class="card-value">@StationCode</div>
     </div>
     <div class="card">
-        <div class="card-title">@TextResources.SharifUi_GateType</div>
+        <div class="card-title">نوع گیت</div>
         <div class="card-value">@GateType</div>
     </div>
     <div class="card">
-        <div class="card-title">@TextResources.SharifUi_LastReadTagCount</div>
+        <div class="card-title">تعداد تگ‌های اخیر</div>
         <div class="card-value">@State.TagCount</div>
     </div>
     <div class="card">
-        <div class="card-title">@TextResources.SharifUi_ApiSuccessCount</div>
+        <div class="card-title">تعداد ارسال موفق</div>
         <div class="card-value status-ok">@State.SuccessCount</div>
     </div>
     <div class="card">
-        <div class="card-title">@TextResources.SharifUi_ApiFailureCount</div>
+        <div class="card-title">تعداد ارسال ناموفق</div>
         <div class="card-value @(State.FailureCount > 0 ? "status-error" : "status-ok")">@State.FailureCount</div>
     </div>
 </div>
@@ -47,7 +47,7 @@
 {
     <div class="card">
         <div class="card-title">
-            @TextResources.SharifUi_LastApiCall
+            آخرین ارسال به سرور
             @if (State.LastApiCallUtc.HasValue)
             {
                 <span class="text-muted">(@State.LastApiCallUtc.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"))</span>
@@ -59,7 +59,7 @@
         }
         else
         {
-            <div class="status-ok">@TextResources.SharifUi_LastApiCallOk</div>
+            <div class="status-ok">آخرین ارسال موفق بود</div>
         }
     </div>
 }
@@ -67,7 +67,7 @@
 @if (!string.IsNullOrEmpty(State.LastError))
 {
     <div class="card">
-        <div class="card-title">@TextResources.SharifUi_LastError</div>
+        <div class="card-title">آخرین خطا</div>
         <div class="status-error">@State.LastError</div>
     </div>
 }
@@ -76,26 +76,26 @@
     <TelerikButton OnClick="OnConnectClick"
                    Enabled="!State.IsConnected"
                    ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">
-        @TextResources.SharifUi_Connect
+        اتصال
     </TelerikButton>
     <TelerikButton OnClick="OnDisconnectClick"
                    Enabled="State.IsConnected"
                    ThemeColor="@ThemeConstants.Button.ThemeColor.Error">
-        @TextResources.SharifUi_Disconnect
+        قطع اتصال
     </TelerikButton>
     <TelerikButton OnClick="OnStartInventoryClick"
                    Enabled="State.IsConnected && !State.IsInventoryRunning"
                    ThemeColor="@ThemeConstants.Button.ThemeColor.Success">
-        @TextResources.SharifUi_StartInventory
+        شروع خواندن
     </TelerikButton>
     <TelerikButton OnClick="OnStopInventoryClick"
                    Enabled="State.IsInventoryRunning"
                    ThemeColor="@ThemeConstants.Button.ThemeColor.Warning">
-        @TextResources.SharifUi_StopInventory
+        توقف خواندن
     </TelerikButton>
 </div>
 
 <TelerikLoaderContainer Visible="IsLoading"
                         LoaderPosition="@LoaderPosition.End"
                         LoaderType="@LoaderType.InfiniteSpinner"
-                        Text="@TextResources.SharifUi_PleaseWait" />
+                        Text="لطفاً صبر کنید..." />

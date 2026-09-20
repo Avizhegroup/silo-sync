@@ -1,12 +1,12 @@
 @page "/logs"
 
-<PageTitle>@TextResources.SharifUi_Logs</PageTitle>
+<PageTitle>لاگ‌ها</PageTitle>
 
-<h1>@TextResources.SharifUi_Logs</h1>
+<h1>لاگ‌ها</h1>
 
 <div class="card">
     <div class="form-row">
-        <label>@TextResources.SharifUi_LogType</label>
+        <label>نوع لاگ</label>
         <TelerikDropDownList Data="LogKinds"
                              @bind-Value="SelectedKind"
                              TextField="Text"
@@ -14,7 +14,7 @@
                              OnChange="OnLogKindChange" />
     </div>
     <div class="form-row">
-        <label>@TextResources.SharifUi_LogFile</label>
+        <label>فایل لاگ</label>
         <TelerikDropDownList Data="LogFiles"
                              @bind-Value="SelectedFile"
                              TextField="Name"
@@ -22,16 +22,16 @@
                              OnChange="OnRefreshClick" />
     </div>
     <div class="form-row">
-        <label>@TextResources.SharifUi_LineCount</label>
+        <label>تعداد خطوط</label>
         <TelerikNumericTextBox @bind-Value="LineCount" Min="10" Max="5000" Step="50" />
     </div>
 
     <TelerikButton OnClick="OnRefreshClick"
                    ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">
-        @TextResources.SharifUi_Refresh
+        به‌روزرسانی
     </TelerikButton>
     <TelerikCheckBox @bind-Value="AutoRefresh" Id="auto-refresh" />
-    <label for="auto-refresh">@TextResources.SharifUi_AutoRefresh</label>
+    <label for="auto-refresh">به‌روزرسانی خودکار هر ۵ ثانیه</label>
 </div>
 
 <pre class="pre-wrap">@LogContent</pre>
@@ -39,4 +39,4 @@
 <TelerikLoaderContainer Visible="IsLoading"
                         LoaderPosition="@LoaderPosition.End"
                         LoaderType="@LoaderType.InfiniteSpinner"
-                        Text="@TextResources.SharifUi_PleaseWait" />
+                        Text="لطفاً صبر کنید..." />

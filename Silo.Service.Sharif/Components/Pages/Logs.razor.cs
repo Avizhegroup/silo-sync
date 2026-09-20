@@ -11,8 +11,8 @@ public partial class Logs : IDisposable
 
     private List<LogKindItem> LogKinds { get; set; } = new()
     {
-        new LogKindItem { Kind = LogKind.Info, Text = TextResources.SharifUi_LogKind_Info },
-        new LogKindItem { Kind = LogKind.Exception, Text = TextResources.SharifUi_LogKind_Exception }
+        new LogKindItem { Kind = LogKind.Info, Text = "اطلاعات" },
+        new LogKindItem { Kind = LogKind.Exception, Text = "خطاها" }
     };
 
     private LogKind SelectedKind { get; set; } = LogKind.Info;

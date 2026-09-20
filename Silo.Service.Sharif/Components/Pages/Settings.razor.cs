@@ -57,7 +57,7 @@ public partial class Settings
         Notification?.Show(new NotificationModel
         {
             ThemeColor = succeeded ? ThemeConstants.Notification.ThemeColor.Success : ThemeConstants.Notification.ThemeColor.Error,
-            Text = succeeded ? TextResources.SharifUi_SettingsSaved : TextResources.SharifUi_SettingsSaveFailed,
+            Text = succeeded ? "تنظیمات با موفقیت ذخیره شد." : "ذخیره تنظیمات با خطا مواجه شد.",
             CloseAfter = 3000
         });
     }

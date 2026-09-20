@@ -48,6 +48,7 @@ builder.Services.AddTelerikBlazor();
 var app = builder.Build();
 
 app.UseStaticFiles();
+app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

@@ -17789,6 +17789,52 @@ WHERE        (fld_TUTParentSerial = N'{NextUnitLevelSerial}'))         where (fl
         return true;
     }
 
+    public int CreateUhfReaderLogHeader(
+    string stationCode,
+    string actionType,
+    string userId = "KIOSK")
+    {
+        var command = @"
+        INSERT INTO tbl_UHFReaderLogHeader
+        (
+            fld_StationCode,
+            fld_ActionType,
+            fld_DocumentCode,
+            fld_TruckCrossId,
+            fld_UHFReaderLogHeaderUserId,
+            fld_UHFReaderLogHeaderControlType,
+            fld_CarProperties,
+            fld_MovementActionId,
+            fld_HeaderUsedStatus,
+            fld_HeaderCreateDateTime
+        )
+        OUTPUT INSERTED.fld_UHFReaderLogHeaderId
+        VALUES
+        (
+            @StationCode,
+            @ActionType,
+            NULL,
+            NULL,
+            @UserId,
+            0,
+            NULL,
+            NULL,
+            0,
+            GETDATE()
+        );";
+
+        var result = dataAccess.SqlDataAdapter(
+            command,
+            new KeyValuePair<string, object>("StationCode", stationCode),
+            new KeyValuePair<string, object>("ActionType", actionType),
+            new KeyValuePair<string, object>("UserId", userId));
+
+        if (result != null && result.Rows.Count > 0)
+            return Convert.ToInt32(result.Rows[0][0]);
+
+        return 0;
+    }
+
     public DataTable SGetAllProductPropertyC
     (
     string userToken

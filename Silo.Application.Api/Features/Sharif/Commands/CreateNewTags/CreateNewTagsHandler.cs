@@ -1,30 +1,42 @@
-﻿
+﻿using Silo.Api.External.Sharif.Models;
+using Silo.Api.External.Sharif.Services;
+
 namespace Silo.Application.Api.Features;
 
 public class CreateNewTagsHandler : IRequestHandler<CreateSharifTagCommand, CreateSharifTagVm>
 {
     private readonly IWmsBusiness _wmsBusiness;
+    private readonly SharifExternalConnect _sharifExternalConnect;
 
-    public CreateNewTagsHandler(IWmsBusiness wmsBusiness)
+    public CreateNewTagsHandler(
+        IWmsBusiness wmsBusiness,
+        SharifExternalConnect sharifExternalConnect)
     {
         _wmsBusiness = wmsBusiness;
+        _sharifExternalConnect = sharifExternalConnect;
     }
 
-    public Task<CreateSharifTagVm> Handle(CreateSharifTagCommand request, CancellationToken cancellationToken)
+    public async Task<CreateSharifTagVm> Handle(
+        CreateSharifTagCommand request,
+        CancellationToken cancellationToken)
     {
-        if (request.Epc == null)
+        if (request.Epcs == null || request.Epcs.Count == 0)
         {
-            return Task.FromResult(new CreateSharifTagVm { Result = false });
+            return new CreateSharifTagVm { Result = false };
         }
 
-        var tags = new List<string> { request.Epc };
+        var operationCode = _wmsBusiness.CreateUhfReaderLogHeader(
+            request.StationCode ?? "",
+            request.GateType ?? "",
+            "KIOSK");
+
 
         var result = _wmsBusiness.SIdentifyPallets(
             deviceId: request.StationCode,
-            listTags: tags,
+            listTags: request.Epcs,
             desc: "API Tag Identify",
             GateType: request.GateType,
-            invCod: "1",
+            invCod: operationCode.ToString(),
             doc: "0",
             DestinationCode: "1",
             userToken: "KIOSK",
@@ -34,9 +46,26 @@ public class CreateNewTagsHandler : IRequestHandler<CreateSharifTagCommand, Crea
             saveDateTime: DateTime.Now
         );
 
-        return Task.FromResult(new CreateSharifTagVm
+
+        var snapshotRequest = new RfidSnapshotRequest
+        {
+            KioskId = request.StationCode ?? string.Empty,
+            ReaderId = string.Empty,
+            SequenceNo = operationCode,
+            CapturedAt = DateTime.UtcNow,
+            Tags = request.Epcs
+                .Select(epc => new RfidSnapshotTag
+                {
+                    Uid = epc
+                })
+                .ToList()
+        };
+
+        await _sharifExternalConnect.SendRfidSnapshotAsync(snapshotRequest, cancellationToken);
+
+        return new CreateSharifTagVm
         {
             Result = result
-        });
+        };
     }
 }

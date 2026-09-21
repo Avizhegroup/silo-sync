@@ -36,13 +36,13 @@ public class Worker : BackgroundService
     {
         try
         {
-            //await _readerControl.ConnectAsync(token);
+            await _readerControl.ConnectAsync(token);
 
             var power = _options.CurrentValue.ReaderPower;
 
-            //await _readerControl.SetPowerAsync(power, token);
+            await _readerControl.SetPowerAsync(power, token);
 
-            //_state.SetInventoryRunning(true);
+            _state.SetInventoryRunning(true);
 
             _logger.LogInformation(
                 "RFID worker initialized. Connected={Connected}, Power={Power}, Station={Station}, GateType={GateType}.",

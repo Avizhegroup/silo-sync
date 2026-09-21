@@ -5,27 +5,44 @@ namespace Silo.Service.Sharif.Configuration;
 
 public sealed class WorkerSettingsWriter
 {
-    private readonly IConfiguration _configuration;
     private readonly ILogger<WorkerSettingsWriter> _logger;
+    private readonly IConfigurationRoot _configuration;
+    private readonly IHostEnvironment _environment;   
 
-    public WorkerSettingsWriter(IConfiguration configuration, ILogger<WorkerSettingsWriter> logger)
+    public WorkerSettingsWriter(
+        IConfiguration configuration,
+        IHostEnvironment environment,               
+        ILogger<WorkerSettingsWriter> logger)
     {
-        _configuration = configuration ;
-        _logger = logger ;
+        _configuration = (IConfigurationRoot)configuration;
+        _environment = environment;
+        _logger = logger;
     }
 
     public string ConfigPath
-        => Path.Combine(AppContext.BaseDirectory, "appsettings.json");
+        => Path.Combine(_environment.ContentRootPath, "appsettings.json");
 
-    public async Task<bool> SaveAsync(RfidWorkerOptions options, CancellationToken cancellationToken = default)
+    public async Task<bool> SaveAsync(
+        RfidWorkerOptions options,
+        CancellationToken cancellationToken = default)
     {
         var path = ConfigPath;
         var tempPath = path + ".tmp";
 
         try
         {
-            using var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-            var node = await JsonNode.ParseAsync(stream, cancellationToken: cancellationToken);
+            JsonNode? node;
+
+            await using (var stream = File.Open(
+                path,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read))
+            {
+                node = await JsonNode.ParseAsync(
+                    stream,
+                    cancellationToken: cancellationToken);
+            }
 
             if (node is null)
             {
@@ -34,13 +51,14 @@ public sealed class WorkerSettingsWriter
             }
 
             var workerNode = node["RfidWorker"] ??= new JsonObject();
+
             workerNode[nameof(options.StationCode)] = options.StationCode;
             workerNode[nameof(options.GateType)] = options.GateType;
-            workerNode[nameof(options.ReaderPower)] = options.ReaderPower.ToString();
-            workerNode[nameof(options.IdleDelayMilliseconds)] = options.IdleDelayMilliseconds.ToString();
-            workerNode[nameof(options.CheckTimeSeconds)] = options.CheckTimeSeconds.ToString();
+            workerNode[nameof(options.ReaderPower)] = options.ReaderPower;
+            workerNode[nameof(options.IdleDelayMilliseconds)] = options.IdleDelayMilliseconds;
+            workerNode[nameof(options.CheckTimeSeconds)] = options.CheckTimeSeconds;
 
-            var options1 = new JsonSerializerOptions
+            var serializerOptions = new JsonSerializerOptions
             {
                 WriteIndented = true,
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
@@ -48,11 +66,22 @@ public sealed class WorkerSettingsWriter
 
             await using (var tempStream = File.Create(tempPath))
             {
-                await JsonSerializer.SerializeAsync(tempStream, node, options1, cancellationToken);
+                await JsonSerializer.SerializeAsync(
+                    tempStream,
+                    node,
+                    serializerOptions,
+                    cancellationToken);
             }
 
-            File.Replace(tempPath, path, null, true);
-            _logger.LogInformation("RfidWorker settings persisted to {ConfigPath}.", path);
+            File.Move(tempPath, path, true);
+
+            _configuration.Reload();
+
+            _logger.LogInformation(
+                "Saved to {Path}. After reload ReaderPower = {ReaderPower}",
+                path,
+                _configuration["RfidWorker:ReaderPower"]);
+
             return true;
         }
         catch (Exception ex)
@@ -68,13 +97,8 @@ public sealed class WorkerSettingsWriter
         try
         {
             if (File.Exists(path))
-            {
                 File.Delete(path);
-            }
         }
-        catch
-        {
-            // Best-effort cleanup.
-        }
+        catch { }
     }
 }

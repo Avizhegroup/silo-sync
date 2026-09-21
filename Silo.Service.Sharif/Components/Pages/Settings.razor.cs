@@ -33,9 +33,14 @@ public partial class Settings
 
         var saved = await SettingsWriter.SaveAsync(Model);
 
-        if (saved && Model.ReaderPower != previousPower)
+        if (saved)
         {
-            await ReaderControl.SetPowerAsync(Model.ReaderPower);
+            ReloadModel();
+
+            if (Model.ReaderPower != previousPower)
+            {
+                await ReaderControl.SetPowerAsync(Model.ReaderPower);
+            }
         }
 
         IsLoading = false;

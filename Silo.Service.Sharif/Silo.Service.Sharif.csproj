@@ -24,6 +24,10 @@
         <Using Include="Microsoft.AspNetCore.Components.Web" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Packages\" />
+    </ItemGroup>
+
  
     <Target Name="PostBuild" AfterTargets="PostBuildEvent;Publish">
         <Exec Command="xcopy /y &quot;$(ProjectDir)Packages\*.*&quot; &quot;$(ProjectDir)$(OutDir)&quot;" />

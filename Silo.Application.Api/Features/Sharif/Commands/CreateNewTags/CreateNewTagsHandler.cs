@@ -54,12 +54,13 @@ public class CreateNewTagsHandler : IRequestHandler<CreateSharifTagCommand, Crea
             SequenceNo = operationCode,
             CapturedAt = DateTime.UtcNow,
             Tags = request.Epcs
-                .Select(epc => new RfidSnapshotTag
-                {
-                    Uid = epc
-                })
-                .ToList()
-        };
+                 .Distinct()
+                 .Select(epc => new RfidSnapshotTag
+                  {
+                 Uid = epc
+                  })
+                 .ToList()
+         };
 
         await _sharifExternalConnect.SendRegisterTagToExternalApi(snapshotRequest, cancellationToken);
 

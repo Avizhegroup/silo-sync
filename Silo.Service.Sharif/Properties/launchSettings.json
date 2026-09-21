@@ -1,12 +1,14 @@
-﻿{
-  "$schema": "https://json.schemastore.org/launchsettings.json",
+{
   "profiles": {
     "Silo.Service.Sharif": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
+      "launchBrowser": true,
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
-      }
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5005"
     }
-  }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json"
 }

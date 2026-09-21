@@ -41,7 +41,8 @@ builder.Services.AddSingleton<RfidConnectApiForSharif>();
 builder.Services.AddHostedService<Worker>();
 
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents()
+    .AddCircuitOptions(options => { options.DetailedErrors = true; });
 
 builder.Services.AddTelerikBlazor();
 

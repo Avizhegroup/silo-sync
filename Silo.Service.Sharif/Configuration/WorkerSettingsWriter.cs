@@ -10,8 +10,8 @@ public sealed class WorkerSettingsWriter
 
     public WorkerSettingsWriter(IConfiguration configuration, ILogger<WorkerSettingsWriter> logger)
     {
-        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _configuration = configuration ;
+        _logger = logger ;
     }
 
     public string ConfigPath

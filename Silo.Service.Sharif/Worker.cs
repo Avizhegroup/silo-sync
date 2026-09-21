@@ -34,21 +34,30 @@ public class Worker : BackgroundService
 
     public override async Task StartAsync(CancellationToken token)
     {
-        //await _readerControl.ConnectAsync(token);
+        try
+        {
+            //await _readerControl.ConnectAsync(token);
 
-        var power = _options.CurrentValue.ReaderPower;
-        //await _readerControl.SetPowerAsync(power, token);
+            var power = _options.CurrentValue.ReaderPower;
 
-       // _state.SetInventoryRunning(true);
+            //await _readerControl.SetPowerAsync(power, token);
 
-        _logger.LogInformation(
-            "RFID worker initialized. Connected={Connected}, Power={Power}, Station={Station}, GateType={GateType}.",
-            _state.IsConnected,
-            power,
-            _options.CurrentValue.StationCode,
-            _options.CurrentValue.GateType);
+            //_state.SetInventoryRunning(true);
 
-        await base.StartAsync(token);
+            _logger.LogInformation(
+                "RFID worker initialized. Connected={Connected}, Power={Power}, Station={Station}, GateType={GateType}.",
+                _state.IsConnected,
+                power,
+                _options.CurrentValue.StationCode,
+                _options.CurrentValue.GateType);
+
+            await base.StartAsync(token);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while starting RFID worker.");
+            throw;
+        }
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -143,8 +152,8 @@ public class Worker : BackgroundService
 
         _ = Task.Run(async () =>
         {
-          
-                await SendTagAsync(tagsToSend, options, stoppingToken);
+
+            await SendTagAsync(tagsToSend, options, stoppingToken);
         }, CancellationToken.None);
     }
 
@@ -155,9 +164,9 @@ public class Worker : BackgroundService
             var json = await _api.SendAsyncObjectByUri<CreateSharifTagVm>(
                 HttpMethod.Post,
                 "Sharif/SendTag",
-                new
+                new 
                 {
-                    EPC = tags.Select(t => t.Epc),
+                    Epcs = tags.Select(t => t.Epc),
                     options.StationCode,
                     options.GateType
                 });

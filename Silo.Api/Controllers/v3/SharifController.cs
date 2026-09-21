@@ -6,9 +6,9 @@ using Silo.Base.Controllers.Base;
 
 namespace Silo.Api.Controllers.v3;
 
-#if DEBUG
+
 [AllowAnonymous]
-#endif
+
 public class SharifController(ILogger<SharifController> logger
     , IConfiguration configuration
     , IMediator mediator) : SiloBaseControllerVersion3(logger)

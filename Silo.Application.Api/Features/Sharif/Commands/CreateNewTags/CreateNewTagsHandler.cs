@@ -61,7 +61,7 @@ public class CreateNewTagsHandler : IRequestHandler<CreateSharifTagCommand, Crea
                 .ToList()
         };
 
-        await _sharifExternalConnect.SendRfidSnapshotAsync(snapshotRequest, cancellationToken);
+        await _sharifExternalConnect.SendRegisterTagToExternalApi(snapshotRequest, cancellationToken);
 
         return new CreateSharifTagVm
         {

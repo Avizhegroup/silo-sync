@@ -163,7 +163,7 @@ public class SharifExternalConnect
         return await _httpClientHandler.PostAsync<CheckExitPermissionResponse>(endpoint, request, cancellationToken);
     }
 
-    public async Task<SharifApiResponse<object>> SendRfidSnapshotAsync(
+    public async Task<SharifApiResponse<object>> SendRegisterTagToExternalApi(
     RfidSnapshotRequest request,
     CancellationToken cancellationToken = default)
     {

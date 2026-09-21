@@ -7,23 +7,30 @@ namespace Silo.Api.External.Sharif;
 public static class SharifServicesRegisteration
 {
     public static IServiceCollection AddSharifServices(
-        this IServiceCollection services,
-        IConfiguration configuration)
+     this IServiceCollection services,
+     IConfiguration configuration)
     {
-        const string baseUrl = "https://api.sharif.edu";
-        const int timeoutSeconds = 30;
+        var baseUrl = configuration["ProjectConfigs:WmsConfigs:ExternalApi:BaseUrl"];
+
+        if (string.IsNullOrWhiteSpace(baseUrl))
+            throw new InvalidOperationException(
+                "Sharif External API BaseUrl is not configured.");
 
         var apiKey = configuration["ProjectConfigs:WmsConfigs:ExternalApi:ApiKey"];
 
         services.AddHttpClient<SharifHttpClientHandler>(client =>
         {
             client.BaseAddress = new Uri(baseUrl);
-
-            client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
-
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+            client.Timeout = TimeSpan.FromSeconds(30);
 
             client.DefaultRequestHeaders.Add("Accept", "application/json");
+
+            if (!string.IsNullOrWhiteSpace(apiKey))
+            {
+                client.DefaultRequestHeaders.Add(
+                    "Authorization",
+                    $"Bearer {apiKey}");
+            }
         });
 
         services.AddScoped<SharifExternalConnect>();

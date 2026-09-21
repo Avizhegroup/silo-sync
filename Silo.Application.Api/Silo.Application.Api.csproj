@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
+        <ProjectReference Include="..\Silo.Api.External.Sharif\Silo.Api.External.Sharif.csproj" />
         <ProjectReference Include="..\Silo.Domains\Silo.Domains.csproj" />
         <ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
         <ProjectReference Include="..\Silo.Application\Silo.Application.Shared.csproj" />

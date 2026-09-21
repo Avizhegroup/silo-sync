@@ -55,7 +55,7 @@ public class Worker : BackgroundService
                 await _api.SendAsyncObjectByUri<CreateSharifTagVm>(HttpMethod.Post,"Sharif/SendTag",
                  new
                  {
-                     EPC = tag.Epc,
+                     Epcs = new List<string> { tag.Epc },
                      StationCode = stationCode,
                      GateType = gateType
 

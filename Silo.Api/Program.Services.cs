@@ -11,6 +11,7 @@ using Silo.Domains;
 using Silo.Domains.Android;
 using Silo.Identity.Server;
 using Silo.Infrastructure.Shared;
+using Silo.Api.External.Sharif;
 
 namespace Silo.Api;
 public static partial class Program
@@ -25,6 +26,8 @@ public static partial class Program
         services.AddIdentityServerServices();
 
         services.AddSignalR();
+
+        services.AddSharifServices(configuration);
 
         services.AddEndpointsApiExplorer();
 

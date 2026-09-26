@@ -9,6 +9,7 @@ using Silo.Identity.Client;
 using Telerik.Blazor.Components;
 
 namespace Silo.Shared.Components;
+
 public partial class Gallery
 {
     public bool IsLoading = false;
@@ -17,6 +18,8 @@ public partial class Gallery
     public string UsageId;
     public GetGalleryMediasDto SelectedGalleryMedia = new();
     public List<GetGalleryMediasDto> GalleryMedias;
+    public Dictionary<string, string> ImagePreviews { get; set; } = new();
+    public GalleryContent GalleryContentComponent { get; set; }
     public List<TelerikContextMenuItem> ContextMenuItems = new()
     {
         new()
@@ -56,6 +59,7 @@ public partial class Gallery
     [Parameter] public EventCallback<GalleryOcrExtractedTextDto> OnOcrTextExtracted { get; set; }
     [Parameter] public long MaxAllowedSizeMB { get; set; } = 20;
     [Parameter] public string AllowedExtensions { get; set; } = "image/png, image/jpeg";
+    [Parameter] public bool ShowOutOfModal { get; set; } = false;
 
     [CascadingParameter] public TelerikNotification Notification { get; set; }
 
@@ -79,7 +83,6 @@ public partial class Gallery
     public async Task OnGalleryMediaRightClick(MouseEventArgs e, GetGalleryMediasDto media)
     {
         SelectedGalleryMedia = media;
-
         await ContextMenu.ShowAsync(e.ClientX, e.ClientY);
     }
 
@@ -120,9 +123,7 @@ public partial class Gallery
         if (imageFile is not null && imageFile.Length > 0)
         {
             byte[] data = imageFile;
-
             using MemoryStream stream = new(data);
-
             await Export.ExportAndDownload(stream, media.MediaName);
         }
     }
@@ -166,10 +167,15 @@ public partial class Gallery
                 {
                     GetGalleryMediasDto uploadMedia = Mapper.Map<GetGalleryMediasDto>(media);
 
+                    if (galleryExtension.Equals(GalleryExtension.Image))
+                    {
+                        var fileBytes = memoryStream.ToArray();
+                        uploadMedia.Base64Image = $"data:image/jpeg;base64,{Convert.ToBase64String(fileBytes)}";
+                    }
+
                     if (GalleryMedias is not null)
                     {
                         GalleryMedias.Add(uploadMedia);
-
                         StateHasChanged();
                     }
 
@@ -213,9 +219,7 @@ public partial class Gallery
     public async Task ShowFileUploader(GalleryUsageType usageType, string usageId)
     {
         UsageType = usageType;
-
         UsageId = usageId;
-
         await FileUploadComponent.OnClickButton(new());
     }
 
@@ -223,72 +227,107 @@ public partial class Gallery
     /// <summary>
     /// Shows gallery modal first, then user can open uploader or etc
     /// </summary>
+    private async Task LoadImagesBase64Async()
+    {
+        if (GalleryMedias is not null)
+        {
+            foreach (var media in GalleryMedias.Where(m => m.Extension == GalleryExtension.Image && string.IsNullOrEmpty(m.Base64Image)))
+            {
+                var imageFile = await Api.PostAsync("Gallery/GetGalleryImageFile", new GetGalleryImageFileQuery()
+                {
+                    Id = media.Id
+                });
+
+                if (imageFile is not null && imageFile.Length > 0)
+                {
+                    media.Base64Image = $"data:image/jpeg;base64,{Convert.ToBase64String(imageFile)}";
+                }
+            }
+        }
+    }
+
     public async Task Show(GalleryUsageType usageType, string usageId)
     {
         IsLoading = true;
-
         UsageType = usageType;
-
         UsageId = usageId;
 
-        GalleryMedias = (await Api.PostAsync<List<GetGalleryMediasDto>>("SGetUserMediasByUsage"
+        var result = await Api.PostAsync<List<GetGalleryMediasDto>>("SGetUserMediasByUsage"
             , new("usageType", UsageType)
             , new("usageId", UsageId)
-            , new("userId", UserId))).Value;
+            , new("userId", UserId));
+
+        GalleryMedias = result.Value;
+        await LoadImagesBase64Async();
 
         IsLoading = false;
 
-        await Modal.Open(new());
+        if (!ShowOutOfModal)
+        {
+            await Modal.Open(new());
+        }
+        else
+        {
+            StateHasChanged();
+        }
     }
 
     /// <summary>
     /// Shows gallery modal first, then user can open uploader or etc
     /// </summary>
-    public async Task Show(string userId
-        , GalleryUsageType usageType)
+    public async Task Show(string userId, GalleryUsageType usageType)
     {
         IsLoading = true;
-
         UsageType = usageType;
-
         UsageId = null;
-
         UserId = userId;
 
         GalleryMedias = (await Api.PostAsync<List<GetGalleryMediasDto>>("SGetUserMediasByUserId"
             , new("usageType", UsageType)
             , new("userId", UserId))).Value;
 
+        await LoadImagesBase64Async();
+
         IsLoading = false;
 
-        await Modal.Open(new());
+        if (!ShowOutOfModal)
+        {
+            await Modal.Open(new());
+        }
+        else
+        {
+            StateHasChanged();
+        }
     }
+
 
     /// <summary>
     /// Shows gallery modal first, then user can open uploader or etc
     /// </summary>
-    public async Task Show(string userId
-        , GalleryUsageType usageType
-        , string usageId
-        , GalleryOcrTypes ocrType = GalleryOcrTypes.None)
+    public async Task Show(string userId, GalleryUsageType usageType, string usageId, GalleryOcrTypes ocrType = GalleryOcrTypes.None)
     {
         IsLoading = true;
-
         UsageType = usageType;
-
         UsageId = usageId;
-
         UserId = userId;
-
         OcrType = ocrType;
 
         GalleryMedias = (await Api.PostAsync<List<GetGalleryMediasDto>>("SGetUserMediasByUsageNoUserId"
             , new("usageType", UsageType)
             , new("usageId", UsageId))).Value;
 
+        await LoadImagesBase64Async();
+
         IsLoading = false;
 
-        await Modal.Open(new());
+        if (!ShowOutOfModal)
+        {
+            await Modal.Open(new());
+        }
+        else
+        {
+            StateHasChanged();
+        }
     }
     #endregion
 
@@ -296,14 +335,12 @@ public partial class Gallery
     private async Task Delete()
     {
         bool result = (await Api.PostAsync<bool>("SRemoveGalleryMedia"
-         , new KeyValuePair<string, object>("mediaId", SelectedGalleryMedia.Id))).Value;
+           , new KeyValuePair<string, object>("mediaId", SelectedGalleryMedia.Id))).Value;
 
         if (result)
         {
             GalleryMedias.Remove(SelectedGalleryMedia);
-
             SelectedGalleryMedia = new();
-
             StateHasChanged();
         }
     }
@@ -322,9 +359,7 @@ public partial class Gallery
         if (imageFile is not null && imageFile.Length > 0)
         {
             byte[] data = imageFile;
-
             using MemoryStream stream = new(data);
-
             await Export.ExportAndDownload(stream, SelectedGalleryMedia.MediaName);
         }
     }
@@ -339,21 +374,18 @@ public partial class Gallery
         try
         {
             IsLoading = true;
-
             StateHasChanged();
 
             var ocrResult = await Api.SendAsyncObjectByUri<GetOcrDataForGalleryMediaVm>(HttpMethod.Get
                 , "Agent/GetOcrDataForGalleryMedia"
                 , new GetOcrDataForGalleryMediaQuery()
-            {
-                GalleryId = SelectedGalleryMedia.Id,
-                OcrType = type
-            });
+                {
+                    GalleryId = SelectedGalleryMedia.Id,
+                    OcrType = type
+                });
 
             IsLoading = false;
-
             await Modal.Close(new());
-
             StateHasChanged();
 
             if (ocrResult.Value.Result.HasValue())

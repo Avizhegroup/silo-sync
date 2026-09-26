@@ -854,3 +854,64 @@
             }
     }
 }
+
+// ── Gallery Component Dark Mode (Fixed) ────────────────────────
+
+.gallery-container {
+    color: #e8eaed !important;
+
+    .gallery-upload-section,
+    .silo-upload,
+    .silo-dropzone {
+        background-color: #252536 !important;
+        border-color: #3a3a55 !important;
+        color: #e8eaed !important;
+
+        *, span, p, label {
+            color: #e8eaed !important;
+        }
+
+        .material-icons, svg {
+            fill: #97DCE1 !important;
+            color: #97DCE1 !important;
+        }
+    }
+
+    .gallery-item-card {
+        background-color: #363656 !important;
+        border: 1px solid #3a3a55 !important;
+        color: #e8eaed !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+
+        &:hover {
+            background-color: #2d2d44 !important;
+            border-color: #4a4a66 !important;
+        }
+    }
+
+    .gallery-item-selected {
+        .gallery-item-card {
+            background-color: #1a3050 !important;
+            border-color: #8ab4f8 !important;
+        }
+    }
+
+    .gallery-item-name,
+    .gallery-item-date,
+    .gallery-item-title,
+    .gallery-item-label {
+        color: #e8eaed !important;
+    }
+
+    .gallery-empty {
+        color: #9aa0a6 !important;
+
+        .material-icons {
+            color: #97DCE1 !important;
+        }
+    }
+
+    .gallery-pagination-info {
+        color: #bdc1c6 !important;
+    }
+}

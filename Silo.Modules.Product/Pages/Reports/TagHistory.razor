@@ -161,11 +161,6 @@
                                 <input readonly="readonly" type="text" @bind-value="ProductInfos[0].RegisterUserName" class="form-control input-search-span-lg" style="    width: 140px !important;" />
                             </div>
                             <div class="d-flex flex-row" style="margin-right: 5px;">
-                                <button class="btn btn-secondary" @onclick="async () => await OnOpenGallery()">
-                                    <MaterialIcon IconName="photo_library"></MaterialIcon>
-                                </button>
-                            </div>
-                            <div class="d-flex flex-row" style="margin-right: 5px;">
                                 <button type="button"
                                         class="btn btn-success"
                                         @onclick="async e => await SelectPrintFormatRef.ShowPrintFormatsAsync(e)">
@@ -990,15 +985,16 @@
                         </TelerikGrid>
                     }
                 </TabStripTab>
+                <TabStripTab Title="گالری">
+                    <Gallery @ref="GalleryRef"
+                            ShowOutOfModal="true"
+                            Readonly="true" />
+                </TabStripTab>
             </TelerikTabStrip>
         </div>
     }
 </div>
-<CascadingValue Value="Notification">
-    <Gallery @ref="GalleryRef"
-             Readonly="true">
-    </Gallery>
-</CascadingValue>
+
 <CascadingValue Value="IsLoading">
     <CascadingValue Value="Notification">
         <SelectPrintFormat @ref="SelectPrintFormatRef"

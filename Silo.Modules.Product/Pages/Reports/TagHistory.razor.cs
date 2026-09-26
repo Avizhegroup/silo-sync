@@ -18,6 +18,7 @@ public partial class TagHistory
     public string ActiveProductSerial = string.Empty;
     public int ActiveTabIndex = 0;
     public int ActiveStepperIndex = 0;
+    public bool _loadGallery;
     public List<GetTagHistoryTimeLineVm> TimeLine = new();
     public List<GetProductInfosBySerialVm> ProductInfos = new();
     public List<GetProductExitInfoBySerialVm> Sales = new();
@@ -138,11 +139,6 @@ public partial class TagHistory
         IsLoading = false;
     }
 
-    public async Task OnOpenGallery()
-    {
-        await GalleryRef.Show(UserId, GalleryUsageType.Tag, ActiveProductSerial);
-    }
-
     protected override async Task SiloInitializer()
     {
         UserId = (await AuthState.GetAuthenticationStateAsync()).User.GetUserId();
@@ -175,6 +171,14 @@ public partial class TagHistory
         IsLoading = false;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_loadGallery && GalleryRef is not null)
+        {
+            _loadGallery = false;
+            await GetGallery();
+        }
+    }
     #region Add Serial
     public async Task OnSerialSelected(string serial)
     {
@@ -222,6 +226,13 @@ public partial class TagHistory
     public async Task OnTabChanged(int newIndex)
     {
         ActiveTabIndex = newIndex;
+
+        if ((TagHistoryTabs)newIndex == TagHistoryTabs.Gallery)
+        {
+            _loadGallery = true;
+            StateHasChanged();
+            return;
+        }
 
         await GetProductHistory();
     }
@@ -383,10 +394,6 @@ public partial class TagHistory
 
                 case TagHistoryTabs.HistoryDetails:
                     await GetTagChangeLogs();
-                    break;
-
-                case TagHistoryTabs.GpsLog:
-                    await GetGpsLogs();
                     break;
             }
         }
@@ -647,6 +654,14 @@ public partial class TagHistory
             {
                 UsageId = ActiveProductSerial
             })).Value.List ?? new();
+    }
+
+    private async Task GetGallery()
+    {
+        await GalleryRef.Show(
+            UserId,
+            GalleryUsageType.Tag,
+            ActiveProductSerial);
     }
     #endregion
 

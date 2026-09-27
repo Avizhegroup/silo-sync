@@ -12,11 +12,8 @@ namespace Silo.Shared.Components;
 public partial class GalleryContent
 {
     public bool IsLoading;
-
-    public List<GetGalleryMediasDto> GalleryMedias { get; set; } = new();
-
-    public GetGalleryMediasDto SelectedGalleryMedia { get; set; }
-
+    public GetGalleryMediasDto SelectedGalleryMedia;
+    public List<GetGalleryMediasDto> GalleryMedias;
     public List<TelerikContextMenuItem> ContextMenuItems { get; set; } = new()
     {
         new()
@@ -53,19 +50,12 @@ public partial class GalleryContent
 
 
     [Parameter] public bool Readonly { get; set; }
-
     [Parameter] public long MaxAllowedSizeMB { get; set; } = 20;
-
     [Parameter] public string UserId { get; set; }
-
     [Parameter] public GalleryUsageType UsageType { get; set; }
-
     [Parameter] public string UsageId { get; set; }
-
     [Parameter] public GalleryOcrTypes OcrType { get; set; } = GalleryOcrTypes.None;
-
     [Parameter] public bool UseNoUserIdApi { get; set; }
-
     [Parameter] public EventCallback<GalleryOcrExtractedTextDto> OnOcrTextExtracted { get; set; }
 
     [CascadingParameter] public TelerikNotification Notification { get; set; }

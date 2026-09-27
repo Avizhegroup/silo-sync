@@ -18,7 +18,6 @@ public partial class TagHistory
     public string ActiveProductSerial = string.Empty;
     public int ActiveTabIndex = 0;
     public int ActiveStepperIndex = 0;
-    public bool _loadGallery;
     public List<GetTagHistoryTimeLineVm> TimeLine = new();
     public List<GetProductInfosBySerialVm> ProductInfos = new();
     public List<GetProductExitInfoBySerialVm> Sales = new();

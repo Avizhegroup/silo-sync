@@ -39,7 +39,6 @@ public partial class TagHistory
     public List<DynamicFieldWithValueDto> DynamicFields = new();
     public List<GetGpsLogDto> GpsLogs = new();
 
-    public GalleryContent GalleryRef { get; set; }
     public SelectPrintFormat SelectPrintFormatRef { get; set; }
 
     [Inject] public RfidConnectApi Api { get; set; }
@@ -643,7 +642,6 @@ public partial class TagHistory
                 UsageId = ActiveProductSerial
             })).Value.List ?? new();
     }
-
     #endregion
 
     #region Show Tag Change Log

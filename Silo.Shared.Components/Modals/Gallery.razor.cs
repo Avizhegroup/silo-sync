@@ -7,6 +7,12 @@ namespace Silo.Shared.Components;
 
 public partial class Gallery
 {
+    public string UserId;
+    public GalleryUsageType UsageType;
+    public string UsageId;
+    public GalleryOcrTypes OcrType = GalleryOcrTypes.None;
+    public bool UseNoUserIdApi;
+
     [Parameter] public bool Readonly { get; set; } = false;
     [Parameter] public long MaxAllowedSizeMB { get; set; } = 20;
     [Parameter] public string AllowedExtensions { get; set; } = "image/png, image/jpeg";
@@ -17,12 +23,6 @@ public partial class Gallery
 
     public GalleryContent GalleryContentComponent { get; set; }
     public Modal Modal { get; set; }
-
-    private string UserId;
-    private GalleryUsageType UsageType;
-    private string UsageId;
-    private GalleryOcrTypes OcrType = GalleryOcrTypes.None;
-    private bool UseNoUserIdApi;   
 
     public async Task Show(GalleryUsageType usageType, string usageId)
     {

@@ -15,6 +15,27 @@ namespace Silo.Shared.Components;
 
 public partial class GalleryContent
 {
+    public bool IsLoading;
+    public GetGalleryMediasDto SelectedGalleryMedia;
+    public List<GetGalleryMediasDto> GalleryMedias;
+    public List<TelerikContextMenuItem> ContextMenuItems { get; set; } = new()
+    {
+        new() { Text = TextResources.APP_StringKeys_Download, Icon = "download" },
+        new() { Text = TextResources.APP_StringKeys_Delete, Icon = "delete" },
+        new()
+        {
+            Text = "استخراج متن از تصویر",
+            Icon = "ai",
+            Items = new()
+            {
+                new() { Text = "پلاک", Icon = "plaque" },
+                new() { Text = "کدملی", Icon = "nc" }
+            }
+        }
+    };
+    public long MaxAllowedSizeBytes => MaxAllowedSizeMB * 1024 * 1024;
+    public string lastLoadKey;
+
     [Parameter] public bool Readonly { get; set; }
     [Parameter] public long MaxAllowedSizeMB { get; set; } = 20;
     [Parameter] public string AllowedExtensions { get; set; } = "image/png, image/jpeg";
@@ -36,56 +57,29 @@ public partial class GalleryContent
     [Inject] public IJSRuntime JSRuntime { get; set; }
     [Inject] public ILogger<GalleryContent> Logger { get; set; }
 
-    public bool IsLoading { get; set; }
-    public GetGalleryMediasDto SelectedGalleryMedia { get; set; } = new();
-    public List<GetGalleryMediasDto> GalleryMedias { get; set; }
+   
     public FileUpload FileUploadComponent { get; set; }
     public TelerikContextMenu<TelerikContextMenuItem> ContextMenu { get; set; }
-    public long MaxAllowedSizeBytes => MaxAllowedSizeMB * 1024 * 1024;
-    private string _lastLoadKey;
-    private bool _isInitialized;
 
-    public List<TelerikContextMenuItem> ContextMenuItems { get; set; } = new()
-    {
-        new() { Text = TextResources.APP_StringKeys_Download, Icon = "download" },
-        new() { Text = TextResources.APP_StringKeys_Delete, Icon = "delete" },
-        new()
-        {
-            Text = "استخراج متن از تصویر",
-            Icon = "ai",
-            Items = new()
-            {
-                new() { Text = "پلاک", Icon = "plaque" },
-                new() { Text = "کدملی", Icon = "nc" }
-            }
-        }
-    };
 
 
 
     protected override async Task OnInitializedAsync()
     {
-        if (string.IsNullOrEmpty(UserId))
-        {
-            UserId = (await SiloAuth.GetAuthenticationStateAsync()).User.GetUserId();
-        }
-        _isInitialized = true;
+
+        UserId = (await SiloAuth.GetAuthenticationStateAsync()).User.GetUserId();
+
+        IsLoading = true;
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        if (!_isInitialized) return;
-
-        if (string.IsNullOrEmpty(UserId))
-        {
-            UserId = (await SiloAuth.GetAuthenticationStateAsync()).User.GetUserId();
-        }
 
         var currentKey = $"{UserId}|{(int)UsageType}|{UsageId ?? ""}|{UseNoUserIdApi}";
 
-        if (currentKey != _lastLoadKey)
+        if (currentKey != lastLoadKey)
         {
-            _lastLoadKey = currentKey;
+            lastLoadKey = currentKey;
             await LoadGalleryMediasAsync();
         }
     }
@@ -98,7 +92,7 @@ public partial class GalleryContent
 
         List<GetGalleryMediasDto> result = null;
 
-        if (UseNoUserIdApi && !string.IsNullOrEmpty(UsageId))
+        if (UseNoUserIdApi && UsageId.HasValue())
         {
             var response = await Api.PostAsync<List<GetGalleryMediasDto>>(
                 "SGetUserMediasByUsageNoUserId",
@@ -107,7 +101,7 @@ public partial class GalleryContent
 
             result = response.Value;
         }
-        else if (!string.IsNullOrEmpty(UsageId))
+        else if (UsageId.HasValue())
         {
             var response = await Api.PostAsync<List<GetGalleryMediasDto>>(
                 "SGetUserMediasByUsage",
@@ -197,14 +191,14 @@ public partial class GalleryContent
 
         if (galleryExtension is null)
         {
-            Notification?.Show(TextResources.APP_StringKeys_File_Extention_Error, "error");
+            Notification.Show(TextResources.APP_StringKeys_File_Extention_Error, "error");
             IsLoading = false;
             return;
         }
 
         if (file.Size > MaxAllowedSizeBytes)
         {
-            Notification?.Show(string.Format(TextResources.APP_StringKeys_Validation_Max_Size, MaxAllowedSizeMB + "mb"), "error");
+            Notification.Show(string.Format(TextResources.APP_StringKeys_Validation_Max_Size, MaxAllowedSizeMB + "mb"), "error");
             IsLoading = false;
             return;
         }

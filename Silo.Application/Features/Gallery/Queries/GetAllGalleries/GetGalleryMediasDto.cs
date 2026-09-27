@@ -11,4 +11,5 @@ public class GetGalleryMediasDto
     public GalleryExtension Extension { get; set; }
     public Dictionary<GalleryOcrTypes, string> OcrResults { get; set; } = new();
     public string Data { get; set; }
+    public string Base64Image { get; set; }
 }

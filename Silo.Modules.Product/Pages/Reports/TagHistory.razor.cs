@@ -39,7 +39,6 @@ public partial class TagHistory
     public List<DynamicFieldWithValueDto> DynamicFields = new();
     public List<GetGpsLogDto> GpsLogs = new();
 
-    public Gallery GalleryRef { get; set; }
     public SelectPrintFormat SelectPrintFormatRef { get; set; }
 
     [Inject] public RfidConnectApi Api { get; set; }
@@ -136,11 +135,6 @@ public partial class TagHistory
         await Export.ExportAndDownloadUsingBypass(response.Value.Result);
 
         IsLoading = false;
-    }
-
-    public async Task OnOpenGallery()
-    {
-        await GalleryRef.Show(UserId, GalleryUsageType.Tag, ActiveProductSerial);
     }
 
     protected override async Task SiloInitializer()

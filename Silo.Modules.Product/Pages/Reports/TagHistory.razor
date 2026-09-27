@@ -986,9 +986,10 @@
                     }
                 </TabStripTab>
                 <TabStripTab Title="گالری">
-                    <Gallery @ref="GalleryRef"
-                            ShowOutOfModal="true"
-                            Readonly="true" />
+                    <GalleryContent UserId="@UserId"
+                                    UsageType="@GalleryUsageType.Tag"
+                                    UsageId="@ActiveProductSerial"
+                                    Readonly="true" />
                 </TabStripTab>
             </TelerikTabStrip>
         </div>

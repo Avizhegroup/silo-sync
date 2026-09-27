@@ -1,73 +1,22 @@
-﻿@using System.Text.Json
-@using Silo.Application.Dto
-@using Silo.Application.Features
+﻿@namespace Silo.Shared.Components
 
-@namespace Silo.Shared.Components
-
-@if (ShowOutOfModal)
-{
-    <div class="gallery-container">
-        <GalleryContent @ref="GalleryContentComponent"
-                        Readonly="Readonly"
-                        IsLoading="IsLoading"
-                        GalleryMedias="GalleryMedias"
-                        SelectedGalleryMedia="SelectedGalleryMedia"
-                        MaxAllowedSizeMB="MaxAllowedSizeMB"
-                        AllowedExtensions="AllowedExtensions"
-                        OnStartUpload="() => IsLoading = true"
-                        OnFileUpload="OnFileUpload"
-                        OnClick="OnGalleryMediaRightClick"
-                        OnRightClick="args => OnGalleryMediaRightClick(args.Args, args.Media)" />
-    </div>
-}
-else
-{
-    <Modal Buttons="ModalButtons.No"
-           ModalTitle="@TextResources.APP_StringKeys_Gallery_Title"
-           @ref="Modal"
-           Size="ModalSize.Large">
-        <ModalBodyContentHtml>
-            <div class="gallery-container">
-                <GalleryContent @ref="GalleryContentComponent"
-                                Readonly="Readonly"
-                                IsLoading="IsLoading"
-                                GalleryMedias="GalleryMedias"
-                                SelectedGalleryMedia="SelectedGalleryMedia"
-                                MaxAllowedSizeMB="MaxAllowedSizeMB"
-                                AllowedExtensions="AllowedExtensions"
-                                OnStartUpload="() => IsLoading = true"
-                               OnFileUpload="OnFileUpload"
-                                OnClick="OnGalleryMediaRightClick"
-                                OnRightClick="args => OnGalleryMediaRightClick(args.Args, args.Media)" />
-            </div>
-        </ModalBodyContentHtml>
-    </Modal>
-}
-
-<TelerikLoaderContainer Visible="IsLoading"
-                        LoaderPosition="@LoaderPosition.End"
-                        LoaderType="LoaderType.InfiniteSpinner"
-                        Text="@TextResources.APP_StringKeys_Loading">
-</TelerikLoaderContainer>
-
-@if (Readonly)
-{
-    <TelerikContextMenu Class="gallery-context"
-                        @ref="@ContextMenu"
-                        Data="@ContextMenuItems.Where(p=>p.Text!= @TextResources.APP_StringKeys_Delete)"
-                        OnClick="@((TelerikContextMenuItem item) => OnContextMenuItemClick(item))">
-    </TelerikContextMenu>
-}
-else
-{
-    <TelerikContextMenu Class="gallery-context"
-                        @ref="@ContextMenu"
-                        Data="@ContextMenuItems"
-                        OnClick="@((TelerikContextMenuItem item) => OnContextMenuItemClick(item))">
-    </TelerikContextMenu>
-}
-
-<TelerikTooltip TargetSelector=".gallery-item-card"
-                Position="@TooltipPosition.Top"
-                ShowOn="@TooltipShowEvent.Hover">
-</TelerikTooltip>
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="@TextResources.APP_StringKeys_Gallery_Title"
+       @ref="Modal"
+       Size="ModalSize.Large">
+    <ModalBodyContentHtml>
+        <div class="gallery-container">
+            <GalleryContent @ref="GalleryContentComponent"
+                            Readonly="Readonly"
+                            MaxAllowedSizeMB="MaxAllowedSizeMB"
+                            AllowedExtensions="AllowedExtensions"
+                            UserId="@UserId"
+                            UsageType="@UsageType"
+                            UsageId="@UsageId"
+                            OcrType="@OcrType"
+                            UseNoUserIdApi="@UseNoUserIdApi"
+                            OnCompleteUpload="OnCompleteUpload"
+                            OnOcrTextExtracted="OnOcrTextExtracted" />
+        </div>
+    </ModalBodyContentHtml>
+</Modal>

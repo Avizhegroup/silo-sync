@@ -10,7 +10,7 @@
         <CascadingValue Value="Notification">
             <FileUpload @ref="FileUploadComponent"
                         AllowedExtensions="@AllowedExtensions"
-                        OnStartUpload="() => OnStartUpload.InvokeAsync()"
+                        OnStartUpload="() => IsLoading = true"
                         ButtonClass="btn btn-success"
                         MaterialIconClass="Upload"
                         MaxAllowedSizeMB="MaxAllowedSizeMB"
@@ -50,7 +50,6 @@
             if (media.Data.HasValue())
             {
                 using var jsonData = JsonDocument.Parse(media.Data);
-
                 if (jsonData.RootElement.TryGetProperty("ActionTypeTitle", out var property))
                 {
                     actionTypeTitle = property.GetString() ?? string.Empty;
@@ -59,10 +58,10 @@
 
             <div class="gallery-item @(SelectedGalleryMedia?.Id == media.Id ? "gallery-item-selected" : "")"
                  @oncontextmenu:preventDefault="true"
-                 @oncontextmenu="async (e) => await OnRightClick.InvokeAsync((e, media))"
-                 @onclick="async () => await OnClick.InvokeAsync(media)">
+                 @oncontextmenu="async (e) => await OnGalleryMediaRightClick(e, media)"
+                 @onclick="async () => await OnGalleryMediaClick(media)">
                 <div class="gallery-item-card">
-                    <div class="gallery-item-icon @iconColorClass" style="overflow: hidden; border-radius: 8px; width:133PX; height:95PX; ">
+                    <div class="gallery-item-icon @iconColorClass" style="overflow: hidden; border-radius: 8px; width:133PX; height:95PX;">
                         @if (media.Extension == GalleryExtension.Image && !string.IsNullOrEmpty(media.Base64Image))
                         {
                             <img src="@media.Base64Image" style="width: 100%; height: 100%; object-fit: cover;" />
@@ -102,3 +101,31 @@ else if (!IsLoading)
         <p>@TextResources.APP_StringKeys_Validation_AnyData</p>
     </div>
 }
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+@if (Readonly)
+{
+    <TelerikContextMenu Class="gallery-context"
+                        @ref="@ContextMenu"
+                        Data="@ContextMenuItems.Where(p => p.Text != TextResources.APP_StringKeys_Delete)"
+                        OnClick="@((TelerikContextMenuItem item) => OnContextMenuItemClick(item))">
+    </TelerikContextMenu>
+}
+else
+{
+    <TelerikContextMenu Class="gallery-context"
+                        @ref="@ContextMenu"
+                        Data="@ContextMenuItems"
+                        OnClick="@((TelerikContextMenuItem item) => OnContextMenuItemClick(item))">
+    </TelerikContextMenu>
+}
+
+<TelerikTooltip TargetSelector=".gallery-item-card"
+                Position="@TooltipPosition.Top"
+                ShowOn="@TooltipShowEvent.Hover">
+</TelerikTooltip>

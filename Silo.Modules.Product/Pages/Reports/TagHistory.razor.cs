@@ -40,7 +40,7 @@ public partial class TagHistory
     public List<DynamicFieldWithValueDto> DynamicFields = new();
     public List<GetGpsLogDto> GpsLogs = new();
 
-    public Gallery GalleryRef { get; set; }
+    public GalleryContent GalleryRef { get; set; }
     public SelectPrintFormat SelectPrintFormatRef { get; set; }
 
     [Inject] public RfidConnectApi Api { get; set; }
@@ -171,14 +171,6 @@ public partial class TagHistory
         IsLoading = false;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (_loadGallery && GalleryRef is not null)
-        {
-            _loadGallery = false;
-            await GetGallery();
-        }
-    }
     #region Add Serial
     public async Task OnSerialSelected(string serial)
     {
@@ -226,13 +218,6 @@ public partial class TagHistory
     public async Task OnTabChanged(int newIndex)
     {
         ActiveTabIndex = newIndex;
-
-        if ((TagHistoryTabs)newIndex == TagHistoryTabs.Gallery)
-        {
-            _loadGallery = true;
-            StateHasChanged();
-            return;
-        }
 
         await GetProductHistory();
     }
@@ -394,6 +379,10 @@ public partial class TagHistory
 
                 case TagHistoryTabs.HistoryDetails:
                     await GetTagChangeLogs();
+                    break;
+
+                case TagHistoryTabs.GpsLog:
+                    await GetGpsLogs();
                     break;
             }
         }
@@ -656,13 +645,6 @@ public partial class TagHistory
             })).Value.List ?? new();
     }
 
-    private async Task GetGallery()
-    {
-        await GalleryRef.Show(
-            UserId,
-            GalleryUsageType.Tag,
-            ActiveProductSerial);
-    }
     #endregion
 
     #region Show Tag Change Log

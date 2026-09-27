@@ -87,8 +87,6 @@ public partial class GalleryContent
     public async Task LoadGalleryMediasAsync()
     {
         IsLoading = true;
-        StateHasChanged();
-
 
         List<GetGalleryMediasDto> result = null;
 
@@ -205,7 +203,6 @@ public partial class GalleryContent
 
        
             IsLoading = true;
-            StateHasChanged();
 
             await using var memoryStream = new MemoryStream();
             await file.OpenReadStream(maxAllowedSize: MaxAllowedSizeBytes).CopyToAsync(memoryStream);
@@ -247,7 +244,6 @@ public partial class GalleryContent
             }
         
             IsLoading = false;
-            StateHasChanged();
         
     }
 
@@ -259,7 +255,9 @@ public partial class GalleryContent
         if (result)
         {
             GalleryMedias.Remove(SelectedGalleryMedia);
+
             SelectedGalleryMedia = new();
+
             StateHasChanged();
         }
     }
@@ -267,23 +265,23 @@ public partial class GalleryContent
     private async Task Download()
     {
         IsLoading = true;
-        StateHasChanged();
-
        
             var imageFile = await Api.PostAsync("Gallery/GetGalleryImageFile", new GetGalleryImageFileQuery
             {
                 Id = SelectedGalleryMedia.Id
             });
 
-            if (imageFile is not null && imageFile.Length > 0)
-            {
-                using var stream = new MemoryStream(imageFile);
-                await Export.ExportAndDownload(stream, SelectedGalleryMedia.MediaName);
-            }
-        
-            IsLoading = false;
-            StateHasChanged();
-        
+        IsLoading = false;
+
+        if (imageFile is not null && imageFile.Length > 0)
+        {
+            byte[] data = imageFile;
+
+            using MemoryStream stream = new(data);
+
+            await Export.ExportAndDownload(stream, SelectedGalleryMedia.MediaName);
+        }
+
     }
 
     private async Task Ocr(GalleryOcrTypes type)

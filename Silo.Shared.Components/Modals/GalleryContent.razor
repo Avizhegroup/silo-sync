@@ -4,27 +4,10 @@
 
 @namespace Silo.Shared.Components
 
-@if (!Readonly)
-{
-    <div class="gallery-upload-section">
-        <CascadingValue Value="Notification">
-            <FileUpload @ref="FileUploadComponent"
-                        AllowedExtensions="@AllowedExtensions"
-                        OnStartUpload="() => IsLoading = true"
-                        ButtonClass="btn btn-success"
-                        MaterialIconClass="Upload"
-                        MaxAllowedSizeMB="MaxAllowedSizeMB"
-                        ShowDropZone="true"
-                        DropZoneText="کلیک کنید یا را در اینجا رها کنید"
-                        OnUpload="OnFileUpload">
-            </FileUpload>
-        </CascadingValue>
-    </div>
-}
-
 @if (GalleryMedias is not null && GalleryMedias.Any())
 {
     <div class="gallery-grid">
+
         @foreach (var media in GalleryMedias)
         {
             var iconName = media.Extension switch
@@ -50,38 +33,65 @@
             if (media.Data.HasValue())
             {
                 using var jsonData = JsonDocument.Parse(media.Data);
-                if (jsonData.RootElement.TryGetProperty("ActionTypeTitle", out var property))
+
+                if (jsonData.RootElement.TryGetProperty(
+                        "ActionTypeTitle",
+                        out var property))
                 {
                     actionTypeTitle = property.GetString() ?? string.Empty;
                 }
             }
 
-            <div class="gallery-item @(SelectedGalleryMedia?.Id == media.Id ? "gallery-item-selected" : "")"
+            <div class="gallery-item @(SelectedGalleryMedia?.Id == media.Id
+                                ? "gallery-item-selected"
+                                : "")"
+                 @ondblclick="async () => await OnMediaDoubleClick(media)"
+                 @onclick="() => SelectedGalleryMedia = media"
                  @oncontextmenu:preventDefault="true"
-                 @oncontextmenu="async (e) => await OnGalleryMediaRightClick(e, media)"
-                 @onclick="async () => await OnGalleryMediaClick(media)">
+                 @oncontextmenu="async e => await OnGalleryMediaRightClick(e, media)">
+
                 <div class="gallery-item-card">
-                    <div class="gallery-item-icon @iconColorClass" style="overflow: hidden; border-radius: 8px; width:133PX; height:95PX;">
-                        @if (media.Extension == GalleryExtension.Image && !string.IsNullOrEmpty(media.Base64Image))
+
+                    <div class="gallery-item-icon @iconColorClass"
+                         style="overflow:hidden;
+                        border-radius:8px;
+                        width:133px;
+                        height:95px;">
+
+                        @if (media.Extension == GalleryExtension.Image &&
+                             !string.IsNullOrEmpty(media.Base64Image))
                         {
-                            <img src="@media.Base64Image" style="width: 100%; height: 100%; object-fit: cover;" />
+                            <img src="@media.Base64Image"
+                                 style="width:100%;
+                            height:100%;
+                            object-fit:cover;" />
                         }
                         else
                         {
-                            <MaterialIcon IconName="@iconName"></MaterialIcon>
+                            <MaterialIcon IconName="@iconName" />
                         }
+
                     </div>
+
                     <div class="gallery-item-info">
-                        <div class="gallery-item-name" title="@media.MediaName">
+
+                        <div class="gallery-item-name"
+                             title="@media.MediaName">
                             @media.MediaName
                         </div>
-                        <div class="gallery-item-name" title="@actionTypeTitle">
+
+                        <div class="gallery-item-name"
+                             title="@actionTypeTitle">
                             @actionTypeTitle
                         </div>
+
                         <div class="gallery-item-date">
-                            @(PersianCalendarTools.GregorianToPersian(media.UpldoadDateTime))
+                            @(PersianCalendarTools.GregorianToPersian(
+                                media.UpldoadDateTime))
                         </div>
+
                     </div>
+
                 </div>
             </div>
         }
@@ -97,7 +107,7 @@
 else if (!IsLoading)
 {
     <div class="gallery-empty">
-        <MaterialIcon IconName="photo_library"></MaterialIcon>
+        <MaterialIcon IconName="photo_library" />
         <p>@TextResources.APP_StringKeys_Validation_AnyData</p>
     </div>
 }
@@ -108,22 +118,11 @@ else if (!IsLoading)
                         Text="@TextResources.APP_StringKeys_Loading">
 </TelerikLoaderContainer>
 
-@if (Readonly)
-{
-    <TelerikContextMenu Class="gallery-context"
-                        @ref="@ContextMenu"
-                        Data="@ContextMenuItems.Where(p => p.Text != TextResources.APP_StringKeys_Delete)"
-                        OnClick="@((TelerikContextMenuItem item) => OnContextMenuItemClick(item))">
-    </TelerikContextMenu>
-}
-else
-{
-    <TelerikContextMenu Class="gallery-context"
-                        @ref="@ContextMenu"
-                        Data="@ContextMenuItems"
-                        OnClick="@((TelerikContextMenuItem item) => OnContextMenuItemClick(item))">
-    </TelerikContextMenu>
-}
+<TelerikContextMenu Class="gallery-context"
+                    @ref="ContextMenu"
+                    Data="@ContextMenuItems"
+                    OnClick="@((TelerikContextMenuItem item) => OnContextMenuItemClick(item))">
+</TelerikContextMenu>
 
 <TelerikTooltip TargetSelector=".gallery-item-card"
                 Position="@TooltipPosition.Top"

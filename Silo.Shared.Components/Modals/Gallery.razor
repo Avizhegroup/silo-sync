@@ -1,22 +1,50 @@
 ﻿@namespace Silo.Shared.Components
 
+@using Silo.Application.Dto
+@using Silo.Application.Features
+
 <Modal Buttons="ModalButtons.No"
        ModalTitle="@TextResources.APP_StringKeys_Gallery_Title"
        @ref="Modal"
        Size="ModalSize.Large">
+
     <ModalBodyContentHtml>
+
         <div class="gallery-container">
-            <GalleryContent @ref="GalleryContentComponent"
-                            Readonly="Readonly"
-                            MaxAllowedSizeMB="MaxAllowedSizeMB"
-                            AllowedExtensions="AllowedExtensions"
+
+            @if (!Readonly)
+            {
+                <div class="gallery-upload-section">
+
+                    <CascadingValue Value="Notification">
+
+                        <FileUpload @ref="FileUploadComponent"
+                                    AllowedExtensions="@AllowedExtensions"
+                                    OnStartUpload="() => IsLoading = true"
+                                    ButtonClass="btn btn-success"
+                                    MaterialIconClass="Upload"
+                                    MaxAllowedSizeMB="MaxAllowedSizeMB"
+                                    ShowDropZone="true"
+                                    DropZoneText="کلیک کنید یا را در اینجا رها کنید"
+                                    OnUpload="OnFileUpload">
+                        </FileUpload>
+
+                    </CascadingValue>
+
+                </div>
+            }
+
+            <GalleryContent @ref="GalleryContentRef"
                             UserId="@UserId"
                             UsageType="@UsageType"
                             UsageId="@UsageId"
                             OcrType="@OcrType"
                             UseNoUserIdApi="@UseNoUserIdApi"
-                            OnCompleteUpload="OnCompleteUpload"
+                            Readonly="@Readonly"
                             OnOcrTextExtracted="OnOcrTextExtracted" />
+
         </div>
+
     </ModalBodyContentHtml>
+
 </Modal>

@@ -4,6 +4,7 @@ public partial class PrintFormatManage
 {
     public bool IsLoading = true;
     public CreatePrintFormatCommand Request = new();
+    public List<GetAllActionTypesDto> ActionTypes = new();
     public List<string> SelectedPageTitles = new();
     public List<GetAllPrintFormatDto> PrintFormats;
     public List<NavbarAllTitle> Links;
@@ -27,6 +28,8 @@ public partial class PrintFormatManage
 
         FilteredLinks = FlatLinks;
 
+        ActionTypes = ActionTypes = (await Api.SendAsyncObjectByUri<GetAllActionTypesVm>(HttpMethod.Get, "ActionType/ReadAll")).Value.List;
+
         IsLoading = false;
     }
 
@@ -36,6 +39,8 @@ public partial class PrintFormatManage
 
         PrintFormats = (await Api.SendAsyncObjectByUri<GetAllPrintFormatVm>(HttpMethod.Get
             , "PrintFormat/GetAll")).Value.List;
+
+        ActionTypes = ActionTypes = (await Api.SendAsyncObjectByUri<GetAllActionTypesVm>(HttpMethod.Get , "ActionType/ReadAll")).Value.List;
 
         IsLoading = false;
 
@@ -149,8 +154,10 @@ public partial class PrintFormatManage
             Id = printFormat.Id,
             Name = printFormat.Name,
             PageTitle = printFormat.PageTitle,
-            Path = printFormat.Path
+            Path = printFormat.Path,
+            ActionTypeId = printFormat.ActionTypeId
         };
+
 
         SelectedPageTitles = printFormat.PageTitle?.Split('|').ToList() ?? new();
 

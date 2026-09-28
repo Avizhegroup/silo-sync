@@ -2,9 +2,12 @@
 using Telerik.Blazor.Components;
 
 namespace Silo.Shared.Components.Print;
+
 public partial class SelectPrintFormat
 {
     public List<GetPrintFormatsByPageTitleDto> PrintFormats;
+
+    [Parameter] public int? ActionTypeId { get; set; }
 
     [Parameter] public EventCallback<GetPrintFormatsByPageTitleDto> OnFileNameSelect { get; set; }
 
@@ -24,10 +27,22 @@ public partial class SelectPrintFormat
 
     private async Task LoadPrintFormatsAsync()
     {
-        string currentPath = $"-{NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Replace("/", "-")}";
+        var path = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
 
-        PrintFormats = (await Api.SendAsyncObjectByUri<GetPrintFormatsByPageTitleVm>(HttpMethod.Get
-            , $"PrintFormat/GetPrintFormatsByPageTitle?pageTitle={currentPath}")).Value?.List;
+        if (ActionTypeId.HasValue)
+        {
+            path = path[..path.LastIndexOf('/')];
+        }
+
+        string currentPath = $"-{path.Replace("/", "-")}";
+
+        var uri = $"PrintFormat/GetPrintFormatsByPageTitle?pageTitle={currentPath}";
+        if (ActionTypeId.HasValue)
+        {
+            uri += $"&actionTypeId={ActionTypeId.Value}";
+        }
+
+        PrintFormats = (await Api.SendAsyncObjectByUri<GetPrintFormatsByPageTitleVm>(HttpMethod.Get, uri)).Value?.List;
 
         IsLoading = false;
     }

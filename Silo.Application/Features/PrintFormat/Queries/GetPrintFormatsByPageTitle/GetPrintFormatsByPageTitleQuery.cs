@@ -2,4 +2,6 @@
 public class GetPrintFormatsByPageTitleQuery : IRequest<GetPrintFormatsByPageTitleVm>
 {
     public string PageTitle { get; set; }
+
+    public int? ActionTypeId { get; set; }
 }

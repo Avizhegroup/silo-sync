@@ -113,8 +113,8 @@ public static partial class Program
 
         services.AddHttpClient<IAiApiClient, AiApiHttpClient>(client =>
         {
-            client.BaseAddress = new Uri(configuration["AiApi:BaseUrl"]);
-            client.DefaultRequestHeaders.Add("X-Api-Key", configuration["AiApi:ApiKey"]);
+            client.BaseAddress = new Uri(configuration["SiloAI:BaseUrl"]);
+            client.DefaultRequestHeaders.Add("X-Api-Key", configuration["SiloAI:ApiKey"]);
         });
 
         services.AddOptions<RagAiOptions>()

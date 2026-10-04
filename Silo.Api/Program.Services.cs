@@ -27,8 +27,6 @@ public static partial class Program
 
         services.AddSignalR();
 
-        services.AddSharifServices(configuration);
-
         services.AddEndpointsApiExplorer();
 
         services.AddSiloApiSwagger(configuration);

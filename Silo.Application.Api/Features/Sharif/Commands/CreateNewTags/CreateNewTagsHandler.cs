@@ -1,19 +1,12 @@
-﻿using Silo.Api.External.Sharif.Models;
-using Silo.Api.External.Sharif.Services;
+﻿namespace Silo.Application.Api.Features;
 
-namespace Silo.Application.Api.Features;
-
-public class CreateNewTagsHandler : IRequestHandler<CreateSharifTagCommand, CreateSharifTagVm>
+public class CreateNewTagsHandler
 {
     private readonly IWmsBusiness _wmsBusiness;
-    private readonly SharifExternalConnect _sharifExternalConnect;
 
-    public CreateNewTagsHandler(
-        IWmsBusiness wmsBusiness,
-        SharifExternalConnect sharifExternalConnect)
+    public CreateNewTagsHandler(IWmsBusiness wmsBusiness)
     {
         _wmsBusiness = wmsBusiness;
-        _sharifExternalConnect = sharifExternalConnect;
     }
 
     public async Task<CreateSharifTagVm> Handle(
@@ -44,23 +37,6 @@ public class CreateNewTagsHandler : IRequestHandler<CreateSharifTagCommand, Crea
             TruckCrossId: "",
             saveDateTime: DateTime.Now
         );
-
-        var snapshotRequest = new RfidSnapshotRequest
-        {
-            KioskId = request.StationCode ?? string.Empty,
-            ReaderId = string.Empty,
-            SequenceNo = operationCode,
-            CapturedAt = DateTime.UtcNow,
-            Tags = request.Epcs
-               .Select(epc => new RfidSnapshotTag
-               {
-                   Uid = epc
-               })
-               .ToList()
-        };
-
-        await _sharifExternalConnect.SendRegisterTagToExternalApi(snapshotRequest, cancellationToken);
-
 
         return new CreateSharifTagVm
         {

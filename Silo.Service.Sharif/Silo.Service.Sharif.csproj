@@ -10,6 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Silo.Api.External.Sharif\Silo.Api.External.Sharif.csproj" />
         <ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
         <ProjectReference Include="..\Silo.Infrastructure.Shared\Silo.Infrastructure.Shared.csproj" />
     </ItemGroup>

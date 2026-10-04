@@ -1,4 +1,5 @@
-﻿using Silo.Service.Sharif;
+﻿using Silo.Api.External.Sharif;
+using Silo.Service.Sharif;
 using Silo.Infrastructure.Shared;
 using Serilog;
 
@@ -21,6 +22,8 @@ builder
     .ConfigureServices((context, services) =>
     {
         services.AddSiloSerilogForWindowsServices(context.Configuration);
+
+        services.AddSharifServices(context.Configuration);
 
         services.AddSingleton<RfidConnectApiForSharif>();
         services.AddSingleton<RfidReaderService>();

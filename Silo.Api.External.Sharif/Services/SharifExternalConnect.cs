@@ -164,20 +164,14 @@ public class SharifExternalConnect
     }
 
     public async Task<SharifApiResponse<object>> SendRegisterTagToExternalApi(
-    RfidSnapshotRequest request,
+    RfidSnapshotInnerRequest request,
     CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(request.KioskId))
-            throw new ArgumentException("KioskId cannot be empty", nameof(request));
-
-        if (request.Tags == null || request.Tags.Count == 0)
-            throw new ArgumentException("Tags cannot be empty", nameof(request));
-
         const string endpoint = "/api/local/rfid/snapshot";
 
         return await _httpClientHandler.PostAsync<object>(
             endpoint,
-            request,
+            request ,
             cancellationToken);
     }
 }

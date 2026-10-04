@@ -1,6 +1,6 @@
 ﻿namespace Silo.Api.External.Sharif.Models;
 
-public class RfidSnapshotRequest
+public class RfidSnapshotInnerRequest
 {
     public string KioskId { get; set; } = string.Empty;
     public string ReaderId { get; set; } = string.Empty;
@@ -11,5 +11,5 @@ public class RfidSnapshotRequest
 
 public class RfidSnapshotTag
 {
-    public string Uid { get; set; } = string.Empty;
+    public string uid { get; set; } = string.Empty;
 }

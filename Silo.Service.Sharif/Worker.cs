@@ -52,13 +52,12 @@ public class Worker : BackgroundService
             {
                 _logger.LogInformation($"Read tag with {tag.Epc}");
                
-                await _api.SendAsyncObjectByUri<CreateSharifTagVm>(HttpMethod.Post,"Sharif/SendTag",
+                var result = await _api.SendAsyncObjectByUri<CreateSharifTagVm>(HttpMethod.Post,"Sharif/SendTag",
                  new
                  {
                      Epcs = new List<string> { tag.Epc },
                      StationCode = stationCode,
                      GateType = gateType
-
                  });
 
             }

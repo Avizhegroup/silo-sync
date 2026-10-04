@@ -20,16 +20,15 @@ public class CreateNewTagsHandler : IRequestHandler<CreateSharifTagCommand, Crea
         CreateSharifTagCommand request,
         CancellationToken cancellationToken)
     {
-        if (request.Epcs == null || request.Epcs.Count == 0)
+        if (request.Epcs is null || request.Epcs.Count == 0)
         {
             return new CreateSharifTagVm { Result = false };
         }
 
         var operationCode = _wmsBusiness.CreateUhfReaderLogHeader(
-            request.StationCode ?? "",
-            request.GateType ?? "",
+            request.StationCode,
+            request.GateType ,
             "KIOSK");
-
 
         var result = _wmsBusiness.SIdentifyPallets(
             deviceId: request.StationCode,
@@ -46,7 +45,6 @@ public class CreateNewTagsHandler : IRequestHandler<CreateSharifTagCommand, Crea
             saveDateTime: DateTime.Now
         );
 
-
         var snapshotRequest = new RfidSnapshotRequest
         {
             KioskId = request.StationCode ?? string.Empty,
@@ -54,18 +52,20 @@ public class CreateNewTagsHandler : IRequestHandler<CreateSharifTagCommand, Crea
             SequenceNo = operationCode,
             CapturedAt = DateTime.UtcNow,
             Tags = request.Epcs
-                .Select(epc => new RfidSnapshotTag
-                {
-                    Uid = epc
-                })
-                .ToList()
+               .Select(epc => new RfidSnapshotTag
+               {
+                   Uid = epc
+               })
+               .ToList()
         };
 
         await _sharifExternalConnect.SendRegisterTagToExternalApi(snapshotRequest, cancellationToken);
 
+
         return new CreateSharifTagVm
         {
-            Result = result
+            Result = result,
+            OperationCode = operationCode
         };
     }
 }

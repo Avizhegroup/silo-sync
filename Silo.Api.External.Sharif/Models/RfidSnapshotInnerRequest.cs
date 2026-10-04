@@ -1,9 +1,5 @@
 ﻿namespace Silo.Api.External.Sharif.Models;
 
-public class RfidSnapShotOutterRequest
-{
-    public RfidSnapshotInnerRequest Data { get; set; }
-}
 public class RfidSnapshotInnerRequest
 {
     public string KioskId { get; set; } = string.Empty;

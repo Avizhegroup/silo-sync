@@ -78,10 +78,6 @@ public class Worker : BackgroundService
 
                 using var scope = _scopeFactory.CreateScope();
                 var sharifExternalConnect = scope.ServiceProvider.GetRequiredService<SharifExternalConnect>();
-                RfidSnapShotOutterRequest otterRequest = new()
-                {
-                    Data = snapshotRequest
-                };
                 await sharifExternalConnect.SendRegisterTagToExternalApi(snapshotRequest, stoppingToken);
             }
 

@@ -64,21 +64,24 @@ public class Worker : BackgroundService
                      GateType = gateType
                  });
 
-                var snapshotRequest = new RfidSnapshotRequest
+                var snapshotRequest = new RfidSnapshotInnerRequest
                 {
                     KioskId = stationCode,
-                    ReaderId = string.Empty,
+                    ReaderId = "1",
                     SequenceNo = result.Value.OperationCode,
                     CapturedAt = DateTime.Now,
                     Tags = new List<RfidSnapshotTag>
                     {
-                        new RfidSnapshotTag { Uid = tag.Epc }
+                        new RfidSnapshotTag { uid = tag.Epc }
                     }
                 };
 
                 using var scope = _scopeFactory.CreateScope();
                 var sharifExternalConnect = scope.ServiceProvider.GetRequiredService<SharifExternalConnect>();
-
+                RfidSnapShotOutterRequest otterRequest = new()
+                {
+                    Data = snapshotRequest
+                };
                 await sharifExternalConnect.SendRegisterTagToExternalApi(snapshotRequest, stoppingToken);
             }
 

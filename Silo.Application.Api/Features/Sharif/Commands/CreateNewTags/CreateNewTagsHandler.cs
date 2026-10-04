@@ -1,6 +1,6 @@
 ﻿namespace Silo.Application.Api.Features;
 
-public class CreateNewTagsHandler
+public class CreateNewTagsHandler : IRequestHandler<CreateSharifTagCommand, CreateSharifTagVm> 
 {
     private readonly IWmsBusiness _wmsBusiness;
 

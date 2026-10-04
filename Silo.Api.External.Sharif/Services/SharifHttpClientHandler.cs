@@ -67,11 +67,11 @@ public class SharifHttpClientHandler
     public async Task<SharifApiResponse<T>> PostAsync<T>(string endpoint, object? content, CancellationToken cancellationToken = default)
     {
         var correlationId = Guid.NewGuid().ToString("N");
-        
+
+        var requestBody = content != null ? JsonSerializer.Serialize(content, _jsonOptions) : "null";
+
         try
         {
-            var requestBody = content != null ? JsonSerializer.Serialize(content, _jsonOptions) : "null";
-            
             _logger.LogInformation(
                 "{LogPrefix} [POST] Request started - CorrelationId: {CorrelationId}, Endpoint: {Endpoint}, RequestBody: {RequestBody}",
                 LogPrefix, correlationId, endpoint, requestBody);
@@ -79,27 +79,11 @@ public class SharifHttpClientHandler
             var response = await _httpClient.PostAsJsonAsync(endpoint, content, _jsonOptions, cancellationToken);
             return await ProcessResponseAsync<T>(response, correlationId, "POST", endpoint, cancellationToken);
         }
-        catch (HttpRequestException ex)
-        {
-            _logger.LogError(ex,
-                "{LogPrefix} [POST] Network error - CorrelationId: {CorrelationId}, Endpoint: {Endpoint}, Error: {ErrorMessage}",
-                LogPrefix, correlationId, endpoint, ex.Message);
-            
-            return CreateErrorResponse<T>(500, "Network error occurred", ex.Message, correlationId);
-        }
-        catch (TaskCanceledException ex)
-        {
-            _logger.LogWarning(
-                "{LogPrefix} [POST] Request timeout - CorrelationId: {CorrelationId}, Endpoint: {Endpoint}, Error: {ErrorMessage}",
-                LogPrefix, correlationId, endpoint, ex.Message);
-            
-            return CreateErrorResponse<T>(408, "Request timeout", ex.Message, correlationId);
-        }
         catch (Exception ex)
         {
             _logger.LogError(ex,
-                "{LogPrefix} [POST] Unexpected error - CorrelationId: {CorrelationId}, Endpoint: {Endpoint}, Error: {ErrorMessage}",
-                LogPrefix, correlationId, endpoint, ex.Message);
+                "{LogPrefix} [POST] Unexpected error - CorrelationId: {CorrelationId}, Endpoint: {Endpoint}, Error: {ErrorMessage}, Content: {Content}",
+                LogPrefix, correlationId, endpoint, ex.Message, content);
             
             return CreateErrorResponse<T>(500, "Unexpected error occurred", ex.Message, correlationId);
         }

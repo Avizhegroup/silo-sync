@@ -38,6 +38,7 @@ public partial class TagHistory
     public List<GetAllInspectElementVm> InspectElements;
     public List<DynamicFieldWithValueDto> DynamicFields = new();
     public List<GetGpsLogDto> GpsLogs = new();
+    public List<GetGalleryMediasDto> GalleryMedias = new();
 
     public Gallery GalleryRef { get; set; }
     public SelectPrintFormat SelectPrintFormatRef { get; set; }
@@ -137,11 +138,7 @@ public partial class TagHistory
 
         IsLoading = false;
     }
-
-    public async Task OnOpenGallery()
-    {
-        await GalleryRef.Show(UserId, GalleryUsageType.Tag, ActiveProductSerial);
-    }
+ 
 
     protected override async Task SiloInitializer()
     {
@@ -246,6 +243,7 @@ public partial class TagHistory
         Expires = new();
         RelatedTags = new();
         TagChangeLogs = new();
+        GalleryMedias = new();
 
     }
 
@@ -387,6 +385,10 @@ public partial class TagHistory
 
                 case TagHistoryTabs.GpsLog:
                     await GetGpsLogs();
+                    break;
+
+                case TagHistoryTabs.Gallery:
+                    await GetGalleryMedias();
                     break;
             }
         }
@@ -647,6 +649,18 @@ public partial class TagHistory
             {
                 UsageId = ActiveProductSerial
             })).Value.List ?? new();
+    }
+
+    private async Task GetGalleryMedias()
+    {
+        if (GalleryMedias.Any())
+        {
+            return;
+        }
+
+        GalleryMedias = (await Api.PostAsync<List<GetGalleryMediasDto>>("SGetUserMediasByUsageNoUserId"
+            , new KeyValuePair<string, object>("usageType", GalleryUsageType.Tag)
+            , new KeyValuePair<string, object>("usageId", ActiveProductSerial))).Value ?? new();
     }
     #endregion
 

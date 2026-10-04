@@ -11,4 +11,6 @@ public class GetAllPrintFormatDto
 
     [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public string Path { get; set; }
+
+    public int? ActionTypeId { get; set; }
 }

@@ -20,4 +20,7 @@ public class PrintFormat
     [Column("fld_Path")]
     [Required]
     public string Path { get; set; }
+
+    [Column("fld_ActionTypeId")]
+    public int? ActionTypeId { get; set; }
 }

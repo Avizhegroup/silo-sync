@@ -25,9 +25,18 @@
                                 Class="form-control input-search-span" />
                 <label style="margin-right:10px;">آدرس فایل</label>
                 <TelerikTextBox @bind-Value="Request.Path"
-                                Class="form-control input-search-span" 
-                                Width="300px !important"/>
-               
+                                Class="form-control input-search-span"
+                                Width="300px !important" />
+
+                <label style="margin-right:10px;">@TextResources.APP_StringKeys_ActionType</label>
+                <TelerikDropDownList Data="ActionTypes"
+                                     TextField="Title"
+                                     ValueField="Id"
+                                     Width="180px !important"
+                                     @bind-Value="Request.ActionTypeId"
+                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                     Class="form-control input-search-span">
+                </TelerikDropDownList>
                 <div style="left:5px; position:absolute;">
                     <button type="button"
                             class="btn btn-light"
@@ -112,6 +121,9 @@
                         <td class="td-style">@printFormat.Name</td>
                         <td class="td-style">@string.Join(" | ", printFormat.PageTitle.Split('|').Select(p => p.Replace("-", "/")))</td>
                         <td class="td-style">
+                            @(ActionTypes.FirstOrDefault(x => x.Id == printFormat.ActionTypeId)?.Title ?? "-")
+                        </td>
+                        <td class="td-style">
                             <button @onclick="async () => await OnChoosePrintFormat(printFormat)"
                                     type="button"
                                     class="btn btn-success tr-buttom">
@@ -124,6 +136,8 @@
                                     Title="@TextResources.APP_StringKeys_Field_Title"></GridColumn>
                         <GridColumn Field="@nameof(GetAllPrintFormatDto.PageTitle)"
                                     Title="آدرس صفحه"></GridColumn>
+                        <GridColumn Field="@nameof(GetAllPrintFormatDto.ActionTypeId)"
+                                    Title="@TextResources.APP_StringKeys_ActionType"></GridColumn>
                         <GridColumn Width="60px"></GridColumn>
                     </GridColumns>
                 </TelerikGrid>

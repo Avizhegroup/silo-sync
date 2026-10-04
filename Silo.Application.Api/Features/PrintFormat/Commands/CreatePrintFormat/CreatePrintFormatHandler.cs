@@ -1,4 +1,5 @@
 ﻿namespace Silo.Application.Api.Features;
+
 public class CreatePrintFormatHandler(WmsApiContext context)
     : IRequestHandler<CreatePrintFormatCommand, CreatePrintFormatVm>
 {
@@ -8,8 +9,10 @@ public class CreatePrintFormatHandler(WmsApiContext context)
         {
             Name = request.Name,
             PageTitle = request.PageTitle,
-            Path = request.Path
+            Path = request.Path,
+            ActionTypeId = request.ActionTypeId
         };
+
 
         if (request.Id.HasValue && request.Id > 0)
         {

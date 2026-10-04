@@ -47,9 +47,6 @@
     <Project Path="Silo.Jobs.Win/Silo.Jobs.Win.csproj" />
     <Project Path="Silo.Service.Sharif/Silo.Service.Sharif.csproj" Id="61cba309-bcd5-4e05-8e93-2135a590e69f" />
   </Folder>
-  <Folder Name="/src/Presentation/Service/Customer Care/">
-    <Project Path="Silo.Ui.Customer/Silo.Ui.Customer.csproj" />
-  </Folder>
   <Folder Name="/src/Presentation/UI/" />
   <Folder Name="/src/Presentation/UI/Web/" />
   <Folder Name="/src/Presentation/UI/Web/Main/">

@@ -162,5 +162,17 @@ public class SharifExternalConnect
 
         return await _httpClientHandler.PostAsync<CheckExitPermissionResponse>(endpoint, request, cancellationToken);
     }
+
+    public async Task<SharifApiResponse<object>> SendRegisterTagToExternalApi(
+    RfidSnapshotInnerRequest request,
+    CancellationToken cancellationToken = default)
+    {
+        const string endpoint = "/api/local/rfid/snapshot";
+
+        return await _httpClientHandler.PostAsync<object>(
+            endpoint,
+            request ,
+            cancellationToken);
+    }
 }
 

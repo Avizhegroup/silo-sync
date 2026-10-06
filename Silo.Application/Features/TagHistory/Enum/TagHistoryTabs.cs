@@ -14,5 +14,6 @@ public enum TagHistoryTabs
     Expire,
     GateAlert,
     HistoryDetails,
-    GpsLog
+    GpsLog,
+    Gallery
 }

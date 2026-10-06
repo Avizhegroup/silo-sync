@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Silo.Application.Features;
 
@@ -45,7 +45,14 @@ public partial class ReportLinks
 
         await LoadUsers();
 
-        await LoadPreviousData();
+        if (Link.HasValue() && Link.StartsWith("ai,reports"))
+        {
+            await LoadPreviousAiData();
+        }
+        else
+        {
+            await LoadPreviousData();
+        }
 
         await LoadTreeviewAndLink();
 
@@ -68,13 +75,19 @@ public partial class ReportLinks
             Request.UserIds.Add(user.Id);
         }
 
-        bool result = (await Api.PostAsyncByUri<bool>("wms/ReportFormat"
-                               , "SSaveLinkForReportFormat"
-                               , new KeyValuePair<string, object>("command", Request))).Value;
+        var method = Link.HasValue() && Link.StartsWith("ai,reports")
+            ? "SSaveLinkForAiReportFormat"
+            : "SSaveLinkForReportFormat";
+
+        bool result = (await Api.PostAsyncByUri<bool>(
+            "wms/ReportFormat",
+            method,
+            new KeyValuePair<string, object>("command", Request)
+        )).Value;
 
         if (result)
         {
-            Notification.Show(TextResources.APP_StringKeys_Alert_Success, "success");
+            Notification.Show(TextResources.APP_StringKeys_Alert_Success,"success");
         }
         else
         {
@@ -242,6 +255,28 @@ public partial class ReportLinks
                                   FormatId = (int)FormatId,
                                   FullUrl = Request.Url
                               }))).Value;
+
+        Request.UserIds = loadedData.UserIds;
+
+        Request.Title = loadedData.Title;
+
+        Request.SelectedCategoryId = loadedData.CategoryId;
+    }
+
+    private async Task LoadPreviousAiData()
+    {
+        var loadedData = (await Api.PostAsyncByUriAndContext<GetMenuLinkOfDynamicReportVm>(
+            "wms/ReportFormat",
+            "SGetLinkForAiReportFormat",
+            new GetMenuLinkOfDynamicReportVmContext(),
+            new KeyValuePair<string, object>(
+                "query",
+                new GetMenuLinkOfDynamicReportQuery
+                {
+                    FormatId = (int)FormatId,
+                    FullUrl = Request.Url
+                })
+        )).Value;
 
         Request.UserIds = loadedData.UserIds;
 

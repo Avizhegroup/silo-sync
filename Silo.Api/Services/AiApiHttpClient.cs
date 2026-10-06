@@ -7,14 +7,19 @@ namespace Silo.Api.Services;
 /// </summary>
 public class AiApiHttpClient(HttpClient httpClient) : IAiApiClient
 {
-    public async Task<string> SendImageAsync(byte[] imageData, string mediaType, string promptKey, CancellationToken cancellationToken = default)
+    public async Task<string> SendIFileGetStringAsync(byte[] imageData
+        , string mediaType
+        , RagDocType docType
+        , string key
+        , CancellationToken cancellationToken = default)
     {
         using var content = new MultipartFormDataContent();
         content.Add(new ByteArrayContent(imageData), "imageData", "image.bin");
         content.Add(new StringContent(mediaType), "mediaType");
-        content.Add(new StringContent(promptKey ?? string.Empty), "promptKey");
+        content.Add(new StringContent(((int)docType).ToString()), "docType");
+        content.Add(new StringContent(key), "key");
 
-        var response = await httpClient.PostAsync("api/ai/agent/ocr", content, cancellationToken);
+        var response = await httpClient.PostAsync("api/image/ocr", content, cancellationToken);
 
         response.EnsureSuccessStatusCode();
 

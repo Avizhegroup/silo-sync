@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Silo.Api.Business;
-using Silo.Application;
 using Silo.Base.Controllers.Base;
 using Silo.Domains.Android;
 using Silo.Domains.Services;

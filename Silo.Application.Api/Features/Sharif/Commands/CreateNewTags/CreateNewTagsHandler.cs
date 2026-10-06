@@ -1,7 +1,6 @@
-﻿
-namespace Silo.Application.Api.Features;
+﻿namespace Silo.Application.Api.Features;
 
-public class CreateNewTagsHandler : IRequestHandler<CreateSharifTagCommand, CreateSharifTagVm>
+public class CreateNewTagsHandler : IRequestHandler<CreateSharifTagCommand, CreateSharifTagVm> 
 {
     private readonly IWmsBusiness _wmsBusiness;
 
@@ -10,21 +9,26 @@ public class CreateNewTagsHandler : IRequestHandler<CreateSharifTagCommand, Crea
         _wmsBusiness = wmsBusiness;
     }
 
-    public Task<CreateSharifTagVm> Handle(CreateSharifTagCommand request, CancellationToken cancellationToken)
+    public async Task<CreateSharifTagVm> Handle(
+        CreateSharifTagCommand request,
+        CancellationToken cancellationToken)
     {
-        if (request.Epc == null)
+        if (request.Epcs is null || request.Epcs.Count == 0)
         {
-            return Task.FromResult(new CreateSharifTagVm { Result = false });
+            return new CreateSharifTagVm { Result = false };
         }
 
-        var tags = new List<string> { request.Epc };
+        var operationCode = _wmsBusiness.CreateUhfReaderLogHeader(
+            request.StationCode,
+            request.GateType ,
+            "KIOSK");
 
         var result = _wmsBusiness.SIdentifyPallets(
             deviceId: request.StationCode,
-            listTags: tags,
+            listTags: request.Epcs,
             desc: "API Tag Identify",
             GateType: request.GateType,
-            invCod: "1",
+            invCod: operationCode.ToString(),
             doc: "0",
             DestinationCode: "1",
             userToken: "KIOSK",
@@ -34,9 +38,10 @@ public class CreateNewTagsHandler : IRequestHandler<CreateSharifTagCommand, Crea
             saveDateTime: DateTime.Now
         );
 
-        return Task.FromResult(new CreateSharifTagVm
+        return new CreateSharifTagVm
         {
-            Result = result
-        });
+            Result = result,
+            OperationCode = operationCode
+        };
     }
 }

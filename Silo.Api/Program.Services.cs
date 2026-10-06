@@ -11,6 +11,7 @@ using Silo.Domains;
 using Silo.Domains.Android;
 using Silo.Identity.Server;
 using Silo.Infrastructure.Shared;
+using Silo.Api.External.Sharif;
 
 namespace Silo.Api;
 public static partial class Program
@@ -110,19 +111,20 @@ public static partial class Program
 
         services.AddHttpClient<IAiApiClient, AiApiHttpClient>(client =>
         {
-            client.BaseAddress = new Uri(configuration["AiApi:BaseUrl"] ?? "http://localhost:5100/");
-            client.DefaultRequestHeaders.Add("X-Api-Key", configuration["AiApi:ApiKey"] ?? string.Empty);
+            client.BaseAddress = new Uri(configuration["SiloAI:BaseUrl"]);
+            client.DefaultRequestHeaders.Add("X-Api-Key", configuration["SiloAI:ApiKey"]);
         });
 
         services.AddOptions<RagAiOptions>()
             .Bind(configuration.GetSection(RagAiOptions.SectionName));
 
-        var siloAiOptions = configuration.GetSection(RagAiOptions.SectionName).Get<RagAiOptions>() ?? new RagAiOptions();
+        var siloAiOptions = configuration.GetSection(RagAiOptions.SectionName).Get<RagAiOptions>();
 
         services.AddHttpClient(SiloAiClient.HttpClientName, client =>
         {
-            client.BaseAddress = new Uri(siloAiOptions.BaseUrl.HasValue() ? siloAiOptions.BaseUrl : "http://localhost:5100/");
-            client.Timeout = TimeSpan.FromSeconds(30);
+            client.BaseAddress = new Uri(siloAiOptions.BaseUrl);
+
+            client.Timeout = TimeSpan.FromMinutes(5);
 
             if (siloAiOptions.ApiKey.HasValue())
             {

@@ -4,5 +4,6 @@
 	[fld_ReportFormatUserId] [nvarchar](128) NULL,
 	[fld_ReportFormatPath] [nvarchar](256) NULL,
 	[fld_ReportFormatName] [nvarchar](256) NULL,
-	[fld_ReportFormatDetails] [nvarchar](max) NULL
+	[fld_ReportFormatDetails] [nvarchar](max) NULL, 
+    [fld_ReportFormatQueryId] INT NULL
 )

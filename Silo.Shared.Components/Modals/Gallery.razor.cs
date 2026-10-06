@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Silo.Application;
-using Silo.Application.Dto;
 using Silo.Application.Features;
 using Silo.Identity.Client;
 using Telerik.Blazor.Components;
@@ -17,37 +16,6 @@ public partial class Gallery
     public string UsageId;
     public GetGalleryMediasDto SelectedGalleryMedia = new();
     public List<GetGalleryMediasDto> GalleryMedias;
-    public List<TelerikContextMenuItem> ContextMenuItems = new()
-    {
-        new()
-        {
-            Text = TextResources.APP_StringKeys_Download,
-            Icon = "download"
-        },
-        new()
-        {
-            Text = TextResources.APP_StringKeys_Delete,
-            Icon = "delete"
-        },
-        new()
-        {
-            Text = "استخراج متن از تصویر",
-            Icon = "ai",
-            Items = new()
-            {
-                new()
-                {
-                    Text = "پلاک",
-                    Icon = "plaque"
-                },
-                new()
-                {
-                    Text = "کدملی",
-                    Icon = "nc"
-                }
-            }
-        }
-    };
     public GalleryOcrTypes OcrType = GalleryOcrTypes.None;
     public long MaxAllowedSizeBytes => MaxAllowedSizeMB * 1024 * 1024;
 
@@ -69,62 +37,10 @@ public partial class Gallery
 
     public Modal Modal { get; set; }
     public FileUpload FileUploadComponent { get; set; }
-    public TelerikContextMenu<TelerikContextMenuItem> ContextMenu { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         UserId = (await SiloAuth.GetAuthenticationStateAsync()).User.GetUserId();
-    }
-
-    public async Task OnGalleryMediaRightClick(MouseEventArgs e, GetGalleryMediasDto media)
-    {
-        SelectedGalleryMedia = media;
-
-        await ContextMenu.ShowAsync(e.ClientX, e.ClientY);
-    }
-
-    public async Task OnContextMenuItemClick(TelerikContextMenuItem item)
-    {
-        if (item.Text == TextResources.APP_StringKeys_Download)
-        {
-            await Download();
-        }
-
-        if (item.Text == TextResources.APP_StringKeys_Delete)
-        {
-            await Delete();
-        }
-
-        if (item.Icon == "plaque")
-        {
-            await Ocr(GalleryOcrTypes.Plaque);
-        }
-
-        if (item.Icon == "nc")
-        {
-            await Ocr(GalleryOcrTypes.NationalCard);
-        }
-    }
-
-    public async Task OnGalleryMediaRightClick(GetGalleryMediasDto media)
-    {
-        IsLoading = true;
-
-        var imageFile = await Api.PostAsync("Gallery/GetGalleryImageFile", new GetGalleryImageFileQuery()
-        {
-            Id = media.Id
-        });
-
-        IsLoading = false;
-
-        if (imageFile is not null && imageFile.Length > 0)
-        {
-            byte[] data = imageFile;
-
-            using MemoryStream stream = new(data);
-
-            await Export.ExportAndDownload(stream, media.MediaName);
-        }
     }
 
     public async Task OnFileUpload(IBrowserFile file)
@@ -291,90 +207,4 @@ public partial class Gallery
         await Modal.Open(new());
     }
     #endregion
-
-    #region Private method
-    private async Task Delete()
-    {
-        bool result = (await Api.PostAsync<bool>("SRemoveGalleryMedia"
-         , new KeyValuePair<string, object>("mediaId", SelectedGalleryMedia.Id))).Value;
-
-        if (result)
-        {
-            GalleryMedias.Remove(SelectedGalleryMedia);
-
-            SelectedGalleryMedia = new();
-
-            StateHasChanged();
-        }
-    }
-
-    private async Task Download()
-    {
-        IsLoading = true;
-
-        var imageFile = await Api.PostAsync("Gallery/GetGalleryImageFile", new GetGalleryImageFileQuery()
-        {
-            Id = SelectedGalleryMedia.Id
-        });
-
-        IsLoading = false;
-
-        if (imageFile is not null && imageFile.Length > 0)
-        {
-            byte[] data = imageFile;
-
-            using MemoryStream stream = new(data);
-
-            await Export.ExportAndDownload(stream, SelectedGalleryMedia.MediaName);
-        }
-    }
-
-    private async Task Ocr(GalleryOcrTypes type)
-    {
-        if (SelectedGalleryMedia.Extension != GalleryExtension.Image)
-        {
-            return;
-        }
-
-        try
-        {
-            IsLoading = true;
-
-            StateHasChanged();
-
-            var ocrResult = await Api.SendAsyncObjectByUri<GetOcrDataForGalleryMediaVm>(HttpMethod.Get
-                , "Agent/GetOcrDataForGalleryMedia"
-                , new GetOcrDataForGalleryMediaQuery()
-            {
-                GalleryId = SelectedGalleryMedia.Id,
-                OcrType = type
-            });
-
-            IsLoading = false;
-
-            await Modal.Close(new());
-
-            StateHasChanged();
-
-            if (ocrResult.Value.Result.HasValue())
-            {
-                await OnOcrTextExtracted.InvokeAsync(new GalleryOcrExtractedTextDto
-                {
-                    ExtractedText = ocrResult.Value.Result,
-                    OcrType = type,
-                    MediaId = SelectedGalleryMedia.Id
-                });
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogWarning(ex, ex.Message);
-        }
-        finally
-        {
-            IsLoading = false;
-            StateHasChanged();
-        }
-    }
-    #endregion 
 }

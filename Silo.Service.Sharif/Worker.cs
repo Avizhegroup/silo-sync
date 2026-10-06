@@ -1,4 +1,6 @@
-﻿using Silo.Application.Features;
+﻿using Silo.Api.External.Sharif.Models;
+using Silo.Api.External.Sharif.Services;
+using Silo.Application.Features;
 
 namespace Silo.Service.Sharif;
 
@@ -8,9 +10,11 @@ public class Worker : BackgroundService
     private readonly ILogger<Worker> _logger;
     private readonly RfidReaderService _rfid;
     private readonly RfidConnectApiForSharif _api;
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public Worker(ILogger<Worker> logger, RfidReaderService rfid, IConfiguration configuration, RfidConnectApiForSharif api)
+    public Worker(ILogger<Worker> logger, RfidReaderService rfid, IConfiguration configuration, RfidConnectApiForSharif api, IServiceScopeFactory scopeFactory)
     {
+        _scopeFactory = scopeFactory;
         _logger = logger;
         _rfid = rfid;
         _configuration = configuration;
@@ -52,15 +56,29 @@ public class Worker : BackgroundService
             {
                 _logger.LogInformation($"Read tag with {tag.Epc}");
                
-                await _api.SendAsyncObjectByUri<CreateSharifTagVm>(HttpMethod.Post,"Sharif/SendTag",
+                var result = await _api.SendAsyncObjectByUri<CreateSharifTagVm>(HttpMethod.Post,"Sharif/SendTag",
                  new
                  {
-                     EPC = tag.Epc,
+                     Epcs = new List<string> { tag.Epc },
                      StationCode = stationCode,
                      GateType = gateType
-
                  });
 
+                var snapshotRequest = new RfidSnapshotInnerRequest
+                {
+                    KioskId = stationCode,
+                    ReaderId = "1",
+                    SequenceNo = result.Value.OperationCode,
+                    CapturedAt = DateTime.Now,
+                    Tags = new List<RfidSnapshotTag>
+                    {
+                        new RfidSnapshotTag { uid = tag.Epc }
+                    }
+                };
+
+                using var scope = _scopeFactory.CreateScope();
+                var sharifExternalConnect = scope.ServiceProvider.GetRequiredService<SharifExternalConnect>();
+                await sharifExternalConnect.SendRegisterTagToExternalApi(snapshotRequest, stoppingToken);
             }
 
             await Task.Delay(500);

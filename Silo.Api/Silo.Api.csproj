@@ -44,8 +44,4 @@
       <Folder Include="Files\Apks\" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Include="C:\Users\Software-Lead\Desktop\Wms.db" Link="Wms.db" />
-    </ItemGroup>
-
 </Project>

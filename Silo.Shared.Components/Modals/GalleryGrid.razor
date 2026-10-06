@@ -1,0 +1,92 @@
+@using System.Text.Json
+
+@namespace Silo.Shared.Components
+
+@using Silo.Application.Dto;
+@using Silo.Application.Features;
+
+@if (GalleryMedias is not null && GalleryMedias.Any())
+{
+    <div class="gallery-grid">
+        @foreach (var media in GalleryMedias)
+        {
+            var iconName = media.Extension switch
+            {
+                GalleryExtension.Pdf => "picture_as_pdf",
+                GalleryExtension.Word => "description",
+                GalleryExtension.Zip => "folder_zip",
+                GalleryExtension.Image => "image",
+                _ => "insert_drive_file"
+            };
+
+            var iconColorClass = media.Extension switch
+            {
+                GalleryExtension.Pdf => "icon-pdf",
+                GalleryExtension.Word => "icon-word",
+                GalleryExtension.Zip => "icon-zip",
+                GalleryExtension.Image => "icon-image",
+                _ => "icon-default"
+            };
+
+           
+
+            <div class="gallery-item @(SelectedGalleryMedia.Id == media.Id ? "gallery-item-selected" : "")"
+                 @oncontextmenu="async (e) => await OnItemClick(e, media)" @oncontextmenu:preventDefault="true">
+                <div class="gallery-item-card">
+                    @if (media.Extension == GalleryExtension.Image && ImagePreviews.TryGetValue(media.Id, out var previewSrc))
+                    {
+                        <div class="gallery-item-icon gallery-item-icon-preview">
+                            <img src="@previewSrc" alt="@media.MediaName" class="gallery-item-preview-image" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="gallery-item-icon @iconColorClass">
+                            <MaterialIcon IconName="@iconName"></MaterialIcon>
+                        </div>
+                    }
+                    <div class="gallery-item-info">
+                        <div class="gallery-item-name" title="@media.MediaName">
+                            @media.MediaName
+                        </div>
+                        @if (media.Data.HasValue())
+                        {
+                            var jsonData = JsonDocument.Parse(media.Data);
+                            jsonData.RootElement.TryGetProperty("ActionTypeTitle", out var actionTypeTitle);
+                            <div class="gallery-item-name" title="@actionTypeTitle">
+                                @actionTypeTitle
+                            </div>
+                        }
+                        <div class="gallery-item-date">
+                            @(PersianCalendarTools.GregorianToPersian(media.UpldoadDateTime))
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (GalleryMedias.Count > 20)
+    {
+        <div class="gallery-pagination-info">
+            @GalleryMedias.Count فایل
+        </div>
+    }
+}
+
+@if (Readonly)
+{
+    <TelerikContextMenu Class="gallery-context"
+                        @ref="@ContextMenu"
+                        Data="@ContextMenuItems.Where(p=>p.Text!= @TextResources.APP_StringKeys_Delete)"
+                        OnClick="@((TelerikContextMenuItem item) => OnContextMenuItemClick(item))">
+    </TelerikContextMenu>
+}
+else
+{
+    <TelerikContextMenu Class="gallery-context"
+                        @ref="@ContextMenu"
+                        Data="@ContextMenuItems"
+                        OnClick="@((TelerikContextMenuItem item) => OnContextMenuItemClick(item))">
+    </TelerikContextMenu>
+}

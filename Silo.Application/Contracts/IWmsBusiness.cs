@@ -232,6 +232,10 @@ public interface IWmsBusiness
          DateTime? saveDateTime = null,
          string? gpsLog = ""
     );
+    int CreateUhfReaderLogHeader(
+        string stationCode,
+        string actionType,
+        string userId = "KIOSK"); 
     bool SInsertQueues(List<Dto.Queue> queues);
     int SInsertUpdateNotification(Notification notif);
     int SInsertUpdateZone(ZoneDto zone);

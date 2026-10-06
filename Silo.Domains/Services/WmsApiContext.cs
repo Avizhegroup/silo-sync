@@ -79,9 +79,15 @@ public partial class WmsApiContext(IConfiguration configuration
     public DbSet<TablesChangeLog> TagChangeLog { get; set; }
     public DbSet<GPSLogs> GpsLogs { get; set; }
     public DbSet<TextResource> TextResources { get; set; }
+    public DbSet<AiGeneratedQueries> AiGeneratedQueries { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<ReportFormat>()
+          .HasOne(x => x.AiGeneratedQuery)
+          .WithMany(x => x.ReportFormats)
+          .HasForeignKey(x => x.QueryId);
+
         modelBuilder.Entity<TablesChangeLog>(entity =>
         {
             entity.Property(x => x.CreatedAt)

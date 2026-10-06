@@ -1,4 +1,4 @@
-namespace Silo.Application.Features;
+﻿namespace Silo.Application.Features;
 public enum TagEventType
 {
     None = 0,
@@ -13,5 +13,6 @@ public enum TagEventType
     GateAlert,
     Sell,
     Guarantee,
-    Expire
+    Expire,
+    Gallery
 }

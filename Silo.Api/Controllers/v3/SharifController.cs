@@ -6,9 +6,9 @@ using Silo.Base.Controllers.Base;
 
 namespace Silo.Api.Controllers.v3;
 
-#if DEBUG
+
 [AllowAnonymous]
-#endif
+
 public class SharifController(ILogger<SharifController> logger
     , IConfiguration configuration
     , IMediator mediator) : SiloBaseControllerVersion3(logger)
@@ -34,4 +34,12 @@ public class SharifController(ILogger<SharifController> logger
             Value = response
         });
     }
+
+    [HttpPost("[action]")]
+    public async Task<IActionResult> SaveBooks(CreateNewBooksCommand command)
+         => Ok(new ApiResponse()
+         {
+             Successful = true,
+             Value = await mediator.Send<CreateNewBooksVm>(command)
+         });
 }

@@ -488,7 +488,7 @@ public partial class RfidConnectApiForSharif : HttpClientHandler
         return result;
     }
 
-    public async Task<string> SendAsyncObjectByUri<T>(HttpMethod method
+    public async Task<ApiResponse<T>> SendAsyncObjectByUri<T>(HttpMethod method
     , string uri
     , object data = null
     , JsonSerializerContext context = null)
@@ -525,10 +525,13 @@ public partial class RfidConnectApiForSharif : HttpClientHandler
 
         var resultStream = await SendAsync(request, new CancellationToken());
 
-        string httpStream = await resultStream.Content.ReadAsStringAsync();
+        Stream httpStream = await resultStream.Content.ReadAsStreamAsync();
 
+        using StreamReader sr = new StreamReader(httpStream);
 
-        return httpStream;
+        var result = await JsonSerializer.DeserializeAsync<ApiResponse<T>>(httpStream, option);
+
+        return result;
     }
 
     #endregion

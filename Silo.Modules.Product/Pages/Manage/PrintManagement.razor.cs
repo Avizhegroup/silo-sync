@@ -46,6 +46,8 @@ public partial class PrintManagement
     [Inject] public IExport Export { get; set; }
     [Inject] public IConfiguration Configuration { get; set; }
 
+    [Parameter] public int? ActionTypeId { get; set; }
+
     protected override async Task SiloInitializer()
     {
         SiloContext.NavbarFilterClicked = null;

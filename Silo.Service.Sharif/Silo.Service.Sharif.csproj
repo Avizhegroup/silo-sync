@@ -10,15 +10,13 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Silo.Api.External.Sharif\Silo.Api.External.Sharif.csproj" />
         <ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />
         <ProjectReference Include="..\Silo.Infrastructure.Shared\Silo.Infrastructure.Shared.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Packages\" />
-    </ItemGroup>
  
-    <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent;Publish">
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent;Publish">
         <Exec Command="xcopy /y &quot;$(ProjectDir)Packages\*.*&quot; &quot;$(ProjectDir)$(OutDir)&quot;" />
-    </Target>-->    
+    </Target>  
 </Project>

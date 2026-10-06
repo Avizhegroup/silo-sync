@@ -1,4 +1,5 @@
 @page "/print/management"
+@page "/print/management/{ActionTypeId:int}"
 @inherits SiloBasePage
 @namespace Silo.Modules.Product.Pages
 @using Silo.Application.Dto
@@ -427,6 +428,7 @@
 <CascadingValue Value="IsLoading">
     <CascadingValue Value="Notification">
         <SelectPrintFormat @ref="SelectPrintFormatRef"
+                           ActionTypeId="@ActionTypeId"
                            OnFileNameSelect="OnPrintActionClick">
         </SelectPrintFormat>
     </CascadingValue>

@@ -39,8 +39,6 @@ public class GetOcrDataForGalleryMediaHandler(WmsApiContext context
             };
         }
 
-        try
-        {
             var fileBytes = await File.ReadAllBytesAsync(gallery.MediaPath);
 
             if (fileBytes is null || fileBytes.Length == 0)
@@ -60,19 +58,19 @@ public class GetOcrDataForGalleryMediaHandler(WmsApiContext context
                 _ => "image/jpeg"
             };
 
-            var prompt = "";
+            var key = "";
 
             if (request.OcrType == GalleryOcrTypes.Plaque)
             {
-                prompt = "plaque";
+                key = "plaque";
             }
 
             if (request.OcrType == GalleryOcrTypes.NationalCard)
             {
-                prompt = "nationalcard";
+                key = "nationalcard";
             }
 
-            var extractedText = await aiApiClient.SendImageAsync(fileBytes, mediaType, prompt, cancellationToken);
+            var extractedText = await aiApiClient.SendIFileGetStringAsync(fileBytes, mediaType, RagDocType.Image ,key, cancellationToken);
 
             await UpdateGallery(extractedText);
 
@@ -80,16 +78,6 @@ public class GetOcrDataForGalleryMediaHandler(WmsApiContext context
             {
                 Result = extractedText
             };
-        }
-        catch (Exception ex)
-        {
-            logger.LogWarning(ex, ex.Message);
-
-            return new()
-            {
-                Result = string.Empty
-            };
-        }
 
         async Task UpdateGallery(string extractedText)
         {

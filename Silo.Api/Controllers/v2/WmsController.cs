@@ -262,6 +262,24 @@ public class WmsController : SiloBaseControllerVersion2
                                               .DistinctBy(p => p.Epc)
                                               .ToList();
 
+
+        //List<InventoryHeader> invHeader = ((WmsBusiness)business)
+        //                                      .SGetAllInventoryHeader()
+        //                                      .Select()
+        //                                      .Select(p => new InventoryHeader()
+        //                                      {
+        //                                          InventoryDate = p.ItemArray[1].ToString(),
+        //                                          InventoryDescription = "",
+        //                                          InventoryHeaderId = (int)p.ItemArray[2],
+        //                                          InventoryStatus=0,
+        //                                          InventoryStoreCodes="",
+        //                                          InventoryTime="",
+        //                                          InventoryUserId=""
+                                                  
+        //                                      })
+        //                                      .DistinctBy(p => p.InventoryHeaderId)
+        //                                      .ToList();
+
         List<Zone> zones = ((WmsBusiness)business)
                                              .SPGetAllZones()
                                              .Select(p => new Zone()

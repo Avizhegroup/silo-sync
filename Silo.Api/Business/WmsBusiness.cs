@@ -2653,16 +2653,16 @@ WHERE        (tbl_Tags.TagEpc IN ({string.Join(", ", epcList.ToArray())} )) ";
 
             if ((epcList is not null && epcList.Count > 0) || (serialList is not null && serialList.Count > 0))
             {
-
-                foreach (string _tempEpcForLengthCheck in epcList)
-                {
-                    if (_tempEpcForLengthCheck.Length > 24)
-                    {
-                        _tempEpcForLengthCheck.Replace(_tempEpcForLengthCheck, _tempEpcForLengthCheck.Substring(0, 24));
-                    }
-                }
                 if (epcList is not null && epcList.Count > 0)
                 {
+                    foreach (string _tempEpcForLengthCheck in epcList)
+                    {
+                        if (_tempEpcForLengthCheck.Length > 24)
+                        {
+                            _tempEpcForLengthCheck.Replace(_tempEpcForLengthCheck, _tempEpcForLengthCheck.Substring(0, 24));
+                        }
+                    }
+                 
                     where = @$"((tbl_Tags.TagEpc IN ({((epcList != null) ? "'" + string.Join("','", epcList.ToArray()) + "'" : "''")})) ) OR (tbl_Tags.TagEpc2 IN ({((epcList != null) ? "'" + string.Join("','", epcList.ToArray()) + "'" : "''")})) and (tbl_Tags.TagEpc <>'')";
                 }
                 else if (serialList is not null && serialList.Any() && serialList[0] != "")
@@ -2708,7 +2708,7 @@ FROM            tbl_Tags
                         ActionId = TempLatestGateinvCod.Split('*')[0];
                         ActionType = TempLatestGateinvCod.Split('*')[1];
                         ActionTypeCodeForSelectInfo = TempLatestGateinvCod.Split('*')[1];
-                    }
+
                         command = $@"SELECT DISTINCT
                   tbl_Tags.ProductSerial, tbl_Tags.ProductCode, tbl_Tags.TagEpc, tbl_Tags.ProductCount, tbl_Tags.ProductName, tbl_Tags.ProductType, tbl_Tags.RegCode, tbl_Tags.ProductStatus, tbl_Tags.TagStatus, tbl_Tags.TagInDestinationId, tbl_Tags.Lock, 
                   tbl_Tags.fld_ProductPropertyAId AS ProductLine, tbl_Tags.fld_ProductPropertyBId AS ProductShift, tbl_Tags.ContractStatus AS DocumentId, tbl_Tags.Freeze, COALESCE(tbl_Tags.DeviceIp, N'') AS ProductOldSerial, COALESCE (tbl_Tags.fld_LastInspectResult, N'[]') AS LastInspectResult,
@@ -2719,247 +2719,253 @@ FROM            tbl_Tags
 FROM        tbl_Tags RIGHT OUTER JOIN
                   tbl_UHF_ReaderLog ON tbl_Tags.ProductSerial = tbl_UHF_ReaderLog.fld_ProductSerial
 WHERE(tbl_UHF_ReaderLog.fld_InventoryId = {ActionId}) ";
-
-                }
-
-                DataTable _dtResult = dataAccess.SqlDataAdapter(command);
-
-                bool DetectRegisterTag = false;
-
-                if (epcList != null && epcList.Count > 0)
-                {
-                    foreach (string Epc in epcList)
-                    {
-                        DetectRegisterTag = false;
-                        foreach (DataRow _dr in _dtResult.Rows)
-                        {
-                            if (_dr["TagEpc"].ToString() == Epc || _dr["TagTreeParentsEpc"].ToString() == Epc)
-                            {
-                                DetectRegisterTag = true;
-                                break;
-                            }
-                        }
-
-                        if (!DetectRegisterTag)
-                        {
-                            _dtResult.Rows.Add();
-                            _dtResult.Rows[_dtResult.Rows.Count - 1]["CheckResultType"] = "2";
-                            _dtResult.Rows[_dtResult.Rows.Count - 1]["CheckActionStatus"] = "3";
-                            _dtResult.Rows[_dtResult.Rows.Count - 1]["ExceptionMessage"] = "تگ رجیستر نشده";
-                            _dtResult.Rows[_dtResult.Rows.Count - 1]["TagEpc"] = Epc;
-                        }
                     }
                 }
-
-                // Get ActionType Info
-                var listActionType = SGetActionTypes();
-                var ActionTypeSelected = (int.TryParse(ActionTypeCodeForSelectInfo, out int _parsAction)) ? (listActionType.FirstOrDefault(p => p.Code == Convert.ToInt32(ActionTypeCodeForSelectInfo))) : null;
-                var _listSourceActionTypeSelected = (ActionTypeSelected != null) ? ActionTypeSelected.From.Split(',') : null;
-                var ActionTypeControls = (ActionTypeSelected != null) ? JsonConvert.DeserializeObject<ActionTypeControlDto>(ActionTypeSelected.ActiveControls) : null;
-
-                // Check Active Control In Product (ActionStatus , CheckResultType,Exception Message)
-                List<string> listTagsForInsertIntoUhfReaderLog = new List<string>();
-
-                foreach (DataRow _dr in _dtResult.Rows)
+                if (command != "")
                 {
-                    if (ActionTypeSelected != null)
+                    DataTable _dtResult = dataAccess.SqlDataAdapter(command);
+
+                    bool DetectRegisterTag = false;
+
+                    if (epcList != null && epcList.Count > 0)
                     {
-                        if (_dr["ExceptionMessage"] != "تگ رجیستر نشده")
+                        foreach (string Epc in epcList)
+                        {
+                            DetectRegisterTag = false;
+                            foreach (DataRow _dr in _dtResult.Rows)
+                            {
+                                if (_dr["TagEpc"].ToString() == Epc || _dr["TagTreeParentsEpc"].ToString() == Epc)
+                                {
+                                    DetectRegisterTag = true;
+                                    break;
+                                }
+                            }
+
+                            if (!DetectRegisterTag)
+                            {
+                                _dtResult.Rows.Add();
+                                _dtResult.Rows[_dtResult.Rows.Count - 1]["CheckResultType"] = "2";
+                                _dtResult.Rows[_dtResult.Rows.Count - 1]["CheckActionStatus"] = "3";
+                                _dtResult.Rows[_dtResult.Rows.Count - 1]["ExceptionMessage"] = "تگ رجیستر نشده";
+                                _dtResult.Rows[_dtResult.Rows.Count - 1]["TagEpc"] = Epc;
+                            }
+                        }
+                    }
+
+                    // Get ActionType Info
+                    var listActionType = SGetActionTypes();
+                    var ActionTypeSelected = (int.TryParse(ActionTypeCodeForSelectInfo, out int _parsAction)) ? (listActionType.FirstOrDefault(p => p.Code == Convert.ToInt32(ActionTypeCodeForSelectInfo))) : null;
+                    var _listSourceActionTypeSelected = (ActionTypeSelected != null) ? ActionTypeSelected.From.Split(',') : null;
+                    var ActionTypeControls = (ActionTypeSelected != null) ? JsonConvert.DeserializeObject<ActionTypeControlDto>(ActionTypeSelected.ActiveControls) : null;
+
+                    // Check Active Control In Product (ActionStatus , CheckResultType,Exception Message)
+                    List<string> listTagsForInsertIntoUhfReaderLog = new List<string>();
+
+                    foreach (DataRow _dr in _dtResult.Rows)
+                    {
+                        if (ActionTypeSelected != null)
+                        {
+                            if (_dr["ExceptionMessage"] != "تگ رجیستر نشده")
+                            {
+                                _dr["CheckResultType"] = "1";
+                                _dr["CheckActionStatus"] = "0";
+                                _dr["ExceptionMessage"] = "";
+
+                                if (ActionTypeControls.NotInSourceError && !ActionTypeControls.NotInSourceIgnore)
+                                {
+                                    bool FlagNotInSourceErrorCheck = true;
+                                    if (_listSourceActionTypeSelected.Length == 1)
+                                    {
+                                        if ((_listSourceActionTypeSelected[0] != "") && _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[0])
+                                            FlagNotInSourceErrorCheck = false;
+                                    }
+                                    else if (_listSourceActionTypeSelected.Length == 2)
+                                    {
+                                        if (((_listSourceActionTypeSelected[0] != "") && _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[0]) || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[1])
+                                            FlagNotInSourceErrorCheck = false;
+
+                                    }
+                                    else if (_listSourceActionTypeSelected.Length == 3)
+                                    {
+                                        if (((_listSourceActionTypeSelected[0] != "") && _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[0]) || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[1] || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[2])
+                                            FlagNotInSourceErrorCheck = false;
+
+                                    }
+                                    else if (_listSourceActionTypeSelected.Length == 4)
+                                    {
+                                        if (((_listSourceActionTypeSelected[0] != "") && _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[0]) || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[1] || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[2] || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[3])
+                                            FlagNotInSourceErrorCheck = false;
+
+                                    }
+                                    if (FlagNotInSourceErrorCheck)
+                                    {
+                                        _dr["CheckResultType"] = "2";
+                                        _dr["CheckActionStatus"] = "2";
+                                        _dr["ExceptionMessage"] = "عدم موجودی در انبار مبدأ";
+
+                                    }
+
+                                }
+                                else if (!ActionTypeControls.NotInSourceError && ActionTypeControls.NotInSourceIgnore)
+                                {
+                                    bool FlagNotInSourceIgnoreCheck = true;
+                                    if (_listSourceActionTypeSelected.Length == 1)
+                                    {
+                                        if ((_listSourceActionTypeSelected[0] != "") && _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[0])
+                                            FlagNotInSourceIgnoreCheck = false;
+                                    }
+                                    else if (_listSourceActionTypeSelected.Length == 2)
+                                    {
+                                        if (((_listSourceActionTypeSelected[0] != "") && _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[0]) || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[1])
+                                            FlagNotInSourceIgnoreCheck = false;
+
+                                    }
+                                    else if (_listSourceActionTypeSelected.Length == 3)
+                                    {
+                                        if (_dr["TagStatus"].ToString() == "3")
+                                        {
+
+                                        }
+                                        if (((_listSourceActionTypeSelected[0] != "") && _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[0]) || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[1] || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[2])
+                                            FlagNotInSourceIgnoreCheck = false;
+
+                                    }
+                                    if (FlagNotInSourceIgnoreCheck)
+                                    {
+                                        _dr["CheckResultType"] = "0";
+                                        _dr["CheckActionStatus"] = "2";
+                                        _dr["ExceptionMessage"] = "";
+
+                                    }
+                                }
+
+                                if (ActionTypeControls.NotQc)
+                                {
+                                    if (_dr["InspectStatus"].ToString() == "0")
+                                    {
+                                        _dr["CheckResultType"] = "2";
+                                        _dr["CheckActionStatus"] = "6";
+                                        _dr["ExceptionMessage"] = "کالا بازرسی نشده";
+
+                                    }
+                                }
+                                if (ActionTypeControls.FailedQC)
+                                {
+                                    if (_dr["InspectStatus"].ToString() == "2")
+                                    {
+                                        _dr["CheckResultType"] = "2";
+                                        _dr["CheckActionStatus"] = "5";
+                                        _dr["ExceptionMessage"] = "کالا بازرسی مردود";
+
+                                    }
+                                }
+                                if (ActionTypeControls.Freezed)
+                                {
+                                    if (_dr["FreezeStatus"].ToString() == "1")
+                                    {
+                                        _dr["CheckResultType"] = "2";
+                                        _dr["CheckActionStatus"] = "4";
+                                        _dr["ExceptionMessage"] = "کالا فریز شده";
+
+                                    }
+                                }
+                                if (ActionTypeControls.TagLifeLessThanIgnore)
+                                {
+                                    int DiffSeconds = 150;
+
+                                    if ((DateTime.Now - Convert.ToDateTime(_dr["TagRegisterDateTime"].ToString())).Seconds <= DiffSeconds)
+                                    {
+                                        _dr["CheckResultType"] = "0";
+                                        _dr["CheckActionStatus"] = "7";
+                                        _dr["ExceptionMessage"] = "";
+
+                                    }
+                                }
+
+                            }
+                            else if (_dr["ExceptionMessage"] == "تگ رجیستر نشده")
+                            {
+                                if (ActionTypeControls.NotRegisterIgnore)
+                                {
+                                    _dr["CheckResultType"] = "0";
+                                }
+                                else
+                                {
+                                    _dr["CheckResultType"] = "2";
+                                }
+                            }
+                        }
+                        else
                         {
                             _dr["CheckResultType"] = "1";
                             _dr["CheckActionStatus"] = "0";
                             _dr["ExceptionMessage"] = "";
-
-                            if (ActionTypeControls.NotInSourceError && !ActionTypeControls.NotInSourceIgnore)
-                            {
-                                bool FlagNotInSourceErrorCheck = true;
-                                if (_listSourceActionTypeSelected.Length == 1)
-                                {
-                                    if ((_listSourceActionTypeSelected[0] != "") && _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[0])
-                                        FlagNotInSourceErrorCheck = false;
-                                }
-                                else if (_listSourceActionTypeSelected.Length == 2)
-                                {
-                                    if (((_listSourceActionTypeSelected[0] != "") && _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[0]) || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[1])
-                                        FlagNotInSourceErrorCheck = false;
-
-                                }
-                                else if (_listSourceActionTypeSelected.Length == 3)
-                                {
-                                    if (((_listSourceActionTypeSelected[0] != "") && _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[0]) || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[1] || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[2])
-                                        FlagNotInSourceErrorCheck = false;
-
-                                }
-                                else if (_listSourceActionTypeSelected.Length == 4)
-                                {
-                                    if (((_listSourceActionTypeSelected[0] != "") && _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[0]) || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[1] || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[2] || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[3])
-                                        FlagNotInSourceErrorCheck = false;
-
-                                }
-                                if (FlagNotInSourceErrorCheck)
-                                {
-                                    _dr["CheckResultType"] = "2";
-                                    _dr["CheckActionStatus"] = "2";
-                                    _dr["ExceptionMessage"] = "عدم موجودی در انبار مبدأ";
-
-                                }
-
-                            }
-                            else if (!ActionTypeControls.NotInSourceError && ActionTypeControls.NotInSourceIgnore)
-                            {
-                                bool FlagNotInSourceIgnoreCheck = true;
-                                if (_listSourceActionTypeSelected.Length == 1)
-                                {
-                                    if ((_listSourceActionTypeSelected[0] != "") && _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[0])
-                                        FlagNotInSourceIgnoreCheck = false;
-                                }
-                                else if (_listSourceActionTypeSelected.Length == 2)
-                                {
-                                    if (((_listSourceActionTypeSelected[0] != "") && _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[0]) || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[1])
-                                        FlagNotInSourceIgnoreCheck = false;
-
-                                }
-                                else if (_listSourceActionTypeSelected.Length == 3)
-                                {
-                                    if (_dr["TagStatus"].ToString() == "3")
-                                    {
-
-                                    }
-                                    if (((_listSourceActionTypeSelected[0] != "") && _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[0]) || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[1] || _dr["TagStatus"].ToString() == _listSourceActionTypeSelected[2])
-                                        FlagNotInSourceIgnoreCheck = false;
-
-                                }
-                                if (FlagNotInSourceIgnoreCheck)
-                                {
-                                    _dr["CheckResultType"] = "0";
-                                    _dr["CheckActionStatus"] = "2";
-                                    _dr["ExceptionMessage"] = "";
-
-                                }
-                            }
-
-                            if (ActionTypeControls.NotQc)
-                            {
-                                if (_dr["InspectStatus"].ToString() == "0")
-                                {
-                                    _dr["CheckResultType"] = "2";
-                                    _dr["CheckActionStatus"] = "6";
-                                    _dr["ExceptionMessage"] = "کالا بازرسی نشده";
-
-                                }
-                            }
-                            if (ActionTypeControls.FailedQC)
-                            {
-                                if (_dr["InspectStatus"].ToString() == "2")
-                                {
-                                    _dr["CheckResultType"] = "2";
-                                    _dr["CheckActionStatus"] = "5";
-                                    _dr["ExceptionMessage"] = "کالا بازرسی مردود";
-
-                                }
-                            }
-                            if (ActionTypeControls.Freezed)
-                            {
-                                if (_dr["FreezeStatus"].ToString() == "1")
-                                {
-                                    _dr["CheckResultType"] = "2";
-                                    _dr["CheckActionStatus"] = "4";
-                                    _dr["ExceptionMessage"] = "کالا فریز شده";
-
-                                }
-                            }
-                            if (ActionTypeControls.TagLifeLessThanIgnore)
-                            {
-                                int DiffSeconds = 150;
-
-                                if ((DateTime.Now - Convert.ToDateTime(_dr["TagRegisterDateTime"].ToString())).Seconds <= DiffSeconds)
-                                {
-                                    _dr["CheckResultType"] = "0";
-                                    _dr["CheckActionStatus"] = "7";
-                                    _dr["ExceptionMessage"] = "";
-
-                                }
-                            }
-
                         }
-                        else if (_dr["ExceptionMessage"] == "تگ رجیستر نشده")
-                        {
-                            if (ActionTypeControls.NotRegisterIgnore)
-                            {
-                                _dr["CheckResultType"] = "0";
-                            }
-                            else
-                            {
-                                _dr["CheckResultType"] = "2";
-                            }
-                        }
+
+                        listTagsForInsertIntoUhfReaderLog.Add(_dr["TagEpc"].ToString() + "*" + _dr["CheckActionStatus"].ToString() + "*" + _dr["ProductSerial"].ToString());
                     }
-                    else
+
+                    // Save in UHFReaderLog by Action Id AND ActionStatus (Douplicate Prevent)
+
+                    if (IsSaveUHF)
                     {
-                        _dr["CheckResultType"] = "1";
-                        _dr["CheckActionStatus"] = "0";
-                        _dr["ExceptionMessage"] = "";
+                        SSaveGateLogNew(userToken, ActionId, DeviceId, listTagsForInsertIntoUhfReaderLog, ActionType, saveDateTime);
                     }
 
-                    listTagsForInsertIntoUhfReaderLog.Add(_dr["TagEpc"].ToString() + "*" + _dr["CheckActionStatus"].ToString() + "*" + _dr["ProductSerial"].ToString());
+                    // Return Data in Object Format
+
+                    List<GateResult> _listGateResult = new List<GateResult>();
+
+                    int RowIndex = 1;
+                    foreach (DataRow dr in _dtResult.Rows)
+                    {
+                        GateResult _gateResult = new GateResult();
+                        _gateResult.ProductName = dr["ProductName"].ToString();
+                        _gateResult.ProductCode = dr["ProductCode"].ToString();
+                        _gateResult.Row = RowIndex.ToString();
+                        _gateResult.Count = dr["ProductCount"].ToString();
+                        _gateResult.SumValue = dr["ProductCount"].ToString();
+                        _gateResult.ProductTechnicalCode = dr["RegCode"].ToString();
+                        _gateResult.TagSerial = dr["TagEpc"].ToString();
+                        _gateResult.ProductSerial = dr["ProductSerial"].ToString();
+                        _gateResult.ProductType = dr["ProductType"].ToString();
+                        _gateResult.ProductStatus = dr["ProductStatus"].ToString();
+                        _gateResult.TagStatus = dr["TagStatus"].ToString();
+                        _gateResult.TagInDestinationId = dr["TagInDestinationId"].ToString();
+                        _gateResult.Lock = dr["Lock"].ToString();
+                        _gateResult.ProductLine = dr["ProductLine"].ToString();
+                        _gateResult.ProductShift = dr["ProductShift"].ToString();
+                        _gateResult.DocumentId = dr["DocumentId"].ToString();
+                        _gateResult.PMToStoreCode = "0";//(CargoTruckPlacements != null && _CargoProductList.Count > 0) ? _CargoProductList.FirstOrDefault(p => p.ProductSerial == dr["ProductSerial"].ToString()).PmToStoreCode : "";
+                        _gateResult.PMToStoreTitle = "0";//(CargoTruckPlacements != null && _CargoProductList.Count > 0) ? _CargoProductList.FirstOrDefault(p => p.ProductSerial == dr["ProductSerial"].ToString()).PmToStoreTitle : "";
+                        _gateResult.PMToZoneCode = "0";//(CargoTruckPlacements != null && _CargoProductList.Count > 0) ? _CargoProductList.FirstOrDefault(p => p.ProductSerial == dr["ProductSerial"].ToString()).PmToZoneCode : "";
+                        _gateResult.Freeze = dr["Freeze"].ToString();
+                        _gateResult.ProductOldSerial = dr["ProductOldSerial"].ToString();
+                        _gateResult.LastInspectResult = dr["LastInspectResult"].ToString();
+                        _gateResult.TagRegisterDateTime = (dr["TagRegisterDateTime"].ToString() != "") ? Convert.ToDateTime(dr["TagRegisterDateTime"]) : DateTime.Now;
+                        _gateResult.CheckResultType = dr["CheckResultType"].ToString();
+                        _gateResult.ExceptionMessage = dr["ExceptionMessage"].ToString();
+                        _gateResult.CheckActionStatus = dr["CheckActionStatus"].ToString();
+                        _gateResult.InspectStatus = dr["InspectStatus"].ToString();
+                        _gateResult.TagZone = dr["TagZone"].ToString();
+                        _gateResult.ProductGroupCode = dr["fld_ProductGroup"].ToString();
+                        _gateResult.ProductSubGroupCode = dr["fld_ProductSubGroup"].ToString();
+                        _gateResult.ProductBrandCode = dr["fld_ProductBrand"].ToString();
+                        _gateResult.ProductSizeCode = dr["fld_ProductPropertyCId"].ToString();
+                        _gateResult.EnterDate = "";
+                        _gateResult.ProductProperties = dr["ProductProperties"].ToString();
+
+                        RowIndex++;
+                        _listGateResult.Add(_gateResult);
+                    }
+
+                    return _listGateResult;
+
                 }
-
-                // Save in UHFReaderLog by Action Id AND ActionStatus (Douplicate Prevent)
-
-                if (IsSaveUHF)
+                else
                 {
-                    SSaveGateLogNew(userToken, ActionId, DeviceId, listTagsForInsertIntoUhfReaderLog, ActionType, saveDateTime);
+                    return null;
                 }
-
-                // Return Data in Object Format
-
-                List<GateResult> _listGateResult = new List<GateResult>();
-
-                int RowIndex = 1;
-                foreach (DataRow dr in _dtResult.Rows)
-                {
-                    GateResult _gateResult = new GateResult();
-                    _gateResult.ProductName = dr["ProductName"].ToString();
-                    _gateResult.ProductCode = dr["ProductCode"].ToString();
-                    _gateResult.Row = RowIndex.ToString();
-                    _gateResult.Count = dr["ProductCount"].ToString();
-                    _gateResult.SumValue = dr["ProductCount"].ToString();
-                    _gateResult.ProductTechnicalCode = dr["RegCode"].ToString();
-                    _gateResult.TagSerial = dr["TagEpc"].ToString();
-                    _gateResult.ProductSerial = dr["ProductSerial"].ToString();
-                    _gateResult.ProductType = dr["ProductType"].ToString();
-                    _gateResult.ProductStatus = dr["ProductStatus"].ToString();
-                    _gateResult.TagStatus = dr["TagStatus"].ToString();
-                    _gateResult.TagInDestinationId = dr["TagInDestinationId"].ToString();
-                    _gateResult.Lock = dr["Lock"].ToString();
-                    _gateResult.ProductLine = dr["ProductLine"].ToString();
-                    _gateResult.ProductShift = dr["ProductShift"].ToString();
-                    _gateResult.DocumentId = dr["DocumentId"].ToString();
-                    _gateResult.PMToStoreCode = "0";//(CargoTruckPlacements != null && _CargoProductList.Count > 0) ? _CargoProductList.FirstOrDefault(p => p.ProductSerial == dr["ProductSerial"].ToString()).PmToStoreCode : "";
-                    _gateResult.PMToStoreTitle = "0";//(CargoTruckPlacements != null && _CargoProductList.Count > 0) ? _CargoProductList.FirstOrDefault(p => p.ProductSerial == dr["ProductSerial"].ToString()).PmToStoreTitle : "";
-                    _gateResult.PMToZoneCode = "0";//(CargoTruckPlacements != null && _CargoProductList.Count > 0) ? _CargoProductList.FirstOrDefault(p => p.ProductSerial == dr["ProductSerial"].ToString()).PmToZoneCode : "";
-                    _gateResult.Freeze = dr["Freeze"].ToString();
-                    _gateResult.ProductOldSerial = dr["ProductOldSerial"].ToString();
-                    _gateResult.LastInspectResult = dr["LastInspectResult"].ToString();
-                    _gateResult.TagRegisterDateTime = (dr["TagRegisterDateTime"].ToString() != "") ? Convert.ToDateTime(dr["TagRegisterDateTime"]) : DateTime.Now;
-                    _gateResult.CheckResultType = dr["CheckResultType"].ToString();
-                    _gateResult.ExceptionMessage = dr["ExceptionMessage"].ToString();
-                    _gateResult.CheckActionStatus = dr["CheckActionStatus"].ToString();
-                    _gateResult.InspectStatus = dr["InspectStatus"].ToString();
-                    _gateResult.TagZone = dr["TagZone"].ToString();
-                    _gateResult.ProductGroupCode = dr["fld_ProductGroup"].ToString();
-                    _gateResult.ProductSubGroupCode = dr["fld_ProductSubGroup"].ToString();
-                    _gateResult.ProductBrandCode = dr["fld_ProductBrand"].ToString();
-                    _gateResult.ProductSizeCode = dr["fld_ProductPropertyCId"].ToString();
-                    _gateResult.EnterDate = "";
-                    _gateResult.ProductProperties = dr["ProductProperties"].ToString();
-
-                    RowIndex++;
-                    _listGateResult.Add(_gateResult);
-                }
-
-                return _listGateResult;
-
             }
             else
             {
@@ -2970,7 +2976,7 @@ WHERE(tbl_UHF_ReaderLog.fld_InventoryId = {ActionId}) ";
         {
             return null;
         }
-     
+
     }
 
 
@@ -3486,6 +3492,7 @@ FROM            tbl_Tags LEFT OUTER JOIN
                          N'' as LineTitle, N'' as  [Shift]");
     }
 
+
     public DataTable SPGetProductInfo(string tagEpc)
     {
         var dtProductInfo = new DataTable();
@@ -3518,6 +3525,9 @@ FROM            tbl_Tags LEFT OUTER JOIN
         dtProductInfo.Columns.Add("TagInDestinationId", typeof(string));  //  انبار قرارگیری           25
         dtProductInfo.Columns.Add("FreezeStatusTitle", typeof(string));  //  انبار قرارگیری           25
         dtProductInfo.Columns.Add("InspectStatusTitle", typeof(string));  //  انبار قرارگیری           25
+        dtProductInfo.Columns.Add("TagTreeParentSerial", typeof(string));  //  سریال بسته           25
+        dtProductInfo.Columns.Add("TagTreeParentsEpc", typeof(string));  //  تگ بسته          25
+
         var command = @"
                       SELECT        TOP (1) COALESCE (tbl_Tags.TagEpc, N'-1') AS TagEpc, COALESCE (tbl_Tags.ProductSerial, N'0') AS ProductSerial, COALESCE (tbl_Tags.ProductCode, N'0') AS ProductCode, COALESCE (tbl_Tags.ProductCount, 0) 
                          AS ProductCount, COALESCE (tbl_Tags.ProductName, N'-1') AS ProductName, COALESCE (tbl_ProductType.ProductTypeTitle, N'-1') AS ProductTypeTitle, COALESCE (tbl_ProductStatus.ProductStatusTitle, N'-1') 
@@ -3534,7 +3544,8 @@ FROM            tbl_Tags LEFT OUTER JOIN
                          AS PlacementZoneId, CASE WHEN tbl_Tags.TagStatus = 0 THEN N'انبارهای تولید' WHEN tbl_Tags.TagStatus = 1 THEN N'انبارهای محصول' WHEN tbl_Tags.TagStatus = 2 THEN N'انبارهای بارگیری' ELSE N'-' END AS TagStatusTitle, 
                          COALESCE (tbl_Tags.Username, N'') AS Username,  COALESCE (tbl_Tags.TagInDestinationId,'0') as TagInDestinationId,
                         CASE WHEN tbl_Tags.Freeze = 0 THEN N'عدم فریز' WHEN tbl_Tags.TagStatus = 1 THEN N'فریز شده' ELSE N'-' END AS FreezeStatusTitle, CASE WHEN (tbl_Tags.Lock = 0 AND fld_LastInspectResult = N'[]') 
-                         THEN N'بازرسی نشده' WHEN (tbl_Tags.Lock = 0 AND fld_LastInspectResult <> N'[]') THEN N'بازرسی تأیید' WHEN (tbl_Tags.Lock = 1 AND fld_LastInspectResult <> N'[]') THEN N'بازرسی مردود' ELSE N'-' END AS InspectStatusTitle
+                         THEN N'بازرسی نشده' WHEN (tbl_Tags.Lock = 0 AND fld_LastInspectResult <> N'[]') THEN N'بازرسی تأیید' WHEN (tbl_Tags.Lock = 1 AND fld_LastInspectResult <> N'[]') THEN N'بازرسی مردود' ELSE N'-' END AS InspectStatusTitle, 
+                         COALESCE (tbl_Tags.TagTreeParentSerial, N'') AS TagTreeParentSerial, COALESCE (tbl_Tags.TagTreeParentsEpc, N'') AS TagTreeParentsEpc
 FROM            tbl_Tags LEFT OUTER JOIN
                          tbl_Products ON tbl_Tags.ProductCode = tbl_Products.ProductCode LEFT OUTER JOIN
                          tbl_ProductType ON tbl_Tags.ProductType = tbl_ProductType.ProductTypeCode LEFT OUTER JOIN
@@ -3545,6 +3556,71 @@ WHERE        (tbl_Tags.TagEpc = @tagEpc) OR
                          (tbl_Tags.ProductSerial = @tagEpc)";
 
         dtProductInfo = dataAccess.SqlDataAdapter(command, new KeyValuePair<string, object>("tagEpc", tagEpc));
+        return dtProductInfo;
+    }
+
+
+    public DataTable SPGetProductListByParentSerial(string parentSerial, string parentEpc)
+    {
+        var dtProductInfo = new DataTable();
+        dtProductInfo.Columns.Add("TagEpc", typeof(string));//شناسه تگ  0
+        dtProductInfo.Columns.Add("ProductSerial", typeof(string));// سریال محموله  1
+        dtProductInfo.Columns.Add("ProductCode", typeof(string));//کد کالا  2
+        dtProductInfo.Columns.Add("ProductCount", typeof(string));//مقدار محموله   3
+        dtProductInfo.Columns.Add("ProductName", typeof(string));//عنوان کالا       4
+        dtProductInfo.Columns.Add("ProductTypeTitle", typeof(string));//نوع کالا   5
+        dtProductInfo.Columns.Add("ProductStatusTitle", typeof(string));//وضعیت کالا    6
+        dtProductInfo.Columns.Add("TagStatus", typeof(string));//وضعیت تگ   7
+        dtProductInfo.Columns.Add("TagRegisterShamsiUnixDate", typeof(string));//تاریخ شمسی و ساعت تولید   8
+        dtProductInfo.Columns.Add("ProductProperties", typeof(string));//سایر مشخصات محموله   9
+        dtProductInfo.Columns.Add("RegCode", typeof(string));// کد فنی محموله    10
+        dtProductInfo.Columns.Add("fld_ProductPropertyATitle", typeof(string)); // خط تولید    11
+        dtProductInfo.Columns.Add("fld_ProductPropertyBTitle", typeof(string));// شیفت تولید    12
+        dtProductInfo.Columns.Add("ProductENTitle", typeof(string));//  عنوان لاتین کالا    13
+        dtProductInfo.Columns.Add("ProductPackWeight", typeof(string));// وزن محموله    14
+        dtProductInfo.Columns.Add("ProductPackVolume", typeof(string));// حجم محموله    15
+        dtProductInfo.Columns.Add("ProductCountInPack", typeof(string));//تعداد کالا در محموله    16
+        dtProductInfo.Columns.Add("ProductValue", typeof(string));// مقدار کالا    17
+        dtProductInfo.Columns.Add("ProductSize", typeof(string));//سایز کالا    18
+        dtProductInfo.Columns.Add("ProductUnit", typeof(string));  //  واحد کالا             19
+        dtProductInfo.Columns.Add("fld_ProductPropertyAId", typeof(string));  // کد خط تولید             20
+        dtProductInfo.Columns.Add("fld_ProductPropertyBId", typeof(string));  // کد شیفت تولید            21
+        dtProductInfo.Columns.Add("TagZone", typeof(string));  //  محل قرارگیری            22
+        dtProductInfo.Columns.Add("PlacementZoneId", typeof(string));  //  کد محل قرارگیری جدید           23
+        dtProductInfo.Columns.Add("TagStatusTitle", typeof(string));  //  عنوان وضعیت تگ           24
+        dtProductInfo.Columns.Add("Username", typeof(string));  //  نام کاربری ثبت کننده           25
+        dtProductInfo.Columns.Add("TagInDestinationId", typeof(string));  //  انبار قرارگیری           25
+        dtProductInfo.Columns.Add("FreezeStatusTitle", typeof(string));  //  انبار قرارگیری           25
+        dtProductInfo.Columns.Add("InspectStatusTitle", typeof(string));  //  انبار قرارگیری           25
+        dtProductInfo.Columns.Add("TagTreeParentSerial", typeof(string));  //  سریال بسته           25
+        dtProductInfo.Columns.Add("TagTreeParentsEpc", typeof(string));  //  تگ بسته          25
+        var command = $@"
+                      SELECT        COALESCE (tbl_Tags.TagEpc, N'-1') AS TagEpc, COALESCE (tbl_Tags.ProductSerial, N'0') AS ProductSerial, COALESCE (tbl_Tags.ProductCode, N'0') AS ProductCode, COALESCE (tbl_Tags.ProductCount, 0) AS ProductCount, 
+                         COALESCE (tbl_Tags.ProductName, N'-1') AS ProductName, COALESCE (tbl_ProductType.ProductTypeTitle, N'-1') AS ProductTypeTitle, COALESCE (tbl_ProductStatus.ProductStatusTitle, N'-1') AS ProductStatusTitle, 
+                         COALESCE (tbl_Tags.TagStatus, 0) AS TagStatus, COALESCE (tbl_Tags.TagRegisterShamsiUnixDate, N'-1') AS TagRegisterShamsiUnixDate, COALESCE (tbl_Tags.ProductProperties, N'') AS ProductProperties, 
+                         COALESCE (tbl_Tags.RegCode, N'0') AS RegCode, COALESCE (tbl_ProductPropertyA.fld_ProductPropertyATitle, N'-1') AS fld_ProductPropertyATitle, COALESCE (tbl_ProductPropertyB.fld_ProductPropertyBTitle, N'-1') 
+                         AS fld_ProductPropertyBTitle, COALESCE (tbl_Products.ProductENTitle, N'-1') AS ProductENTitle, COALESCE (tbl_Products.ProductPackWeight, 0) AS ProductPackWeight, COALESCE (tbl_Products.ProductPackVolume, 0) 
+                         AS ProductPackVolume, COALESCE (tbl_Products.ProductCountInPack, 0) AS ProductCountInPack, COALESCE (tbl_Products.ProductValue, 0) AS ProductValue, COALESCE (tbl_Products.ProductSize, N'-1') AS ProductSize, 
+                         COALESCE (tbl_Products.ProductUnit, N'-1') AS ProductUnit, tbl_Tags.fld_ProductPropertyAId, tbl_Tags.fld_ProductPropertyBId, COALESCE (tbl_Tags.TagZone, N'') AS TagZone, COALESCE
+                             ((SELECT        TOP (1) tbl_ProductPlacementMissions.fld_PPMToZoneId + '*' + CAST(tbl_PlacementOrders.fld_POStatus AS nvarchar(50)) AS Expr1
+                                 FROM            tbl_ProductPlacementMissions LEFT OUTER JOIN
+                                                           tbl_PlacementOrders ON tbl_ProductPlacementMissions.fld_PPMActionId = tbl_PlacementOrders.fld_POCode
+                                 WHERE        (tbl_ProductPlacementMissions.fld_PPMProductSerial = tbl_Tags.ProductSerial) AND (tbl_ProductPlacementMissions.fld_PPMStatus = 0) AND (tbl_ProductPlacementMissions.fld_PPMType = 1)), N'0*0') 
+                         AS PlacementZoneId, CASE WHEN tbl_Tags.TagStatus = 0 THEN N'انبارهای تولید' WHEN tbl_Tags.TagStatus = 1 THEN N'انبارهای محصول' WHEN tbl_Tags.TagStatus = 2 THEN N'انبارهای بارگیری' ELSE N'-' END AS TagStatusTitle, 
+                         COALESCE (tbl_Tags.Username, N'') AS Username, COALESCE (tbl_Tags.TagInDestinationId, N'0') AS TagInDestinationId, 
+                         CASE WHEN tbl_Tags.Freeze = 0 THEN N'عدم فریز' WHEN tbl_Tags.TagStatus = 1 THEN N'فریز شده' ELSE N'-' END AS FreezeStatusTitle, CASE WHEN (tbl_Tags.Lock = 0 AND fld_LastInspectResult = N'[]') 
+                         THEN N'بازرسی نشده' WHEN (tbl_Tags.Lock = 0 AND fld_LastInspectResult <> N'[]') THEN N'بازرسی تأیید' WHEN (tbl_Tags.Lock = 1 AND fld_LastInspectResult <> N'[]') THEN N'بازرسی مردود' ELSE N'-' END AS InspectStatusTitle, 
+                         COALESCE (tbl_Tags.TagTreeParentSerial, N'') AS TagTreeParentSerial, COALESCE (tbl_Tags.TagTreeParentsEpc, N'') AS TagTreeParentsEpc
+FROM            tbl_Tags LEFT OUTER JOIN
+                         tbl_Products ON tbl_Tags.ProductCode = tbl_Products.ProductCode LEFT OUTER JOIN
+                         tbl_ProductType ON tbl_Tags.ProductType = tbl_ProductType.ProductTypeCode LEFT OUTER JOIN
+                         tbl_ProductStatus ON tbl_Tags.ProductStatus = tbl_ProductStatus.ProductStatusCode LEFT OUTER JOIN
+                         tbl_ProductPropertyA ON tbl_Tags.fld_ProductPropertyAId = tbl_ProductPropertyA.fld_ProductPropertyAId LEFT OUTER JOIN
+                         tbl_ProductPropertyB ON tbl_Tags.fld_ProductPropertyBId = tbl_ProductPropertyB.fld_ProductPropertyBId
+WHERE   " + ((parentSerial != "") ? $@"(tbl_Tags.TagTreeParentSerial ='{parentSerial}') " : "") + ((parentSerial != "" && parentEpc != "") ? " OR " : "") + ((parentEpc != "") ? $@"  (tbl_Tags.TagTreeParentsEpc ='{parentEpc}') " : "");
+
+
+        dtProductInfo = dataAccess.SqlDataAdapter(command);
         return dtProductInfo;
     }
 
@@ -5685,14 +5761,17 @@ ORDER BY F.ProductSerial;
             if (serial.Length < 18)
             {
                 productCode = (productCode.Length > 12) ? productCode.Substring(productCode.Length - 12, 12) : productCode.PadRight(12, '0');
-
+                if (serial == "")
+                {
+                    serial = (Convert.ToInt64(SGetNewProductSerial(configuration["ProjectConfigs:WmsConfigs:GetMaxProductSerialBy"].ToString()))).ToString();
+                }
                 serial = ReplaceAllEnglishAlphbet(serial, "").Trim();
                 //if (serial.Length < 8)
                 //{
                 //    PersianCalendar pc = new PersianCalendar();
                 //    serial = pc.GetMonth(DateTime.Now).ToString().Trim().PadLeft(2, '0') + pc.GetDayOfMonth(DateTime.Now).ToString().PadLeft(2, '0') + pc.GetHour(DateTime.Now).ToString().PadLeft(2, '0') + pc.GetMinute(DateTime.Now).ToString().PadLeft(2, '0') + pc.GetSecond(DateTime.Now).ToString().PadLeft(2, '0') + pc.GetMilliseconds(DateTime.Now).ToString().PadLeft(2, '0').Substring(0, 2) + serial;
                 //}
-
+                
                 serial = (serial.Length > 12) ? serial.Trim().Substring(serial.Length - 12, 12) : serial.Trim().PadLeft(12, '0');
 
                 newSerial = productCode + serial;
@@ -17484,10 +17563,10 @@ ORDER BY fld_UHFReaderLogHeaderId DESC";
     }
 
     public bool SRegisterNextlevelProductUnit
-   (
-       string productUnitEpc,
-       List<string> listEpc, string userToken
-   )
+(
+   string productUnitEpc,
+   List<string> listEpc, string userToken
+)
     {
         string listOfEpcs = "";
         string NextUnitLevelSerial = "";
@@ -17508,11 +17587,11 @@ ORDER BY fld_UHFReaderLogHeaderId DESC";
 
         if (productUnitEpc == "-1")
         {//حذف یک محموله از یک بسته
-            var commandDELETEFROMtbl_TagsUnitTree = $@"  DELETE FROM tbl_TagsUnitTree WHERE    (fld_TUTEPC in ({listOfEpcs}))";
+            var commandDELETEFROMtbl_TagsUnitTree = $@"  DELETE FROM tbl_TagsUnitTree WHERE    (fld_TUTEPC in ({listOfEpcs})) OR  (fld_TUTSerial in ({listOfEpcs}))";
             dataAccess.CmdSqlExecuteNonQuery(commandDELETEFROMtbl_TagsUnitTree);
 
 
-            var commandUPDATEtbl_TagsClearParent = $@"UPDATE      tbl_Tags SET              TagTreeParentSerial ='', TagTreeParentsEpc ='' where  (TagEpc in ({listOfEpcs})) ";
+            var commandUPDATEtbl_TagsClearParent = $@"UPDATE      tbl_Tags SET              TagTreeParentSerial ='', TagTreeParentsEpc ='' where  (TagEpc in ({listOfEpcs})) OR  (ProductSerial in ({listOfEpcs})) ";
             dataAccess.CmdSqlExecuteNonQuery(commandUPDATEtbl_TagsClearParent);
 
 
@@ -17523,7 +17602,7 @@ ORDER BY fld_UHFReaderLogHeaderId DESC";
 
             var commandSelectGetDataFromListEpc = $@"   SELECT    Top(1)    tbl_Tags.ProductCode, COUNT(tbl_Tags.ProductSerial) AS Count, SUM(tbl_Tags.ProductCount) AS SumValue, tbl_ProductUOM.fld_ProductUOMId
 FROM            tbl_Tags LEFT OUTER JOIN
-                         tbl_ProductUOM ON tbl_Tags.ProductCode = tbl_ProductUOM.fld_ProductCode WHERE(TagEpc IN('{listEpc[0]}')) AND (tbl_ProductUOM.fld_UOMLevel = 2)
+                         tbl_ProductUOM ON tbl_Tags.ProductCode = tbl_ProductUOM.fld_ProductCode WHERE   (TagEpc IN('{listEpc[0]}') OR (tbl_Tags.ProductSerial IN('{listEpc[0]}')) ) AND (tbl_ProductUOM.fld_UOMLevel = 2)
 GROUP BY tbl_Tags.ProductCode, tbl_ProductUOM.fld_ProductUOMId";
 
             var dtResultGetDataFromListEpc = dataAccess.SqlDataAdapter(commandSelectGetDataFromListEpc);
@@ -17587,10 +17666,10 @@ WHERE   (fld_TUTUnitLevel = {NextUnitLevel})";
 
 
             var commandDELETEFROMtbl_TagsUnitTree = $@"  DELETE FROM tbl_TagsUnitTree
-WHERE   (fld_TUTParentSerial = @fld_TUTParentSerial) OR (fld_TUTEPC in ({listOfEpcs}))";
+WHERE   (fld_TUTParentSerial = @fld_TUTParentSerial) OR (fld_TUTEPC in ({listOfEpcs})) OR (fld_TUTSerial in ({listOfEpcs}))";
             dataAccess.CmdSqlExecuteNonQuery(commandDELETEFROMtbl_TagsUnitTree, new KeyValuePair<string, object>("fld_TUTParentSerial", NextUnitLevelSerial));
 
-            var commandUPDATEtbl_TagsClearParent = $@"UPDATE      tbl_Tags SET              TagTreeParentSerial ='', TagTreeParentsEpc ='' where (TagTreeParentSerial ='{NextUnitLevelSerial}') OR (TagEpc in ({listOfEpcs})) ";
+            var commandUPDATEtbl_TagsClearParent = $@"UPDATE      tbl_Tags SET              TagTreeParentSerial ='', TagTreeParentsEpc ='' where (TagTreeParentSerial ='{NextUnitLevelSerial}') OR (TagEpc in ({listOfEpcs})) OR (ProductSerial in ({listOfEpcs})) ";
             dataAccess.CmdSqlExecuteNonQuery(commandUPDATEtbl_TagsClearParent);
 
 
@@ -17598,11 +17677,11 @@ WHERE   (fld_TUTParentSerial = @fld_TUTParentSerial) OR (fld_TUTEPC in ({listOfE
 SELECT   tbl_Tags.ProductSerial, '1' AS Expr1, tbl_ProductUOM.fld_ProductUOMId, tbl_Tags.TagEpc, tbl_Tags.ProductCode, '1' AS Expr2, tbl_Tags.ProductCount, '{NextUnitLevelSerial}' AS Expr3, '' AS Expr4, '{userToken}' AS Expr5
 FROM     tbl_Tags INNER JOIN
              tbl_ProductUOM ON tbl_Tags.ProductCode = tbl_ProductUOM.fld_ProductCode
-WHERE   (tbl_ProductUOM.fld_UOMLevel = 1) AND (tbl_Tags.TagEpc IN ({listOfEpcs} ))";
+WHERE   (tbl_ProductUOM.fld_UOMLevel = 1) AND ((tbl_Tags.TagEpc IN ({listOfEpcs} )) OR (tbl_Tags.ProductSerial IN ({listOfEpcs} )) )";
             dataAccess.CmdSqlExecuteNonQuery(commandINSERTINTOtbl_TagsUnitTree);
 
 
-            var commandUPDATEtbl_TagsSetParent = $@"UPDATE      tbl_Tags SET              TagTreeParentSerial ='{NextUnitLevelSerial}', TagTreeParentsEpc ='{NextUnitLevelEpc}' where (TagEpc in (  {listOfEpcs} ))";
+            var commandUPDATEtbl_TagsSetParent = $@"UPDATE      tbl_Tags SET              TagTreeParentSerial ='{NextUnitLevelSerial}', TagTreeParentsEpc ='{NextUnitLevelEpc}' where (TagEpc in (  {listOfEpcs} )) OR (tbl_Tags.ProductSerial IN ({listOfEpcs} ))";
             dataAccess.CmdSqlExecuteNonQuery(commandUPDATEtbl_TagsSetParent);
 
 
@@ -17974,6 +18053,13 @@ FROM            tbl_UHF_ReaderLog LEFT OUTER JOIN
         }
     }
 
+
+    public string SSaveNewInventoryHeaderId(  string[] StoreCodeList, string deviceId,  DateTime? saveDateTime,string UserCode)
+    {
+
+
+        return "555";
+    }
     public bool SSaveInventoryWithDesc(int header, string store, string deviceId, string[] data, string desc, DateTime? saveDateTime = null)
     {
         if (saveDateTime is null)
@@ -26610,7 +26696,7 @@ GROUP BY tbl_Products.ProductType ";
         return dataAccess.SqlDataAdapter(command);
     }
 
-    public bool SCancelRegisterTag(string TagEpc, string username, string deviceId, string deviceIp)
+    public bool SCancelRegisterTag(string TagEpc, string username, string deviceId, string deviceIp,string FormAccessType)
     {
         if (username.HasNoValue())
         {
@@ -27095,6 +27181,18 @@ VALUES        (@AlarmLogDateTime, @AlarmLogGateNumber, @AlarmLogType,@AlarmLogTa
                 ,[fld_InventoryStoreCode]
             FROM [dbo].[tbl_InventoryTags]
             WHERE [fld_InventoryHeaderId] = COALESCE((SELECT MAX(InnerTags.fld_InventoryHeaderId) FROM tbl_InventoryTags AS InnerTags),0)
+            """;
+
+        return dataAccess.SqlDataAdapter(command);
+    }
+
+
+    public DataTable SGetAllInventoryHeader()
+    {
+        string command = """
+            SELECT fld_InventoryHeaderId, fld_InventoryDate, fld_InventoryTime,fld_InventoryStoreCodes, fld_InventoryUserId, fld_InventoryDescription, fld_InventoryStatus
+            FROM [dbo].[tbl_InventoryHeader]
+             
             """;
 
         return dataAccess.SqlDataAdapter(command);
@@ -28747,7 +28845,8 @@ order by fld_OtherDeviceUHFLogActionCode desc ";
         , string refCode
         , string desc
         , string properties
-        , string userToken)
+        , string userToken
+        ,string FormAccessType)
     {
         var tagRow = dataAccess.SqlDataAdapter(
             "SELECT TagInDestinationId, ProductSerial FROM tbl_Tags WHERE ProductSerial = @serial",

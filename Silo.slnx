@@ -76,6 +76,9 @@
     <File Path="Docs/RAG-Chat-Guide.md" />
   </Folder>
   <Folder Name="/Solution Items/Docs/Pages/" />
+  <Folder Name="/Solution Items/Docs/Pages/Inventory/">
+    <File Path="Docs/InventoryConflicts.md" />
+  </Folder>
   <Folder Name="/Solution Items/Docs/Pages/Warehouse/" />
   <Folder Name="/Solution Items/Docs/Pages/Warehouse/ImageAnalize/">
     <File Path="Docs/ImageAnalize.md" />

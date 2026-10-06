@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using System.Text.Json;
 using System.Collections.Concurrent;
-using Silo.Application;
 
 namespace Silo.Pages.Reports;
 public partial class InventoryConflicts

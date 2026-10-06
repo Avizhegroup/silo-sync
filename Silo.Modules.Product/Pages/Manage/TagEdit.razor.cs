@@ -5,7 +5,6 @@ using Silo.Application;
 using Silo.Application.Dto;
 using Silo.Application.Dto.DynamicField;
 using Silo.Components.DynamicField;
-using Silo.Application.Features;
 using Silo.Shared.Components;
 using Silo.Shared.Components.Print;
 
@@ -23,6 +22,7 @@ public partial class TagEdit
     public SelectPrintFormat SelectPrintFormatRef { get; set; }
     public Gallery GalleryRef { get; set; }
 
+    [Parameter] public int Mode { get; set; } = 1;
 
     [Inject] public RfidConnectApi Api { get; set; }
     [Inject] public IHostingEnvironment Environment { get; set; }
@@ -85,7 +85,8 @@ public partial class TagEdit
             , new("refCode", "-1")
             , new("desc", "-1")
             , new("properties", dynamicJson)
-            , new("userToken", UserId))).Value;
+            , new("userToken", UserId)
+            , new("FormAccessType", Mode.ToString()))).Value;
 
         if (result)
         {

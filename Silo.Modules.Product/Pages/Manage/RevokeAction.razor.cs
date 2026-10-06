@@ -9,6 +9,8 @@ public partial class RevokeAction
 
     [Inject] public RfidConnectApi Api { get; set; }
 
+    [Parameter] public int Mode { get; set; } = 1;
+
     public Modal ErrorModal { get; set; }
 
     protected override async Task SiloInitializer()
@@ -61,7 +63,8 @@ public partial class RevokeAction
             , new("TagEpc", Product.TagEpc)
             , new("username", "")
             , new("deviceId", "")
-            , new("deviceIp", ""))).Value;
+            , new("deviceIp", "")
+            , new("FormAccessType", Mode.ToString()))).Value;
 
         if (result)
         {
@@ -71,7 +74,7 @@ public partial class RevokeAction
         }
         else
         {
-            Notification.Show(TextResources.APP_StringKeys_Alert_Success, "error");
+            Notification.Show(TextResources.APP_StringKeys_Alert_Fail, "error");
         }
 
         IsLoading = false;

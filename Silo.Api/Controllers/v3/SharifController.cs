@@ -23,23 +23,4 @@ public class SharifController(ILogger<SharifController> logger
             Value = response
         });
     }
-
-    [HttpPost("[action]")]
-    public async Task<IActionResult> SendTag(CreateSharifTagCommand command)
-    {
-        var response = await mediator.Send<CreateSharifTagVm>(command);
-        return Ok(new ApiResponse<CreateSharifTagVm>
-        {
-            Successful = true,
-            Value = response
-        });
-    }
-
-    [HttpPost("[action]")]
-    public async Task<IActionResult> SaveBooks(CreateNewBooksCommand command)
-         => Ok(new ApiResponse()
-         {
-             Successful = true,
-             Value = await mediator.Send<CreateNewBooksVm>(command)
-         });
 }

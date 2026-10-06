@@ -29,7 +29,7 @@ public interface IWmsBusiness
     int SaveProduct(SaveProductCommand product);
     DataTable SCalAggByEpc(List<string> epcs);
     DataTable SCalculateAccontingConflicts(InventoryRequest search);
-    bool SCancelRegisterTag(string TagEpc, string username, string deviceId, string deviceIp);
+    bool SCancelRegisterTag(string TagEpc, string username, string deviceId, string deviceIp, string mode);
     bool SCastOnline(string driver, string data, string userToken);
     int SChangeDocumentStatus(SaveDocumentStatusCommand command);
     bool SChangeProductStatusBySerial(string ProductTagEPC, int statusCode, int actionId, string destId, string userToken, string productLocationId);

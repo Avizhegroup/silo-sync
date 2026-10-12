@@ -25,6 +25,7 @@
   <Folder Name="/src/Core/Infrastructures/">
     <Project Path="Silo.Infrastructure.Shared/Silo.Infrastructure.Shared.csproj" />
     <Project Path="Silo.Infrastructure.Web/Silo.Infrastructure.Web.csproj" />
+    <Project Path="Silo.Queueing/Silo.Queueing.csproj" />
   </Folder>
   <Folder Name="/src/Identity/">
     <Project Path="Silo.Identity.Client/Silo.Identity.Client.csproj" />

@@ -3,9 +3,12 @@
 internal sealed class QueueTaskConsumer(
     QueueDbContext dbContext,
     QueueTaskHandlerResolver handlerResolver,
+    IPublishEndpoint publishEndpoint,
     IOptions<CompanyQueueingOptions> options,
     ILogger<QueueTaskConsumer> logger) : IConsumer<ExecuteWorkflowTask>
 {
+    public const string EndpointName = "queue-workflow-task";
+
     public async Task Consume(ConsumeContext<ExecuteWorkflowTask> context)
     {
         var now = DateTimeOffset.UtcNow;
@@ -16,6 +19,18 @@ internal sealed class QueueTaskConsumer(
         if (workflow is null ||
             workflow.Status is QueueWorkflowState.Completed or QueueWorkflowState.Failed ||
             context.Message.TaskIndex != workflow.CurrentTaskIndex)
+        {
+            return;
+        }
+
+        var saga = await dbContext.Sagas
+            .AsNoTracking()
+            .SingleOrDefaultAsync(
+                x => x.CorrelationId == workflow.Id,
+                context.CancellationToken);
+        if (saga is null ||
+            saga.CurrentState != "Running" ||
+            saga.CurrentTaskIndex != context.Message.TaskIndex)
         {
             return;
         }
@@ -41,6 +56,7 @@ internal sealed class QueueTaskConsumer(
         task.Status = QueueTaskState.Running;
         task.AttemptCount++;
         task.StartedAt ??= now;
+        task.NextAttemptAt = null;
         task.LeaseUntil = now.AddSeconds(options.Value.Processing.RequestTimeoutSeconds * 2);
         workflow.Status = QueueWorkflowState.Running;
         workflow.StartedAt ??= now;
@@ -113,6 +129,9 @@ internal sealed class QueueTaskConsumer(
                 workflow.CompletedAt = now;
             }
 
+            await publishEndpoint.Publish(
+                new WorkflowTaskSucceeded(workflow.Id, task.Index),
+                context.CancellationToken);
             try
             {
                 await dbContext.SaveChangesAsync(context.CancellationToken);
@@ -127,7 +146,6 @@ internal sealed class QueueTaskConsumer(
                 throw;
             }
 
-            await context.Publish(new WorkflowTaskSucceeded(workflow.Id, task.Index));
             return;
         }
 
@@ -156,10 +174,6 @@ internal sealed class QueueTaskConsumer(
                 throw;
             }
 
-            await context.SchedulePublish(
-                delay,
-                new ExecuteWorkflowTask(workflow.Id, task.Index),
-                context.CancellationToken);
             return;
         }
 
@@ -167,6 +181,9 @@ internal sealed class QueueTaskConsumer(
         task.CompletedAt = now;
         workflow.Status = QueueWorkflowState.Failed;
         workflow.CompletedAt = null;
+        await publishEndpoint.Publish(
+            new WorkflowTaskFailed(workflow.Id, task.Index),
+            context.CancellationToken);
         try
         {
             await dbContext.SaveChangesAsync(context.CancellationToken);
@@ -180,8 +197,6 @@ internal sealed class QueueTaskConsumer(
 
             throw;
         }
-
-        await context.Publish(new WorkflowTaskFailed(workflow.Id, task.Index));
     }
 
     private async Task<bool> RefreshAfterConcurrencyAsync(

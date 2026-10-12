@@ -122,21 +122,46 @@ public sealed class QueueingInfrastructureTests
 
         Assert.True(await sagaHarness.Consumed.Any<WorkflowTaskSucceeded>());
 
-        var failedWorkflow = Guid.NewGuid();
-        await harness.Bus.Publish(new WorkflowSubmitted(failedWorkflow, 5));
-        await harness.Published.Any<ExecuteWorkflowTask>(
-            message => message.Context.Message.WorkflowId == failedWorkflow &&
-                       message.Context.Message.TaskIndex == 0);
-        await harness.Bus.Publish(new WorkflowTaskFailed(failedWorkflow, 0));
-        Assert.True(await sagaHarness.Consumed.Any<WorkflowTaskFailed>(
-            message => message.Context.Message.WorkflowId == failedWorkflow));
-        await harness.Bus.Publish(new WorkflowTaskSucceeded(failedWorkflow, 0));
-        Assert.False(await harness.Published.Any<ExecuteWorkflowTask>(
-            message => message.Context.Message.WorkflowId == failedWorkflow &&
-                       message.Context.Message.TaskIndex == 1));
-        await harness.Bus.Publish(new WorkflowResumeRequested(failedWorkflow));
+        await harness.Stop();
+    }
+
+    [Fact]
+    public async Task Failed_saga_blocks_later_tasks_and_resumes_the_failed_task()
+    {
+        var services = new ServiceCollection();
+        services.AddMassTransitTestHarness(registration =>
+        {
+            registration.AddSagaStateMachine<QueueWorkflowStateMachine, QueueWorkflowSaga>()
+                .InMemoryRepository();
+        });
+
+        await using var provider = services.BuildServiceProvider(true);
+        var harness = provider.GetRequiredService<ITestHarness>();
+        await harness.Start();
+        var sagaHarness = harness.GetSagaStateMachineHarness<QueueWorkflowStateMachine, QueueWorkflowSaga>();
+        var workflowId = Guid.NewGuid();
+
+        await harness.Bus.Publish(new WorkflowSubmitted(workflowId, 5));
+        Assert.True(await sagaHarness.Consumed.Any<WorkflowSubmitted>(
+            message => message.Context.Message.WorkflowId == workflowId));
         Assert.True(await harness.Published.Any<ExecuteWorkflowTask>(
-            message => message.Context.Message.WorkflowId == failedWorkflow &&
+            message => message.Context.Message.WorkflowId == workflowId &&
+                       message.Context.Message.TaskIndex == 0));
+        await harness.Bus.Publish(new WorkflowTaskFailed(workflowId, 0));
+        Assert.True(await sagaHarness.Consumed.Any<WorkflowTaskFailed>(
+            message => message.Context.Message.WorkflowId == workflowId));
+
+        await harness.Bus.Publish(new WorkflowTaskSucceeded(workflowId, 0));
+        Assert.True(await sagaHarness.Consumed.Any<WorkflowTaskSucceeded>(
+            message => message.Context.Message.WorkflowId == workflowId));
+        Assert.False(await harness.Published.Any<ExecuteWorkflowTask>(
+            message => message.Context.Message.WorkflowId == workflowId &&
+                       message.Context.Message.TaskIndex == 1));
+
+        await harness.Bus.Publish(new WorkflowResumeRequested(workflowId));
+        await Task.Delay(TimeSpan.FromMilliseconds(100));
+        Assert.Equal(2, harness.Published.Select<ExecuteWorkflowTask>().Count(
+            message => message.Context.Message.WorkflowId == workflowId &&
                        message.Context.Message.TaskIndex == 0));
 
         await harness.Stop();

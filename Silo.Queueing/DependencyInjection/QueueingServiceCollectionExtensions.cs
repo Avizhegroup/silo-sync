@@ -37,10 +37,12 @@ public static class QueueingServiceCollectionExtensions
 
         services.AddMassTransit(registration =>
         {
-            registration.AddDelayedMessageScheduler();
             registration.AddConsumer<QueueTaskConsumer>()
                 .Endpoint(endpoint =>
-                    endpoint.ConcurrentMessageLimit = settings.Processing.ConcurrentWorkflows);
+                {
+                    endpoint.Name = QueueTaskConsumer.EndpointName;
+                    endpoint.ConcurrentMessageLimit = settings.Processing.ConcurrentWorkflows;
+                });
             registration.AddConsumer<QueueTaskFaultConsumer>();
 
             registration.AddSagaStateMachine<QueueWorkflowStateMachine, QueueWorkflowSaga>()
@@ -58,9 +60,16 @@ public static class QueueingServiceCollectionExtensions
                 outbox.UseBusOutbox();
             });
 
-            registration.AddConfigureEndpointsCallback((context, _, endpoint) =>
+            registration.AddConfigureEndpointsCallback((context, endpointName, endpoint) =>
             {
-                endpoint.UseEntityFrameworkOutbox<QueueDbContext>(context);
+                if (!string.Equals(
+                        endpointName,
+                        QueueTaskConsumer.EndpointName,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    endpoint.UseEntityFrameworkOutbox<QueueDbContext>(context);
+                }
+
                 if (settings.Processing.MaxRetryCount > 0)
                 {
                     endpoint.UseDelayedRedelivery(retry =>
@@ -85,7 +94,6 @@ public static class QueueingServiceCollectionExtensions
                         host.Password(settings.RabbitMq.Password);
                     });
 
-                bus.UseDelayedMessageScheduler();
                 bus.ConfigureEndpoints(context);
             });
         });

@@ -11,8 +11,8 @@ business operations.
 - .NET 9.
 - SQL Server reachable through the configured queue connection string.
 - RabbitMQ reachable through the configured host and virtual host.
-- RabbitMQ's **rabbitmq_delayed_message_exchange** plugin, used for durable
-  delayed retry and error redelivery.
+- RabbitMQ's **rabbitmq_delayed_message_exchange** plugin, used by MassTransit
+  for delayed redelivery after transient infrastructure failures.
 - One or more application `IQueueTaskHandler` registrations.
 
 The queue library uses its own `QueueDbContext`; it does not require changes to
@@ -198,10 +198,12 @@ that token.
 ## Execution, retries, and recovery
 
 MassTransit persists saga state in SQL Server and drives one task at a time.
-After a task succeeds, its result is committed through the EF inbox/outbox
-before the saga dispatches the next task. Duplicate and stale completion events
-are correlated with the workflow and task index; they cannot advance a later
-task. SQL row-version columns protect concurrent workflow/task updates.
+After a task succeeds, its result and the saga event are saved through the EF
+bus outbox before the saga dispatches the next task. The task consumer performs
+its external handler call outside the outbox transaction. Duplicate task
+deliveries are protected by persisted task state and row-version concurrency;
+duplicate or stale completion events are correlated with the workflow and task
+index and cannot advance a later task.
 
 Task behavior:
 
@@ -215,17 +217,20 @@ Task behavior:
    retry using capped exponential backoff.
 
 `MaxRetryCount` means retries after the initial attempt. For example, five
-retries allow at most six handler executions. The retry message is persisted in
-the same SQL outbox transaction as the `Retrying` state. Handler exceptions and
+retries allow at most six handler executions. The retry due time is persisted with the `Retrying` state in SQL. The recovery
+service republishes due work; duplicate publications are safe because task
+claims and workflow cursors are persisted and concurrency-protected. This scan
+only dispatches due work and does not busy-loop. Handler exceptions and
 timeouts are treated as retryable; handlers should return `Failure(...,
 retryable: false)` for permanent application failures.
 
 The recovery hosted service periodically scans SQL for expired task leases and
-due retries and republishes their execution messages. SQL state, not the
-recovery timer, is the source of truth. This covers process/host restarts and
-lost or redelivered broker messages. RabbitMQ's delayed exchange plugin is
-required both for scheduled retries and MassTransit delayed redelivery of
-transient infrastructure failures.
+due retries and republishes their execution messages. It only dispatches tasks
+whose saga is in the running state, so startup recovery cannot bypass saga
+orchestration. SQL state, not the recovery timer, is the source of truth. This
+covers process/host restarts and lost or redelivered broker messages.
+RabbitMQ's delayed exchange plugin is required for MassTransit delayed
+redelivery of transient infrastructure failures.
 
 The library does not claim exactly-once external HTTP execution. A process can
 fail after a remote service has completed an operation but before SQL records

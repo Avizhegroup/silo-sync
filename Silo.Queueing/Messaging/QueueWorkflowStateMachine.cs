@@ -54,11 +54,14 @@ internal sealed class QueueWorkflowStateMachine : MassTransitStateMachine<QueueW
                 })
                 .TransitionTo(Failed));
 
-        During(Failed,
+        DuringAny(
             When(ResumeRequested)
-                .TransitionTo(Running)
-                .Publish(context => new ExecuteWorkflowTask(
-                    context.Saga.CorrelationId,
-                    context.Saga.CurrentTaskIndex)));
+                .If(
+                    context => context.Saga.CurrentState == Failed.Name,
+                    then => then
+                        .TransitionTo(Running)
+                        .Publish(context => new ExecuteWorkflowTask(
+                            context.Saga.CorrelationId,
+                            context.Saga.CurrentTaskIndex))));
     }
 }

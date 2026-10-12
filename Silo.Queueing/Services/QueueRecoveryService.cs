@@ -33,15 +33,19 @@ internal sealed class QueueRecoveryService(
         await using var scope = scopeFactory.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<QueueDbContext>();
         var now = DateTimeOffset.UtcNow;
-        var recoverable = await dbContext.Tasks
-            .AsNoTracking()
-            .Where(task =>
-                task.Workflow.CurrentTaskIndex == task.Index &&
-                (task.Status == QueueTaskState.Running && task.LeaseUntil <= now ||
-                 task.Status == QueueTaskState.Retrying && task.NextAttemptAt <= now))
-            .OrderBy(task => task.Workflow.CreatedAt)
+        var recoverable = await (
+            from task in dbContext.Tasks.AsNoTracking()
+            join saga in dbContext.Sagas.AsNoTracking()
+                on task.WorkflowId equals saga.CorrelationId
+            where saga.CurrentState == "Running" &&
+                  saga.CurrentTaskIndex == task.Index &&
+                  task.Workflow.CurrentTaskIndex == task.Index &&
+                  (task.Status == QueueTaskState.Pending && task.Workflow.Status == QueueWorkflowState.Pending ||
+                   task.Status == QueueTaskState.Running && task.LeaseUntil <= now ||
+                   task.Status == QueueTaskState.Retrying && task.NextAttemptAt <= now)
+            orderby task.Workflow.CreatedAt
+            select new ExecuteWorkflowTask(task.WorkflowId, task.Index))
             .Take(options.Value.Processing.ConcurrentWorkflows * 10)
-            .Select(task => new ExecuteWorkflowTask(task.WorkflowId, task.Index))
             .ToArrayAsync(cancellationToken);
 
         foreach (var message in recoverable)

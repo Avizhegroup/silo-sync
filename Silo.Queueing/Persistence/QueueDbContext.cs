@@ -7,6 +7,7 @@ public sealed class QueueDbContext(DbContextOptions<QueueDbContext> options)
 {
     internal DbSet<QueueWorkflowRecord> Workflows => Set<QueueWorkflowRecord>();
     internal DbSet<QueueTaskRecord> Tasks => Set<QueueTaskRecord>();
+    internal DbSet<QueueWorkflowSaga> Sagas => Set<QueueWorkflowSaga>();
 
     /// <inheritdoc />
     protected override IEnumerable<ISagaClassMap> Configurations

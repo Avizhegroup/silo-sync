@@ -1,9 +1,11 @@
 namespace Silo.Queueing.Persistence.Migrations;
 
+/// <summary>Creates queue workflow, saga, task, and MassTransit outbox persistence tables.</summary>
 [DbContext(typeof(QueueDbContext))]
 [Migration("20261012000000_InitialQueueSchema")]
 public sealed class InitialQueueSchema : Migration
 {
+    /// <summary>Creates the initial queue schema.</summary>
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.Sql(
@@ -118,6 +120,7 @@ public sealed class InitialQueueSchema : Migration
             """);
     }
 
+    /// <summary>Drops the queue schema created by this migration.</summary>
     protected override void Down(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.Sql(

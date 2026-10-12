@@ -1,11 +1,14 @@
 namespace Silo.Queueing;
 
+/// <summary>Independent EF Core context for workflow, task, saga, and MassTransit outbox data.</summary>
+/// <param name="options">Configured SQL Server provider options.</param>
 public sealed class QueueDbContext(DbContextOptions<QueueDbContext> options)
     : SagaDbContext(options)
 {
     internal DbSet<QueueWorkflowRecord> Workflows => Set<QueueWorkflowRecord>();
     internal DbSet<QueueTaskRecord> Tasks => Set<QueueTaskRecord>();
 
+    /// <inheritdoc />
     protected override IEnumerable<ISagaClassMap> Configurations
     {
         get
@@ -14,6 +17,7 @@ public sealed class QueueDbContext(DbContextOptions<QueueDbContext> options)
         }
     }
 
+    /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

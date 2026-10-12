@@ -1,137 +1,61 @@
 # Silo.Queueing
 
-`Silo.Queueing` is the dedicated .NET class-library boundary for reusable,
-durable workflow queuing shared by ASP.NET Core APIs. Its intended
-responsibilities are RabbitMQ transport, MassTransit setup, ordered workflow
-execution, retries, SQL Server persistence, recovery, and status inspection.
-Application-specific operations remain in the API that consumes the library.
+`Silo.Queueing` is the reusable, durable workflow queue library for ASP.NET Core
+services in Silo. It owns workflow persistence and ordering, MassTransit saga
+orchestration, RabbitMQ delivery, bounded retry scheduling, recovery, and
+workflow/task status. Consuming APIs provide only task handlers for their own
+business operations.
 
-## Current project status
+## Requirements and infrastructure
 
-This change establishes the .NET 9 class library and adds it to `Silo.slnx`.
-It is a project scaffold only: queue services, consumers, handlers, message
-contracts, MassTransit/RabbitMQ setup, persistence entities, EF Core migrations,
-and automated tests have not yet been implemented. The API shapes and examples
-below describe the intended contract from issue #17; they must not be treated as
-available runtime functionality until those components are implemented.
+- .NET 9.
+- SQL Server reachable through the configured queue connection string.
+- RabbitMQ reachable through the configured host and virtual host.
+- RabbitMQ's **rabbitmq_delayed_message_exchange** plugin, used for durable
+  delayed retry and error redelivery.
+- One or more application `IQueueTaskHandler` registrations.
 
-No broker, database, or external API is required to build this empty scaffold.
-The full solution does not need to be built to validate this project.
+The queue library uses its own `QueueDbContext`; it does not require changes to
+an application's business `DbContext`. RabbitMQ messages are persistent and
+queue declarations are durable. SQL Server stores workflows, ordered tasks,
+attempts, saga progress, inbox records, and transactional outbox messages.
 
-## Design boundary
+## Add the library to an API
 
-The library is intended to own all reusable queue infrastructure:
-
-- The public workflow submission, status, and resume service.
-- Queue-specific public request, result, context, and status models.
-- Handler lookup and internal task consumers.
-- MassTransit/RabbitMQ configuration and durable message handling.
-- Saga orchestration and strict sequential processing.
-- SQL Server queue persistence, EF Core mappings and migrations.
-- Retry scheduling, failure tracking, and workflow recovery.
-- Inbox/outbox and duplicate-message handling where supported by the selected
-  MassTransit architecture.
-- Startup configuration and validation, logging, and diagnostics integration.
-
-Consuming applications should own only application-specific task handlers and
-their dependencies, such as external API clients, authentication, request and
-response DTOs, and business validation. They should not need to define queue
-consumers or saga state machines, configure MassTransit or RabbitMQ, or persist
-workflow state in their business `DbContext`.
-
-The library must use explicit handler registrations to map task type names to
-`IQueueTaskHandler` implementations. It must not construct types or execute
-code selected from untrusted task payloads.
-
-## Intended consumer contract
-
-The target integration is one registration call in the consuming API:
+Reference `Silo.Queueing` (or its published NuGet package) and make the single
+infrastructure registration call:
 
 ```csharp
 builder.Services.AddCompanyQueueing(builder.Configuration);
+builder.Services.AddHttpClient("ExternalApi");
+builder.Services.AddScoped<IQueueTaskHandler, ExternalApiTaskHandler>();
 ```
 
-The library is intended to expose an `IQueueWorkflowService` with operations
-equivalent to:
+Register one handler per task type. Multiple handlers are supported; task type
+names must be unique and are validated when the host starts. Do not register
+RabbitMQ consumers, MassTransit, saga state machines, or queue persistence in
+the consuming API.
+
+Apply queue database migrations as an explicit deployment/startup operation
+before processing traffic:
 
 ```csharp
-Task<Guid> SubmitAsync(
-    QueueWorkflowRequest request,
-    CancellationToken cancellationToken = default);
-
-Task<QueueWorkflowStatus?> GetStatusAsync(
-    Guid workflowId,
-    CancellationToken cancellationToken = default);
-
-Task ResumeAsync(
-    Guid workflowId,
-    CancellationToken cancellationToken = default);
+await app.Services
+    .GetRequiredService<IQueueDatabaseMigrator>()
+    .MigrateAsync();
 ```
 
-These signatures are a design target, not implemented methods in the current
-scaffold. Submission should return an identifier only after durable acceptance.
-Requests should include an explicit idempotency key so a retried API request
-does not create a second workflow.
+Migration application uses EF Core `MigrateAsync`; it applies pending
+migrations and does not call `EnsureCreated`, drop tables, or recreate an
+existing database. In production, applying migrations in a controlled
+deployment step is recommended.
 
-The intended task-handler extension point is:
+## Configuration
 
-```csharp
-public interface IQueueTaskHandler
-{
-    string TaskType { get; }
-
-    Task<QueueTaskResult> ExecuteAsync(
-        QueueTaskContext context,
-        CancellationToken cancellationToken);
-}
-```
-
-`QueueTaskContext` should carry the workflow and task identifiers, registered
-task type, payload, and execution metadata. `QueueTaskResult` should represent
-success or failure, safe failure details, and whether the failure is retryable.
-Payloads should be validated by their application-specific handler.
-
-Multiple handler implementations must be resolvable by distinct task types.
-An application-specific handler may use `IHttpClientFactory`; endpoint details,
-authentication, HTTP DTOs, and response validation belong to that handler, not
-to this infrastructure library. External calls cannot be guaranteed exactly
-once: where the external API supports it, handlers should pass an idempotency
-key derived from the workflow/task identity.
-
-## Intended workflow behavior
-
-A workflow is an ordered list of tasks. The library should support at least the
-five-task case and arbitrary practical task counts. Its core invariants are:
-
-1. Execute only the first incomplete task.
-2. Do not begin the next task until the current task has succeeded.
-3. Never execute two tasks in the same workflow concurrently.
-4. Preserve task order and do not silently skip failed tasks.
-5. Allow different workflows to execute concurrently, subject to configuration.
-6. Persist task attempts and state transitions so redelivery or restart cannot
-   incorrectly advance a workflow.
-7. Mark a workflow `Completed` only after every task has succeeded.
-
-The intended workflow and task lifecycle is:
-
-| Status | Meaning |
-| --- | --- |
-| `Pending` | Accepted durably and waiting to start. |
-| `Running` | The current task is being processed. |
-| `Retrying` | A retryable failure is waiting for its scheduled retry. |
-| `Completed` | Every task completed successfully. |
-| `Failed` | Processing stopped after a permanent failure or retry exhaustion. |
-
-Task-level status and attempt history should identify the current task, each
-task's outcome, timestamps, retry count, and safe error details. Resuming a
-failed workflow should retry its current incomplete task; it must not reset
-completed tasks or restart from task one.
-
-## Intended configuration
-
-Configuration is planned under one strongly typed `CompanyQueueing` section.
-The precise options and defaults remain subject to implementation and startup
-validation.
+Settings are strongly typed and bound from one `CompanyQueueing` section.
+Required values are validated at host startup. Keep credentials and production
+connection strings in deployment configuration or a secret provider, not in
+source control.
 
 ```json
 {
@@ -156,88 +80,192 @@ validation.
 }
 ```
 
-The configuration provider should be supplied by the application, deployment
-environment, or secret store. Credentials and production endpoints must not be
-committed in source control or embedded in code. Invalid or missing required
-settings should fail validation during application startup, rather than
-producing partially configured queue services.
+Configuration values and meanings:
 
-Retry behavior should use bounded exponential backoff, honor the configured
-maximum attempt count and delay, and distinguish retryable from permanent
-failures. Exhausted workflows should remain durably `Failed` until explicitly
-resumed or otherwise administered; retries must not busy-loop.
+| Setting | Meaning |
+| --- | --- |
+| `RabbitMq:Host` | RabbitMQ DNS name or address. |
+| `RabbitMq:VirtualHost` | Broker virtual host. |
+| `RabbitMq:Username`, `Password` | Broker credentials. |
+| `Database:ConnectionString` | SQL Server connection used exclusively for queue data. |
+| `Processing:MaxRetryCount` | Retries after the first attempt; zero disables handler retries. |
+| `Processing:InitialRetryDelaySeconds` | First retry delay. |
+| `Processing:MaxRetryDelaySeconds` | Upper bound for exponential retry delay. |
+| `Processing:RequestTimeoutSeconds` | Cancellation timeout passed to task handlers. |
+| `Processing:ConcurrentWorkflows` | Maximum task messages processed concurrently by this API host. |
 
-## Persistence, delivery, and recovery
+The initial retry delay must not exceed the maximum retry delay.
+`ConcurrentWorkflows` limits consumer concurrency per API host; separate API
+instances each enforce their own limit.
 
-The planned `QueueDbContext` belongs to this library and is independent of a
-consumer's application `DbContext`. SQL Server persistence should cover
-workflow identity and status, ordered task data, task attempts and errors,
-timestamps, idempotency keys, and MassTransit saga state. Appropriate unique
-constraints and concurrency protection are needed for idempotency and competing
-updates.
+## Submit, inspect, and resume workflows
 
-RabbitMQ should use durable queues and persistent messages where supported.
-MassTransit saga persistence and SQL Server are the source of truth for progress,
-not process memory, static state, local files, or in-process timers. Recovery
-should continue at the first incomplete task after API, worker, host, broker,
-or database restarts, and should tolerate consumer crashes and message
-redelivery. Error queues and dead-letter behavior should follow the selected
-MassTransit/RabbitMQ configuration.
-
-Inbox/outbox support should be configured where the chosen topology can provide
-it. Duplicate submission and delivery should be safe, and state changes should
-not cause a failed task to advance. External HTTP operations cannot participate
-in the queue database transaction: a timeout may happen after the remote
-service has processed a request. Handler-level external idempotency is preferred
-when available; otherwise that uncertainty must be documented and handled
-conservatively.
-
-EF Core migrations should be shipped with the library and applied explicitly
-by a consuming application or deployment process. Migration instructions and
-the eventual command/project configuration should be documented when the
-migrations are implemented. Startup must not drop tables or automatically run
-destructive database operations.
-
-## Intended consumer setup
-
-After the public infrastructure is implemented, a consumer API is expected to
-register it and its application-specific handlers approximately as follows:
+Inject `IQueueWorkflowService`; callers do not publish MassTransit messages
+directly. Requests are durable and idempotent. The idempotency key is hashed
+before storage. Repeating an identical request with the same key returns the
+original workflow ID; using the key for a different request throws
+`IdempotencyConflictException`.
 
 ```csharp
-builder.Services.AddCompanyQueueing(builder.Configuration);
-builder.Services.AddHttpClient("ExternalApi");
-builder.Services.AddScoped<IQueueTaskHandler, ExternalApiTaskHandler>();
+var workflowId = await queueWorkflowService.SubmitAsync(
+    new QueueWorkflowRequest
+    {
+        IdempotencyKey = requestId,
+        Tasks =
+        [
+            new QueueTaskRequest
+            {
+                TaskType = "external.update",
+                Payload = JsonSerializer.SerializeToElement(
+                    new { recordId = 42, status = "ready" })
+            },
+            new QueueTaskRequest
+            {
+                TaskType = "external.notify",
+                Payload = JsonSerializer.SerializeToElement(
+                    new { recordId = 42 })
+            }
+        ]
+    },
+    cancellationToken);
 ```
 
-The API then injects `IQueueWorkflowService` to submit a `QueueWorkflowRequest`,
-inspect task/workflow status, and resume a failed workflow. `ExternalApiTaskHandler`
-is application code: it uses a named or typed `HttpClient`, implements the
-application's authentication and endpoint-specific protocol, validates the
-response, and returns a `QueueTaskResult`. The consuming API may expose its own
-HTTP endpoints for those service operations; this library is not intended to
-create application controllers.
+The request supports 1–100 ordered tasks. `SubmitAsync` validates task types
+against registered handlers and stores both the workflow and initial outgoing
+message through the SQL transactional bus outbox. It returns the workflow ID
+only after the database transaction commits.
 
-## Project and validation
+`GetStatusAsync(workflowId)` returns `null` for an unknown ID; otherwise the
+status includes current task index, workflow lifecycle/timestamps, and ordered
+task statuses, attempt counts, and safe last error details.
+`ResumeAsync(workflowId)` resumes a failed workflow at its first incomplete
+task. It does not restart tasks already completed or reset the attempt history.
+Resuming an unknown or non-failed workflow raises an exception.
 
-The project targets `net9.0` through the repository's shared build properties.
-It is included in `Silo.slnx` under the Core infrastructure solution folder.
+## Implement application task handlers
 
-Build just this project while it remains independent of solution-wide build
-issues:
+`IQueueTaskHandler` is the only queue extension point applications need. Task
+types resolve through explicitly registered handlers; payload values are never
+used as CLR type names or executable code.
+
+```csharp
+public sealed class ExternalApiTaskHandler(IHttpClientFactory clients)
+    : IQueueTaskHandler
+{
+    public string TaskType => "external.update";
+
+    public async Task<QueueTaskResult> ExecuteAsync(
+        QueueTaskContext context,
+        CancellationToken cancellationToken)
+    {
+        using var client = clients.CreateClient("ExternalApi");
+        using var request = new HttpRequestMessage(
+            HttpMethod.Post,
+            "application-specific/path");
+        request.Headers.Add("Idempotency-Key", context.IdempotencyKey);
+        request.Content = JsonContent.Create(context.Payload);
+
+        using var response = await client.SendAsync(request, cancellationToken);
+        if (response.IsSuccessStatusCode)
+        {
+            return QueueTaskResult.Success();
+        }
+
+        var retryable = (int)response.StatusCode == 429 ||
+                        (int)response.StatusCode >= 500;
+        return QueueTaskResult.Failure(
+            "The external operation was rejected.",
+            retryable,
+            $"HTTP_{(int)response.StatusCode}");
+    }
+}
+```
+
+Replace the placeholder URI and request construction with the consuming
+application's actual endpoint contract, DTOs, authentication, and response
+validation. Do not put endpoint-specific or business-specific logic in this
+library. Handlers should return only safe error text: exception messages and
+upstream response bodies may contain secrets or personal information. The
+stable workflow/task `IdempotencyKey` should be forwarded when the external
+service supports idempotency.
+
+The handler receives the payload as a cloned `JsonElement`, the zero-based task
+index, one-based attempt number, workflow/task IDs, and stable task
+idempotency key. Its cancellation token is cancelled after
+`RequestTimeoutSeconds` or when the consumer is stopping. Handlers must honor
+that token.
+
+## Execution, retries, and recovery
+
+MassTransit persists saga state in SQL Server and drives one task at a time.
+After a task succeeds, its result is committed through the EF inbox/outbox
+before the saga dispatches the next task. Duplicate and stale completion events
+are correlated with the workflow and task index; they cannot advance a later
+task. SQL row-version columns protect concurrent workflow/task updates.
+
+Task behavior:
+
+1. The saga dispatches only the current task.
+2. The consumer claims that task and persists its attempt and lease.
+3. A successful result marks that task completed and advances the persisted
+   workflow cursor.
+4. A permanent failure, or a retryable failure after the retry limit, marks
+   both task and workflow failed and blocks later tasks.
+5. A retryable failure stores a safe error detail and schedules a delayed
+   retry using capped exponential backoff.
+
+`MaxRetryCount` means retries after the initial attempt. For example, five
+retries allow at most six handler executions. The retry message is persisted in
+the same SQL outbox transaction as the `Retrying` state. Handler exceptions and
+timeouts are treated as retryable; handlers should return `Failure(...,
+retryable: false)` for permanent application failures.
+
+The recovery hosted service periodically scans SQL for expired task leases and
+due retries and republishes their execution messages. SQL state, not the
+recovery timer, is the source of truth. This covers process/host restarts and
+lost or redelivered broker messages. RabbitMQ's delayed exchange plugin is
+required both for scheduled retries and MassTransit delayed redelivery of
+transient infrastructure failures.
+
+The library does not claim exactly-once external HTTP execution. A process can
+fail after a remote service has completed an operation but before SQL records
+the result. Use the provided stable task idempotency key with external APIs
+that support it. Otherwise, the operation may be repeated during recovery.
+
+## Persistence and schema
+
+The EF Core context and migration are in this project assembly. The initial
+migration creates:
+
+- `QueueWorkflows` and `QueueWorkflowTasks`, including unique idempotency and
+  per-workflow task-order constraints.
+- `QueueWorkflowSagas` for MassTransit state machine progress.
+- `InboxState`, `OutboxMessage`, and `OutboxState` for duplicate delivery and
+  transactional outgoing messages.
+- Row-version columns for optimistic concurrency of queue records.
+
+Applications can apply migrations through `IQueueDatabaseMigrator` as shown
+above. The service is also registered in DI for deployment tooling. Do not
+assume RabbitMQ stores workflow progress; the SQL Server queue database is
+authoritative.
+
+## Testing and build
+
+Build the library only:
 
 ```sh
 dotnet build Silo.Queueing/Silo.Queueing.csproj
 ```
 
-Queue-specific tests, migration commands, and an end-to-end RabbitMQ/SQL Server
-example are not available in this scaffold. They should be added alongside the
-future implementation rather than implied by this document.
+Run the isolated test project (it is intentionally not added to the main
+solution):
 
-## Scope and non-goals
+```sh
+dotnet test Silo.Queueing.Tests/Silo.Queueing.Tests.csproj
+```
 
-This project is intended to be reusable by multiple ASP.NET Core APIs and
-NuGet-packaged once its implementation and packaging are complete. It does not
-choose an external API contract, move business logic into the library, guarantee
-exactly-once external HTTP execution, or introduce a second broker or workflow
-engine. The current change adds only the project boundary and this design
-document; it does not claim the issue's queueing behavior is complete.
+Tests cover service registration and configuration validation, EF migration
+discovery/schema contents, and saga task ordering/failure blocking with
+MassTransit's in-memory test harness. A live RabbitMQ + SQL Server deployment
+test is not included; broker outage, SQL contention, and remote HTTP behavior
+must additionally be validated in the consuming deployment environment.

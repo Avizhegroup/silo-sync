@@ -1,6 +1,5 @@
 global using System.ComponentModel.DataAnnotations;
 global using System.Data;
-global using System.Data.Common;
 global using System.Security.Cryptography;
 global using System.Text;
 global using System.Text.Json;

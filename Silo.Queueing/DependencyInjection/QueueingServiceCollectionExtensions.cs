@@ -61,12 +61,16 @@ public static class QueueingServiceCollectionExtensions
             registration.AddConfigureEndpointsCallback((context, _, endpoint) =>
             {
                 endpoint.UseEntityFrameworkOutbox<QueueDbContext>(context);
-                endpoint.UseDelayedRedelivery(retry =>
-                    retry.Exponential(
-                        settings.Processing.MaxRetryCount,
-                        TimeSpan.FromSeconds(settings.Processing.InitialRetryDelaySeconds),
-                        TimeSpan.FromSeconds(settings.Processing.MaxRetryDelaySeconds),
-                        TimeSpan.FromSeconds(settings.Processing.InitialRetryDelaySeconds)));
+                if (settings.Processing.MaxRetryCount > 0)
+                {
+                    endpoint.UseDelayedRedelivery(retry =>
+                        retry.Exponential(
+                            settings.Processing.MaxRetryCount,
+                            TimeSpan.FromSeconds(settings.Processing.InitialRetryDelaySeconds),
+                            TimeSpan.FromSeconds(settings.Processing.MaxRetryDelaySeconds),
+                            TimeSpan.FromSeconds(settings.Processing.InitialRetryDelaySeconds)));
+                }
+
                 endpoint.UseMessageRetry(retry => retry.Immediate(2));
             });
 

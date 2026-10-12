@@ -3,7 +3,6 @@ namespace Silo.Queueing;
 internal sealed class QueueTaskConsumer(
     QueueDbContext dbContext,
     QueueTaskHandlerResolver handlerResolver,
-    IMessageScheduler messageScheduler,
     IOptions<CompanyQueueingOptions> options,
     ILogger<QueueTaskConsumer> logger) : IConsumer<ExecuteWorkflowTask>
 {
@@ -53,16 +52,21 @@ internal sealed class QueueTaskConsumer(
         }
         catch (DbUpdateConcurrencyException)
         {
-            dbContext.ChangeTracker.Clear();
-            return;
+            if (await RefreshAfterConcurrencyAsync(task, workflow, context.CancellationToken))
+            {
+                return;
+            }
+
+            throw;
         }
 
+        using var payloadDocument = JsonDocument.Parse(task.Payload);
         var handlerContext = new QueueTaskContext(
             workflow.Id,
             task.Id,
             task.Index,
             task.TaskType,
-            JsonDocument.Parse(task.Payload).RootElement.Clone(),
+            payloadDocument.RootElement.Clone(),
             task.AttemptCount,
             $"{workflow.Id:N}:{task.Id:N}");
 
@@ -109,7 +113,20 @@ internal sealed class QueueTaskConsumer(
                 workflow.CompletedAt = now;
             }
 
-            await dbContext.SaveChangesAsync(context.CancellationToken);
+            try
+            {
+                await dbContext.SaveChangesAsync(context.CancellationToken);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (await RefreshAfterConcurrencyAsync(task, workflow, context.CancellationToken))
+                {
+                    return;
+                }
+
+                throw;
+            }
+
             await context.Publish(new WorkflowTaskSucceeded(workflow.Id, task.Index));
             return;
         }
@@ -125,8 +142,21 @@ internal sealed class QueueTaskConsumer(
             task.NextAttemptAt = now.Add(delay);
             workflow.Status = QueueWorkflowState.Retrying;
 
-            await dbContext.SaveChangesAsync(context.CancellationToken);
-            await messageScheduler.SchedulePublish(
+            try
+            {
+                await dbContext.SaveChangesAsync(context.CancellationToken);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (await RefreshAfterConcurrencyAsync(task, workflow, context.CancellationToken))
+                {
+                    return;
+                }
+
+                throw;
+            }
+
+            await context.SchedulePublish(
                 delay,
                 new ExecuteWorkflowTask(workflow.Id, task.Index),
                 context.CancellationToken);
@@ -137,8 +167,35 @@ internal sealed class QueueTaskConsumer(
         task.CompletedAt = now;
         workflow.Status = QueueWorkflowState.Failed;
         workflow.CompletedAt = null;
-        await dbContext.SaveChangesAsync(context.CancellationToken);
+        try
+        {
+            await dbContext.SaveChangesAsync(context.CancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (await RefreshAfterConcurrencyAsync(task, workflow, context.CancellationToken))
+            {
+                return;
+            }
+
+            throw;
+        }
+
         await context.Publish(new WorkflowTaskFailed(workflow.Id, task.Index));
+    }
+
+    private async Task<bool> RefreshAfterConcurrencyAsync(
+        QueueTaskRecord task,
+        QueueWorkflowRecord workflow,
+        CancellationToken cancellationToken)
+    {
+        await dbContext.Entry(task).ReloadAsync(cancellationToken);
+        await dbContext.Entry(workflow).ReloadAsync(cancellationToken);
+
+        return task.Status == QueueTaskState.Completed ||
+               task.Status == QueueTaskState.Running && task.LeaseUntil > DateTimeOffset.UtcNow ||
+               workflow.Status is QueueWorkflowState.Completed or QueueWorkflowState.Failed ||
+               workflow.CurrentTaskIndex != task.Index;
     }
 
     private static TimeSpan GetRetryDelay(int attempt, QueueProcessingOptions settings)

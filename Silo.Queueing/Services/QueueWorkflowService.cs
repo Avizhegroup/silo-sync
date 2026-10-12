@@ -18,7 +18,7 @@ internal sealed class QueueWorkflowService(
 
         var idempotencyHash = Hash(request.IdempotencyKey);
         var requestHash = Hash(JsonSerializer.Serialize(
-            request.Tasks.Select(x => new { x.TaskType, Payload = x.Payload.GetRawText() })));
+            request.Tasks.Select(x => new { x.TaskType, Payload = x.Payload })));
 
         var existing = await dbContext.Workflows
             .AsNoTracking()

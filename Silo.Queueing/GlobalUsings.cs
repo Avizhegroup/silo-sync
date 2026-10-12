@@ -1,0 +1,17 @@
+global using System.ComponentModel.DataAnnotations;
+global using System.Data;
+global using System.Data.Common;
+global using System.Security.Cryptography;
+global using System.Text;
+global using System.Text.Json;
+global using MassTransit;
+global using MassTransit.EntityFrameworkCoreIntegration;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Infrastructure;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using Microsoft.EntityFrameworkCore.Migrations;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Hosting;
+global using Microsoft.Extensions.Logging;
+global using Microsoft.Extensions.Options;

@@ -1,4 +1,4 @@
-global using System.ComponentModel.DataAnnotations;
+﻿global using System.ComponentModel.DataAnnotations;
 global using System.Data;
 global using System.Security.Cryptography;
 global using System.Text;

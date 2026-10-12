@@ -1,4 +1,4 @@
-namespace Silo.Queueing;
+﻿namespace Silo.Queueing;
 
 /// <summary>Execution context supplied to an application task handler.</summary>
 /// <param name="WorkflowId">The parent workflow identifier.</param>

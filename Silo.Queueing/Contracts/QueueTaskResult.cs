@@ -1,4 +1,4 @@
-namespace Silo.Queueing;
+﻿namespace Silo.Queueing;
 
 /// <summary>Outcome returned by an application task handler.</summary>
 public sealed record QueueTaskResult

@@ -1,4 +1,4 @@
-namespace Silo.Queueing;
+﻿namespace Silo.Queueing;
 
 /// <summary>Submits and administers durable workflows.</summary>
 public interface IQueueWorkflowService

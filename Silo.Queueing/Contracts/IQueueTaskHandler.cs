@@ -1,4 +1,4 @@
-namespace Silo.Queueing;
+﻿namespace Silo.Queueing;
 
 /// <summary>Application-provided executor for a registered task type.</summary>
 public interface IQueueTaskHandler

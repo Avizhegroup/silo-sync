@@ -1,4 +1,4 @@
-namespace Silo.Queueing;
+﻿namespace Silo.Queueing;
 
 /// <summary>A workflow to be executed in task order.</summary>
 public sealed record QueueWorkflowRequest

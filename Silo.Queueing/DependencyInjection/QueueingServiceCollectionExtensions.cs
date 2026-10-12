@@ -1,4 +1,4 @@
-namespace Silo.Queueing;
+﻿namespace Silo.Queueing;
 
 /// <summary>Registers the reusable queue infrastructure.</summary>
 public static class QueueingServiceCollectionExtensions

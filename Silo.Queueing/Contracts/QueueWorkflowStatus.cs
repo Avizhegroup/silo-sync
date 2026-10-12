@@ -1,4 +1,4 @@
-namespace Silo.Queueing;
+﻿namespace Silo.Queueing;
 
 /// <summary>Persistent workflow lifecycle values.</summary>
 public enum QueueWorkflowState

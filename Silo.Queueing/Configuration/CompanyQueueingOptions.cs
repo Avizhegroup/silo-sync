@@ -1,4 +1,4 @@
-namespace Silo.Queueing;
+﻿namespace Silo.Queueing;
 
 /// <summary>Settings bound from the CompanyQueueing configuration section.</summary>
 public sealed class CompanyQueueingOptions

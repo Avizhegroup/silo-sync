@@ -1,4 +1,4 @@
-namespace Silo.Queueing.Persistence.Migrations;
+﻿namespace Silo.Queueing.Persistence.Migrations;
 
 /// <summary>Creates queue workflow, saga, task, and MassTransit outbox persistence tables.</summary>
 [DbContext(typeof(QueueDbContext))]

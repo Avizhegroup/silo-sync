@@ -1,4 +1,4 @@
-namespace Silo.Queueing;
+﻿namespace Silo.Queueing;
 
 /// <summary>Independent EF Core context for workflow, task, saga, and MassTransit outbox data.</summary>
 /// <param name="options">Configured SQL Server provider options.</param>

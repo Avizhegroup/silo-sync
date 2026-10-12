@@ -1,4 +1,4 @@
-namespace Silo.Queueing;
+﻿namespace Silo.Queueing;
 
 internal sealed record WorkflowSubmitted(Guid WorkflowId, int TaskCount);
 internal sealed record WorkflowResumeRequested(Guid WorkflowId);

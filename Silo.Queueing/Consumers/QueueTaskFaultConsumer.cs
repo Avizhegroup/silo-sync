@@ -1,4 +1,4 @@
-namespace Silo.Queueing;
+﻿namespace Silo.Queueing;
 
 internal sealed class QueueTaskFaultConsumer(QueueDbContext dbContext)
     : IConsumer<Fault<ExecuteWorkflowTask>>

@@ -59,11 +59,16 @@ public partial class FrmMain : Form
     int MultiPartRowIndex = 1;
 
     CancellationTokenSource _cts = new CancellationTokenSource();
+    private readonly LocalWebSocketServer _localWebSocketServer = new(
+        Environment.GetEnvironmentVariable("SILO_LOCAL_WS_ORIGINS")?.Split(';', StringSplitOptions.RemoveEmptyEntries)
+        ?? Array.Empty<string>());
+    private bool _allowClose;
 
 
     public FrmMain()
     {
         InitializeComponent();
+        Shown += StartLocalWebSocketServer;
 
         _UhfReaders.Connect();
 
@@ -82,6 +87,18 @@ public partial class FrmMain : Form
                                null,
                                null,
                                null);
+            }
+
+            private async void StartLocalWebSocketServer(object? sender, EventArgs e)
+            {
+                try
+                {
+                    await _localWebSocketServer.StartAsync();
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message, "Local WebSocket server error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
             catch
             {
@@ -2004,11 +2021,15 @@ public partial class FrmMain : Form
 
     }
 
-    private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+    private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
+        if (!_allowClose)
+        {
+            e.Cancel = true;
+        }
         bool _AllowToExit = false;
 
-        if (_FlagResetApp)
+        if (_allowClose || _FlagResetApp)
         {
             _AllowToExit = true;
         }
@@ -2027,8 +2048,21 @@ public partial class FrmMain : Form
         {
             try
             {
+                await _localWebSocketServer.StopAsync();
+            }
+            catch (Exception exception)
+            {
+                ExceptionLogger.WriteExceptionLogs(exception);
+            }
+            try
+            {
                 _UhfReaders.Stop();
                 _UhfReaders.DisConnect();
+            }
+            if (!_allowClose)
+            {
+                _allowClose = true;
+                Close();
             }
             catch
             {

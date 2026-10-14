@@ -55,6 +55,7 @@
     <Project Path="Silo.Modules.Guarantee/Silo.Modules.Guarantee.csproj" />
     <Project Path="Silo.Modules.Inspect/Silo.Modules.Inspect.csproj" />
     <Project Path="Silo.Modules.Product/Silo.Modules.Product.csproj" />
+    <Project Path="Silo.Modules.Register/Silo.Modules.Register.csproj" Id="1b96d395-5bc1-4488-a19e-3fe8bad895bf" />
     <Project Path="Silo.Modules.TruckCross/Silo.Modules.TruckCross.csproj" />
   </Folder>
   <Folder Name="/src/Presentation/UI/Web/Shared/">
@@ -70,6 +71,9 @@
   <Folder Name="/Solution Items/Docs/" />
   <Folder Name="/Solution Items/Docs/AI/">
     <File Path="Docs/RAG-Chat-Guide.md" />
+  </Folder>
+  <Folder Name="/Solution Items/Docs/Migration/">
+    <File Path="Docs/Register-migration.md" />
   </Folder>
   <Folder Name="/Solution Items/Docs/Pages/" />
   <Folder Name="/Solution Items/Docs/Pages/Warehouse/" />

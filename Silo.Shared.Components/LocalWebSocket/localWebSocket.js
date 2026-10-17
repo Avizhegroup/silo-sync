@@ -1,24 +1,33 @@
 let socket;
-const handlers = new Set();
+let dotNetRef;
 
-export function connect(url) {
+function notify(method, ...args) {
+    dotNetRef?.invokeMethodAsync(method, ...args).catch(() => { });
+}
+
+export function connect(url, reference) {
+    dotNetRef = reference;
     if (socket?.readyState === WebSocket.OPEN || socket?.readyState === WebSocket.CONNECTING) {
+        notify("OnSocketStateChanged", socket.readyState === WebSocket.OPEN);
         return;
     }
-    socket = new WebSocket(url);
-    window.localWebSocket = {
-        send,
-        isConnected,
-        onMessage,
-        offMessage,
-        disconnect
-    };
-    socket.addEventListener("message", event => {
+
+    const current = new WebSocket(url);
+    socket = current;
+    current.addEventListener("open", () => notify("OnSocketStateChanged", true));
+    current.addEventListener("close", () => {
+        if (socket === current) {
+            socket = undefined;
+        }
+        notify("OnSocketStateChanged", false);
+    });
+    current.addEventListener("error", () => notify("OnSocketError", "Connection to the local device host failed."));
+    current.addEventListener("message", event => {
         if (typeof event.data !== "string") {
-            socket.close(1003, "Text messages only");
+            current.close(1003, "Text messages only");
             return;
         }
-        handlers.forEach(handler => handler(event.data));
+        notify("OnSocketMessage", event.data);
     });
 }
 
@@ -36,17 +45,9 @@ export function isConnected() {
     return socket?.readyState === WebSocket.OPEN;
 }
 
-export function onMessage(callback) {
-    handlers.add(callback);
-}
-
-export function offMessage(callback) {
-    handlers.delete(callback);
-}
-
 export function disconnect() {
-    handlers.clear();
-    socket?.close(1000, "Component disconnected");
+    const current = socket;
     socket = undefined;
-    delete window.localWebSocket;
+    dotNetRef = undefined;
+    current?.close(1000, "Component disconnected");
 }

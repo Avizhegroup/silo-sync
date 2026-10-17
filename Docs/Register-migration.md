@@ -27,6 +27,52 @@ Conventions: *"RPC"* = a named call to the single HTTP endpoint (§4). *"Hub"* =
 
 ---
 
+## 0. Migration status
+
+Target split: **Blazor** `Silo.Modules.Register` (web workflows) and **Windows** `Silo.Windows.Register` (RFID reader, scanner, printer). Status below reflects the code as of this update; "built" means the project compiles, not that it was tested against real devices or a running server.
+
+| Form | Target | Status | Where / notes |
+|---|---|---|---|
+| F1 Login | Blazor host | Covered | Existing Silo login; no work needed. |
+| F2 Multi-product batch | Blazor | Done | `/register/batch` (`MultiProductBatch`). Linked from PrintManagement. |
+| F3 Product master CRUD | Blazor | Existing, not verified | Assumed covered by `Silo.Modules.Product`; not compared field by field. |
+| F4 Product type | Blazor | Existing, not verified | Same as F3. |
+| F5 Product picker | Blazor | Done | Reuses `ProductCodeModal`. |
+| F6 Print + register tags | Windows | Not started | Needs label printing (FastReport/ZPL templates, section 9) and tag writing. Only `PrinterService` (raw ZPL send) exists. |
+| F7 Print existing action (FastReport) | Windows | Not started | Same as F6. |
+| F8 Register by barcode + RFID | Windows | Partly | Reader, barcode buffer and socket exist. No register form that pairs serial and EPC and calls the register RPC. |
+| F9 Cancel registered tag | Blazor | Not started | Not checked whether an equivalent web page already exists. |
+| F10 Change registration date | Blazor | Done | `/register/date`. No inspect/warehouse gating (see F10 spec). |
+| F11 Parent package | Blazor | Done | `/register/package`. `GetLatestNextlevelProductUnitbyEpc` does not exist on the server, so the package code is re-read by EPC. |
+| F12 Test register (single) | Blazor + device | Done | `/register/test`, connects to the device host through `LocalWebSocketComponent` (epc/barcode in, startReader/stopReader out). Not run against a real reader. |
+| F13 Test register (group) | Blazor + device | Not started | Needs continuous multi-tag read; the host already supports continuous mode. |
+| F14 Registered-production report | Blazor | Existing, not verified | Assumed covered by existing web reports. |
+| F15 Cancelled-registration report | Blazor | Existing, not verified | Same as F14. |
+| F16 Data-quality report | Blazor | Existing, not verified | Same as F14. |
+| F17 Settings | Windows | Done (subset) | `SettingsForm` + `%AppData%\Silo.Windows.Register\settings.json`. Lacks print-format, login, notification, shift and other print-related keys. |
+| F18 Toast | Blazor | Covered | Uses the existing `Notification` service. |
+
+### Windows device host (`Silo.Windows.Register`)
+
+Done: settings store; `ReaderManager` (24-hex EPC normalization, T64 ignore list, de-duplication, single/continuous modes); `SerialEpcReader`; `SimulatedEpcReader`; `BarcodeWedgeBuffer` (splitter rule); `PrinterService` (raw ZPL); loopback WebSocket server (HTTPS origin allowlist, token, one client, 64 KiB limit); `MainForm` and `SettingsForm`.
+
+Message protocol: host to browser `{"type":"epc|barcode|pong|error","value":"..."}`; browser to host `{"type":"startReader","mode":1|2}`, `{"type":"stopReader"}`, `{"type":"print","printer":"","data":"ZPL"}`, `{"type":"ping"}`.
+
+### Remaining work
+
+1. **Vendor reader drivers** (6061 RfidApiLib, Tiny UhfReader_API_HID, T64 VHLib): DLLs are not in the repo. `VendorEpcReader` throws "not installed" until implemented. Only the serial and simulated readers work.
+2. **F6/F7 printing:** label templates, FastReport or ZPL generation, print-action flow, and tag writing. Printing is the largest remaining item.
+3. **F8:** Windows form that pairs a barcode serial with a read EPC and calls the register RPC.
+4. **F9 and F13:** cancel-registration page and group test page.
+5. **Verification of "existing" items** (F3, F4, F14 to F16): compare against the legacy field and filter rules.
+6. **Hardware testing** of the device host, readers, scanner, printer, and browser behaviour for `ws://127.0.0.1` from an HTTPS page (mixed content / private network access).
+7. **Host setup:** allowed origin and token must be configured in the Windows app, and the token is currently typed manually on the test page.
+8. **Localization:** several labels on the new pages and the Windows forms are hardcoded English and need `TextResources` keys.
+9. **Claims/permissions** for `/register/batch`, `/register/date`, `/register/package`, `/register/test`.
+10. **Unmigrated F17 settings** and the legacy migration of old settings values.
+
+---
+
 ## 1. Application overview
 
 - **Product:** a Windows desktop client for a factory/warehouse "register and label" process. Operators define a production batch (product, production line, shift, warehouse, roll/document code, count), the system creates one **print row per serial** on the server, labels (barcode and/or RFID tag) are printed, and each serial is **registered** — i.e. bound to an RFID tag EPC — so the item can be tracked afterwards (inspection, warehouses, packages/parents, reports). Supporting screens: master data (products, product types), cancel a registration, change the registration date, group serials into a parent package, QA tests of label-vs-tag correspondence, and reports.

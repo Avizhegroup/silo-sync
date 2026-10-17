@@ -1,9 +1,20 @@
 # Local WebSocket component
 
-`LocalWebSocketComponent` initializes a browser-side WebSocket to the Gate WinForms application's loopback listener (default port `5005`). It deliberately has no C# message-send method or incoming-payload callback: application payloads must stay in JavaScript and never enter the Blazor Server circuit.
+`LocalWebSocketComponent` connects the browser page to the local device host (`Silo.Windows.Register`, default `ws://127.0.0.1:5005/?token=...`) and exposes it through normal Blazor events.
 
-Configure `SILO_LOCAL_WS_ORIGINS` in the WinForms process as a semicolon-delimited list of exact HTTPS origins (for example, `https://wms.example.com`). Configure the same per-session token in `SILO_LOCAL_WS_TOKEN` in the WinForms process and the component's `SessionToken` parameter. The Gate application starts the listener when its main form is shown and stops it after an accepted close. Only one browser can be connected; additional connections are rejected while it is active. Text messages are limited to 64 KiB.
+```razor
+<LocalWebSocketComponent @ref="_socket" Port="5005" SessionToken="@Token"
+                         OnConnectionChanged="OnSocketConnectionChanged"
+                         OnMessageReceived="OnSocketMessageReceived"
+                         OnError="OnSocketError" />
+```
 
-After the component connects, its JavaScript module exposes `window.localWebSocket` in the browser. Register callbacks with `window.localWebSocket.onMessage(callback)` / `offMessage(callback)`, and send with `window.localWebSocket.send(text)`. A Blazor Server `@onclick` handler is not suitable for payload sending: the handler runs on IIS. Bind a native browser-side DOM event handler and call `window.localWebSocket.send(...)` from it instead. Do not pass message contents to C# or log them through server-side code.
+- `OnConnectionChanged` (`EventCallback<bool>`): true when connected, false when closed.
+- `OnMessageReceived` (`EventCallback<string>`): raw JSON text from the host, e.g. `{"type":"epc","value":"..."}` or `{"type":"barcode","value":"..."}`.
+- `OnError` (`EventCallback<string>`): connection errors.
+- `SendAsync(string)` / `SendCommandAsync(object)`: send to the host, e.g. `SendCommandAsync(new { type = "startReader", mode = 1 })`.
+- `ConnectAsync()`, `DisconnectAsync()`, `IsConnectedAsync()`, `IsConnected`; set `AutoConnect="false"` to connect manually.
 
-The component's `SessionToken` is delivered to the browser through Blazor rendering/interop; use a short-lived, per-session token and do not treat a shared static token as strong authentication. This implementation has not been verified against the deployment's target browser. HTTPS pages may have browser-specific mixed-content, Local Network Access/private-network permission, or enterprise policy restrictions when opening `ws://127.0.0.1`; there is no remote fallback. Verify those policies in the target browser before deployment. A TLS-enabled local WebSocket endpoint and browser trust provisioning may be required where plain loopback WebSockets are blocked.
+The host requires the page's exact HTTPS origin in its allowed origins and the same token as `SessionToken`. Only one browser can be connected at a time and messages are limited to 64 KiB.
+
+Payloads pass through the Blazor Server circuit (SignalR), so scanned data (EPCs, barcodes) reaches the server. Avoid using this for sensitive data. Use a short-lived per-session token, because it is delivered to the browser through rendering. Browser policies for `ws://127.0.0.1` from HTTPS pages (mixed content, private network access) must be verified on the target browsers.

@@ -62,7 +62,7 @@
     <Project Path="Silo.Shared.Components/Silo.Shared.Components.csproj" />
   </Folder>
   <Folder Name="/src/Presentation/UI/Windows/">
-    <Project Path="Silo.Ui.Gate/Silo.Ui.Gate.csproj" />
+    <Project Path="Silo.Windows.Register/Silo.Windows.Register.csproj" Id="7e55b673-d12d-48bb-8340-e113580a9af2" />
   </Folder>
   <Folder Name="/src/Shared/">
     <Project Path="Silo.Shared/Silo.Shared.csproj" />

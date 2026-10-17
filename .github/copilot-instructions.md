@@ -30,6 +30,7 @@ Silo.Ui.Bypass            → Blazor Server UI (bypass flow)
 Silo.Modules.*            → Feature modules (Ai, Document, Guarantee, Inspect, Product, TruckCross)
 Silo.Jobs.Win             → Windows service jobs
 Silo.Ai.Agent             → AI chat agent (chatbot instructions in Chat/*.md)
+Silo.Ui.Register          → Windows application for RFID-reader, printer, and scanner-dependent workflows
 ```
 
 ### Domain-Based Organization (Critical)
@@ -53,7 +54,7 @@ All new features in `Silo.Application\Features\` follow this structure per domai
 ```
 Features\{DomainName}\
 ├── Commands\
-│   └── {Verb}{DomainName}\
+│   └── {Verb}{DomainName}\ 
 │       ├── {Verb}{DomainName}Command.cs
 │       ├── {Verb}{DomainName}Handler.cs
 │       └── {Verb}{DomainName}Vm.cs
@@ -163,3 +164,11 @@ The `.github/prompts/` folder contains reusable prompt files for common tasks:
 - `refactoring-blazor.prompt.md` — Blazor component refactoring rules
 - `dynamic-report.prompt.md` — dynamic report builder pattern
 - `sql-query-tune.prompt.md` — SQL optimization rules (use CTEs, avoid SELECT *, no scenario changes)
+
+---
+
+## Register Migration Guidelines
+
+- Place RFID-reader, printer, and scanner-dependent workflows only in the planned `Silo.Ui.Register` Windows application.
+- Add only missing non-hardware web workflows to `Silo.Modules.Register`.
+- Reuse existing `Silo.Modules.Product` and report pages rather than duplicating them.

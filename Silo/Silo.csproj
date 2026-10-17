@@ -94,6 +94,7 @@
 		<ProjectReference Include="..\Silo.Modules.Guarantee\Silo.Modules.Guarantee.csproj" />
 		<ProjectReference Include="..\Silo.Modules.Inspect\Silo.Modules.Inspect.csproj" />
 		<ProjectReference Include="..\Silo.Modules.Product\Silo.Modules.Product.csproj" />
+		<ProjectReference Include="..\Silo.Modules.Register\Silo.Modules.Register.csproj" />
 		<ProjectReference Include="..\Silo.Modules.TruckCross\Silo.Modules.TruckCross.csproj" />
         <ProjectReference Include="..\Silo.Modules.Document\Silo.Modules.Document.csproj" />
 		<ProjectReference Include="..\Silo.Shared\Silo.Shared.csproj" />

@@ -1,46 +1,67 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace Silo.Shared.Components;
 
 public partial class LocalWebSocketComponent : IAsyncDisposable
 {
+    private const string ModulePath = "./_content/Silo.Shared.Components/LocalWebSocket/localWebSocket.js";
+
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
     [Parameter] public int Port { get; set; } = 5005;
     [Parameter, EditorRequired] public string SessionToken { get; set; } = string.Empty;
+    [Parameter] public bool AutoConnect { get; set; } = true;
+
+    /// <summary>Raised with the text of every message received from the local device host.</summary>
+    [Parameter] public EventCallback<string> OnMessageReceived { get; set; }
+
+    /// <summary>Raised with true when connected and false when disconnected.</summary>
+    [Parameter] public EventCallback<bool> OnConnectionChanged { get; set; }
+
+    [Parameter] public EventCallback<string> OnError { get; set; }
+
+    public bool IsConnected { get; private set; }
 
     private IJSObjectReference? _module;
+    private DotNetObjectReference<LocalWebSocketComponent>? _self;
     private bool _disposed;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
+        if (firstRender && AutoConnect)
         {
-            return;
+            await ConnectAsync();
         }
-
-        _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/Silo.Shared.Components/LocalWebSocket/localWebSocket.js");
-        await _module.InvokeVoidAsync("connect", $"ws://127.0.0.1:{Port}/?token={Uri.EscapeDataString(SessionToken)}");
     }
 
     public async Task ConnectAsync()
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        _module ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/Silo.Shared.Components/LocalWebSocket/localWebSocket.js");
-        await _module.InvokeVoidAsync("connect", $"ws://127.0.0.1:{Port}/?token={Uri.EscapeDataString(SessionToken)}");
+        _module ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", ModulePath);
+        _self ??= DotNetObjectReference.Create(this);
+        await _module.InvokeVoidAsync("connect", $"ws://127.0.0.1:{Port}/?token={Uri.EscapeDataString(SessionToken)}", _self);
     }
 
     public async Task<bool> IsConnectedAsync()
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        if (_module is null)
-        {
-            return false;
-        }
-        return await _module.InvokeAsync<bool>("isConnected");
+        return _module is not null && await _module.InvokeAsync<bool>("isConnected");
     }
+
+    /// <summary>Sends raw text to the device host.</summary>
+    public async Task SendAsync(string data)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        if (_module is null || !IsConnected)
+        {
+            throw new InvalidOperationException("The local WebSocket is not connected.");
+        }
+        await _module.InvokeVoidAsync("send", data);
+    }
+
+    /// <summary>Sends a JSON command such as {"type":"startReader","mode":1}.</summary>
+    public Task SendCommandAsync(object command)
+        => SendAsync(System.Text.Json.JsonSerializer.Serialize(command));
 
     public async Task DisconnectAsync()
     {
@@ -51,21 +72,34 @@ public partial class LocalWebSocketComponent : IAsyncDisposable
         }
     }
 
+    [JSInvokable]
+    public async Task OnSocketStateChanged(bool connected)
+    {
+        IsConnected = connected;
+        await OnConnectionChanged.InvokeAsync(connected);
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public Task OnSocketMessage(string message) => OnMessageReceived.InvokeAsync(message);
+
+    [JSInvokable]
+    public Task OnSocketError(string message) => OnError.InvokeAsync(message);
+
     public async ValueTask DisposeAsync()
     {
         _disposed = true;
-        if (_module is null)
+        if (_module is not null)
         {
-            return;
+            try
+            {
+                await _module.InvokeVoidAsync("disconnect");
+                await _module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+            }
         }
-
-        try
-        {
-            await _module.InvokeVoidAsync("disconnect");
-            await _module.DisposeAsync();
-        }
-        catch (JSDisconnectedException)
-        {
-        }
+        _self?.Dispose();
     }
 }

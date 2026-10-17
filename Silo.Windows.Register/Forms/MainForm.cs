@@ -1,0 +1,194 @@
+using Silo.Windows.Register.Config;
+using Silo.Windows.Register.Devices;
+using Silo.Windows.Register.Server;
+
+namespace Silo.Windows.Register.Forms;
+
+public sealed class MainForm : Form
+{
+    private readonly SettingsStore _store = new();
+    private readonly Label _serverStatus = new() { AutoSize = true, Text = "Server: stopped" };
+    private readonly Label _clientStatus = new() { AutoSize = true, Text = "Browser: not connected" };
+    private readonly Label _readerStatus = new() { AutoSize = true, Text = "Reader: stopped" };
+    private readonly Button _toggleServer = new() { Text = "Start server", AutoSize = true };
+    private readonly Button _toggleReader = new() { Text = "Start reader", AutoSize = true };
+    private readonly Button _settingsButton = new() { Text = "Settings", AutoSize = true };
+    private readonly TextBox _log = new() { Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical, Dock = DockStyle.Fill };
+    private RegisterSettings _settings;
+    private ReaderManager _reader;
+    private DeviceSocketServer _server;
+    private BarcodeWedgeBuffer _wedge;
+
+    public MainForm()
+    {
+        Text = "Silo Register - Device Host";
+        ClientSize = new Size(720, 460);
+        StartPosition = FormStartPosition.CenterScreen;
+        KeyPreview = true;
+
+        _settings = _store.Load();
+        (_reader, _server, _wedge) = Build();
+
+        var buttons = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(8) };
+        buttons.Controls.AddRange([_toggleServer, _toggleReader, _settingsButton]);
+        var status = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(8), FlowDirection = FlowDirection.TopDown };
+        status.Controls.AddRange([_serverStatus, _clientStatus, _readerStatus]);
+        Controls.Add(_log);
+        Controls.Add(status);
+        Controls.Add(buttons);
+
+        _toggleServer.Click += OnToggleServerClick;
+        _toggleReader.Click += OnToggleReaderClick;
+        _settingsButton.Click += OnSettingsClick;
+        KeyPress += (_, e) => _wedge.Append(e.KeyChar);
+        FormClosing += OnMainFormClosing;
+    }
+
+    private (ReaderManager, DeviceSocketServer, BarcodeWedgeBuffer) Build()
+    {
+        var reader = new ReaderManager(_settings);
+        var server = new DeviceSocketServer(_settings);
+        var wedge = new BarcodeWedgeBuffer(_settings);
+
+        reader.EpcRead += async (_, epc) => await ForwardAsync("epc", epc);
+        reader.StatusChanged += (_, message) => UiPost(() =>
+        {
+            _readerStatus.Text = $"Reader: {(reader.IsRunning ? "running" : "stopped")}";
+            _toggleReader.Text = reader.IsRunning ? "Stop reader" : "Start reader";
+            AppendLog(message);
+        });
+        wedge.BarcodeRead += async (_, barcode) => await ForwardAsync("barcode", barcode);
+        server.Log += (_, message) => UiPost(() => AppendLog(message));
+        server.ClientConnectionChanged += (_, connected) => UiPost(() =>
+            _clientStatus.Text = connected ? "Browser: connected" : "Browser: not connected");
+        server.CommandReceived += (_, command) => UiPost(() => HandleCommand(command));
+        return (reader, server, wedge);
+    }
+
+    private async Task ForwardAsync(string type, string value)
+    {
+        UiPost(() => AppendLog($"{type}: {value}"));
+        try
+        {
+            await _server.SendAsync(type, value);
+        }
+        catch (Exception exception) when (exception is System.Net.WebSockets.WebSocketException or ObjectDisposedException)
+        {
+        }
+    }
+
+    private void HandleCommand(SocketCommand command)
+    {
+        try
+        {
+            switch (command.Type.ToLowerInvariant())
+            {
+                case "startreader":
+                    _reader.Start(command.Mode == 2 ? ReadMode.Continuous : ReadMode.Single);
+                    break;
+                case "stopreader":
+                    _reader.Stop();
+                    break;
+                case "print":
+                    PrinterService.SendRaw(string.IsNullOrWhiteSpace(command.Printer) ? _settings.PrinterModel : command.Printer, command.Data ?? string.Empty);
+                    break;
+                case "ping":
+                    _ = _server.SendAsync("pong", string.Empty);
+                    break;
+                default:
+                    AppendLog($"Unknown command: {command.Type}");
+                    break;
+            }
+        }
+        catch (Exception exception)
+        {
+            AppendLog($"Command '{command.Type}' failed: {exception.Message}");
+            _ = _server.SendAsync("error", exception.Message);
+        }
+    }
+
+    private void OnToggleServerClick(object? sender, EventArgs e)
+    {
+        try
+        {
+            if (_server.IsRunning)
+            {
+                _ = _server.StopAsync();
+            }
+            else
+            {
+                _server.Start();
+            }
+            _serverStatus.Text = $"Server: {(_server.IsRunning ? $"listening on 127.0.0.1:{_settings.SocketPort}" : "stopped")}";
+            _toggleServer.Text = _server.IsRunning ? "Stop server" : "Start server";
+        }
+        catch (InvalidOperationException exception)
+        {
+            MessageBox.Show(this, exception.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    private void OnToggleReaderClick(object? sender, EventArgs e)
+    {
+        try
+        {
+            if (_reader.IsRunning)
+            {
+                _reader.Stop();
+            }
+            else
+            {
+                _reader.Start(ReadMode.Continuous);
+            }
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(this, exception.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    private async void OnSettingsClick(object? sender, EventArgs e)
+    {
+        using var dialog = new SettingsForm(_store, _settings);
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+        {
+            return;
+        }
+
+        await _server.DisposeAsync();
+        _reader.Dispose();
+        _wedge.Dispose();
+        _settings = _store.Load();
+        (_reader, _server, _wedge) = Build();
+        _serverStatus.Text = "Server: stopped";
+        _toggleServer.Text = "Start server";
+        _toggleReader.Text = "Start reader";
+        AppendLog("Settings applied");
+    }
+
+    private async void OnMainFormClosing(object? sender, FormClosingEventArgs e)
+    {
+        _reader.Dispose();
+        _wedge.Dispose();
+        await _server.DisposeAsync();
+    }
+
+    private void UiPost(Action action)
+    {
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        if (InvokeRequired)
+        {
+            BeginInvoke(action);
+        }
+        else
+        {
+            action();
+        }
+    }
+
+    private void AppendLog(string message) => _log.AppendText($"{DateTime.Now:HH:mm:ss}  {message}{Environment.NewLine}");
+}

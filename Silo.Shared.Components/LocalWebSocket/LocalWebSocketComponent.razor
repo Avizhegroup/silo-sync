@@ -1,3 +1,22 @@
 @namespace Silo.Shared.Components
 
-<span hidden></span>
+<div class="card shadow-sm mb-3">
+    <div class="card-header d-flex flex-wrap gap-3 align-items-center">
+        <span class="fw-bold">Device host</span>
+        <span class="badge @(IsConnected ? "bg-success" : "bg-secondary")">@(IsConnected ? "Connected" : "Disconnected")</span>
+        <input type="password" class="form-control form-control-sm" style="max-width:260px" placeholder="Device token"
+               @bind="TokenInput" @bind:event="oninput" disabled="@IsConnectRequested" />
+        @if (IsConnectRequested)
+        {
+            <button type="button" class="btn btn-sm btn-outline-danger" @onclick="OnDisconnectClick">Disconnect</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-sm btn-primary" disabled="@string.IsNullOrWhiteSpace(TokenInput)" @onclick="OnConnectClick">Connect</button>
+        }
+        @if (!string.IsNullOrEmpty(Error))
+        {
+            <span class="text-danger small">@Error</span>
+        }
+    </div>
+</div>

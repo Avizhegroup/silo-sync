@@ -43,24 +43,7 @@ public partial class RegisterTest
 
     public LocalWebSocketComponent? Socket { get; set; }
     public int DevicePort { get; set; } = 5005;
-    public string DeviceTokenInput { get; set; } = string.Empty;
-    public string DeviceToken { get; set; } = string.Empty;
-    public bool IsDeviceConnectRequested { get; set; }
     public bool IsDeviceConnected { get; set; }
-    public string DeviceError { get; set; } = string.Empty;
-
-    public void OnDeviceConnectClick()
-    {
-        DeviceToken = DeviceTokenInput.Trim();
-        DeviceError = string.Empty;
-        IsDeviceConnectRequested = true;
-    }
-
-    public void OnDeviceDisconnectClick()
-    {
-        IsDeviceConnectRequested = false;
-        IsDeviceConnected = false;
-    }
 
     public async Task OnDeviceConnectionChanged(bool connected)
     {
@@ -68,7 +51,6 @@ public partial class RegisterTest
 
         if (connected)
         {
-            DeviceError = string.Empty;
             await Socket!.SendCommandAsync(new { type = "startReader", mode = 2 });
         }
 
@@ -77,9 +59,7 @@ public partial class RegisterTest
 
     public void OnDeviceError(string message)
     {
-        DeviceError = message;
-        IsDeviceConnectRequested = false;
-        StateHasChanged();
+        Notification.Show(message, "error");
     }
 
     public async Task OnDeviceMessageReceived(string json)
@@ -104,8 +84,7 @@ public partial class RegisterTest
                 await OnBarcodeReceived(message.Value);
                 break;
             case "error":
-                DeviceError = message.Value ?? string.Empty;
-                StateHasChanged();
+                Notification.Show(message.Value ?? string.Empty, "error");
                 break;
         }
     }

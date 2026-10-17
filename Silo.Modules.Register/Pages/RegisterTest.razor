@@ -9,34 +9,10 @@
 <TelerikLoaderContainer Visible="@IsLoading" />
 
 <div class="container-fluid mt-2">
-    @if (IsDeviceConnectRequested)
-    {
-        <LocalWebSocketComponent @ref="Socket" Port="@DevicePort" SessionToken="@DeviceToken"
-                                 OnConnectionChanged="OnDeviceConnectionChanged"
-                                 OnMessageReceived="OnDeviceMessageReceived"
-                                 OnError="OnDeviceError" />
-    }
-
-    <div class="card shadow-sm mb-3">
-        <div class="card-header d-flex flex-wrap gap-3 align-items-center">
-            <span class="fw-bold">Device host</span>
-            <span class="badge @(IsDeviceConnected ? "bg-success" : "bg-secondary")">@(IsDeviceConnected ? "Connected" : "Disconnected")</span>
-            <input type="password" class="form-control form-control-sm" style="max-width:260px" placeholder="Device token"
-                   @bind="DeviceTokenInput" @bind:event="oninput" disabled="@IsDeviceConnectRequested" />
-            @if (IsDeviceConnectRequested)
-            {
-                <button type="button" class="btn btn-sm btn-outline-danger" @onclick="OnDeviceDisconnectClick">Disconnect</button>
-            }
-            else
-            {
-                <button type="button" class="btn btn-sm btn-primary" disabled="@string.IsNullOrWhiteSpace(DeviceTokenInput)" @onclick="OnDeviceConnectClick">Connect</button>
-            }
-            @if (!string.IsNullOrEmpty(DeviceError))
-            {
-                <span class="text-danger small">@DeviceError</span>
-            }
-        </div>
-    </div>
+    <LocalWebSocketComponent @ref="Socket" Port="@DevicePort"
+                             OnConnectionChanged="OnDeviceConnectionChanged"
+                             OnMessageReceived="OnDeviceMessageReceived"
+                             OnError="OnDeviceError" />
 
     <div class="card shadow-sm mb-3">
         <div class="card-header fw-bold">1. @TextResources.APP_StringKeys_ProductSerial / EPC</div>

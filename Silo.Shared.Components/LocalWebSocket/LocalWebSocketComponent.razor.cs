@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 
 namespace Silo.Shared.Components;
 
@@ -9,8 +8,6 @@ public partial class LocalWebSocketComponent : IAsyncDisposable
 
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
     [Parameter] public int Port { get; set; } = 5005;
-    [Parameter, EditorRequired] public string SessionToken { get; set; } = string.Empty;
-    [Parameter] public bool AutoConnect { get; set; } = true;
 
     /// <summary>Raised with the text of every message received from the local device host.</summary>
     [Parameter] public EventCallback<string> OnMessageReceived { get; set; }
@@ -21,16 +18,30 @@ public partial class LocalWebSocketComponent : IAsyncDisposable
     [Parameter] public EventCallback<string> OnError { get; set; }
 
     public bool IsConnected { get; private set; }
+    public string TokenInput { get; set; } = string.Empty;
+    public bool IsConnectRequested { get; private set; }
+    public string Error { get; private set; } = string.Empty;
 
     private IJSObjectReference? _module;
     private DotNetObjectReference<LocalWebSocketComponent>? _self;
     private bool _disposed;
+    private string _token = string.Empty;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    public async Task OnConnectClick()
     {
-        if (firstRender && AutoConnect)
+        _token = TokenInput.Trim();
+        Error = string.Empty;
+        IsConnectRequested = true;
+        await ConnectAsync();
+    }
+
+    public async Task OnDisconnectClick()
+    {
+        IsConnectRequested = false;
+        await DisconnectAsync();
+        if (IsConnected)
         {
-            await ConnectAsync();
+            await OnSocketStateChanged(false);
         }
     }
 
@@ -39,7 +50,7 @@ public partial class LocalWebSocketComponent : IAsyncDisposable
         ObjectDisposedException.ThrowIf(_disposed, this);
         _module ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", ModulePath);
         _self ??= DotNetObjectReference.Create(this);
-        await _module.InvokeVoidAsync("connect", $"ws://127.0.0.1:{Port}/?token={Uri.EscapeDataString(SessionToken)}", _self);
+        await _module.InvokeVoidAsync("connect", $"ws://127.0.0.1:{Port}/?token={Uri.EscapeDataString(_token)}", _self);
     }
 
     public async Task<bool> IsConnectedAsync()
@@ -84,7 +95,13 @@ public partial class LocalWebSocketComponent : IAsyncDisposable
     public Task OnSocketMessage(string message) => OnMessageReceived.InvokeAsync(message);
 
     [JSInvokable]
-    public Task OnSocketError(string message) => OnError.InvokeAsync(message);
+    public async Task OnSocketError(string message)
+    {
+        Error = message;
+        IsConnectRequested = false;
+        await OnError.InvokeAsync(message);
+        StateHasChanged();
+    }
 
     public async ValueTask DisposeAsync()
     {

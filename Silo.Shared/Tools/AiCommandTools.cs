@@ -23,6 +23,7 @@ public class AiCommandTools
 {
     private const string SqlStart = "<<SQL";
     private const string ConfigStart = "<<CONFIG";
+    private const string SearchStart = "<<Search";
     private const string BlockEnd = ">>";
 
     /// <summary>
@@ -86,6 +87,51 @@ public class AiCommandTools
                 blockStart,
                 blockLength);
 
+            startIndex = blockStart;
+        }
+
+        return text.Trim();
+    }
+
+    public static string StripSearchBlocks(
+    string text,
+    List<string>? collectedCommands = null)
+    {
+        if (string.IsNullOrEmpty(text))
+            return text;
+
+        var startIndex = 0;
+
+        while (startIndex < text.Length)
+        {
+            var blockStart = text.IndexOf(
+                SearchStart,
+                startIndex,
+                StringComparison.OrdinalIgnoreCase);
+
+            if (blockStart == -1)
+                break;
+
+            var contentStart = blockStart + SearchStart.Length;
+
+            var blockEnd = text.IndexOf(
+                BlockEnd,
+                contentStart,
+                StringComparison.OrdinalIgnoreCase);
+
+            if (blockEnd == -1)
+                break;
+
+            var query = text
+                .Substring(contentStart, blockEnd - contentStart)
+                .Trim();
+
+            if (collectedCommands is not null && query.Length > 0)
+                collectedCommands.Add(query);
+
+            var blockLength = blockEnd + BlockEnd.Length - blockStart;
+
+            text = text.Remove(blockStart, blockLength);
             startIndex = blockStart;
         }
 

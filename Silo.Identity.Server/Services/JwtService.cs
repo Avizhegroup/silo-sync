@@ -1,9 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Azure.Core;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Silo.Application.Dto;
 using Silo.Application.Exceptions;
@@ -89,7 +86,14 @@ public partial class JwtService(IdentityBusiness identityBusiness
                     throw new UserNotFoundException();
                 }
 
-                id = ((IdentityBusiness)identityBusiness).TSLogin(request.Username, request.Password);
+                var id = "0";
+
+                var avizheLoginResultDt = ((IdentityBusiness)identityBusiness).GetUserByUsername(request.Username, request.Username);
+
+                if (avizheLoginResultDt.Rows.Count != 0)
+                {
+                    id = avizheLoginResultDt.Select()[0].ItemArray[0].ToString();
+                }
 
                 if (id.Equals("0"))
                 {

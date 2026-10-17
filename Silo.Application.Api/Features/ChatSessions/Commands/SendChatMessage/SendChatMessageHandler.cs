@@ -68,19 +68,13 @@ public class SendChatMessageHandler(
 
         var searchCommands = new List<string>();
 
-        var configCommands = new List<string>();
-
         var cleanResponseText = AiCommandTools.StripSqlBlocks(result.ResponseText ?? string.Empty, sqlCommands);
 
         cleanResponseText = AiCommandTools.StripSearchBlocks(cleanResponseText, searchCommands);
 
-        cleanResponseText = AiCommandTools.StripConfigBlocks(cleanResponseText, configCommands);
-
         var searchResults = new List<List<object>>();
 
         var sqlResults = new List<List<object>>();
-
-        var searchResponseText = string.Empty;
 
         if (sqlCommands.Count > 0)
         {
@@ -136,10 +130,6 @@ public class SendChatMessageHandler(
                             finalText,
                             finalSearchCommands);
 
-                        finalText = AiCommandTools.StripConfigBlocks(
-                            finalText,
-                            finalConfigCommands);
-
                         if (finalText.HasValue())
                         {
                             cleanResponseText = finalText;
@@ -179,21 +169,6 @@ public class SendChatMessageHandler(
                     ? "اجرای جستجو با خطا مواجه شد."
                     : $"{cleanResponseText}\n\nاجرای جستجو با خطا مواجه شد.";
             }
-        }
-
-        if (searchResponseText.HasValue())
-        {
-            cleanResponseText = cleanResponseText.HasNoValue()
-                ? searchResponseText
-                : $"{cleanResponseText}\n\n{searchResponseText}";
-        }
-
-        if (configCommands.Count > 0)
-        {
-            logger.LogInformation(
-                "Received {ConfigCommandCount} CONFIG command(s) from AI for user {UserId}",
-                configCommands.Count,
-                request.UserId);
         }
 
         state.ConversationId = conversationId;

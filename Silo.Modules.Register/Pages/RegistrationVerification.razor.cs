@@ -26,7 +26,8 @@ public partial class RegistrationVerification
         try
         {
             Tag = (await Api.PostAsyncByContext<List<GetRevokeTagsVm>>("SGetProductBySerial",
-                new GetRevokeTagsVmContext(), new("serial", Serial.Trim()))).Value?.FirstOrDefault();
+                new GetRevokeTagsVmContext()
+                , new  KeyValuePair<string, object>("serial", Serial.Trim()))).Value?.FirstOrDefault();
 
             if (Tag is null)
             {

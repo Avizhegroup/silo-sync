@@ -61,9 +61,7 @@
   <Folder Name="/src/Presentation/UI/Web/Shared/">
     <Project Path="Silo.Shared.Components/Silo.Shared.Components.csproj" />
   </Folder>
-  <Folder Name="/src/Presentation/UI/Windows/">
-    <Project Path="Silo.Ui.Gate/Silo.Ui.Gate.csproj" />
-  </Folder>
+  <Folder Name="/src/Presentation/UI/Windows/" />
   <Folder Name="/src/Shared/">
     <Project Path="Silo.Shared/Silo.Shared.csproj" />
     <Project Path="Silo.Source/Silo.Source.csproj" />

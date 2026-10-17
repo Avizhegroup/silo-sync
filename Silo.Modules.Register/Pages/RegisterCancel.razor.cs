@@ -27,7 +27,8 @@ public partial class RegisterCancel
         try
         {
             var result = (await Api.PostAsyncByContext<List<GetRevokeTagsVm>>("SGetProductBySerial",
-                new GetRevokeTagsVmContext(), new("serial", Serial.Trim()))).Value;
+                new GetRevokeTagsVmContext()
+                , new KeyValuePair<string, object>("serial", Serial.Trim()))).Value;
 
             Tag = result?.FirstOrDefault();
             if (Tag is null)

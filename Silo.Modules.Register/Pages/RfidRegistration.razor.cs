@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Silo.Shared.Components;
 
 namespace Silo.Modules.Register.Pages;
 
@@ -31,7 +30,7 @@ public partial class RfidRegistration
         {
             string username = (await AuthState.GetAuthenticationStateAsync()).User.Identity?.Name ?? string.Empty;
             string? existingSerial = (await Api.PostAsync<string>("SCheckTagEPCReturnProductSerial",
-                new("TagEpc", Request.Epc))).Value;
+                new KeyValuePair<string, object>("TagEpc", Request.Epc))).Value;
 
             if (!string.IsNullOrWhiteSpace(existingSerial))
             {

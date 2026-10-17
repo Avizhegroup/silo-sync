@@ -47,23 +47,6 @@ public partial class RegisterDataReport
                 Rows = (await Api.PostAsync<List<RegisterReportRow>>("SRepRegisterTagWithOutEPC")).Value;
             }
 
-            private sealed class RegisterReportRow
-            {
-                public string ProductSerial { get; set; } = string.Empty;
-                public string ProductCode { get; set; } = string.Empty;
-                public string ProductName { get; set; } = string.Empty;
-                public string RegCode { get; set; } = string.Empty;
-                public decimal ProductCount { get; set; }
-                public string Date => !string.IsNullOrWhiteSpace(SoftDeleteDate)
-                    ? SoftDeleteDate
-                    : !string.IsNullOrWhiteSpace(TagRegisterShamsiUnixDate) ? TagRegisterShamsiUnixDate : RegisterDate;
-                public string User => !string.IsNullOrWhiteSpace(SoftDeleteUser) ? SoftDeleteUser : Username;
-                public string RegisterDate { get; set; } = string.Empty;
-                public string SoftDeleteDate { get; set; } = string.Empty;
-                public string SoftDeleteUser { get; set; } = string.Empty;
-                public string Username { get; set; } = string.Empty;
-                public string TagRegisterShamsiUnixDate { get; set; } = string.Empty;
-            }
         }
         catch
         {
@@ -75,4 +58,22 @@ public partial class RegisterDataReport
             IsLoading = false;
         }
     }
+    private sealed class RegisterReportRow
+    {
+        public string ProductSerial { get; set; } = string.Empty;
+        public string ProductCode { get; set; } = string.Empty;
+        public string ProductName { get; set; } = string.Empty;
+        public string RegCode { get; set; } = string.Empty;
+        public decimal ProductCount { get; set; }
+        public string Date => !string.IsNullOrWhiteSpace(SoftDeleteDate)
+            ? SoftDeleteDate
+            : !string.IsNullOrWhiteSpace(TagRegisterShamsiUnixDate) ? TagRegisterShamsiUnixDate : RegisterDate;
+        public string User => !string.IsNullOrWhiteSpace(SoftDeleteUser) ? SoftDeleteUser : Username;
+        public string RegisterDate { get; set; } = string.Empty;
+        public string SoftDeleteDate { get; set; } = string.Empty;
+        public string SoftDeleteUser { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string TagRegisterShamsiUnixDate { get; set; } = string.Empty;
+    }
+
 }

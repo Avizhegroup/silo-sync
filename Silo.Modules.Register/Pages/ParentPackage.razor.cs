@@ -55,7 +55,7 @@ public partial class ParentPackage
             if (Succeeded)
             {
                 string? packageId = (await Api.PostAsync<string>("GetLatestNextlevelProductUnitbyEpc",
-                    new("EpcCode", ParentEpc.Trim()))).Value;
+                    new KeyValuePair<string, object>("EpcCode", ParentEpc.Trim()))).Value;
                 if (!string.IsNullOrWhiteSpace(packageId))
                 {
                     Message = $"{TextResources.APP_StringKeys_Alert_Success} {packageId}";

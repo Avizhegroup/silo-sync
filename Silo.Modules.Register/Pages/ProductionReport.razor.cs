@@ -43,7 +43,7 @@ public partial class ProductionReport
         {
             Rows = (await Api.PostAsyncByContext<List<GetAllRegisterDetailsVm>>(
                 "SRepRegisterTagDetailsForWinApp", new GetAllRegisterDetailsVmContext(),
-                new("filter", Filter))).Value ?? new();
+                new KeyValuePair<string, object>("filter", Filter))).Value ?? new();
         }
         catch
         {

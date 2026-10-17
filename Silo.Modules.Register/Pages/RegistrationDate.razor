@@ -1,0 +1,40 @@
+@page "/register/date"
+@inherits SiloBasePage
+@namespace Silo.Modules.Register.Pages
+
+<PageTitle>@TextResources.APP_StringKeys_DateTime</PageTitle>
+
+<div class="container-fluid mt-3" dir="rtl">
+    <h1 class="h4">@TextResources.APP_StringKeys_DateTime</h1>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <EditForm Model="Request" OnValidSubmit="OnSubmit">
+                <DataAnnotationsValidator />
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">@TextResources.APP_StringKeys_ProductSerial</label>
+                        <InputText class="form-control" @bind-Value="Request.Serial" />
+                        <ValidationMessage For="@(() => Request.Serial)" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">@TextResources.APP_StringKeys_Date</label>
+                        <InputText class="form-control" @bind-Value="Request.Date" placeholder="1405/01/01" />
+                        <ValidationMessage For="@(() => Request.Date)" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">@TextResources.APP_StringKeys_Time</label>
+                        <InputText class="form-control" @bind-Value="Request.Time" placeholder="12:00" />
+                        <ValidationMessage For="@(() => Request.Time)" />
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button class="btn btn-primary" type="submit" disabled="@IsLoading">@TextResources.APP_StringKeys_Save</button>
+                    </div>
+                </div>
+            </EditForm>
+            @if (!string.IsNullOrWhiteSpace(Message))
+            {
+                <div class="alert @(Succeeded ? "alert-success" : "alert-danger") mt-3" role="status">@Message</div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+@page "/register/rfid"
+@inherits SiloBasePage
+@namespace Silo.Modules.Register.Pages
+
+<PageTitle>@TextResources.APP_StringKeys_Register</PageTitle>
+
+<div class="container-fluid mt-3" dir="rtl">
+    <h1 class="h4">@TextResources.APP_StringKeys_Register</h1>
+    <p>در این صفحه اطلاعات بارکد و EPC دریافت‌شده از همراه ویندوز ثبت می‌شود؛ خواندن فیزیکی تگ در مرورگر انجام نمی‌شود.</p>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <EditForm Model="Request" OnValidSubmit="OnSubmit">
+                <DataAnnotationsValidator />
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">@TextResources.APP_StringKeys_ProductSerial</label>
+                        <InputText class="form-control" @bind-Value="Request.Serial" />
+                        <ValidationMessage For="@(() => Request.Serial)" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">EPC</label>
+                        <InputText class="form-control" @bind-Value="Request.Epc" />
+                        <ValidationMessage For="@(() => Request.Epc)" />
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button class="btn btn-primary" type="submit" disabled="@IsLoading">@TextResources.APP_StringKeys_Register</button>
+                    </div>
+                </div>
+            </EditForm>
+            @if (!string.IsNullOrWhiteSpace(Message))
+            {
+                <div class="alert @(Succeeded ? "alert-success" : "alert-danger") mt-3" role="status">@Message</div>
+            }
+        </div>
+    </div>
+</div>

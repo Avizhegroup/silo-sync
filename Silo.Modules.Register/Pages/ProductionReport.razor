@@ -1,0 +1,55 @@
+@page "/register/production-report"
+@inherits SiloBasePage
+@namespace Silo.Modules.Register.Pages
+
+<PageTitle>@TextResources.APP_StringKeys_Register</PageTitle>
+
+<div class="container-fluid mt-3" dir="rtl">
+    <h1 class="h4">@TextResources.APP_StringKeys_Register</h1>
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">@TextResources.APP_StringKeys_ProductCode</label>
+                    <input class="form-control" @bind="Filter.ProductCode" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">@TextResources.APP_StringKeys_ProductSerial</label>
+                    <input class="form-control" @bind="Filter.ProductSerial" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">@TextResources.APP_StringKeys_FromDate</label>
+                    <input class="form-control" @bind="FromDate" placeholder="1405/01/01" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">@TextResources.APP_StringKeys_ToDate</label>
+                    <input class="form-control" @bind="ToDate" placeholder="1405/01/02" />
+                </div>
+            </div>
+            <button class="btn btn-primary mt-3" @onclick="Search" disabled="@IsLoading">@TextResources.APP_StringKeys_Search</button>
+        </div>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Message))
+    {
+        <div class="alert alert-danger" role="alert">@Message</div>
+    }
+    @if (Rows is not null)
+    {
+        <TelerikGrid Data="Rows" Pageable="true" Sortable="true" PageSize="20">
+            <GridToolBarTemplate>
+                <GridCommandButton Command="ExcelExport">@TextResources.APP_StringKeys_ExportExcel</GridCommandButton>
+            </GridToolBarTemplate>
+            <GridExport><GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Register" /></GridExport>
+            <GridColumns>
+                <GridColumn Field="@nameof(GetAllRegisterDetailsVm.ProductSerial)" Title="@TextResources.APP_StringKeys_ProductSerial" />
+                <GridColumn Field="@nameof(GetAllRegisterDetailsVm.ProductCode)" Title="@TextResources.APP_StringKeys_ProductCode" />
+                <GridColumn Field="@nameof(GetAllRegisterDetailsVm.ProductName)" Title="@TextResources.APP_StringKeys_ProductName" />
+                <GridColumn Field="@nameof(GetAllRegisterDetailsVm.Count)" Title="@TextResources.APP_StringKeys_ProductCount" />
+                <GridColumn Field="@nameof(GetAllRegisterDetailsVm.DateTime)" Title="@TextResources.APP_StringKeys_DateTime" />
+                <GridColumn Field="@nameof(GetAllRegisterDetailsVm.Username)" Title="@TextResources.APP_StringKeys_User" />
+                <GridColumn Field="@nameof(GetAllRegisterDetailsVm.Line)" Title="@TextResources.APP_StringKeys_Chart_Line" />
+                <GridColumn Field="@nameof(GetAllRegisterDetailsVm.Shift)" Title="@TextResources.APP_StringKeys_Chart_Shift" />
+            </GridColumns>
+        </TelerikGrid>
+    }
+</div>

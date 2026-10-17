@@ -1,0 +1,48 @@
+@page "/register/package"
+@inherits SiloBasePage
+@namespace Silo.Modules.Register.Pages
+
+<PageTitle>@TextResources.APP_StringKeys_ProductPackWeight</PageTitle>
+
+<div class="container-fluid mt-3" dir="rtl">
+    <h1 class="h4">@TextResources.APP_StringKeys_ProductPackWeight</h1>
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label">EPC بسته</label>
+                    <input class="form-control" @bind="ParentEpc" />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">@TextResources.APP_StringKeys_ProductSerial</label>
+                    <input class="form-control" @bind="SerialInput" @bind:event="oninput" @onkeydown="OnSerialKeyDown" />
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-outline-primary" @onclick="AddSerial">@TextResources.APP_StringKeys_Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <TelerikGrid Data="Serials" Pageable="true" Sortable="true" PageSize="10">
+                <GridColumns>
+                    <GridColumn Field="@nameof(SerialRow.Serial)" Title="@TextResources.APP_StringKeys_ProductSerial" />
+                    <GridColumn>
+                        <Template Context="item">
+                            <button class="btn btn-sm btn-outline-danger" @onclick="() => RemoveSerial((SerialRow)item)">@TextResources.APP_StringKeys_Remove</button>
+                        </Template>
+                    </GridColumn>
+                </GridColumns>
+            </TelerikGrid>
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-primary" @onclick="SavePackage" disabled="@IsLoading">@TextResources.APP_StringKeys_Save</button>
+                <button class="btn btn-outline-secondary" @onclick="Clear">@TextResources.APP_StringKeys_Clear</button>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Message))
+            {
+                <div class="alert @(Succeeded ? "alert-success" : "alert-danger") mt-3" role="status">@Message</div>
+            }
+        </div>
+    </div>
+</div>

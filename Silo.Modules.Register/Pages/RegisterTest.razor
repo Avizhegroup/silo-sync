@@ -6,14 +6,13 @@
 
 <PageTitle>@PageTitle</PageTitle>
 
-<TelerikLoaderContainer Visible="@IsLoading" />
-
+<LocalWebSocketComponent @ref="Socket" 
+                         Port="@DevicePort"
+                         OnConnectionChanged="OnDeviceConnectionChanged"
+                         OnMessageReceived="OnDeviceMessageReceived"
+                         OnError="OnDeviceError" />
 <div class="container-fluid mt-2">
-    <LocalWebSocketComponent @ref="Socket" Port="@DevicePort"
-                             OnConnectionChanged="OnDeviceConnectionChanged"
-                             OnMessageReceived="OnDeviceMessageReceived"
-                             OnError="OnDeviceError" />
-
+   
     <div class="card shadow-sm mb-3">
         <div class="card-header fw-bold">1. @TextResources.APP_StringKeys_ProductSerial / EPC</div>
         <div class="card-body d-flex flex-wrap gap-3 align-items-end">
@@ -55,3 +54,4 @@
         </div>
     </div>
 </div>
+<TelerikLoaderContainer Visible="@IsLoading" />

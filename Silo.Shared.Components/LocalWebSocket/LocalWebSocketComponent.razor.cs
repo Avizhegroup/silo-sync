@@ -1,4 +1,5 @@
-﻿using Microsoft.JSInterop;
+﻿using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.JSInterop;
 
 namespace Silo.Shared.Components;
 
@@ -6,7 +7,10 @@ public partial class LocalWebSocketComponent : IAsyncDisposable
 {
     private const string ModulePath = "./_content/Silo.Shared.Components/LocalWebSocket/localWebSocket.js";
 
+    private const string TokenStorageKey = "Silo.LocalWebSocket.Token";
+
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+    [Inject] private ProtectedLocalStorage LocalStorage { get; set; } = default!;
     [Parameter] public int Port { get; set; } = 5005;
 
     /// <summary>Raised with the text of every message received from the local device host.</summary>
@@ -26,6 +30,28 @@ public partial class LocalWebSocketComponent : IAsyncDisposable
     private DotNetObjectReference<LocalWebSocketComponent>? _self;
     private bool _disposed;
     private string _token = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            var stored = await LocalStorage.GetAsync<string>(TokenStorageKey);
+            if (stored.Success && !string.IsNullOrWhiteSpace(stored.Value))
+            {
+                TokenInput = stored.Value;
+                StateHasChanged();
+            }
+        }
+        catch (System.Security.Cryptography.CryptographicException)
+        {
+            await LocalStorage.DeleteAsync(TokenStorageKey);
+        }
+    }
 
     public async Task OnConnectClick()
     {
@@ -87,6 +113,10 @@ public partial class LocalWebSocketComponent : IAsyncDisposable
     public async Task OnSocketStateChanged(bool connected)
     {
         IsConnected = connected;
+        if (connected && !string.IsNullOrEmpty(_token))
+        {
+            await LocalStorage.SetAsync(TokenStorageKey, _token);
+        }
         await OnConnectionChanged.InvokeAsync(connected);
         StateHasChanged();
     }

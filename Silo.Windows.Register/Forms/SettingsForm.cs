@@ -3,68 +3,35 @@ using Silo.Windows.Register.Devices;
 
 namespace Silo.Windows.Register.Forms;
 
-public sealed class SettingsForm : Form
+public sealed partial class SettingsForm : Form
 {
-    private readonly SettingsStore _store;
-    private readonly RegisterSettings _settings;
-    private readonly ComboBox _readerType = new() { DropDownStyle = ComboBoxStyle.DropDownList };
-    private readonly ComboBox _port = new() { DropDownStyle = ComboBoxStyle.DropDown };
-    private readonly NumericUpDown _baud = new() { Minimum = 1200, Maximum = 921600 };
-    private readonly NumericUpDown _power = new() { Minimum = 0, Maximum = 30 };
-    private readonly TextBox _ignore = new();
-    private readonly NumericUpDown _serialLength = new() { Minimum = 0, Maximum = 50 };
-    private readonly TextBox _splitter = new() { MaxLength = 1 };
-    private readonly ComboBox _printer = new() { DropDownStyle = ComboBoxStyle.DropDown };
-    private readonly NumericUpDown _socketPort = new() { Minimum = 1, Maximum = 65535 };
-    private readonly TextBox _token = new();
-    private readonly TextBox _origins = new();
-    private readonly TextBox _serverIp = new();
+    private SettingsStore _store = null!;
+    private RegisterSettings _settings = null!;
 
-    public SettingsForm(SettingsStore store, RegisterSettings settings)
+    // Required by the Visual Studio designer.
+    public SettingsForm()
+    {
+        InitializeComponent();
+        Load += OnSettingsFormLoad;
+    }
+
+    public SettingsForm(SettingsStore store, RegisterSettings settings) : this()
     {
         _store = store;
         _settings = settings;
-        Text = "Settings";
-        FormBorderStyle = FormBorderStyle.FixedDialog;
-        MaximizeBox = false;
-        MinimizeBox = false;
-        StartPosition = FormStartPosition.CenterParent;
-        ClientSize = new Size(520, 480);
+    }
+
+    private void OnSettingsFormLoad(object? sender, EventArgs e)
+    {
+        if (_settings is null)
+        {
+            return;
+        }
 
         _readerType.DataSource = Enum.GetValues<DeskReaderType>();
         _port.Items.AddRange(System.IO.Ports.SerialPort.GetPortNames());
         _printer.Items.AddRange(PrinterService.GetInstalledPrinters().ToArray());
-
-        var table = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 2, Padding = new Padding(10) };
-        table.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 170));
-        table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        AddRow(table, "Server IP", _serverIp);
-        AddRow(table, "Desk reader type", _readerType);
-        AddRow(table, "Reader port", _port);
-        AddRow(table, "Baud rate (Serial)", _baud);
-        AddRow(table, "Reader power", _power);
-        AddRow(table, "Ignore EPCs (comma, T64)", _ignore);
-        AddRow(table, "Serial length", _serialLength);
-        AddRow(table, "Barcode splitter", _splitter);
-        AddRow(table, "Printer", _printer);
-        AddRow(table, "Socket port", _socketPort);
-        AddRow(table, "Socket token", _token);
-        AddRow(table, "Allowed origins (comma, HTTPS)", _origins);
-
-        var save = new Button { Text = "Save", DialogResult = DialogResult.None, Dock = DockStyle.Bottom, Height = 36 };
-        save.Click += OnSaveClick;
-        Controls.Add(table);
-        Controls.Add(save);
-
-        Load += (_, _) => BindFromSettings();
-    }
-
-    private static void AddRow(TableLayoutPanel table, string caption, Control control)
-    {
-        control.Dock = DockStyle.Fill;
-        table.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        table.Controls.Add(new Label { Text = caption, AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(0, 8, 0, 8) });
-        table.Controls.Add(control);
+        BindFromSettings();
     }
 
     private void BindFromSettings()

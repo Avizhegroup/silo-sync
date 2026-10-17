@@ -1,45 +1,30 @@
+﻿using System.ComponentModel;
 using Silo.Windows.Register.Config;
 using Silo.Windows.Register.Devices;
 using Silo.Windows.Register.Server;
 
 namespace Silo.Windows.Register.Forms;
 
-public sealed class MainForm : Form
+public sealed partial class MainForm : Form
 {
     private readonly SettingsStore _store = new();
-    private readonly Label _serverStatus = new() { AutoSize = true, Text = "Server: stopped" };
-    private readonly Label _clientStatus = new() { AutoSize = true, Text = "Browser: not connected" };
-    private readonly Label _readerStatus = new() { AutoSize = true, Text = "Reader: stopped" };
-    private readonly Button _toggleServer = new() { Text = "Start server", AutoSize = true };
-    private readonly Button _toggleReader = new() { Text = "Start reader", AutoSize = true };
-    private readonly Button _settingsButton = new() { Text = "Settings", AutoSize = true };
-    private readonly TextBox _log = new() { Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical, Dock = DockStyle.Fill };
-    private RegisterSettings _settings;
-    private ReaderManager _reader;
-    private DeviceSocketServer _server;
-    private BarcodeWedgeBuffer _wedge;
+    private RegisterSettings _settings = null!;
+    private ReaderManager _reader = null!;
+    private DeviceSocketServer _server = null!;
+    private BarcodeWedgeBuffer _wedge = null!;
 
     public MainForm()
     {
-        Text = "Silo Register - Device Host";
-        ClientSize = new Size(720, 460);
-        StartPosition = FormStartPosition.CenterScreen;
-        KeyPreview = true;
+        InitializeComponent();
+
+        if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+        {
+            return;
+        }
 
         _settings = _store.Load();
         (_reader, _server, _wedge) = Build();
 
-        var buttons = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(8) };
-        buttons.Controls.AddRange([_toggleServer, _toggleReader, _settingsButton]);
-        var status = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(8), FlowDirection = FlowDirection.TopDown };
-        status.Controls.AddRange([_serverStatus, _clientStatus, _readerStatus]);
-        Controls.Add(_log);
-        Controls.Add(status);
-        Controls.Add(buttons);
-
-        _toggleServer.Click += OnToggleServerClick;
-        _toggleReader.Click += OnToggleReaderClick;
-        _settingsButton.Click += OnSettingsClick;
         KeyPress += (_, e) => _wedge.Append(e.KeyChar);
         FormClosing += OnMainFormClosing;
     }

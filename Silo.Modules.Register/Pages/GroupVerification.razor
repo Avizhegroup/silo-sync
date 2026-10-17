@@ -1,0 +1,39 @@
+@page "/register/verify-group"
+@inherits SiloBasePage
+@namespace Silo.Modules.Register.Pages
+
+<PageTitle>@TextResources.APP_StringKeys_Reports</PageTitle>
+
+<div class="container-fluid mt-3" dir="rtl">
+    <h1 class="h4">@TextResources.APP_StringKeys_Reports</h1>
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <label class="form-label">EPC</label>
+            <div class="input-group">
+                <input class="form-control" @bind="EpcInput" @bind:event="oninput" @onkeydown="OnKeyDown" />
+                <button class="btn btn-outline-primary" @onclick="AddEpc">@TextResources.APP_StringKeys_Add</button>
+            </div>
+            <div class="mt-2 d-flex gap-2">
+                <button class="btn btn-primary" @onclick="Verify" disabled="@IsLoading">@TextResources.APP_StringKeys_Search</button>
+                <button class="btn btn-outline-secondary" @onclick="Clear">@TextResources.APP_StringKeys_Clear</button>
+            </div>
+        </div>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Message))
+    {
+        <div class="alert alert-danger" role="alert">@Message</div>
+    }
+    @if (Results is not null)
+    {
+        <TelerikGrid Data="Results" Pageable="true" Sortable="true" PageSize="20">
+            <GridColumns>
+                <GridColumn Field="@nameof(TagVerificationRow.TagEpc)" Title="EPC" />
+                <GridColumn Field="@nameof(TagVerificationRow.ProductSerial)" Title="@TextResources.APP_StringKeys_ProductSerial" />
+                <GridColumn Field="@nameof(TagVerificationRow.ProductCode)" Title="@TextResources.APP_StringKeys_ProductCode" />
+                <GridColumn Field="@nameof(TagVerificationRow.ProductName)" Title="@TextResources.APP_StringKeys_ProductName" />
+                <GridColumn Field="@nameof(TagVerificationRow.RegCode)" Title="@TextResources.APP_StringKeys_Chart_Regcode" />
+                <GridColumn Field="@nameof(TagVerificationRow.ContractStatus)" Title="@TextResources.APP_StringKeys_Status" />
+            </GridColumns>
+        </TelerikGrid>
+    }
+</div>

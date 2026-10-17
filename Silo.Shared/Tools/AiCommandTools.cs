@@ -22,7 +22,7 @@
 public class AiCommandTools
 {
     private const string SqlStart = "<<SQL";
-    private const string ConfigStart = "<<CONFIG";
+    private const string SearchStart = "<<Search";
     private const string BlockEnd = ">>";
 
     /// <summary>
@@ -92,25 +92,9 @@ public class AiCommandTools
         return text.Trim();
     }
 
-    /// <summary>
-    /// Strips all <c>&lt;&lt;CONFIG ... &gt;&gt;</c> blocks from
-    /// <paramref name="text"/>.
-    ///
-    /// Extracted CONFIG commands are returned through
-    /// <paramref name="collectedCommands"/>.
-    /// </summary>
-    /// <param name="text">
-    /// Raw AI response text that may contain CONFIG command blocks.
-    /// </param>
-    /// <param name="collectedCommands">
-    /// Optional list that receives the extracted CONFIG commands.
-    /// </param>
-    /// <returns>
-    /// The cleaned response text with all CONFIG command blocks removed.
-    /// </returns>
-    public static string StripConfigBlocks(
-        string text,
-        List<string>? collectedCommands = null)
+    public static string StripSearchBlocks(
+    string text,
+    List<string>? collectedCommands = null)
     {
         if (string.IsNullOrEmpty(text))
             return text;
@@ -120,14 +104,14 @@ public class AiCommandTools
         while (startIndex < text.Length)
         {
             var blockStart = text.IndexOf(
-                ConfigStart,
+                SearchStart,
                 startIndex,
                 StringComparison.OrdinalIgnoreCase);
 
             if (blockStart == -1)
                 break;
 
-            var contentStart = blockStart + ConfigStart.Length;
+            var contentStart = blockStart + SearchStart.Length;
 
             var blockEnd = text.IndexOf(
                 BlockEnd,
@@ -137,22 +121,16 @@ public class AiCommandTools
             if (blockEnd == -1)
                 break;
 
-            var config = text
-                .Substring(
-                    contentStart,
-                    blockEnd - contentStart)
+            var query = text
+                .Substring(contentStart, blockEnd - contentStart)
                 .Trim();
 
-            if (collectedCommands is not null && config.Length > 0)
-                collectedCommands.Add(config);
+            if (collectedCommands is not null && query.Length > 0)
+                collectedCommands.Add(query);
 
-            var blockLength =
-                (blockEnd + BlockEnd.Length) - blockStart;
+            var blockLength = blockEnd + BlockEnd.Length - blockStart;
 
-            text = text.Remove(
-                blockStart,
-                blockLength);
-
+            text = text.Remove(blockStart, blockLength);
             startIndex = blockStart;
         }
 

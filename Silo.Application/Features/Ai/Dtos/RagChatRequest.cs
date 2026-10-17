@@ -22,4 +22,10 @@ public class RagChatRequest
 
     [JsonPropertyName("key")]
     public string? Key { get; set; }
+
+    [JsonPropertyName("isFinalAnswer")]
+    public bool IsFinalAnswer { get; set; } = false;
+
+    [JsonPropertyName("databaseResultsJson")]
+    public string? DatabaseResultsJson { get; set; }
 }

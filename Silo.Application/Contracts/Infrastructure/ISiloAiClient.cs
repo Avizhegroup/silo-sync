@@ -11,4 +11,11 @@ public interface ISiloAiClient
     /// <paramref name="docType"/> overrides the configured default document type for this call, when provided.
     /// </summary>
     Task<RagChatResponse?> SendAsync(Guid? conversationId, string message, RagDocType docType, CancellationToken cancellationToken);
+
+    Task<RagChatResponse?> SendFinalAnswerAsync(
+    Guid? conversationId,
+    string originalQuestion,
+    string databaseResultsJson,
+    RagDocType docType,
+    CancellationToken cancellationToken);
 }

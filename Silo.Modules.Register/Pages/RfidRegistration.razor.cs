@@ -29,12 +29,25 @@ public partial class RfidRegistration
 
         try
         {
+            string username = (await AuthState.GetAuthenticationStateAsync()).User.Identity?.Name ?? string.Empty;
             string? existingSerial = (await Api.PostAsync<string>("SCheckTagEPCReturnProductSerial",
                 new("TagEpc", Request.Epc))).Value;
 
             if (!string.IsNullOrWhiteSpace(existingSerial))
             {
-                Message = $"This EPC is already registered to serial {existingSerial}.";
+                Message = TextResources.APP_StringKeys_Validation_AnyData;
+                return;
+            }
+
+            int serialStatus = (await Api.PostAsync<int>("SIsProductSerialExist",
+                new("serial", Request.Serial),
+                new("username", username),
+                new("deviceIp", "0"),
+                new("deviceId", "0"))).Value;
+
+            if (serialStatus != 1)
+            {
+                Message = TextResources.APP_StringKeys_Validation_NotFound;
                 return;
             }
 
@@ -43,7 +56,7 @@ public partial class RfidRegistration
                 new("productCode", ""),
                 new("productCount", ""),
                 new("epcList", new[] { Request.Epc.Trim() }),
-                new("username", (await AuthState.GetAuthenticationStateAsync()).User.Identity?.Name ?? ""),
+                new("username", username),
                 new("deviceIp", "0"),
                 new("deviceId", "0"),
                 new("RegisterProperties", ""))).Value;

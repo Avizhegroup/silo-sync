@@ -1,0 +1,45 @@
+@page "/register/reports/{ReportType}"
+@inherits SiloBasePage
+@namespace Silo.Modules.Register.Pages
+
+<PageTitle>@ReportTitle</PageTitle>
+
+<div class="container-fluid mt-3" dir="rtl">
+    <h1 class="h4">@ReportTitle</h1>
+    @if (ReportType == "cancelled")
+    {
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3"><label class="form-label">@TextResources.APP_StringKeys_ProductSerial</label><input class="form-control" @bind="Serial" /></div>
+                    <div class="col-md-3"><label class="form-label">@TextResources.APP_StringKeys_FromDate</label><input class="form-control" @bind="FromDate" /></div>
+                    <div class="col-md-3"><label class="form-label">@TextResources.APP_StringKeys_ToDate</label><input class="form-control" @bind="ToDate" /></div>
+                    <div class="col-md-3 d-flex align-items-end"><button class="btn btn-primary" @onclick="Search" disabled="@IsLoading">@TextResources.APP_StringKeys_Search</button></div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <button class="btn btn-primary mb-3" @onclick="Search" disabled="@IsLoading">@TextResources.APP_StringKeys_Search</button>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Message))
+    {
+        <div class="alert alert-danger" role="alert">@Message</div>
+    }
+    @if (Rows is not null)
+    {
+        <TelerikGrid Data="Rows" Pageable="true" Sortable="true" PageSize="20">
+            <GridColumns>
+                <GridColumn Field="@nameof(RegisterReportRow.ProductSerial)" Title="@TextResources.APP_StringKeys_ProductSerial" />
+                <GridColumn Field="@nameof(RegisterReportRow.ProductCode)" Title="@TextResources.APP_StringKeys_ProductCode" />
+                <GridColumn Field="@nameof(RegisterReportRow.ProductName)" Title="@TextResources.APP_StringKeys_ProductName" />
+                <GridColumn Field="@nameof(RegisterReportRow.RegCode)" Title="@TextResources.APP_StringKeys_Chart_Regcode" />
+                <GridColumn Field="@nameof(RegisterReportRow.ProductCount)" Title="@TextResources.APP_StringKeys_ProductCount" />
+                <GridColumn Field="@nameof(RegisterReportRow.Date)" Title="@TextResources.APP_StringKeys_DateTime" />
+                <GridColumn Field="@nameof(RegisterReportRow.User)" Title="@TextResources.APP_StringKeys_User" />
+            </GridColumns>
+        </TelerikGrid>
+    }
+</div>

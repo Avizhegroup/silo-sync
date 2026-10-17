@@ -12,5 +12,11 @@
     <PackageReference Include="System.IO.Ports" />
   </ItemGroup>
 
+  <Target Name="CopyPackageDlls" AfterTargets="Build">
+    <ItemGroup>
+      <PackageDll Include="$(MSBuildProjectDirectory)\Packages\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PackageDll)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

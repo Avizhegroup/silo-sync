@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using Silo.Windows.Register.Config;
 using Silo.Windows.Register.Devices;
+using Silo.Windows.Register.Printing;
 using Silo.Windows.Register.Server;
 
 namespace Silo.Windows.Register.Forms;
@@ -12,6 +13,7 @@ public sealed partial class MainForm : Form
     private ReaderManager _reader = null!;
     private DeviceSocketServer _server = null!;
     private BarcodeWedgeBuffer _wedge = null!;
+    private PrintCommandHandler _printing = null!;
 
     public MainForm()
     {
@@ -42,6 +44,7 @@ public sealed partial class MainForm : Form
             _toggleReader.Text = reader.IsRunning ? "Stop reader" : "Start reader";
             AppendLog(message);
         });
+        _printing = new PrintCommandHandler(_settings, new LabelFormatStore(), server, message => UiPost(() => AppendLog(message)));
         wedge.BarcodeRead += async (_, barcode) => await ForwardAsync("barcode", barcode);
         server.Log += (_, message) => UiPost(() => AppendLog(message));
         server.ClientConnectionChanged += (_, connected) => UiPost(() =>
@@ -75,7 +78,11 @@ public sealed partial class MainForm : Form
                     _reader.Stop();
                     break;
                 case "print":
-                    PrinterService.SendRaw(string.IsNullOrWhiteSpace(command.Printer) ? _settings.PrinterModel : command.Printer, command.Data ?? string.Empty);
+                case "listprinters":
+                case "listformats":
+                case "printerstatus":
+                case "printformat":
+                    _ = _printing.HandleAsync(command);
                     break;
                 case "ping":
                     _ = _server.SendAsync("pong", string.Empty);

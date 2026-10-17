@@ -7,12 +7,25 @@ using Silo.Windows.Register.Config;
 
 namespace Silo.Windows.Register.Server;
 
-public sealed record SocketCommand(string Type, int? Mode, string? Printer, string? Data);
+public sealed record SocketCommand(
+    string Type,
+    int? Mode,
+    string? Printer,
+    string? Data,
+    string? Id = null,
+    string? Kind = null,
+    string? Format = null,
+    bool? WriteRfid = null,
+    Dictionary<string, string>? Fields = null,
+    Dictionary<string, string>? TechnicalData = null);
 
 /// <summary>
 /// Loopback WebSocket server (ws://127.0.0.1:{port}/?token=...). One browser client; HTTPS origin allowlist.
 /// Outgoing: {"type":"epc|barcode|status|pong","value":"..."}.
-/// Incoming: {"type":"startReader","mode":1|2}, {"type":"stopReader"}, {"type":"print","printer":"","data":"ZPL"}, {"type":"ping"}.
+/// Incoming: {"type":"startReader","mode":1|2}, {"type":"stopReader"}, {"type":"print","printer":"","data":"ZPL","id":"1"},
+/// {"type":"listPrinters"}, {"type":"listFormats"}, {"type":"printerStatus","kind":"zmin","id":"1"},
+/// {"type":"printFormat","id":"1","kind":"zpl|zmin","format":"name","printer":"","writeRfid":false,"fields":{},"technicalData":{}}.
+/// Replies: {"type":"printers|formats","value":"&lt;json&gt;"}, {"type":"printResult|printerStatus","id":"1","ok":true,"value":"message","code":0}.
 /// </summary>
 public sealed class DeviceSocketServer(RegisterSettings settings) : IAsyncDisposable
 {
@@ -90,6 +103,9 @@ public sealed class DeviceSocketServer(RegisterSettings settings) : IAsyncDispos
 
     public Task SendAsync(string type, string value, CancellationToken cancellationToken = default)
         => SendRawAsync(JsonSerializer.Serialize(new { type, value }), cancellationToken);
+
+    public Task SendReplyAsync(string type, string? id, bool ok, string value, int code = 0, CancellationToken cancellationToken = default)
+        => SendRawAsync(JsonSerializer.Serialize(new { type, id, ok, value, code }), cancellationToken);
 
     public async Task SendRawAsync(string json, CancellationToken cancellationToken = default)
     {

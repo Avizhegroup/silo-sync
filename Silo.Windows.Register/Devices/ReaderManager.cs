@@ -27,17 +27,26 @@ public sealed class ReaderManager(RegisterSettings settings) : IDisposable
         _mode = mode;
         var reader = Create();
         reader.EpcRead += OnRawEpc;
+        if (reader is IReaderFaultSource faultSource)
+        {
+            faultSource.Faulted += OnReaderFaulted;
+        }
+        _reader = reader; // assigned before Start so a Single-mode result can stop it immediately
         try
         {
             reader.Start();
         }
         catch
         {
+            _reader = null;
             reader.EpcRead -= OnRawEpc;
+            if (reader is IReaderFaultSource source)
+            {
+                source.Faulted -= OnReaderFaulted;
+            }
             reader.Dispose();
             throw;
         }
-        _reader = reader;
         StatusChanged?.Invoke(this, $"Reader started: {reader.Name} ({mode})");
     }
 
@@ -50,6 +59,10 @@ public sealed class ReaderManager(RegisterSettings settings) : IDisposable
         }
 
         reader.EpcRead -= OnRawEpc;
+        if (reader is IReaderFaultSource faultSource)
+        {
+            faultSource.Faulted -= OnReaderFaulted;
+        }
         reader.Dispose();
         lock (_gate)
         {
@@ -72,6 +85,8 @@ public sealed class ReaderManager(RegisterSettings settings) : IDisposable
         DeskReaderType.Simulated => new SimulatedEpcReader(),
         _ => new VendorEpcReader(settings.DeskReaderType, settings.DeskUHFReaderPort, settings.ReaderPower)
     };
+
+    private void OnReaderFaulted(object? sender, string message) => StatusChanged?.Invoke(this, $"Reader error: {message}");
 
     private void OnRawEpc(object? sender, string raw)
     {

@@ -6,10 +6,30 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- The native vendor DLLs (VHLib, UhfReader_API_HID, SLABHID*) are x64 only. -->
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.IO.Ports" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Managed vendor libraries: RfidApiLib (6061 reader) and LabelPrinter (ZMIN SDK). Copied by CopyPackageDlls. -->
+    <Reference Include="RfidApiLib">
+      <HintPath>Packages\RfidApiLib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="LabelPrinter">
+      <HintPath>Packages\LabelPrinter.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Default label templates (zpl\*.txt, zmin\*.lsf); copied next to the executable. -->
+    <None Include="Formats\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <Target Name="CopyPackageDlls" AfterTargets="Build">

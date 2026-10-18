@@ -1,0 +1,71 @@
+@page "/register/cancel"
+@inherits SiloBasePage
+@namespace Silo.Modules.Register.Pages
+@using Silo.Application.Features
+@using Silo.Shared.Components
+@using Telerik.Blazor.Components
+
+<PageTitle>@PageTitle</PageTitle>
+
+<LocalWebSocketComponent @ref="Socket"
+                         Port="@DevicePort"
+                         OnConnectionChanged="OnDeviceConnectionChanged"
+                         OnMessageReceived="OnDeviceMessageReceived"
+                         OnError="OnDeviceError" />
+
+<div class="container-fluid mt-2">
+    <div class="card shadow-sm mb-3">
+        <div class="card-header d-flex flex-wrap gap-3 align-items-center">
+            <span class="fw-bold">Cancel a registered tag</span>
+            <span class="badge @(IsDeviceConnected ? "bg-success" : "bg-secondary")">Reader: @(IsDeviceConnected ? "connected" : "not connected")</span>
+        </div>
+        <div class="card-body d-flex flex-wrap gap-3 align-items-end">
+            <div>
+                <label for="cancel-input" class="form-label">@TextResources.APP_StringKeys_ProductSerial / EPC</label>
+                <input id="cancel-input" class="form-control" style="min-width:280px" @bind="Input" @bind:event="oninput"
+                       @onkeyup="OnInputKeyUp" disabled="@(IsLoading || ConfirmPending)" autocomplete="off" />
+            </div>
+            <button type="button" class="btn btn-primary" disabled="@(IsLoading || ConfirmPending || string.IsNullOrWhiteSpace(Input))" @onclick="OnSearchClick">
+                @TextResources.APP_StringKeys_Search
+            </button>
+            <button type="button" class="btn btn-outline-secondary" disabled="@IsLoading" @onclick="OnClearClick">@TextResources.APP_StringKeys_New</button>
+        </div>
+    </div>
+
+    <div class="alert alert-@MessageKind fs-5">@Message</div>
+
+    @if (Product is not null)
+    {
+        <div class="card shadow-sm mb-3">
+            <div class="card-header fw-bold">@TextResources.APP_StringKeys_ProductName</div>
+            <div class="card-body">
+                <TelerikGrid Data="ProductList" Pageable="false" Sortable="false">
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetRevokeTagsVm.ProductSerial)" Title="@TextResources.APP_StringKeys_ProductSerial" />
+                        <GridColumn Field="@nameof(GetRevokeTagsVm.ProductName)" Title="@TextResources.APP_StringKeys_ProductName" />
+                        <GridColumn Field="@nameof(GetRevokeTagsVm.ProductCode)" Title="@TextResources.APP_StringKeys_ProductCode" />
+                        <GridColumn Field="@nameof(GetRevokeTagsVm.Size)" Title="@TextResources.APP_StringKeys_Product_Size" />
+                        <GridColumn Field="@nameof(GetRevokeTagsVm.RegCode)" Title="@TextResources.APP_StringKeys_Chart_Regcode" />
+                        <GridColumn Field="@nameof(GetRevokeTagsVm.Qc)" Title="@TextResources.APP_StringKeys_Chart_Qc" />
+                        <GridColumn Field="@nameof(GetRevokeTagsVm.Warehouse)" Title="@TextResources.APP_StringKeys_Field_Warehouse_Title" />
+                    </GridColumns>
+                </TelerikGrid>
+            </div>
+        </div>
+
+        @if (ConfirmPending)
+        {
+            <div class="alert alert-danger d-flex flex-wrap gap-3 align-items-center">
+                <span>@string.Format(TextResources.APP_StringKeys_Revoke_Confirm, Product.ProductSerial)</span>
+                <button type="button" class="btn btn-danger" @onclick="OnConfirmYes">@TextResources.APP_StringKeys_Confirm</button>
+                <button type="button" class="btn btn-outline-secondary" @onclick="OnConfirmNo">@TextResources.APP_StringKeys_Close</button>
+            </div>
+        }
+        else
+        {
+            <button type="button" class="btn btn-danger" disabled="@IsLoading" @onclick="OnCancelClick">@TextResources.APP_StringKeys_Revoke</button>
+        }
+    }
+</div>
+
+<TelerikLoaderContainer Visible="@IsLoading" />

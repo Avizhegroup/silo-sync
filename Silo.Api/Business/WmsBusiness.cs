@@ -26841,7 +26841,7 @@ GROUP BY tbl_Products.ProductType ";
 
                 var sqlCommandTagMovement = $@"DELETE   
                         FROM            tbl_TagsMovement
-                        where WHERE       (ProductSerial = N'{TagEpc}') OR
+                        WHERE       (ProductSerial = N'{TagEpc}') OR
                                      (TagEpc = N'{TagEpc}')  ";
                 childrenCommands.Add(new(sqlCommandTagMovement, new KeyValuePair<string, object>[]
                 {

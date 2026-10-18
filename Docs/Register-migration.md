@@ -40,12 +40,12 @@ Target split: **Blazor** `Silo.Modules.Register` (web workflows) and **Windows**
 | F5 Product picker | Blazor | Done | Reuses `ProductCodeModal`. |
 | F6 Print + register tags | Blazor + Windows | Done for ZPL and ZMIN (not run on hardware) | `/register/print` (`PrintRegister`): load a print action, per serial create/reuse the EPC (`SCreateEpc`), `SRegisterTag`, print through the device host (`printFormat`: ZPL RAW or ZMIN LabelPrinter SDK), then `PrintUpdatePrintStatus`. Templates live on the workstation (`Formats\zpl`, `Formats\zmin`). Not ported: legacy auto-print after register (`KindRegister` modes) and the "print only the serial" shortcuts. The legacy hard-coded test EPC is not carried over; the EPC type is chosen on the page. |
 | F7 Print existing action (FastReport) | Windows | Partly | The same page reprints an existing action through ZPL/ZMIN. FastReport (`.frx`) / PDF printing is **not** implemented. |
-| F8 Register by barcode + RFID | Windows | Partly | Vendor readers, barcode buffer and socket exist. No register form that pairs serial and EPC and calls the register RPC. |
+| F8 Register by barcode + RFID | Blazor + device | Done (not run on hardware) | `/register/pair` (`PairTag`): barcode typed by the scanner into the page (or sent by the host) plus EPC from the reader (single-read mode, restarted after each pair). Full legacy decision table (`SCheckTagEPCReturnProductSerial` → `SIsProductSerialExist` → `SRegisterTag`) with in-page confirmations; an error stops the run. Deviations: the edit path sends the real user id (legacy sent an empty username); "No" at the already-registered prompt is shown as a warning row and the run continues (legacy: silent success). Not ported: single-serial mode opened from the print form, the hidden dev test button. |
 | F9 Cancel registered tag | Blazor | Not started | Not checked whether an equivalent web page already exists. |
-| F10 Change registration date | Blazor | Done | `/register/date`. No inspect/warehouse gating (see F10 spec). |
+| F10 Change registration date | Blazor | Done | `/register/date`. Enforces the legacy rule: editable only when the inspect title is "بازرسی نشده" and `TagStatus` is 0 (production warehouses), checked on lookup and again before saving (the server does not enforce it). The lookup accepts a serial or an EPC (`SPGetProductInfo`); the reader is not wired to this page. |
 | F11 Parent package | Blazor | Done | `/register/package`. `GetLatestNextlevelProductUnitbyEpc` does not exist on the server, so the package code is re-read by EPC. |
 | F12 Test register (single) | Blazor + device | Done | `/register/test`, connects to the device host through `LocalWebSocketComponent` (epc/barcode in, startReader/stopReader out). Not run against a real reader. |
-| F13 Test register (group) | Blazor + device | Not started | Needs continuous multi-tag read; the host already supports continuous mode. |
+| F13 Test register (group) | Blazor + device | Done (not run on hardware) | `/register/test/group` (`GroupTest`): continuous read (mode 2), new EPCs batched once a second into `SGetProductsByEpcs`, red/green rows, total and not-registered counters, Reset. The server query does not return an old-serial column (legacy showed an always-empty one), so that column is omitted. Lookups only run when new tags were read (legacy called the API every second). |
 | F14 Registered-production report | Blazor | Existing, not verified | Assumed covered by existing web reports. |
 | F15 Cancelled-registration report | Blazor | Existing, not verified | Same as F14. |
 | F16 Data-quality report | Blazor | Existing, not verified | Same as F14. |
@@ -62,13 +62,13 @@ Message protocol: host to browser `{"type":"epc|barcode|pong|error","value":"...
 
 1. **Vendor reader drivers:** implemented from the legacy calls but **not tested on real readers** (and the code has not been compiled in CI). T64 reads only the first tag per poll, as legacy did. Tiny ignores the configured power, as legacy did.
 2. **F6/F7 printing:** ZPL and ZMIN are implemented; **FastReport/PDF printing, auto-print after register (`KindRegister` modes) and the legacy merge-to-PDF option are not**. The ZMIN flow needs a real ZMIN printer to verify (`LabelPrinter.dll` is obfuscated vendor code used exactly as the legacy app called it).
-3. **F8:** Windows form that pairs a barcode serial with a read EPC and calls the register RPC.
+3. **F8:** done (`/register/pair`). The host's keyboard-wedge buffer still only sees keys while the host window has focus; the web pages therefore take the barcode in their own focused input.
 4. **F9 and F13:** cancel-registration page and group test page.
 5. **Verification of "existing" items** (F3, F4, F14 to F16): compare against the legacy field and filter rules.
 6. **Hardware testing** of the device host, readers, scanner, printer, and browser behaviour for `ws://127.0.0.1` from an HTTPS page (mixed content / private network access).
 7. **Host setup:** allowed origin and token must be configured in the Windows app. The token is typed once in the component and then reused (auto-connect with retry, `DeviceRpc` request/reply now live in `Silo.Shared.Components`).
 8. **Localization:** several labels on the new pages and the Windows forms are hardcoded English and need `TextResources` keys.
-9. **Claims/permissions** for `/register/batch`, `/register/date`, `/register/package`, `/register/test`, `/register/print`.
+9. **Claims/permissions** for `/register/batch`, `/register/date`, `/register/package`, `/register/test`, `/register/print`, `/register/pair`, `/register/test/group`.
 10. **Unmigrated F17 settings** and the legacy migration of old settings values.
 
 ---

@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Silo.Application.Features;
+using Silo.Modules.Register.Models;
 
 namespace Silo.Modules.Register.Pages;
 
@@ -14,10 +15,12 @@ public partial class RegistrationDate
     public string NewDate { get; set; } = string.Empty;
     public string NewTime { get; set; } = string.Empty;
     public GetRevokeTagsVm? Product { get; set; }
+    public bool CanEdit { get; set; }
+    public string EditReason { get; set; } = string.Empty;
     public List<GetRevokeTagsVm> ProductList => Product is null ? [] : [Product];
     public bool DateError => NewDate.Length > 0 && !DateRegex.IsMatch(NewDate);
     public bool TimeError => NewTime.Length > 0 && !TimeRegex.IsMatch(NewTime);
-    public bool IsInputValid => DateRegex.IsMatch(NewDate) && TimeRegex.IsMatch(NewTime);
+    public bool IsInputValid => CanEdit && DateRegex.IsMatch(NewDate) && TimeRegex.IsMatch(NewTime);
 
     [Inject] public RfidConnectApi Api { get; set; } = default!;
 
@@ -53,6 +56,15 @@ public partial class RegistrationDate
 
         try
         {
+            // The server does not enforce the rule, so check it again right before writing.
+            var current = await GetTagStateAsync(Product.ProductSerial);
+            (CanEdit, EditReason) = TagStateInfo.EvaluateDateEdit(current);
+            if (!CanEdit)
+            {
+                Notification.Show(EditReason, "error");
+                return;
+            }
+
             bool ok = (await Api.PostAsync<bool>("SChangeRegisterDate"
                 , new KeyValuePair<string, object>("ProductSerial", Product.ProductSerial)
                 , new KeyValuePair<string, object>("NewDate", NewDate)
@@ -64,6 +76,8 @@ public partial class RegistrationDate
             if (ok)
             {
                 Product = null;
+                CanEdit = false;
+                EditReason = string.Empty;
                 NewDate = NewTime = string.Empty;
             }
         }
@@ -87,15 +101,24 @@ public partial class RegistrationDate
 
         try
         {
-            var products = (await Api.PostAsyncByContext<List<GetRevokeTagsVm>>("SGetProductBySerial"
-                , new GetRevokeTagsVmContext()
-                , new KeyValuePair<string, object>("serial", Serial))).Value;
+            // The input may be a serial or a tag EPC: SPGetProductInfo resolves either.
+            var state = await GetTagStateAsync(Serial);
+            (CanEdit, EditReason) = TagStateInfo.EvaluateDateEdit(state);
 
-            Product = products?.FirstOrDefault();
+            Product = null;
+            if (state is not null)
+            {
+                var products = (await Api.PostAsyncByContext<List<GetRevokeTagsVm>>("SGetProductBySerial"
+                    , new GetRevokeTagsVmContext()
+                    , new KeyValuePair<string, object>("serial", state.ProductSerial))).Value;
+
+                Product = products?.FirstOrDefault();
+            }
 
             if (Product is null)
             {
-                Notification.Show(TextResources.APP_StringKeys_Alert_Fail, "error");
+                CanEdit = false;
+                Notification.Show(state is null ? EditReason : TextResources.APP_StringKeys_Alert_Fail, "error");
             }
 
             Serial = string.Empty;
@@ -105,4 +128,8 @@ public partial class RegistrationDate
             IsLoading = false;
         }
     }
+
+    private async Task<TagStateInfo?> GetTagStateAsync(string serialOrEpc)
+        => (await Api.PostAsync<List<TagStateInfo>>("SPGetProductInfo"
+            , new KeyValuePair<string, object>("tagEpc", serialOrEpc))).Value?.FirstOrDefault();
 }

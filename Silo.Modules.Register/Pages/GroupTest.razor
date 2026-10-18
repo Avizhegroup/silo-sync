@@ -1,0 +1,77 @@
+@page "/register/test/group"
+@inherits SiloBasePage
+@implements IDisposable
+@namespace Silo.Modules.Register.Pages
+@using Silo.Shared.Components
+@using Telerik.Blazor.Components
+
+<PageTitle>@PageTitle</PageTitle>
+
+<LocalWebSocketComponent @ref="Socket"
+                         Port="@DevicePort"
+                         OnConnectionChanged="OnDeviceConnectionChanged"
+                         OnMessageReceived="OnDeviceMessageReceived"
+                         OnError="OnDeviceError" />
+
+<div class="container-fluid mt-2">
+    <div class="card shadow-sm mb-3">
+        <div class="card-header d-flex flex-wrap gap-3 align-items-center">
+            <span class="fw-bold">Group tag test</span>
+            <span class="badge @(IsReading ? "bg-warning text-dark" : "bg-secondary")">@(IsReading ? "Reading" : "Stopped")</span>
+            <span class="ms-auto d-flex flex-wrap gap-2">
+                <NavLink href="/register/test" class="btn btn-sm btn-outline-secondary">Single test</NavLink>
+            </span>
+        </div>
+        <div class="card-body d-flex flex-wrap gap-4 align-items-center">
+            <div class="fs-5">All tags: <strong>@Rows.Count</strong></div>
+            <div class="fs-5 @(NotRegisteredCount > 0 ? "text-danger" : string.Empty)">Not registered: <strong>@NotRegisteredCount</strong></div>
+            <div class="text-muted">Waiting for lookup: @_pending.Count</div>
+            @if (IsReading)
+            {
+                <button type="button" class="btn btn-outline-danger" @onclick="StopAsync">Stop</button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-primary" disabled="@(!IsDeviceConnected)" @onclick="StartAsync">Start reading</button>
+            }
+            <button type="button" class="btn btn-outline-secondary" disabled="@(!IsDeviceConnected)" @onclick="ResetAsync">Reset</button>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body table-responsive">
+            <table class="table table-sm align-middle">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>EPC</th>
+                        <th>@TextResources.APP_StringKeys_ProductSerial</th>
+                        <th>@TextResources.APP_StringKeys_ProductCode</th>
+                        <th>@TextResources.APP_StringKeys_ProductName</th>
+                        <th>@TextResources.APP_StringKeys_Chart_Regcode</th>
+                        <th>Contract status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in Rows)
+                    {
+                        <tr class="@(row.IsRegistered ? "table-success" : "table-danger")">
+                            <td>@row.Index</td>
+                            <td class="font-monospace">@row.Epc</td>
+                            <td>@(row.IsRegistered ? row.Serial : "Not registered")</td>
+                            <td>@row.ProductCode</td>
+                            <td>@row.ProductName</td>
+                            <td>@row.RegCode</td>
+                            <td>@row.ContractStatus</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

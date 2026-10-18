@@ -13,7 +13,7 @@
         <div class="card-header fw-bold">1. @TextResources.APP_StringKeys_Search @TextResources.APP_StringKeys_ProductSerial</div>
         <div class="card-body d-flex flex-wrap gap-3 align-items-end">
             <div>
-                <label for="date-serial" class="form-label">@TextResources.APP_StringKeys_ProductSerial</label>
+                <label for="date-serial" class="form-label">@TextResources.APP_StringKeys_ProductSerial / EPC</label>
                 <input id="date-serial" class="form-control" style="min-width:260px" @bind="Serial" @bind:event="oninput"
                        @onkeyup="OnSerialKeyUp" autofocus />
             </div>
@@ -45,12 +45,14 @@
             </div>
         </div>
 
+        <div class="alert @(CanEdit ? "alert-success" : "alert-danger")">@EditReason</div>
+
         <div class="card shadow-sm">
             <div class="card-header fw-bold">3. @TextResources.APP_StringKeys_Date</div>
             <div class="card-body d-flex flex-wrap gap-3 align-items-start">
                 <div>
                     <label for="date-new" class="form-label">@TextResources.APP_StringKeys_Date (1404/01/31)</label>
-                    <input id="date-new" class="form-control @(DateError ? "is-invalid" : string.Empty)" maxlength="10"
+                    <input id="date-new" class="form-control @(DateError ? "is-invalid" : string.Empty)" maxlength="10" disabled="@(!CanEdit)"
                            placeholder="14yy/mm/dd" @bind="NewDate" @bind:event="oninput" />
                     @if (DateError)
                     {
@@ -59,7 +61,7 @@
                 </div>
                 <div>
                     <label for="date-time" class="form-label">HH:mm</label>
-                    <input id="date-time" class="form-control @(TimeError ? "is-invalid" : string.Empty)" maxlength="5"
+                    <input id="date-time" class="form-control @(TimeError ? "is-invalid" : string.Empty)" maxlength="5" disabled="@(!CanEdit)"
                            placeholder="HH:mm" @bind="NewTime" @bind:event="oninput" />
                     @if (TimeError)
                     {

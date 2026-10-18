@@ -1,9 +1,16 @@
 @page "/register/package"
 @inherits SiloBasePage
 @namespace Silo.Modules.Register.Pages
+@using Silo.Shared.Components
 @using Telerik.Blazor.Components
 
 <PageTitle>@PageTitle</PageTitle>
+
+<LocalWebSocketComponent @ref="Socket"
+                         Port="@DevicePort"
+                         OnConnectionChanged="OnDeviceConnectionChanged"
+                         OnMessageReceived="OnDeviceMessageReceived"
+                         OnError="OnDeviceError" />
 
 <TelerikLoaderContainer Visible="@IsLoading" />
 
@@ -39,6 +46,10 @@
                     <button type="button" class="btn btn-outline-primary" disabled="@IsLoading" @onclick="OnLoadPackageClick">
                         @TextResources.APP_StringKeys_Search
                     </button>
+                    <button type="button" class="btn @(IsReading ? "btn-warning" : "btn-outline-primary")" disabled="@(IsLoading || !IsDeviceConnected)" @onclick="OnReadTagClick"
+                            title="@(IsDeviceConnected ? "Read the package tag with the reader" : "The device host is not connected")">
+                        @(IsReading ? "Waiting for the tag..." : "Read package tag")
+                    </button>
                 </div>
             </div>
         </div>
@@ -47,7 +58,28 @@
     <div class="card shadow-sm">
         <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
             <span class="fw-bold">3. @TextResources.APP_StringKeys_Count: <span class="badge bg-secondary">@Items.Count</span></span>
-            <div class="d-flex gap-2">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <span class="text-muted">@TextResources.APP_StringKeys_Value: @TotalValue.ToString("0.##")</span>
+                <select class="form-select" style="max-width:240px" @bind="SelectedFormatKey" disabled="@(IsPrinting || !IsDeviceConnected)">
+                    <option value="">Label format</option>
+                    @foreach (var format in Formats)
+                    {
+                        <option value="@format.Key">@format.Display</option>
+                    }
+                </select>
+                @if (SelectedFormat?.Kind == "zpl")
+                {
+                    <select class="form-select" style="max-width:220px" @bind="SelectedPrinter" disabled="@IsPrinting">
+                        <option value="">(default printer of the host)</option>
+                        @foreach (var printer in Printers)
+                        {
+                            <option value="@printer">@printer</option>
+                        }
+                    </select>
+                }
+                <button type="button" class="btn btn-outline-dark" disabled="@(IsLoading || IsPrinting || SelectedFormat is null || Items.Count == 0 || !IsDeviceConnected)" @onclick="OnPrintLabelClick">
+                    Print label
+                </button>
                 <button type="button" class="btn btn-outline-secondary" disabled="@IsLoading" @onclick="OnClearClick">@TextResources.APP_StringKeys_New</button>
                 <button type="button" class="btn btn-success" disabled="@(IsLoading || Items.Count == 0 || string.IsNullOrWhiteSpace(PackageEpc))" @onclick="OnSaveClick">
                     @TextResources.APP_StringKeys_Save

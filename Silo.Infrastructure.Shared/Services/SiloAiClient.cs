@@ -65,4 +65,53 @@ public class SiloAiClient : ISiloAiClient
 
         return await response.Content.ReadFromJsonAsync<RagChatResponse>(cancellationToken: cancellationToken);
     }
+
+
+    public async Task<RagChatResponse?> SendFinalAnswerAsync(
+        Guid? conversationId,
+        string originalQuestion,
+        string databaseResultsJson,
+        RagDocType docType,
+        CancellationToken cancellationToken)
+    {
+        RagChatRequest request = new()
+        {
+            ConversationId = conversationId,
+            Message = originalQuestion,
+            TopK = _options.TopK,
+            IsMainChat = true,
+            DocType = docType,
+            Key = _options.Key,
+            IsFinalAnswer = true,
+            DatabaseResultsJson = databaseResultsJson
+        };
+
+        using var response = await _httpClient.PostAsJsonAsync(SendEndpoint,request,cancellationToken);
+
+        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "SiloAI final-answer request failed. " +
+                "StatusCode={StatusCode}, ConversationId={ConversationId}, " +
+                "ResponseBody={ResponseBody}",
+                (int)response.StatusCode,
+                conversationId,
+                responseBody);
+
+            return new RagChatResponse
+            {
+                StatusCode = response.StatusCode
+            };
+        }
+
+        var result = System.Text.Json.JsonSerializer.Deserialize<RagChatResponse>(
+            responseBody,
+            new System.Text.Json.JsonSerializerOptions(
+                System.Text.Json.JsonSerializerDefaults.Web));
+
+        return result;
+    }
+
 }

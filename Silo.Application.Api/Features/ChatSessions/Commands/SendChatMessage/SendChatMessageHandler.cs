@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Silo.Application.Contracts;
 using Silo.Shared.Tools;
@@ -59,15 +60,19 @@ public class SendChatMessageHandler(
             };
         }
 
+        var conversationId = result.ConversationId;
+
         var priceUsage = result.PriceUsage;
 
         var sqlCommands = new List<string>();
 
+        var searchCommands = new List<string>();
+
         var cleanResponseText = AiCommandTools.StripSqlBlocks(result.ResponseText ?? string.Empty, sqlCommands);
 
-        var configCommands = new List<string>();
+        cleanResponseText = AiCommandTools.StripSearchBlocks(cleanResponseText, searchCommands);
 
-        cleanResponseText = AiCommandTools.StripConfigBlocks(cleanResponseText,configCommands);
+        var searchResults = new List<List<object>>();
 
         var sqlResults = new List<List<object>>();
 
@@ -75,32 +80,112 @@ public class SendChatMessageHandler(
         {
             try
             {
-                var data = DataTableTools.DataTableToObjects(dataAccess.SqlDataAdapter(sqlCommands[0]));
+                var data = DataTableTools.DataTableToObjects( dataAccess.SqlDataAdapter(sqlCommands[0]));
 
                 sqlResults.Add(data);
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "Failed to execute SQL command from AI response for user {UserId}", request.UserId);
+                logger.LogWarning(ex,"Failed to execute SQL command from AI response for user {UserId}", request.UserId);
             }
         }
 
-        if (configCommands.Count > 0)
+        if (searchCommands.Count > 0)
         {
-            logger.LogInformation(
-                "Received {ConfigCommandCount} CONFIG command(s) from AI for user {UserId}",
-                configCommands.Count,
-                request.UserId);
+            var finalAnswerGenerated = false;
+
+            try
+            {
+                var data = DataTableTools.DataTableToObjects(dataAccess.SqlDataAdapter(searchCommands[0]));
+
+                searchResults.Add(data);
+
+                var databaseResultsJson = JsonSerializer.Serialize(data);
+
+                try
+                {
+
+                    var finalResult = await siloAiClient.SendFinalAnswerAsync(
+                        conversationId,
+                        request.Message,
+                        databaseResultsJson,
+                        request.Mode,
+                        cancellationToken);
+
+                    if (finalResult is not null &&
+                        finalResult.StatusCode is null or HttpStatusCode.OK &&
+                        finalResult.ResponseText.HasValue())
+                    {
+                        var finalSqlCommands = new List<string>();
+
+                        var finalSearchCommands = new List<string>();
+
+                        var finalConfigCommands = new List<string>();
+
+                        var finalText = AiCommandTools.StripSqlBlocks(
+                            finalResult.ResponseText,
+                            finalSqlCommands);
+
+                        finalText = AiCommandTools.StripSearchBlocks(
+                            finalText,
+                            finalSearchCommands);
+
+                        if (finalText.HasValue())
+                        {
+                            cleanResponseText = finalText;
+
+                            conversationId = finalResult.ConversationId;
+
+                            finalAnswerGenerated = true;
+                        }
+
+                        if (finalResult.PriceUsage.HasValue)
+                        {
+                            priceUsage = (priceUsage ?? 0m) + finalResult.PriceUsage.Value;
+                        }
+                    }
+                    else
+                    {
+                        logger.LogWarning("Silo AI final-answer generation returned no usable response for user {UserId}", request.UserId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex,"Silo AI final-answer generation failed after Search execution for user {UserId}", request.UserId);
+                }
+
+                if (data.Count == 0 && !finalAnswerGenerated)
+                {
+                    cleanResponseText = cleanResponseText.HasNoValue()
+                        ? "نتیجه‌ای برای جستجو پیدا نشد."
+                        : $"{cleanResponseText}\n\nنتیجه‌ای برای جستجو پیدا نشد.";
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex,"Failed to execute Search command for user {UserId}", request.UserId);
+
+                cleanResponseText = cleanResponseText.HasNoValue()
+                    ? "اجرای جستجو با خطا مواجه شد."
+                    : $"{cleanResponseText}\n\nاجرای جستجو با خطا مواجه شد.";
+            }
         }
 
-        state.ConversationId = result.ConversationId;
+        state.ConversationId = conversationId;
 
-        state.Messages.Add(new ChatMessageDto { Text = request.Message, IsUser = true, Datetime = DateTime.Now });
+        state.Messages.Add(new ChatMessageDto
+        {
+            Text = request.Message,
+            IsUser = true,
+            Datetime = DateTime.Now
+        });
 
-        state.Messages.Add(new ChatMessageDto { 
+        state.Messages.Add(new ChatMessageDto
+        {
             Text = cleanResponseText,
             IsUser = false,
-            Datetime = DateTime.Now});
+            Datetime = DateTime.Now
+        });
 
         var updatedJson = JsonSerializer.Serialize(state);
 
@@ -139,7 +224,9 @@ public class SendChatMessageHandler(
                 }
                 else
                 {
-                    usage = JsonSerializer.Deserialize<ChatTokenUsageDto>(existingSession.TokenUsage) ?? new ChatTokenUsageDto();
+                    usage = JsonSerializer.Deserialize<ChatTokenUsageDto>(
+                                existingSession.TokenUsage)
+                            ?? new ChatTokenUsageDto();
                 }
 
                 usage.InputTokenCount += result.TokenUsage.InputTokenCount;
@@ -151,7 +238,6 @@ public class SendChatMessageHandler(
             }
 
             existingSession.PriceUsage += priceUsage;
-
             existingSession.LastUpdated = DateTime.Now;
 
             await context.SaveChangesAsync(cancellationToken);
@@ -179,7 +265,8 @@ public class SendChatMessageHandler(
             ResponseText = cleanResponseText,
             SessionId = sessionId,
             SqlCommandsResults = sqlResults,
-            QueryId = aiQuery?.Id
+            QueryId = aiQuery?.Id,
+            SearchCommandsResults = searchResults
         };
     }
 }

@@ -236,6 +236,22 @@ public partial class AddProduct
             }
         }
 
+        // The register flow divides the pack value by the carton value (SSavePrintBySerial), so a product saved with a
+        // zero value could never be registered. The legacy product form required the pack value.
+        if (EnabilityChecker.ProductValue && Product.ProductValue <= 0)
+        {
+            Notification.Show(string.Format(TextResources.APP_StringKeys_Validation_Required,
+                                            TextResources.APP_StringKeys_ProductValue), "error");
+            return;
+        }
+
+        if (EnabilityChecker.ProductPackValue && Product.ProductPackValue <= 0)
+        {
+            Notification.Show(string.Format(TextResources.APP_StringKeys_Validation_Required,
+                                            TextResources.APP_StringKeys_PackValue), "error");
+            return;
+        }
+
         IsLoading = true;
 
         FixEmptinessSaveProduct();

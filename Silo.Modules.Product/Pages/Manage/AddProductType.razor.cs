@@ -43,6 +43,16 @@ public partial class AddProductType
 
     public async Task OnSaveProductType(MouseEventArgs e)
     {
+        // Legacy (F4): both the code and the title are required.
+        if (string.IsNullOrWhiteSpace(Request.Code) || string.IsNullOrWhiteSpace(Request.Title))
+        {
+            Notification.Show(string.Format(TextResources.APP_StringKeys_Validation_Required,
+                                            string.IsNullOrWhiteSpace(Request.Code)
+                                                ? TextResources.APP_StringKeys_Code
+                                                : TextResources.APP_StringKeys_Field_Title), "error");
+            return;
+        }
+
         IsLoading = true;
 
         bool result = (await Api.PostAsync<bool>("SSaveProductType",

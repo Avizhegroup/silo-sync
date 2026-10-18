@@ -12896,35 +12896,35 @@ WHERE [NESTED].Freeze = 0"
     string User
     )
     {
-        string whereKey = " (SoftDelete = 1) AND";
+        // Parameterised: the filter values come from the browser and must never be concatenated into the SQL text.
+        var conditions = new List<string> { "SoftDelete = 1" };
+        var parameters = new List<KeyValuePair<string, object>>();
 
         if (ProductSerial != "" && ProductSerial != "-1")
         {
-            whereKey += " ( ProductSerial= " + ProductSerial + " )  AND";
+            conditions.Add("ProductSerial = @ProductSerial");
+            parameters.Add(new("ProductSerial", ProductSerial));
         }
 
         if (FromDate != "" && FromDate != "-1")
         {
-            whereKey += " (SoftDeleteDate >= '" + FromDate + "')  AND";
+            conditions.Add("SoftDeleteDate >= @FromDate");
+            parameters.Add(new("FromDate", FromDate));
         }
 
         if (ToDate != "" && ToDate != "-1")
         {
-            whereKey += " (SoftDeleteDate <= '" + ToDate + "')  AND";
+            conditions.Add("SoftDeleteDate <= @ToDate");
+            parameters.Add(new("ToDate", ToDate));
         }
 
         if (User != "" && User != "-1")
         {
-            whereKey += " (SoftDeleteUser=N'" + User + "')  AND";
+            conditions.Add("SoftDeleteUser = @User");
+            parameters.Add(new("User", User));
         }
 
-        if (!string.IsNullOrEmpty(whereKey))
-        {
-            if (whereKey != "" && whereKey.Substring(whereKey.Length - 3, 3) == "AND")
-            {
-                whereKey = whereKey.Substring(0, whereKey.Length - 3);
-            }
-        }
+        string whereKey = string.Join(" AND ", conditions);
 
         var dtProducts = new DataTable();
         dtProducts.Columns.Add("ProductSerial", typeof(string));
@@ -12958,7 +12958,7 @@ FROM tbl_Print " + (whereKey != string.Empty ? " Where " + whereKey : "") +
       "User: " + User + Environment.NewLine +
       "sqlCommand: " + sqlCommand + Environment.NewLine
      );
-            return dataAccess.SqlDataAdapter(sqlCommand);
+            return dataAccess.SqlDataAdapter(sqlCommand, parameters.ToArray());
         }
         catch (Exception exception)
         {

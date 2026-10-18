@@ -13723,6 +13723,123 @@ EXECUTE sp_executesql @sqlcmd;";
     }
 
 
+    /// <summary>
+    /// Registered production grouped by line, technical code, size, product type and quality (the legacy "summary by size
+    /// and technical code" tab). Unlike <see cref="SRepRegisterTagSummaryGroupBySizeANDRegCode"/> every filter is a SQL
+    /// parameter (that method concatenates the values, so only numeric codes work and the values are injectable) and the
+    /// quality columns are pivoted by the caller. Filters use the same convention: null, empty or "-1" means not set;
+    /// dates are "yyyyMMdd" (Persian calendar) and times "HHmmss". The business day starts with the first shift, so a
+    /// date range covers [from 06:00:01, to 06:00:01] exactly like the legacy report.
+    /// </summary>
+    public DataTable SRepRegisterTagMatrix(GetRegisterRequestFilter filter)
+    {
+        var table = new DataTable();
+        foreach (var name in new[] { "Line", "RegCode", "Size", "ProductType", "Qc" })
+        {
+            table.Columns.Add(name, typeof(string));
+        }
+
+        table.Columns.Add("Count", typeof(decimal));
+
+        try
+        {
+            var conditions = new List<string>();
+            var parameters = new List<KeyValuePair<string, object>>();
+
+            static bool IsSet(string value) => !string.IsNullOrWhiteSpace(value) && value != "-1";
+
+            void Add(string value, string condition, string name, object parameterValue = null)
+            {
+                if (!IsSet(value))
+                {
+                    return;
+                }
+
+                conditions.Add(condition);
+                parameters.Add(new(name, parameterValue ?? value));
+            }
+
+            var businessDayStart = "060001";
+            var firstShift = SPGetShiftStartENDList().Select("fld_ProductPropertyBId = 1").FirstOrDefault();
+            if (firstShift is not null)
+            {
+                var start = firstShift["fld_ProductPropertyBDesc"].ToString().Split('-')[0].Split(':');
+                if (start.Length == 2 && start[0].Length == 2 && start[1].Length == 2)
+                {
+                    businessDayStart = start[0] + start[1] + "01";
+                }
+            }
+
+            if (IsSet(filter.FromDate) && !System.Text.RegularExpressions.Regex.IsMatch(filter.FromDate, @"^\d{8}$")
+                || IsSet(filter.ToDate) && !System.Text.RegularExpressions.Regex.IsMatch(filter.ToDate, @"^\d{8}$")
+                || IsSet(filter.FromTime) && !System.Text.RegularExpressions.Regex.IsMatch(filter.FromTime, @"^\d{6}$")
+                || IsSet(filter.ToTime) && !System.Text.RegularExpressions.Regex.IsMatch(filter.ToTime, @"^\d{6}$"))
+            {
+                return table;
+            }
+
+            Add(filter.ProductCode, "Tags.ProductCode = @ProductCode", "ProductCode");
+            Add(filter.Qc, "Tags.ProductStatus = @Qc", "Qc");
+            Add(filter.ProductSerial, "Tags.ProductSerial = @ProductSerial", "ProductSerial");
+            Add(filter.ProductOldSerial, "Tags.DeviceIp = @ProductOldSerial", "ProductOldSerial");
+            Add(filter.FromDate, "Tags.TagRegisterShamsiUnixDate >= @FromDate", "FromDate", filter.FromDate + businessDayStart);
+            Add(filter.ToDate, "Tags.TagRegisterShamsiUnixDate <= @ToDate", "ToDate", filter.ToDate + businessDayStart);
+            Add(filter.FromTime, "SUBSTRING(Tags.TagRegisterShamsiUnixDate, 9, 6) >= @FromTime", "FromTime");
+            Add(filter.ToTime, "SUBSTRING(Tags.TagRegisterShamsiUnixDate, 9, 6) < @ToTime", "ToTime");
+            Add(filter.Line, "Tags.fld_ProductPropertyAId = @Line", "Line");
+            Add(filter.TechnicalCode
+                , filter.TechnicalCodeLike ? "Tags.RegCode LIKE @TechnicalCode" : "Tags.RegCode = @TechnicalCode"
+                , "TechnicalCode"
+                , filter.TechnicalCodeLike ? "%" + filter.TechnicalCode + "%" : filter.TechnicalCode);
+            Add(filter.Shift, "Tags.fld_ProductPropertyBId = @Shift", "Shift");
+            Add(filter.Size, "Tags.fld_ProductPropertyCId = @Size", "Size");
+            Add(filter.ContractStatus, "Tags.ContractStatus = @ContractStatus", "ContractStatus");
+            Add(filter.ProductGroup, "Tags.fld_ProductGroup = @ProductGroup", "ProductGroup");
+            Add(filter.ProductBrand, "Tags.fld_ProductBrand = @ProductBrand", "ProductBrand");
+            Add(filter.RegisterDevice, "Tags.DeviceId = @RegisterDevice", "RegisterDevice");
+
+            if (IsSet(filter.InspectStatus))
+            {
+                switch (filter.InspectStatus)
+                {
+                    case "0":
+                        conditions.Add("Tags.Lock = 1 AND Tags.fld_LastInspectResult <> N'[]'");
+                        break;
+                    case "1":
+                        conditions.Add("Tags.Lock = 0 AND Tags.fld_LastInspectResult <> N'[]'");
+                        break;
+                    case "2":
+                        conditions.Add("Tags.Lock = 0 AND Tags.fld_LastInspectResult = N'[]'");
+                        break;
+                }
+            }
+
+            var command = $@"
+SELECT Line, RegCode, Size, ProductType, Qc, SUM(ProductCount) AS [Count]
+FROM (SELECT COALESCE(PA.fld_ProductPropertyATitle, N'') AS Line,
+             COALESCE(Tags.RegCode, N'') AS RegCode,
+             COALESCE(PC.fld_ProductPropertyCTitle, N'') AS Size,
+             COALESCE(JSON_VALUE(P.ProductTechnicalData, '$.description'), N'') AS ProductType,
+             COALESCE(PS.ProductStatusTitle, N'') AS Qc,
+             COALESCE(Tags.ProductCount, 0) AS ProductCount
+      FROM tbl_Tags AS Tags
+      LEFT OUTER JOIN tbl_ProductPropertyA AS PA ON Tags.fld_ProductPropertyAId = PA.fld_ProductPropertyAId
+      LEFT OUTER JOIN tbl_Products AS P ON Tags.ProductCode = P.ProductCode
+      LEFT OUTER JOIN tbl_ProductPropertyC AS PC ON P.ProductSize = PC.fld_ProductPropertyCId
+      LEFT OUTER JOIN tbl_ProductStatus AS PS ON P.ProductStatus = PS.ProductStatusCode
+      {(conditions.Count > 0 ? "WHERE " + string.Join(" AND ", conditions) : string.Empty)}) AS Source
+GROUP BY Line, RegCode, Size, ProductType, Qc
+ORDER BY RegCode, Size, Qc";
+
+            return dataAccess.SqlDataAdapter(command, parameters.ToArray());
+        }
+        catch (Exception exception)
+        {
+            logger.LogWarning(exception, exception.Message);
+            return table;
+        }
+    }
+
     public DataTable SRepRegisterTagSummaryForRegisterWinApp(GetRegisterRequestFilter filter)
     {
         string userId = httpContext.User.GetUserId();

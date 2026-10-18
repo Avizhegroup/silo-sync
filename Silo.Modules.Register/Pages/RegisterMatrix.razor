@@ -1,0 +1,152 @@
+@page "/register/reportmatrix"
+@inherits SiloBasePage
+@namespace Silo.Modules.Register.Pages
+@using Telerik.Blazor.Components
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="container-fluid mt-2">
+    <div class="card shadow-sm mb-3">
+        <div class="card-header fw-bold">@TextResources.APP_StringKeys_Filters</div>
+        <div class="card-body d-flex flex-wrap gap-3 align-items-end">
+            <div>
+                <label for="mx-from" class="form-label">@TextResources.APP_StringKeys_FromDate (1404/05/12)</label>
+                <input id="mx-from" class="form-control @(FromDateError ? "is-invalid" : string.Empty)"
+                       style="max-width:150px" maxlength="10" @bind="FromDate" @bind:event="oninput" />
+            </div>
+            <div>
+                <label for="mx-to" class="form-label">@TextResources.APP_StringKeys_ToDate</label>
+                <input id="mx-to" class="form-control @(ToDateError ? "is-invalid" : string.Empty)"
+                       style="max-width:150px" maxlength="10" @bind="ToDate" @bind:event="oninput" />
+            </div>
+            <div>
+                <label for="mx-ftime" class="form-label">HH:mm</label>
+                <input id="mx-ftime" class="form-control" style="max-width:100px" maxlength="5" placeholder="06:00" @bind="FromTime" @bind:event="oninput" />
+            </div>
+            <div>
+                <label for="mx-ttime" class="form-label">HH:mm</label>
+                <input id="mx-ttime" class="form-control" style="max-width:100px" maxlength="5" placeholder="14:00" @bind="ToTime" @bind:event="oninput" />
+            </div>
+            <div>
+                <label for="mx-line" class="form-label">@TextResources.APP_StringKeys_Line</label>
+                <select id="mx-line" class="form-select" @bind="Line">
+                    <option value="">@TextResources.APP_StringKeys_NotChoosed</option>
+                    @foreach (var item in Lines)
+                    {
+                        <option value="@item.Code">@item.Title</option>
+                    }
+                </select>
+            </div>
+            <div>
+                <label for="mx-shift" class="form-label">@TextResources.APP_StringKeys_Chart_Shift</label>
+                <select id="mx-shift" class="form-select" @bind="Shift">
+                    <option value="">@TextResources.APP_StringKeys_NotChoosed</option>
+                    @foreach (var item in Shifts)
+                    {
+                        <option value="@item.Code">@item.Title</option>
+                    }
+                </select>
+            </div>
+            <div>
+                <label for="mx-qc" class="form-label">@TextResources.APP_StringKeys_Chart_Qc</label>
+                <select id="mx-qc" class="form-select" @bind="Qc">
+                    <option value="">@TextResources.APP_StringKeys_NotChoosed</option>
+                    @foreach (var item in Qcs)
+                    {
+                        <option value="@item.Code">@item.Title</option>
+                    }
+                </select>
+            </div>
+            <div>
+                <label for="mx-size" class="form-label">@TextResources.APP_StringKeys_Product_Size</label>
+                <select id="mx-size" class="form-select" @bind="Size">
+                    <option value="">@TextResources.APP_StringKeys_NotChoosed</option>
+                    @foreach (var item in Sizes)
+                    {
+                        <option value="@item.Code">@item.Title</option>
+                    }
+                </select>
+            </div>
+            <div>
+                <label for="mx-code" class="form-label">@TextResources.APP_StringKeys_ProductCode</label>
+                <input id="mx-code" class="form-control" style="max-width:160px" @bind="ProductCode" />
+            </div>
+            <div>
+                <label for="mx-tech" class="form-label">@TextResources.APP_StringKeys_Chart_Regcode</label>
+                <input id="mx-tech" class="form-control" style="max-width:160px" @bind="TechnicalCode" />
+            </div>
+            <div class="form-check">
+                <input id="mx-like" type="checkbox" class="form-check-input" @bind="TechnicalCodeLike" />
+                <label for="mx-like" class="form-check-label">Contains</label>
+            </div>
+            <div>
+                <label for="mx-doc" class="form-label">@TextResources.APP_StringKeys_DocKey</label>
+                <input id="mx-doc" class="form-control" style="max-width:160px" @bind="DocumentId" />
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary" disabled="@(IsLoading || DateError || TimeError)" @onclick="OnSearchClick">@TextResources.APP_StringKeys_Search</button>
+                <button type="button" class="btn btn-outline-secondary" disabled="@IsLoading" @onclick="OnClearClick">@TextResources.APP_StringKeys_Clear</button>
+                <button type="button" class="btn btn-outline-success" disabled="@(IsLoading || PivotRows.Count == 0)" @onclick="OnExcelClick">Excel</button>
+            </div>
+        </div>
+    </div>
+
+    @if (Result is not null)
+    {
+        @if (PivotRows.Count == 0)
+        {
+            <div class="alert alert-info">@TextResources.APP_StringKeys_Validation_AnyData</div>
+        }
+        else
+        {
+            <div class="card shadow-sm">
+                <div class="card-header fw-bold">@TextResources.APP_StringKeys_Product_Size / @TextResources.APP_StringKeys_Chart_Regcode</div>
+                <div class="card-body table-responsive">
+                    <table class="table table-sm table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th>@TextResources.APP_StringKeys_Line</th>
+                                <th>@TextResources.APP_StringKeys_Chart_Regcode</th>
+                                <th>@TextResources.APP_StringKeys_Product_Size</th>
+                                <th>@TextResources.APP_StringKeys_ProductType</th>
+                                @foreach (var qc in QcColumns)
+                                {
+                                    <th class="text-end">@qc</th>
+                                }
+                                <th class="text-end">@TextResources.APP_StringKeys_SumValue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in PivotRows)
+                            {
+                                <tr>
+                                    <td>@row.Line</td>
+                                    <td>@row.RegCode</td>
+                                    <td>@row.Size</td>
+                                    <td>@row.ProductType</td>
+                                    @foreach (var qc in QcColumns)
+                                    {
+                                        <td class="text-end">@row.Value(qc).ToString("0.##")</td>
+                                    }
+                                    <td class="text-end fw-bold">@row.Total.ToString("0.##")</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="fw-bold">
+                                <td colspan="4">@TextResources.APP_StringKeys_SumValue</td>
+                                @foreach (var qc in QcColumns)
+                                {
+                                    <td class="text-end">@ColumnTotal(qc).ToString("0.##")</td>
+                                }
+                                <td class="text-end">@GrandTotal.ToString("0.##")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<TelerikLoaderContainer Visible="@IsLoading" />

@@ -34,7 +34,7 @@ Target split: **Blazor** `Silo.Modules.Register` (web workflows) and **Windows**
 | Form | Target | Status | Where / notes |
 |---|---|---|---|
 | F1 Login | Blazor host | Covered | Existing Silo login; no work needed. |
-| F2 Multi-product batch | Blazor | Done | `/register/batch` (`MultiProductBatch`). Linked from PrintManagement. |
+| F2 Batch definition (hub) | Blazor | Done except the items listed under "Remaining work" (not compiled, not run) | `/register/batch` (`MultiProductBatch`). **Two modes** (checkbox, locked once rows exist): *multi-product* (add rows, then Confirm → one `SSavePrintBySerial` per row) and *single product* (Confirm saves directly). **Serial list** (single mode): by range (legacy rule: end excluded, optional fixed prefix cut from the start value, counter padded to the start length) or from an `.xlsx` (first column, optional header row, max 5 MB / 50,000 serials); serials are validated (letters, digits, `_-./`) and de-duplicated, then saved one request per serial (`PrintCount` 1, `ProductSerial` = `ProductOldSerial`), awaited and **resumable** after a failure (legacy fired them without awaiting). Without a list the server generates the serials from the count. **Document panel:** list (`SGetDocumentsByDocType`, newest 300, filter by key) or typed key → `SGetDocumentData`; header JSON is parsed as JSON (legacy split on `:`) and shown, and copied into empty dynamic fields of the same title; items are merged per product and show requested/remaining (`SGetRemainRegisterByDoc`, minus unsaved rows); picking an item loads the product (`SPSearchProductWeb`) and sets the count to the remaining quantity converted to tags; with a document loaded only its products are accepted. **Remaining check** (checkbox, default on): requested = tags × (pack value ÷ product value), the same quantity the server subtracts; the legacy settings `CheckRegisterByDocItems`/`CountInPackEqualCount` are replaced by this single rule. Line/shift/store with one item are auto-selected; shift follows the clock when its title contains 1/2/3. After saving, a link opens `/register/print?actionId=…`. `Location` is now sent as "0" like legacy. |
 | F3 Product master CRUD | Blazor | Existing, not verified | Assumed covered by `Silo.Modules.Product`; not compared field by field. |
 | F4 Product type | Blazor | Existing, not verified | Same as F3. |
 | F5 Product picker | Blazor | Done | Reuses `ProductCodeModal`. |
@@ -63,13 +63,14 @@ Message protocol: host to browser `{"type":"epc|barcode|pong|error","value":"...
 1. **Vendor reader drivers:** implemented from the legacy calls but **not tested on real readers** (and the code has not been compiled in CI). T64 reads only the first tag per poll, as legacy did. Tiny ignores the configured power, as legacy did.
 2. **F6/F7 printing:** ZPL and ZMIN are implemented; **FastReport/PDF printing, auto-print after register (`KindRegister` modes) and the legacy merge-to-PDF option are not**. The ZMIN flow needs a real ZMIN printer to verify (`LabelPrinter.dll` is obfuscated vendor code used exactly as the legacy app called it).
 3. **F8:** done (`/register/pair`). The host's keyboard-wedge buffer still only sees keys while the host window has focus; the web pages therefore take the barcode in their own focused input.
-4. **F9 and F13:** cancel-registration page and group test page.
+4. **F9:** cancel-registration page not checked/ported (F13 group test is done).
 5. **Verification of "existing" items** (F3, F4, F14 to F16): compare against the legacy field and filter rules.
 6. **Hardware testing** of the device host, readers, scanner, printer, and browser behaviour for `ws://127.0.0.1` from an HTTPS page (mixed content / private network access).
 7. **Host setup:** allowed origin and token must be configured in the Windows app. The token is typed once in the component and then reused (auto-connect with retry, `DeviceRpc` request/reply now live in `Silo.Shared.Components`).
 8. **Localization:** several labels on the new pages and the Windows forms are hardcoded English and need `TextResources` keys.
 9. **Claims/permissions** for `/register/batch`, `/register/date`, `/register/package`, `/register/test`, `/register/print`, `/register/pair`, `/register/test/group`.
 10. **Unmigrated F17 settings** and the legacy migration of old settings values.
+11. **F2 gaps:** weight-average panel (`ComputeAverageProductPackValueFromAllWeight`), the `HaveLogin` user whitelist (hard-coded in legacy), reloading an existing action with the "<" / ">" buttons, keyboard shortcuts F5/F6/F7, the `.xls` Excel format (only `.xlsx`), the dead "get from Api" tab, and the `RegisterCountEvryTimeIsOne` / `AllowShowOnlyPrintFormBeforeSavePrintAction` settings (the print link shows after saving).
 
 ---
 

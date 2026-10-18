@@ -13,6 +13,15 @@ public partial class LocalWebSocketComponent : IAsyncDisposable
     [Inject] private ProtectedLocalStorage LocalStorage { get; set; } = default!;
     [Parameter] public int Port { get; set; } = 5005;
 
+    /// <summary>Connect on first render when a token was saved by an earlier successful connection.</summary>
+    [Parameter] public bool AutoConnect { get; set; } = true;
+
+    /// <summary>Connection attempts before an error is reported (the host accepts one browser at a time).</summary>
+    [Parameter] public int ConnectAttempts { get; set; } = 4;
+
+    /// <summary>Delay between connection attempts.</summary>
+    [Parameter] public int RetryDelayMilliseconds { get; set; } = 750;
+
     /// <summary>Raised with the text of every message received from the local device host.</summary>
     [Parameter] public EventCallback<string> OnMessageReceived { get; set; }
 
@@ -45,6 +54,11 @@ public partial class LocalWebSocketComponent : IAsyncDisposable
             {
                 TokenInput = stored.Value;
                 StateHasChanged();
+
+                if (AutoConnect && !IsConnectRequested)
+                {
+                    await OnConnectClick();
+                }
             }
         }
         catch (System.Security.Cryptography.CryptographicException)
@@ -76,7 +90,8 @@ public partial class LocalWebSocketComponent : IAsyncDisposable
         ObjectDisposedException.ThrowIf(_disposed, this);
         _module ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", ModulePath);
         _self ??= DotNetObjectReference.Create(this);
-        await _module.InvokeVoidAsync("connect", $"ws://127.0.0.1:{Port}/?token={Uri.EscapeDataString(_token)}", _self);
+        await _module.InvokeVoidAsync("connect", $"ws://127.0.0.1:{Port}/?token={Uri.EscapeDataString(_token)}", _self,
+            Math.Max(1, ConnectAttempts), Math.Max(100, RetryDelayMilliseconds));
     }
 
     public async Task<bool> IsConnectedAsync()

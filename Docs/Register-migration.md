@@ -66,7 +66,7 @@ Message protocol: host to browser `{"type":"epc|barcode|pong|error","value":"...
 4. **F9 and F13:** cancel-registration page and group test page.
 5. **Verification of "existing" items** (F3, F4, F14 to F16): compare against the legacy field and filter rules.
 6. **Hardware testing** of the device host, readers, scanner, printer, and browser behaviour for `ws://127.0.0.1` from an HTTPS page (mixed content / private network access).
-7. **Host setup:** allowed origin and token must be configured in the Windows app, and the token is currently typed manually on the test page.
+7. **Host setup:** allowed origin and token must be configured in the Windows app. The token is typed once in the component and then reused (auto-connect with retry, `DeviceRpc` request/reply now live in `Silo.Shared.Components`).
 8. **Localization:** several labels on the new pages and the Windows forms are hardcoded English and need `TextResources` keys.
 9. **Claims/permissions** for `/register/batch`, `/register/date`, `/register/package`, `/register/test`, `/register/print`.
 10. **Unmigrated F17 settings** and the legacy migration of old settings values.

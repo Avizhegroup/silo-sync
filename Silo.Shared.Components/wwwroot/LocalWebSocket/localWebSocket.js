@@ -1,27 +1,56 @@
 let socket;
 let dotNetRef;
+let retryTimer;
 
 function notify(method, ...args) {
     dotNetRef?.invokeMethodAsync(method, ...args).catch(() => { });
 }
 
-export function connect(url, reference) {
+// attempts: how many times to try before reporting a failure (the host accepts one browser at a time, so a
+// reconnect right after leaving another page can be refused for a moment until the old socket has closed).
+export function connect(url, reference, attempts = 1, delayMilliseconds = 750) {
     dotNetRef = reference;
     if (socket?.readyState === WebSocket.OPEN || socket?.readyState === WebSocket.CONNECTING) {
         notify("OnSocketStateChanged", socket.readyState === WebSocket.OPEN);
         return;
     }
 
+    clearTimeout(retryTimer);
+    open(url, Math.max(1, attempts), delayMilliseconds);
+}
+
+function open(url, remaining, delayMilliseconds) {
     const current = new WebSocket(url);
     socket = current;
-    current.addEventListener("open", () => notify("OnSocketStateChanged", true));
+    let opened = false;
+
+    current.addEventListener("open", () => {
+        opened = true;
+        notify("OnSocketStateChanged", true);
+    });
     current.addEventListener("close", () => {
-        if (socket === current) {
-            socket = undefined;
+        if (socket !== current) {
+            return; // closed on purpose by disconnect() or replaced by a newer socket
         }
+        socket = undefined;
+
+        if (opened) {
+            notify("OnSocketStateChanged", false);
+            return;
+        }
+
+        if (remaining > 1) {
+            retryTimer = setTimeout(() => {
+                if (!socket && dotNetRef) {
+                    open(url, remaining - 1, delayMilliseconds);
+                }
+            }, delayMilliseconds);
+            return;
+        }
+
+        notify("OnSocketError", "Connection to the local device host failed.");
         notify("OnSocketStateChanged", false);
     });
-    current.addEventListener("error", () => notify("OnSocketError", "Connection to the local device host failed."));
     current.addEventListener("message", event => {
         if (typeof event.data !== "string") {
             current.close(1003, "Text messages only");
@@ -46,6 +75,7 @@ export function isConnected() {
 }
 
 export function disconnect() {
+    clearTimeout(retryTimer);
     const current = socket;
     socket = undefined;
     dotNetRef = undefined;

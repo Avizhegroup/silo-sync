@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using Silo.Application;
@@ -596,6 +597,125 @@ public partial class MultiProductBatch
 
         return result?.Successful == true && !string.IsNullOrWhiteSpace(result.Value);
     }
+
+    #region Open an existing operation
+
+    private static readonly Regex ActionIdRegex = new("^[0-9]{1,9}$", RegexOptions.Compiled);
+
+    public string OpenActionId { get; set; } = string.Empty;
+
+    public async Task OnOpenActionKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await OpenActionAsync(OpenActionId);
+        }
+    }
+
+    public Task OnOpenActionClick() => OpenActionAsync(OpenActionId);
+
+    /// <summary>Legacy "&lt;" / "&gt;" buttons: the previous or the next operation code.</summary>
+    public Task StepActionAsync(int delta)
+        => int.TryParse(ActionId, out var current)
+            ? OpenActionAsync(Math.Max(1, current + delta).ToString(CultureInfo.InvariantCulture))
+            : Task.CompletedTask;
+
+    /// <summary>
+    /// Shows an operation that was saved earlier (legacy action navigation): its print rows are grouped per product and
+    /// pack value and listed as saved, so the print page can be opened for it. A new operation is started with "New".
+    /// </summary>
+    public async Task OpenActionAsync(string? actionId)
+    {
+        actionId = (actionId ?? string.Empty).Trim();
+
+        if (IsLoading)
+        {
+            return;
+        }
+
+        if (Rows.Any(p => !p.IsSaved))
+        {
+            Notification.Show("Save or remove the unsaved rows before opening another operation.", "warning");
+            return;
+        }
+
+        if (!ActionIdRegex.IsMatch(actionId))
+        {
+            Notification.Show("Enter a numeric operation code.", "error");
+            return;
+        }
+
+        IsLoading = true;
+        try
+        {
+            var rows = (await Api.PostAsync<List<PrintLabelRow>>("SGetPrintListByPrintActionId"
+                , new KeyValuePair<string, object>("PrintActionId", actionId)
+                , new KeyValuePair<string, object>("userToken", _userCode))).Value ?? [];
+
+            if (rows.Count == 0)
+            {
+                Notification.Show($"No serial was found for operation {actionId}.", "warning");
+                return;
+            }
+
+            ActionId = actionId;
+            OpenActionId = string.Empty;
+            Rows.Clear();
+            CurrentProduct = null;
+            ResetDocument();
+            Serials = [];
+            PackValue = string.Empty;
+            Count = 1;
+
+            foreach (var group in rows.GroupBy(p => (Code: p.ProductCode ?? string.Empty, Value: p.ProductCount ?? string.Empty, Document: p.DocumentId ?? string.Empty)))
+            {
+                var first = group.First();
+                TryParseValue(group.Key.Value, out var packValue);
+
+                Rows.Add(new BatchRow
+                {
+                    ProductCode = group.Key.Code,
+                    ProductName = first.ProductName ?? string.Empty,
+                    TechnicalCode = first.ProductRegCode ?? string.Empty,
+                    Count = group.Count(),
+                    PackValue = packValue,
+                    DocumentId = group.Key.Document,
+                    IsSaved = true
+                });
+            }
+        }
+        catch
+        {
+            Notification.Show(TextResources.APP_StringKeys_Alert_Fail, "error");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    #endregion
+
+    #region Average pack value from the total weight
+
+    public bool ShowWeightPanel { get; set; }
+    public string TotalWeight { get; set; } = string.Empty;
+
+    /// <summary>Legacy "average weight" helper: pack value = total weight / number of tags, rounded to two decimals.</summary>
+    public void OnApplyAverageWeight()
+    {
+        if (CurrentProduct is null || Count <= 0 || !TryParseValue(TotalWeight, out var weight) || weight <= 0)
+        {
+            Notification.Show("Choose a product, enter the count and the total weight first.", "error");
+            return;
+        }
+
+        PackValue = Math.Round(weight / Count, 2).ToString(CultureInfo.CurrentCulture);
+        TotalWeight = string.Empty;
+        ShowWeightPanel = false;
+    }
+
+    #endregion
 
     public async Task OnNewClick(MouseEventArgs e)
     {

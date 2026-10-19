@@ -12,6 +12,12 @@
         <div class="card-header">@TextResources.APP_StringKeys_OperationInfo @TextResources.APP_StringKeys_Register</div>
         <div class="card-body d-flex flex-wrap gap-3 align-items-end">
             <span>@TextResources.APP_StringKeys_OperationCode: @ActionId</span>
+            <div class="input-group" style="max-width:380px">
+                <button type="button" class="btn btn-outline-secondary" title="-1" disabled="@IsLoading" @onclick="() => StepActionAsync(-1)">&lsaquo;</button>
+                <input class="form-control" inputmode="numeric" placeholder="@TextResources.APP_StringKeys_OperationCode" @bind="OpenActionId" @bind:event="oninput" @onkeyup="OnOpenActionKeyUp" />
+                <button type="button" class="btn btn-outline-secondary" disabled="@(IsLoading || string.IsNullOrWhiteSpace(OpenActionId))" @onclick="OnOpenActionClick">@TextResources.APP_StringKeys_Search</button>
+                <button type="button" class="btn btn-outline-secondary" title="+1" disabled="@IsLoading" @onclick="() => StepActionAsync(1)">&rsaquo;</button>
+            </div>
             <button type="button" class="btn btn-warning" disabled="@IsLoading" @onclick="OnNewClick">@TextResources.APP_StringKeys_New</button>
             <NavLink href="/print/management" class="btn btn-outline-secondary">@TextResources.APP_StringKeys_Print</NavLink>
             @if (HasSavedRows)
@@ -178,6 +184,17 @@
                 <label for="register-value">@TextResources.APP_StringKeys_PackValue</label>
                 <input id="register-value" class="form-control" @bind="PackValue" />
             </div>
+            <div class="form-check">
+                <input id="register-weight-toggle" type="checkbox" class="form-check-input" @bind="ShowWeightPanel" />
+                <label for="register-weight-toggle" class="form-check-label">Pack value from total weight</label>
+            </div>
+            @if (ShowWeightPanel)
+            {
+                <div class="input-group" style="max-width:320px">
+                    <input class="form-control" inputmode="decimal" placeholder="Total weight" @bind="TotalWeight" />
+                    <button type="button" class="btn btn-outline-primary" disabled="@(CurrentProduct is null)" @onclick="OnApplyAverageWeight">Average</button>
+                </div>
+            }
             <button type="button" class="btn btn-primary" disabled="@(IsLoading || HasSavedRows)" @onclick="OnAddClick">@(IsSingleMode ? TextResources.APP_StringKeys_Confirm : TextResources.APP_StringKeys_Add)</button>
         </div>
         @if (DynamicFields.Count > 0)

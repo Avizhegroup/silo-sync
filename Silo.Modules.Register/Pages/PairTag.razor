@@ -35,6 +35,32 @@
             {
                 <button type="button" class="btn btn-primary" disabled="@(!IsDeviceConnected)" @onclick="StartOperationAsync">Start</button>
             }
+            <div class="form-check">
+                <input id="pair-autoprint" type="checkbox" class="form-check-input" @bind="AutoPrint" disabled="@(IsOperationOn || ReceiptFormats.Count == 0)" />
+                <label for="pair-autoprint" class="form-check-label">Print a receipt after each registration</label>
+            </div>
+            @if (AutoPrint)
+            {
+                <div>
+                    <label for="pair-receipt" class="form-label">Receipt format</label>
+                    <select id="pair-receipt" class="form-select" @bind="ReceiptFormatName" disabled="@IsOperationOn">
+                        @foreach (var format in ReceiptFormats)
+                        {
+                            <option value="@format.Name">@format.Name</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label for="pair-receipt-printer" class="form-label">Printer</label>
+                    <select id="pair-receipt-printer" class="form-select" @bind="ReceiptPrinter" disabled="@IsOperationOn">
+                        <option value="">(printer named in the file, else the host default)</option>
+                        @foreach (var printer in Printers)
+                        {
+                            <option value="@printer">@printer</option>
+                        }
+                    </select>
+                </div>
+            }
             <span class="text-muted small">Hold the product sheet with the barcode facing the scanner, then bring the tag to the reader.</span>
         </div>
     </div>

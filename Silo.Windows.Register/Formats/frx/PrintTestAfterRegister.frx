@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="07/03/2018 19:54:30" ReportInfo.Modified="06/02/2026 11:37:46" ReportInfo.CreatorVersion="1.8.29.0">
+  <Dictionary>
+    <Parameter Name="سریال محموله" DataType="System.String"/>
+    <Parameter Name="RFID" DataType="System.String"/>
+    <Parameter Name="عنوان کالا" DataType="System.String"/>
+    <Parameter Name="کد فنی" DataType="System.String"/>
+    <Parameter Name="مقدار محموله" DataType="System.String"/>
+    <Parameter Name="تاریخ تولید" DataType="System.String"/>
+    <Parameter Name="کد سند" DataType="System.String"/>
+    <Parameter Name="گرماژ" DataType="System.String"/>
+    <Parameter Name="عرض" DataType="System.String"/>
+    <Parameter Name="وزن" DataType="System.String"/>
+    <Parameter Name="تعداد برش" DataType="System.String"/>
+    <Parameter Name="درجه" DataType="System.String"/>
+    <Parameter Name="مساحت" DataType="System.String"/>
+    <Parameter Name="محل برش ها" DataType="System.String"/>
+    <Parameter Name="سریال نیم ساخته" DataType="System.String"/>
+    <Parameter Name="طول" DataType="System.String"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" LeftMargin="0" TopMargin="0" RightMargin="0" BottomMargin="0" Guides="249.7,533.2,6.9,33.36,1,225.55,225.69,1.139999,38.36,192.56,193.45,219.91,19.91,210.91,1.89,224.44,2.2,224.55,51.7,3.45,113.95,2.56,224.11,166.43,113.5,113.4,222.34,113.84,222.78,3.56,113.06,-16.68,74.04,38.24,128.96,-19.44,71.28,-18.68,72.04,-20.12,70.6,36.24,126.96,37.24,127.96,119.52,157.32,120.52,158.32,150.2,240.92,151.2,241.92,9,49.24,174.32,212.56,68.04,151.67,10.24,42.36,-39.44,255.4,0,226.8">
+    <PageHeaderBand Name="PageHeader1" Width="1122.66" Height="773.55" Guides="-103.95,-56.7,5,20.9,22.9,24.91,21.9,2,3,23.9,36.8,39.25,39.8,150.32,59.7,126.95,39.36,149.76,126.62,67.04,97.28,81.16,104.84,42.36,57.48,62.04,77.16,62.48,77.6,85.16,100.28,107.84,122.96,84.72,99.84,108.4,123.52,38.8,69.04,68.04,98.28,128.52,47.36,75.6,90.72,105.84,120.96,129.52,144.64,127.52,148.68,20.12,41.8,22.68,37.8,0,151.2">
+      <TextObject Name="Text1" Left="1" Top="220.24" Width="1105.19" Height="513.98" Text="کالا با سریال : [سریال محموله]&#13;&#10;با شناسه تگ:&#13;&#10;[RFID]&#13;&#10;رجیستر شده است" HorzAlign="Center" RightToLeft="true" Font="Arial, 53pt"/>
+    </PageHeaderBand>
+  </ReportPage>
+</Report>

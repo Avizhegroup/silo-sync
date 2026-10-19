@@ -1,14 +1,23 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.JSInterop;
 using Silo.Modules.Register.Models;
 using Silo.Shared.Components;
 
 namespace Silo.Modules.Register.Pages;
 
 /// <summary>
-/// Registers the tags of a print operation and prints their labels (legacy forms F6/F7).
-/// Per serial: get/reuse the EPC, register the tag on the server, print the label through the device host
-/// (ZPL or ZMIN) and mark the print row. The labels are printed on the workstation that runs Silo.Windows.Register.
+/// Registers the tags of a print operation and prints their labels (legacy forms F6/F7). Labels are printed on the
+/// workstation that runs Silo.Windows.Register: ZPL, ZMIN or FastReport (<c>.frx</c>) templates; FastReport output
+/// can also be one merged PDF that opens on that workstation (legacy "merge to PDF" and the preview).
+/// Three modes replace the legacy <c>KindRegister</c> setting:
+/// <list type="bullet">
+/// <item><b>register</b> (1): per serial get/reuse the EPC, register the tag on the server, print, mark the print row;</item>
+/// <item><b>print</b> (2 and 4): only print; the tags are paired afterwards on <c>/register/pair</c>;</item>
+/// <item><b>autoregister</b> (3): print the barcode, then register the tag with the serial's digits as EPC (letters removed).</item>
+/// </list>
+/// A PDF is never registered or marked.
 /// </summary>
 public partial class PrintRegister
 {
@@ -17,6 +26,15 @@ public partial class PrintRegister
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
     private static readonly TimeSpan ListTimeout = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan PrintTimeout = TimeSpan.FromSeconds(60);
+    private static readonly TimeSpan PdfTimeout = TimeSpan.FromSeconds(180);
+    private static readonly Regex LetterRegex = new("[A-Za-z]", RegexOptions.Compiled);
+
+    private const int PdfChunkSize = 25;
+    private const string ModeStorageKey = "Silo.Register.PrintMode";
+
+    public const string ModeRegister = "register";
+    public const string ModePrint = "print";
+    public const string ModeAutoRegister = "autoregister";
 
     private readonly DeviceRpc _rpc = new();
     private string _userId = string.Empty;
@@ -34,6 +52,15 @@ public partial class PrintRegister
     public bool WriteRfid { get; set; }
     public bool AllowReprint { get; set; }
 
+    /// <summary>register | print | autoregister (see the class summary).</summary>
+    public string PrintMode { get; set; } = ModeRegister;
+
+    /// <summary>"print" sends the FastReport label to a printer, "pdf" opens one merged PDF on the workstation.</summary>
+    public string FrxOutput { get; set; } = "print";
+
+    /// <summary>Legacy "control print format by brand": FastReport files named title_printer_brand are filtered by the product brand.</summary>
+    public bool FilterByBrand { get; set; }
+
     public LocalWebSocketComponent? Socket { get; set; }
     public int DevicePort { get; set; } = 5005;
     public bool IsDeviceConnected { get; set; }
@@ -41,10 +68,65 @@ public partial class PrintRegister
     [Parameter, SupplyParameterFromQuery(Name = "actionId")] public string? ActionIdQuery { get; set; }
 
     [Inject] public RfidConnectApi Api { get; set; } = default!;
+    [Inject] public ProtectedLocalStorage LocalStorage { get; set; } = default!;
 
-    public DeviceFormat? SelectedFormat => Formats.FirstOrDefault(p => p.Key == SelectedFormatKey);
+    public DeviceFormat? SelectedFormat => VisibleFormats.FirstOrDefault(p => p.Key == SelectedFormatKey);
+
+    public bool IsPdf => SelectedFormat?.IsFastReport == true && FrxOutput == "pdf";
+
+    public bool NeedsPrinter => SelectedFormat is { Kind: "zpl" } || (SelectedFormat?.IsFastReport == true && !IsPdf);
+
+    /// <summary>The brand of the first selected serial (the filter applies to one product at a time).</summary>
+    public string? SelectedBrand => Rows.FirstOrDefault(p => p.IsSelected)?.ProductBrand?.Trim();
+
+    public IEnumerable<DeviceFormat> VisibleFormats => !FilterByBrand || string.IsNullOrEmpty(SelectedBrand)
+        ? Formats
+        : Formats.Where(p => p.Brand is null || p.Brand == SelectedBrand);
 
     public bool CanPrint => IsDeviceConnected && !IsBusy && !IsLoading && SelectedFormat is not null && Rows.Any(p => p.IsSelected);
+
+    public string PrintButtonText => IsPdf
+        ? "Export PDF"
+        : PrintMode switch
+        {
+            ModePrint => "Print",
+            ModeAutoRegister => "Print and register",
+            _ => "Register and print"
+        };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            var stored = await LocalStorage.GetAsync<string>(ModeStorageKey);
+            if (stored.Success && (stored.Value is ModeRegister or ModePrint or ModeAutoRegister) && stored.Value != PrintMode)
+            {
+                PrintMode = stored.Value!;
+                StateHasChanged();
+            }
+        }
+        catch (Exception exception) when (exception is InvalidOperationException or System.Security.Cryptography.CryptographicException or JSDisconnectedException)
+        {
+            // The remembered mode is a convenience only.
+        }
+    }
+
+    public async Task OnModeChanged(ChangeEventArgs e)
+    {
+        PrintMode = e.Value?.ToString() is ModePrint or ModeAutoRegister ? e.Value!.ToString()! : ModeRegister;
+        try
+        {
+            await LocalStorage.SetAsync(ModeStorageKey, PrintMode);
+        }
+        catch (Exception exception) when (exception is InvalidOperationException or JSDisconnectedException)
+        {
+        }
+    }
 
     protected override async Task SiloInitializer()
     {
@@ -148,7 +230,7 @@ public partial class PrintRegister
 
             if (SelectedFormat is null)
             {
-                SelectedFormatKey = Formats.FirstOrDefault()?.Key ?? string.Empty;
+                SelectedFormatKey = VisibleFormats.FirstOrDefault()?.Key ?? string.Empty;
             }
 
             if (Formats.Count == 0)
@@ -177,6 +259,7 @@ public partial class PrintRegister
                 type = "printerStatus",
                 id,
                 kind = format.Kind,
+                format = format.Name,
                 printer = SelectedPrinter
             }, ListTimeout);
 
@@ -201,8 +284,9 @@ public partial class PrintRegister
             return;
         }
 
+        var registersTags = !IsPdf && PrintMode != ModePrint;
         var registered = selected.Count(p => p.RegisterFlag);
-        if (registered > 0 && !AllowReprint)
+        if (registersTags && registered > 0 && !AllowReprint)
         {
             Notification.Show($"{registered} selected serial(s) are already registered. Tick 'Allow reprint' to print them again.", "warning");
             return;
@@ -211,6 +295,12 @@ public partial class PrintRegister
         IsBusy = true;
         try
         {
+            if (IsPdf)
+            {
+                await ExportPdfAsync(selected, format);
+                return;
+            }
+
             if (!await IsPrinterReadyAsync(format))
             {
                 return;
@@ -243,6 +333,82 @@ public partial class PrintRegister
         }
     }
 
+    /// <summary>Legacy preview: the first selected label as a PDF that opens on the workstation.</summary>
+    public async Task PreviewAsync()
+    {
+        var format = SelectedFormat;
+        var first = Rows.FirstOrDefault(p => p.IsSelected);
+        if (format is not { IsFastReport: true } || first is null)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            await ExportPdfAsync([first], format);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    /// <summary>
+    /// One merged PDF of all rows (legacy "merge print to PDF"). The labels travel in chunks of one job so a message
+    /// stays small; the host opens the PDF after the last chunk. Nothing is registered or marked.
+    /// </summary>
+    private async Task ExportPdfAsync(IReadOnlyList<PrintLabelRow> rows, DeviceFormat format)
+    {
+        var job = Guid.NewGuid().ToString("N");
+
+        try
+        {
+            for (var index = 0; index < rows.Count; index += PdfChunkSize)
+            {
+                var items = new List<object>();
+                foreach (var row in rows.Skip(index).Take(PdfChunkSize))
+                {
+                    if (!LabelFieldBuilder.TryBuild(row, (row.TagEpc ?? string.Empty).Trim().ToUpperInvariant(), out var fields, out var technicalData, out var error))
+                    {
+                        Notification.Show($"{row.ProductSerial}: {error}", "error");
+                        return;
+                    }
+
+                    items.Add(new { fields, technicalData });
+                }
+
+                var more = index + PdfChunkSize < rows.Count;
+                var reply = await _rpc.RequestAsync(Socket!, id => new
+                {
+                    type = "printFormat",
+                    id,
+                    kind = format.Kind,
+                    format = format.Name,
+                    output = "pdf",
+                    job,
+                    more,
+                    items
+                }, more ? PrintTimeout : PdfTimeout);
+
+                if (!reply.Ok)
+                {
+                    Notification.Show(reply.Value ?? "The PDF could not be created.", "error");
+                    return;
+                }
+
+                if (!more)
+                {
+                    Notification.Show(reply.Value ?? "The PDF was opened on the workstation.", "success");
+                }
+            }
+        }
+        catch (Exception exception) when (exception is TimeoutException or InvalidOperationException)
+        {
+            Notification.Show(exception.Message, "error");
+        }
+    }
+
     private async Task<bool> IsPrinterReadyAsync(DeviceFormat format)
     {
         try
@@ -252,6 +418,7 @@ public partial class PrintRegister
                 type = "printerStatus",
                 id,
                 kind = format.Kind,
+                format = format.Name,
                 printer = SelectedPrinter
             }, ListTimeout);
 
@@ -274,9 +441,10 @@ public partial class PrintRegister
         try
         {
             var epc = (row.TagEpc ?? string.Empty).Trim().ToUpperInvariant();
+            var registeredBefore = row.RegisterFlag;
 
-            // 1. The tag: reuse the registered EPC (reprint) or create and register a new one.
-            if (!EpcRegex.IsMatch(epc))
+            // 1. Mode "register": the tag exists before the label is printed (the label may carry the EPC / write the chip).
+            if (PrintMode == ModeRegister && !EpcRegex.IsMatch(epc))
             {
                 epc = (await Api.PostAsync<string>("SCreateEpc"
                     , new KeyValuePair<string, object>("serial", row.ProductSerial ?? string.Empty)
@@ -290,17 +458,7 @@ public partial class PrintRegister
                     return (false, $"The server did not return a valid EPC for type '{EpcType}'.", false);
                 }
 
-                var registered = (await Api.PostAsync<bool>("SRegisterTag"
-                    , new KeyValuePair<string, object>("productSerial", row.ProductSerial ?? string.Empty)
-                    , new KeyValuePair<string, object>("productCode", row.ProductCode ?? string.Empty)
-                    , new KeyValuePair<string, object>("productCount", row.ProductCount ?? string.Empty)
-                    , new KeyValuePair<string, object>("epcList", new[] { epc })
-                    , new KeyValuePair<string, object>("username", _userId)
-                    , new KeyValuePair<string, object>("deviceId", "0")
-                    , new KeyValuePair<string, object>("deviceIp", "0")
-                    , new KeyValuePair<string, object>("RegisterProperties", string.Empty))).Value;
-
-                if (!registered)
+                if (!await RegisterTagAsync(row, epc))
                 {
                     return (false, "The tag could not be registered.", false);
                 }
@@ -322,22 +480,52 @@ public partial class PrintRegister
                 format = format.Name,
                 printer = SelectedPrinter,
                 writeRfid = WriteRfid,
+                output = "print",
                 fields,
                 technicalData
             }, PrintTimeout);
 
             if (!reply.Ok)
             {
-                // The tag stays registered with its EPC: after fixing the printer the same row can simply be printed again.
-                return (false, $"Registered, but printing failed: {reply.Value}", true);
+                // In mode "register" the tag stays registered with its EPC: after fixing the printer the same row can simply be printed again.
+                return (false, PrintMode == ModeRegister ? $"Registered, but printing failed: {reply.Value}" : $"Printing failed: {reply.Value}", true);
             }
 
-            // 3. Mark the print row as registered.
+            if (PrintMode == ModePrint)
+            {
+                return (true, "Printed. Pair the tag on the register-by-barcode page.", false);
+            }
+
+            // 3a. Mode "autoregister" (legacy KindRegister 3): the printed barcode is the identity, the EPC is the serial's digits.
+            if (PrintMode == ModeAutoRegister)
+            {
+                if (registeredBefore)
+                {
+                    return (true, "Printed (already registered).", false);
+                }
+
+                var autoEpc = LetterRegex.Replace(row.ProductSerial ?? string.Empty, string.Empty);
+                if (autoEpc.Length == 0)
+                {
+                    return (false, "Printed, but the serial has no digits to use as the tag id.", true);
+                }
+
+                if (!await RegisterTagAsync(row, autoEpc))
+                {
+                    return (false, "Printed, but the tag could not be registered.", true);
+                }
+
+                row.TagEpc = autoEpc;
+            }
+
+            // 3b. Mark the print row as registered.
             var marked = (await Api.PostAsync<bool>("PrintUpdatePrintStatus"
                 , new KeyValuePair<string, object>("productSerial", row.ProductSerial ?? string.Empty))).Value;
 
             row.RegisterFlag = true;
-            return (true, marked ? "Registered and printed." : "Printed, but the print status was not updated.", false);
+            return (true, PrintMode == ModeAutoRegister
+                ? (marked ? "Printed and registered." : "Printed and registered, but the print status was not updated.")
+                : (marked ? "Registered and printed." : "Printed, but the print status was not updated."), false);
         }
         catch (Exception exception) when (exception is TimeoutException or InvalidOperationException)
         {
@@ -348,6 +536,17 @@ public partial class PrintRegister
             return (false, TextResources.APP_StringKeys_Alert_Fail, false);
         }
     }
+
+    private async Task<bool> RegisterTagAsync(PrintLabelRow row, string epc)
+        => (await Api.PostAsync<bool>("SRegisterTag"
+            , new KeyValuePair<string, object>("productSerial", row.ProductSerial ?? string.Empty)
+            , new KeyValuePair<string, object>("productCode", row.ProductCode ?? string.Empty)
+            , new KeyValuePair<string, object>("productCount", row.ProductCount ?? string.Empty)
+            , new KeyValuePair<string, object>("epcList", new[] { epc })
+            , new KeyValuePair<string, object>("username", _userId)
+            , new KeyValuePair<string, object>("deviceId", "0")
+            , new KeyValuePair<string, object>("deviceIp", "0")
+            , new KeyValuePair<string, object>("RegisterProperties", string.Empty))).Value;
 
     #endregion
 }

@@ -3,7 +3,8 @@ namespace Silo.Windows.Register.Printing;
 public enum LabelFormatKind
 {
     Zpl,
-    Zmin
+    Zmin,
+    Frx
 }
 
 public sealed record LabelFormatInfo(string Kind, string Name);
@@ -11,7 +12,7 @@ public sealed record LabelFormatInfo(string Kind, string Name);
 /// <summary>
 /// Label templates kept on the workstation. Two folders are searched, the per-user one first:
 /// %AppData%\Silo.Windows.Register\Formats and &lt;application folder&gt;\Formats, each with a "zpl" (*.txt)
-/// and a "zmin" (*.lsf) sub-folder. The browser only ever refers to a template by kind and name.
+/// and a "zmin" (*.lsf) and a "frx" (FastReport *.frx) sub-folder. The browser only ever refers to a template by kind and name.
 /// </summary>
 public sealed class LabelFormatStore
 {
@@ -30,6 +31,9 @@ public sealed class LabelFormatStore
                 return true;
             case "zmin":
                 kind = LabelFormatKind.Zmin;
+                return true;
+            case "frx":
+                kind = LabelFormatKind.Frx;
                 return true;
             default:
                 kind = default;
@@ -83,7 +87,17 @@ public sealed class LabelFormatStore
         throw new FileNotFoundException($"Label format '{name}' ({FolderOf(kind)}) was not found.");
     }
 
-    private static string FolderOf(LabelFormatKind kind) => kind == LabelFormatKind.Zpl ? "zpl" : "zmin";
+    private static string FolderOf(LabelFormatKind kind) => kind switch
+    {
+        LabelFormatKind.Zpl => "zpl",
+        LabelFormatKind.Zmin => "zmin",
+        _ => "frx"
+    };
 
-    private static string ExtensionOf(LabelFormatKind kind) => kind == LabelFormatKind.Zpl ? ".txt" : ".lsf";
+    private static string ExtensionOf(LabelFormatKind kind) => kind switch
+    {
+        LabelFormatKind.Zpl => ".txt",
+        LabelFormatKind.Zmin => ".lsf",
+        _ => ".frx"
+    };
 }

@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
 using Silo.Application;
 using Silo.Application.Features;
@@ -15,7 +16,7 @@ namespace Silo.Modules.Register.Pages;
 /// then creates the print rows on the server. Two modes: several products in one operation (list, then confirm) or a
 /// single product saved directly, optionally with an explicit serial list (range or Excel).
 /// </summary>
-public partial class MultiProductBatch
+public partial class MultiProductBatch : IAsyncDisposable
 {
     private const string DocumentTypeId = "1";
 
@@ -57,10 +58,22 @@ public partial class MultiProductBatch
     public List<string> Serials { get; set; } = [];
 
     private string _userCode = string.Empty;
+    private HashSet<string> _allowedUsers = new(StringComparer.OrdinalIgnoreCase);
+    private string _userName = string.Empty;
+    private IJSObjectReference? _shortcuts;
+    private DotNetObjectReference<MultiProductBatch>? _self;
+
+    /// <summary>
+    /// Legacy <c>HaveLogin</c> whitelist: when the setting <c>Register:BatchAllowedUsers</c> (a list of user names) is not
+    /// empty only those users may create print rows; empty means everyone with access to the page.
+    /// </summary>
+    public bool CanSave => _allowedUsers.Count == 0 || _allowedUsers.Contains(_userName);
 
     [Inject] public RfidConnectApi Api { get; set; } = default!;
     [Inject] public IFormalDataCache FormalCache { get; set; } = default!;
     [Inject] public IJSRuntime JS { get; set; } = default!;
+    [Inject] public IConfiguration AppConfiguration { get; set; } = default!;
+    [Inject] public NavigationManager NavManager { get; set; } = default!;
 
     public IEnumerable<DocumentInfo> FilteredDocuments => string.IsNullOrWhiteSpace(DocumentSearch)
         ? Documents
@@ -72,7 +85,13 @@ public partial class MultiProductBatch
     {
         try
         {
-            _userCode = (await AuthState.GetAuthenticationStateAsync()).User.GetUserId();
+            var user = (await AuthState.GetAuthenticationStateAsync()).User;
+            _userCode = user.GetUserId();
+            _userName = user.GetUsername() ?? string.Empty;
+            _allowedUsers = new HashSet<string>(
+                AppConfiguration.GetSection("Register:BatchAllowedUsers").GetChildren()
+                    .Select(p => p.Value?.Trim() ?? string.Empty).Where(p => p.Length > 0),
+                StringComparer.OrdinalIgnoreCase);
             Lines = await FormalCache.GetLines();
             Shifts = await FormalCache.GetShifts();
             Warehouses = (await FormalCache.GetWarehouses())
@@ -432,6 +451,12 @@ public partial class MultiProductBatch
             return;
         }
 
+        if (!CanSave)
+        {
+            Notification.Show("You are not allowed to register new serials.", "error");
+            return;
+        }
+
         if (CurrentProduct is null || string.IsNullOrWhiteSpace(CurrentProduct.ProductCode)
             || string.IsNullOrWhiteSpace(Line) || string.IsNullOrWhiteSpace(Shift)
             || string.IsNullOrWhiteSpace(Warehouse) || string.IsNullOrWhiteSpace(ActionId)
@@ -517,6 +542,12 @@ public partial class MultiProductBatch
     {
         if (IsLoading || string.IsNullOrWhiteSpace(ActionId) || !Rows.Any(p => !p.IsSaved))
         {
+            return;
+        }
+
+        if (!CanSave)
+        {
+            Notification.Show("You are not allowed to register new serials.", "error");
             return;
         }
 
@@ -790,4 +821,95 @@ public partial class MultiProductBatch
         public int SavedCount { get; set; }
         public bool IsSaved { get; set; }
     }
+
+    #region Keyboard shortcuts (legacy F5 / F6 / F7)
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            _shortcuts = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Silo.Modules.Register/batchShortcuts.js");
+            _self = DotNetObjectReference.Create(this);
+            await _shortcuts.InvokeVoidAsync("register", _self);
+        }
+        catch (Exception exception) when (exception is JSException or JSDisconnectedException or InvalidOperationException)
+        {
+            // The shortcuts are a convenience; every action also has a button.
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnShortcut(string key)
+    {
+        switch (key)
+        {
+            case "F5":
+                ClearEntry();
+                break;
+            case "F6":
+                // Multi-product mode: confirm the listed rows; otherwise add the product (single mode saves directly).
+                if (Rows.Any(p => !p.IsSaved) && !IsSingleMode)
+                {
+                    await SaveRowsAsync();
+                }
+                else
+                {
+                    await OnAddClick(new MouseEventArgs());
+                }
+                break;
+            case "F7":
+                if (HasSavedRows && !string.IsNullOrWhiteSpace(ActionId))
+                {
+                    NavManager.NavigateTo($"/register/print?actionId={Uri.EscapeDataString(ActionId)}");
+                }
+                else
+                {
+                    Notification.Show("Save the operation first.", "warning");
+                }
+                break;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>F5: clears the entry fields (product, count, weight, serial list, document, dynamic fields); listed rows stay.</summary>
+    private void ClearEntry()
+    {
+        if (IsLoading || HasSavedRows)
+        {
+            return;
+        }
+
+        CurrentProduct = null;
+        Serials = [];
+        PackValue = string.Empty;
+        Count = 1;
+        DocumentId = "000";
+        ResetDocument();
+        DynamicFields.ForEach(p => p.Value = p.DefaultValue ?? string.Empty);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_shortcuts is not null)
+            {
+                await _shortcuts.InvokeVoidAsync("unregister");
+                await _shortcuts.DisposeAsync();
+            }
+        }
+        catch (Exception exception) when (exception is JSDisconnectedException or JSException)
+        {
+        }
+
+        _self?.Dispose();
+    }
+
+    #endregion
 }

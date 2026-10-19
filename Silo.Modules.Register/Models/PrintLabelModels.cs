@@ -4,11 +4,31 @@ using System.Text.Json.Serialization;
 
 namespace Silo.Modules.Register.Models;
 
-/// <summary>A label template reported by the device host (kind "zpl" or "zmin").</summary>
+/// <summary>A label template reported by the device host (kind "zpl", "zmin" or "frx").</summary>
 public sealed record DeviceFormat(string Kind, string Name)
 {
     public string Key => $"{Kind}|{Name}";
     public string Display => $"{Kind.ToUpperInvariant()} - {Name}";
+
+    public bool IsFastReport => Kind == "frx";
+
+    /// <summary>
+    /// Legacy FastReport naming <c>title_printer_brand</c>: the brand code is the third token. Null for other names.
+    /// Used by "only formats of the product's brand".
+    /// </summary>
+    public string? Brand
+    {
+        get
+        {
+            if (!IsFastReport)
+            {
+                return null;
+            }
+
+            var parts = Name.Split('_');
+            return parts.Length > 2 ? parts[2].Trim() : null;
+        }
+    }
 }
 
 /// <summary>One row of <c>SGetPrintListByPrintActionId</c> (all values arrive as strings except the flag).</summary>
@@ -22,6 +42,13 @@ public sealed class PrintLabelRow
     public string? ProductTypeTitle { get; set; }
     public string? ProductCount { get; set; }
     public string? ProductCountInPack { get; set; }
+    public string? ProductItemCount { get; set; }
+    public string? ProductUnit { get; set; }
+    public string? ProductBrand { get; set; }
+    public string? ProductBrandTitle { get; set; }
+    public string? ProductGroupTitle { get; set; }
+    [JsonPropertyName("fld_ProductPropertyBTitle")] public string? ProductionShiftTitle { get; set; }
+    public string? ProductProperties { get; set; }
     public string? ProductSizeTitle { get; set; }
     public string? ProductRegCode { get; set; }
     public string? ProductStatusTitle { get; set; }
@@ -78,7 +105,25 @@ public static class LabelFieldBuilder
         fields["سایز_کالا"] = row.ProductSizeTitle ?? string.Empty;
         fields["تعداد_کالا_در_محموله"] = row.ProductCountInPack ?? string.Empty;
 
+        // Values the FastReport templates also use (legacy parameter names, "_" stands for a space there).
+        fields["تاریخ_تولید_شمسی"] = date;
+        fields["تاریخ_تولید_میلادی"] = row.PrintActionDateTime ?? string.Empty;
+        fields["مقدار_هر_کالا"] = row.ProductItemCount ?? string.Empty;
+        fields["واحد_کالا"] = row.ProductUnit ?? string.Empty;
+        fields["شیفت_تولید"] = row.ProductionShiftTitle ?? string.Empty;
+        fields["برند_کالا"] = row.ProductBrandTitle ?? string.Empty;
+        fields["شانه_کالا"] = row.ProductGroupTitle ?? string.Empty;
+        fields["عنوان_کالا_لاتین"] = row.ProductDescription ?? string.Empty;
+        fields["RFID"] = epc;
+
         technicalData = ReadTechnicalData(row.ProductTechnicalData);
+
+        // Legacy FastReport order: the technical data first, then the product properties override clashing names.
+        foreach (var pair in ReadTechnicalData(row.ProductProperties))
+        {
+            technicalData[pair.Key] = pair.Value;
+        }
+
         error = string.Empty;
         return true;
     }

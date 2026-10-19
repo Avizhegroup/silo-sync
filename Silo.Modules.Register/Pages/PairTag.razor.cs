@@ -32,6 +32,10 @@ public partial class PairTag
     private static readonly TimeSpan UnmatchedTimeout = TimeSpan.FromSeconds(15);
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
+    private static readonly TimeSpan ListTimeout = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan PrintTimeout = TimeSpan.FromSeconds(60);
+
+    private readonly DeviceRpc _rpc = new();
     private string _userId = string.Empty;
     private string _barcode = string.Empty;
     private string _epc = string.Empty;
@@ -57,6 +61,13 @@ public partial class PairTag
     public LocalWebSocketComponent? Socket { get; set; }
     public int DevicePort { get; set; } = 5005;
     public bool IsDeviceConnected { get; set; }
+
+    /// <summary>Legacy "auto print after register": a FastReport receipt (serial and RFID) after each successful pairing.</summary>
+    public bool AutoPrint { get; set; }
+    public List<DeviceFormat> ReceiptFormats { get; set; } = [];
+    public List<string> Printers { get; set; } = [];
+    public string ReceiptFormatName { get; set; } = string.Empty;
+    public string ReceiptPrinter { get; set; } = string.Empty;
 
     [Inject] public RfidConnectApi Api { get; set; } = default!;
 
@@ -314,7 +325,82 @@ public partial class PairTag
             , new KeyValuePair<string, object>("deviceIp", "0")
             , new KeyValuePair<string, object>("RegisterProperties", string.Empty))).Value;
 
-        return Report(serial, epc, registered ? successText : failureText, registered ? PairResultKind.Success : PairResultKind.Error);
+        var ok = Report(serial, epc, registered ? successText : failureText, registered ? PairResultKind.Success : PairResultKind.Error);
+        if (registered && AutoPrint)
+        {
+            await PrintReceiptAsync(serial, epc);
+        }
+
+        return ok;
+    }
+
+    /// <summary>
+    /// Prints the receipt template with the serial and the tag EPC (legacy PrintTestAfterRegister.frx: parameters
+    /// "سریال محموله" and "RFID"). A failure is shown as a warning and does not stop the pairing run.
+    /// </summary>
+    private async Task PrintReceiptAsync(string serial, string epc)
+    {
+        if (Socket is null || !IsDeviceConnected || string.IsNullOrEmpty(ReceiptFormatName))
+        {
+            Notification.Show("Auto print is on, but no receipt format is available.", "warning");
+            return;
+        }
+
+        try
+        {
+            var reply = await _rpc.RequestAsync(Socket, id => new
+            {
+                type = "printFormat",
+                id,
+                kind = "frx",
+                format = ReceiptFormatName,
+                printer = ReceiptPrinter,
+                output = "print",
+                fields = new Dictionary<string, string>
+                {
+                    ["سریال_محموله"] = serial,
+                    ["RFID"] = epc,
+                    ["شناسه_تگ"] = epc
+                }
+            }, PrintTimeout);
+
+            if (!reply.Ok)
+            {
+                Notification.Show($"The receipt was not printed: {reply.Value}", "warning");
+            }
+        }
+        catch (Exception exception) when (exception is TimeoutException or InvalidOperationException)
+        {
+            Notification.Show($"The receipt was not printed: {exception.Message}", "warning");
+        }
+    }
+
+    public async Task RefreshReceiptFormatsAsync()
+    {
+        if (Socket is null || !IsDeviceConnected)
+        {
+            return;
+        }
+
+        try
+        {
+            var formats = await _rpc.RequestAsync(Socket, id => new { type = "listFormats", id }, ListTimeout);
+            ReceiptFormats = (JsonSerializer.Deserialize<List<DeviceFormat>>(formats.Value ?? "[]", JsonOptions) ?? [])
+                .Where(p => p.IsFastReport).ToList();
+
+            var printers = await _rpc.RequestAsync(Socket, id => new { type = "listPrinters", id }, ListTimeout);
+            Printers = JsonSerializer.Deserialize<List<string>>(printers.Value ?? "[]", JsonOptions) ?? [];
+
+            if (!ReceiptFormats.Any(p => p.Name == ReceiptFormatName))
+            {
+                ReceiptFormatName = ReceiptFormats.FirstOrDefault(p => p.Name.StartsWith("PrintTestAfterRegister", StringComparison.OrdinalIgnoreCase))?.Name
+                    ?? ReceiptFormats.FirstOrDefault()?.Name ?? string.Empty;
+            }
+        }
+        catch (Exception exception) when (exception is TimeoutException or InvalidOperationException or JsonException)
+        {
+            Notification.Show(exception.Message, "error");
+        }
     }
 
     private bool Report(string serial, string epc, string status, PairResultKind kind)
@@ -357,6 +443,15 @@ public partial class PairTag
             await RestartReaderAsync();
         }
 
+        if (connected)
+        {
+            await RefreshReceiptFormatsAsync();
+        }
+        else
+        {
+            _rpc.FailAll("The device host disconnected.");
+        }
+
         if (!connected && IsOperationOn)
         {
             SetMessage("The device host disconnected. Reconnect, then press Start again.", "danger");
@@ -368,6 +463,11 @@ public partial class PairTag
 
     public async Task OnDeviceMessageReceived(string json)
     {
+        if (_rpc.TryComplete(json))
+        {
+            return;
+        }
+
         DeviceMessage? message;
         try
         {

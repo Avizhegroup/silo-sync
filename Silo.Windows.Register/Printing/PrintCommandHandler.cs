@@ -15,6 +15,8 @@ public sealed class PrintCommandHandler(
     DeviceSocketServer server,
     Action<string> log)
 {
+    private readonly FastReportPrinter _frx = new();
+
     public static bool Handles(string type) => type.ToLowerInvariant() is
         "print" or "listprinters" or "listformats" or "printerstatus" or "printformat";
 
@@ -54,10 +56,15 @@ public sealed class PrintCommandHandler(
     {
         if (!LabelFormatStore.TryParseKind(command.Kind, out var kind))
         {
-            return new ZminResult(false, "Unknown label format kind (use 'zpl' or 'zmin').");
+            return new ZminResult(false, "Unknown label format kind (use 'zpl', 'zmin' or 'frx').");
         }
 
         var path = formats.Resolve(kind, command.Format);
+        if (kind == LabelFormatKind.Frx)
+        {
+            return PrintFrx(command, path);
+        }
+
         if (kind == LabelFormatKind.Zpl)
         {
             ZplLabelPrinter.Print(ResolvePrinter(command.Printer), path, command.Fields, command.TechnicalData);
@@ -70,6 +77,37 @@ public sealed class PrintCommandHandler(
         return result;
     }
 
+    private ZminResult PrintFrx(SocketCommand command, string path)
+    {
+        var output = (command.Output ?? "print").Trim().ToLowerInvariant();
+        if (output is not ("print" or "pdf"))
+        {
+            return new ZminResult(false, "Unknown FastReport output (use 'print' or 'pdf').");
+        }
+
+        var items = command.Items is { Count: > 0 }
+            ? command.Items
+            : [new FrxItem(command.Fields, command.TechnicalData)];
+
+        // The printer is only needed for the final call of a job that prints.
+        var more = command.More ?? false;
+        var printer = output == "print" && !more ? ResolveFrxPrinter(command.Printer, command.Format) : null;
+
+        var result = _frx.Run(path, printer, items, output, command.Job, more);
+        if (!more)
+        {
+            log($"FastReport '{command.Format}' ({output}, {items.Count} label(s)): {result.Message}");
+        }
+
+        return result;
+    }
+
+    /// <summary>The requested printer, else the printer named in the template file name, else the configured default.</summary>
+    private string ResolveFrxPrinter(string? requested, string? formatName)
+        => ResolvePrinter(string.IsNullOrWhiteSpace(requested) && formatName is not null
+            ? FastReportPrinter.PrinterOfName(formatName)
+            : requested);
+
     private async Task ReplyStatusAsync(SocketCommand command)
     {
         if (LabelFormatStore.TryParseKind(command.Kind, out var kind) && kind == LabelFormatKind.Zmin)
@@ -79,10 +117,12 @@ public sealed class PrintCommandHandler(
             return;
         }
 
-        // ZPL RAW printers expose no status through the spooler API: report whether the printer exists.
+        var kindIsFrx = LabelFormatStore.TryParseKind(command.Kind, out var statusKind) && statusKind == LabelFormatKind.Frx;
+
+        // ZPL RAW printers (and FastReport printers) expose no status through the spooler API: report whether the printer exists.
         try
         {
-            var name = ResolvePrinter(command.Printer);
+            var name = kindIsFrx ? ResolveFrxPrinter(command.Printer, command.Format) : ResolvePrinter(command.Printer);
             await server.SendReplyAsync("printerStatus", command.Id, true, $"Printer '{name}' is installed.");
         }
         catch (InvalidOperationException exception)

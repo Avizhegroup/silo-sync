@@ -17,19 +17,27 @@ public sealed record SocketCommand(
     string? Format = null,
     bool? WriteRfid = null,
     Dictionary<string, string>? Fields = null,
-    Dictionary<string, string>? TechnicalData = null);
+    Dictionary<string, string>? TechnicalData = null,
+    List<Printing.FrxItem>? Items = null,
+    string? Output = null,
+    string? Job = null,
+    bool? More = null);
 
 /// <summary>
 /// Loopback WebSocket server (ws://127.0.0.1:{port}/?token=...). One browser client; HTTPS origin allowlist.
 /// Outgoing: {"type":"epc|barcode|status|pong","value":"..."}.
 /// Incoming: {"type":"startReader","mode":1|2}, {"type":"stopReader"}, {"type":"print","printer":"","data":"ZPL","id":"1"},
 /// {"type":"listPrinters"}, {"type":"listFormats"}, {"type":"printerStatus","kind":"zmin","id":"1"},
-/// {"type":"printFormat","id":"1","kind":"zpl|zmin","format":"name","printer":"","writeRfid":false,"fields":{},"technicalData":{}}.
+/// {"type":"printFormat","id":"1","kind":"zpl|zmin","format":"name","printer":"","writeRfid":false,"fields":{},"technicalData":{}},
+/// and for FastReport {"type":"printFormat","id":"1","kind":"frx","format":"name","printer":"","output":"print|pdf",
+/// "items":[{"fields":{},"technicalData":{}}],"job":"optional id","more":true} (more = collect only; the call without it prints or exports).
 /// Replies: {"type":"printers|formats","value":"&lt;json&gt;"}, {"type":"printResult|printerStatus","id":"1","ok":true,"value":"message","code":0}.
 /// </summary>
 public sealed class DeviceSocketServer(RegisterSettings settings) : IAsyncDisposable
 {
     private const int MaximumMessageBytes = 64 * 1024;
+    // FastReport jobs carry the values of many labels in one message (loopback, authenticated); replies stay small.
+    private const int MaximumIncomingBytes = 512 * 1024;
     private readonly SemaphoreSlim _sendLock = new(1, 1);
     private HttpListener? _listener;
     private CancellationTokenSource? _shutdown;
@@ -205,7 +213,7 @@ public sealed class DeviceSocketServer(RegisterSettings settings) : IAsyncDispos
                 await socket.CloseAsync(WebSocketCloseStatus.InvalidMessageType, "Text only", token);
                 return;
             }
-            if (message.Length + result.Count > MaximumMessageBytes)
+            if (message.Length + result.Count > MaximumIncomingBytes)
             {
                 await socket.CloseAsync(WebSocketCloseStatus.MessageTooBig, "Too large", token);
                 return;

@@ -12,6 +12,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- FastReport (.frx) labels: the legacy app used the commercial FastReport.NET 2017; the open-source engine loads the same files. -->
+    <PackageReference Include="FastReport.OpenSource" />
+    <PackageReference Include="FastReport.OpenSource.Export.PdfSimple" />
     <PackageReference Include="System.IO.Ports" />
   </ItemGroup>
 
@@ -28,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Default label templates (zpl\*.txt, zmin\*.lsf); copied next to the executable. -->
+    <!-- Default label templates (zpl\*.txt, zmin\*.lsf, frx\*.frx); copied next to the executable. -->
     <None Include="Formats\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

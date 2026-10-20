@@ -10,11 +10,5 @@
         <PackageReference Include="Newtonsoft.Json" />
         <PackageReference Include="DocumentFormat.OpenXml" />
     </ItemGroup>
-
-    <ItemGroup>
-        <None Include="TextResources.resx">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
     
 </Project>

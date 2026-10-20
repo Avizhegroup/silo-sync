@@ -118,7 +118,7 @@ public partial class CancelTag
 
             if (state is null || string.IsNullOrWhiteSpace(state.ProductSerial) || state.TagEpc == "-1")
             {
-                SetMessage("This tag is not registered.", "danger");
+                SetMessage(TextResources.APP_StringKeys_Tag_Not_Register, "danger");
                 return;
             }
 

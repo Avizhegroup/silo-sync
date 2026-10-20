@@ -24,7 +24,7 @@ public sealed class TagStateInfo
     {
         if (state is null)
         {
-            return (false, "The tag is not registered.");
+            return (false, TextResources.APP_StringKeys_Tag_Not_Register);
         }
 
         var notInspected = string.Equals(state.InspectStatusTitle?.Trim(), NotInspectedTitle, StringComparison.Ordinal);

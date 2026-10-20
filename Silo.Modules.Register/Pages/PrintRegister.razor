@@ -96,7 +96,7 @@
                 <input id="print-reprint" type="checkbox" class="form-check-input" @bind="AllowReprint" disabled="@IsBusy" />
                 <label for="print-reprint" class="form-check-label">Allow reprint of serials that are already registered</label>
             </div>
-            <button type="button" class="btn btn-outline-secondary" disabled="@(!IsDeviceConnected || IsBusy)" @onclick="RefreshDeviceAsync">Refresh list</button>
+            <button type="button" class="btn btn-outline-secondary" disabled="@(!IsDeviceConnected || IsBusy)" @onclick="RefreshDeviceAsync">@TextResources.APP_StringKeys_Refresh</button>
             <button type="button" class="btn btn-outline-secondary" disabled="@(!IsDeviceConnected || IsBusy || SelectedFormat is null || IsPdf)" @onclick="CheckPrinterAsync">Check printer</button>
         </div>
     </div>
@@ -104,8 +104,8 @@
     <div class="card shadow-sm">
         <div class="card-header d-flex flex-wrap gap-3 align-items-center">
             <span class="fw-bold">3. Serials (@Rows.Count)</span>
-            <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@IsBusy" @onclick="() => SelectAll(true)">Select all</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@IsBusy" @onclick="() => SelectAll(false)">Clear</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@IsBusy" @onclick="() => SelectAll(true)">@TextResources.APP_StringKeys_Print_SelectAll</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@IsBusy" @onclick="() => SelectAll(false)">@TextResources.APP_StringKeys_Clear</button>
             @if (PrintMode == "print")
             {
                 <NavLink href="/register/pair" class="btn btn-sm btn-outline-primary">Pair printed labels with tags</NavLink>
@@ -125,7 +125,7 @@
                         <th>@TextResources.APP_StringKeys_ProductSerial</th>
                         <th>@TextResources.APP_StringKeys_ProductCode</th>
                         <th>@TextResources.APP_StringKeys_ProductName</th>
-                        <th>EPC</th>
+                        <th>@TextResources.APP_StringKeys_TagEPC</th>
                         <th>@TextResources.APP_StringKeys_Status</th>
                     </tr>
                 </thead>

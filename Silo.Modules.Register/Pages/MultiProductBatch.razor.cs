@@ -236,7 +236,7 @@ public partial class MultiProductBatch : IAsyncDisposable
 
             if (document is null || string.IsNullOrWhiteSpace(document.Key))
             {
-                Notification.Show($"No data was found for document {DocumentId}.", "warning");
+                Notification.Show(TextResources.APP_StringKeys_Error_Notfound_DocKey, "warning");
                 return;
             }
 
@@ -364,7 +364,7 @@ public partial class MultiProductBatch : IAsyncDisposable
 
             if (product is null)
             {
-                Notification.Show($"Product {item.ProductCode} was not found.", "error");
+                Notification.Show(TextResources.APP_StringKeys_Error_ProductCodeNotFound, "error");
                 return;
             }
 
@@ -409,7 +409,7 @@ public partial class MultiProductBatch : IAsyncDisposable
         var file = e.File;
         if (file.Size > SerialListBuilder.MaxExcelBytes)
         {
-            Notification.Show("The file is larger than 5 MB.", "error");
+            Notification.Show(string.Format(TextResources.APP_StringKeys_Validation_Max_Size ?? "{0}", "5 MB"), "error");
             return;
         }
 
@@ -434,7 +434,7 @@ public partial class MultiProductBatch : IAsyncDisposable
         }
         catch (IOException)
         {
-            Notification.Show("The file could not be read.", "error");
+            Notification.Show(TextResources.APP_StringKeys_Error_ExcelExtractionException, "error");
         }
     }
 
@@ -453,7 +453,7 @@ public partial class MultiProductBatch : IAsyncDisposable
 
         if (!CanSave)
         {
-            Notification.Show("You are not allowed to register new serials.", "error");
+            Notification.Show(TextResources.APP_StringKeys_You_Dont_Have_Access_Permission, "error");
             return;
         }
 
@@ -547,7 +547,7 @@ public partial class MultiProductBatch : IAsyncDisposable
 
         if (!CanSave)
         {
-            Notification.Show("You are not allowed to register new serials.", "error");
+            Notification.Show(TextResources.APP_StringKeys_You_Dont_Have_Access_Permission, "error");
             return;
         }
 
@@ -672,7 +672,7 @@ public partial class MultiProductBatch : IAsyncDisposable
 
         if (!ActionIdRegex.IsMatch(actionId))
         {
-            Notification.Show("Enter a numeric operation code.", "error");
+            Notification.Show(TextResources.APP_StringKeys_Validation_Required_OperationCode, "error");
             return;
         }
 
@@ -685,7 +685,7 @@ public partial class MultiProductBatch : IAsyncDisposable
 
             if (rows.Count == 0)
             {
-                Notification.Show($"No serial was found for operation {actionId}.", "warning");
+                Notification.Show(TextResources.APP_StringKeys_Error_SerialsNotFound, "warning");
                 return;
             }
 
@@ -869,7 +869,7 @@ public partial class MultiProductBatch : IAsyncDisposable
                 }
                 else
                 {
-                    Notification.Show("Save the operation first.", "warning");
+                    Notification.Show(TextResources.APP_StringKeys_First_Save_Data, "warning");
                 }
                 break;
         }

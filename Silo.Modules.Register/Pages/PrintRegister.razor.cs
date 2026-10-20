@@ -89,7 +89,7 @@ public partial class PrintRegister
         ? "Export PDF"
         : PrintMode switch
         {
-            ModePrint => "Print",
+            ModePrint => TextResources.APP_StringKeys_Print,
             ModeAutoRegister => "Print and register",
             _ => "Register and print"
         };
@@ -152,7 +152,7 @@ public partial class PrintRegister
         var actionId = ActionId.Trim();
         if (!ActionIdRegex.IsMatch(actionId))
         {
-            Notification.Show("Enter a numeric operation code.", "error");
+            Notification.Show(TextResources.APP_StringKeys_Validation_Required_OperationCode, "error");
             return;
         }
 
@@ -168,7 +168,7 @@ public partial class PrintRegister
 
             if (Rows.Count == 0)
             {
-                Notification.Show("No serial was found for this operation.", "warning");
+                Notification.Show(TextResources.APP_StringKeys_Error_SerialsNotFound, "warning");
             }
         }
         catch
@@ -309,7 +309,7 @@ public partial class PrintRegister
             foreach (var row in selected)
             {
                 row.Succeeded = null;
-                row.Status = "Working...";
+                row.Status = TextResources.APP_StringKeys_Wait;
                 StateHasChanged();
 
                 var (ok, message, stopBatch) = await ProcessAsync(row, format);
@@ -460,7 +460,7 @@ public partial class PrintRegister
 
                 if (!await RegisterTagAsync(row, epc))
                 {
-                    return (false, "The tag could not be registered.", false);
+                    return (false, TextResources.APP_StringKeys_Save_Failed, false);
                 }
 
                 row.TagEpc = epc;

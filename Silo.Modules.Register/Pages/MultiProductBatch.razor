@@ -10,7 +10,7 @@
 <div class="container-fluid mt-2">
     @if (!CanSave)
     {
-        <div class="alert alert-warning">You are not allowed to register new serials (the list of allowed users is configured by the administrator).</div>
+        <div class="alert alert-warning">@TextResources.APP_StringKeys_You_Dont_Have_Access_Permission</div>
     }
     <div class="card shadow-sm mb-3">
         <div class="card-header">@TextResources.APP_StringKeys_OperationInfo @TextResources.APP_StringKeys_Register</div>
@@ -62,7 +62,7 @@
                 <label for="register-document">@TextResources.APP_StringKeys_DocKey</label>
                 <div class="input-group">
                     <input id="register-document" class="form-control" value="@DocumentId" @onchange="OnDocumentChanged" disabled="@HasSavedRows" />
-                    <button type="button" class="btn btn-outline-secondary" disabled="@(IsLoading || HasSavedRows)" @onclick="ToggleDocumentsAsync">Documents</button>
+                    <button type="button" class="btn btn-outline-secondary" disabled="@(IsLoading || HasSavedRows)" @onclick="ToggleDocumentsAsync">@TextResources.APP_StringKeys_Documents</button>
                 </div>
             </div>
         </div>
@@ -72,7 +72,7 @@
     {
         <div class="card shadow-sm mb-3">
             <div class="card-header d-flex gap-3 align-items-center">
-                <span>Documents</span>
+                <span>@TextResources.APP_StringKeys_Documents</span>
                 <input class="form-control" style="max-width:260px" placeholder="@TextResources.APP_StringKeys_DocKey" @bind="DocumentSearch" @bind:event="oninput" />
                 <button type="button" class="btn btn-sm btn-outline-secondary ms-auto" @onclick="ToggleDocumentsAsync">@TextResources.APP_StringKeys_Close</button>
             </div>
@@ -112,7 +112,7 @@
                 <div class="col-12 col-lg">
                     <table class="table table-sm align-middle">
                         <thead>
-                            <tr><th>@TextResources.APP_StringKeys_ProductCode</th><th>@TextResources.APP_StringKeys_ProductName</th><th>Requested</th><th>Remaining</th><th></th></tr>
+                            <tr><th>@TextResources.APP_StringKeys_ProductCode</th><th>@TextResources.APP_StringKeys_ProductName</th><th>Requested</th><th>@TextResources.APP_StringKeys_Remain</th><th></th></tr>
                         </thead>
                         <tbody>
                             @foreach (var item in DocumentItems)
@@ -148,13 +148,13 @@
                     <label for="serial-mode">Source</label>
                     <select id="serial-mode" class="form-select" @bind="SerialMode">
                         <option value="range">Range</option>
-                        <option value="excel">Excel (.xlsx)</option>
+                        <option value="excel">@TextResources.APP_StringKeys_ExcelFile (.xlsx)</option>
                     </select>
                 </div>
                 @if (SerialMode == "range")
                 {
-                    <div><label for="serial-from">From</label><input id="serial-from" class="form-control" style="max-width:150px" @bind="RangeFrom" /></div>
-                    <div><label for="serial-to">To (not included)</label><input id="serial-to" class="form-control" style="max-width:150px" @bind="RangeTo" /></div>
+                    <div><label for="serial-from">@TextResources.APP_StringKeys_From_Serial</label><input id="serial-from" class="form-control" style="max-width:150px" @bind="RangeFrom" /></div>
+                    <div><label for="serial-to">@TextResources.APP_StringKeys_To_Serial (&lt;)</label><input id="serial-to" class="form-control" style="max-width:150px" @bind="RangeTo" /></div>
                     <div><label for="serial-cut-start">Fixed prefix: start</label><input id="serial-cut-start" type="number" min="0" class="form-control" style="max-width:110px" @bind="CutStart" /></div>
                     <div><label for="serial-cut-length">Fixed prefix: length</label><input id="serial-cut-length" type="number" min="0" class="form-control" style="max-width:110px" @bind="CutLength" /></div>
                     <button type="button" class="btn btn-outline-primary" disabled="@HasSavedRows" @onclick="GenerateRange">@TextResources.APP_StringKeys_Add</button>
@@ -197,7 +197,7 @@
             {
                 <div class="input-group" style="max-width:320px">
                     <input class="form-control" inputmode="decimal" placeholder="Total weight" @bind="TotalWeight" />
-                    <button type="button" class="btn btn-outline-primary" disabled="@(CurrentProduct is null)" @onclick="OnApplyAverageWeight">Average</button>
+                    <button type="button" class="btn btn-outline-primary" disabled="@(CurrentProduct is null)" @onclick="OnApplyAverageWeight">@TextResources.APP_StringKeys_Average</button>
                 </div>
             }
             <button type="button" class="btn btn-primary" disabled="@(IsLoading || HasSavedRows || !CanSave)" @onclick="OnAddClick">@(IsSingleMode ? TextResources.APP_StringKeys_Confirm : TextResources.APP_StringKeys_Add)</button>

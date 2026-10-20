@@ -24,17 +24,17 @@
         </div>
         <div class="card-body d-flex flex-wrap gap-4 align-items-center">
             <div class="fs-5">All tags: <strong>@Rows.Count</strong></div>
-            <div class="fs-5 @(NotRegisteredCount > 0 ? "text-danger" : string.Empty)">Not registered: <strong>@NotRegisteredCount</strong></div>
+            <div class="fs-5 @(NotRegisteredCount > 0 ? "text-danger" : string.Empty)">@TextResources.APP_StringKeys_No_Register: <strong>@NotRegisteredCount</strong></div>
             <div class="text-muted">Waiting for lookup: @_pending.Count</div>
             @if (IsReading)
             {
-                <button type="button" class="btn btn-outline-danger" @onclick="StopAsync">Stop</button>
+                <button type="button" class="btn btn-outline-danger" @onclick="StopAsync">@TextResources.APP_StringKeys_Pause</button>
             }
             else
             {
                 <button type="button" class="btn btn-primary" disabled="@(!IsDeviceConnected)" @onclick="StartAsync">Start reading</button>
             }
-            <button type="button" class="btn btn-outline-secondary" disabled="@(!IsDeviceConnected)" @onclick="ResetAsync">Reset</button>
+            <button type="button" class="btn btn-outline-secondary" disabled="@(!IsDeviceConnected)" @onclick="ResetAsync">@TextResources.APP_StringKeys_Clear</button>
         </div>
     </div>
 
@@ -49,12 +49,12 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>EPC</th>
+                        <th>@TextResources.APP_StringKeys_TagEPC</th>
                         <th>@TextResources.APP_StringKeys_ProductSerial</th>
                         <th>@TextResources.APP_StringKeys_ProductCode</th>
                         <th>@TextResources.APP_StringKeys_ProductName</th>
                         <th>@TextResources.APP_StringKeys_Chart_Regcode</th>
-                        <th>Contract status</th>
+                        <th>@TextResources.APP_StringKeys_ContractStatus</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,7 +63,7 @@
                         <tr class="@(row.IsRegistered ? "table-success" : "table-danger")">
                             <td>@row.Index</td>
                             <td class="font-monospace">@row.Epc</td>
-                            <td>@(row.IsRegistered ? row.Serial : "Not registered")</td>
+                            <td>@(row.IsRegistered ? row.Serial : TextResources.APP_StringKeys_No_Register)</td>
                             <td>@row.ProductCode</td>
                             <td>@row.ProductName</td>
                             <td>@row.RegCode</td>

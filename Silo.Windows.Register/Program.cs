@@ -8,6 +8,7 @@ internal static class Program
     private static void Main()
     {
         ApplicationConfiguration.Initialize();
+        Localizer.Load();
         Application.Run(new MainForm());
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using TextResources = Silo.Shared.TextResources;
+using System.ComponentModel;
 using Silo.Windows.Register.Config;
 using Silo.Windows.Register.Devices;
 using Silo.Windows.Register.Printing;
@@ -18,6 +19,7 @@ public sealed partial class MainForm : Form
     public MainForm()
     {
         InitializeComponent();
+        _settingsButton.Text = Localizer.Text(TextResources.APP_StringKeys_Settings, "Settings");
 
         if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
         {

@@ -1,4 +1,5 @@
-﻿using Silo.Windows.Register.Config;
+﻿using TextResources = Silo.Shared.TextResources;
+using Silo.Windows.Register.Config;
 using Silo.Windows.Register.Devices;
 
 namespace Silo.Windows.Register.Forms;
@@ -12,6 +13,12 @@ public sealed partial class SettingsForm : Form
     public SettingsForm()
     {
         InitializeComponent();
+        Text = Localizer.Text(TextResources.APP_StringKeys_Settings, "Settings");
+        _save.Text = Localizer.Text(TextResources.APP_StringKeys_Save, "Save");
+        _serverIpLabel.Text = Localizer.Text(TextResources.APP_StringKeys_Server_Address, "Server IP");
+        _readerTypeLabel.Text = Localizer.Text(TextResources.APP_StringKeys_Rfid_DeviceType, "Desk reader type");
+        _serialLengthLabel.Text = Localizer.Text(TextResources.APP_StringKeys_Chars_Count, "Serial length");
+        _splitterLabel.Text = Localizer.Text(TextResources.APP_StringKeys_Separator_Phrase, "Barcode splitter");
         Load += OnSettingsFormLoad;
     }
 

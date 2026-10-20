@@ -127,7 +127,7 @@ public partial class RegisterTest
         if (TagSide is null)
         {
             ResultState = TestResultState.TagNotRegistered;
-            ResultMessage = "Tag is not registered";
+            ResultMessage = TextResources.APP_StringKeys_Tag_Not_Register;
         }
         else
         {

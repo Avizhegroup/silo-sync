@@ -151,7 +151,7 @@ public partial class PairTag
 
         _barcode = serial;
         BarcodeInput = serial;
-        SetMessage(HasEpc ? "Saving..." : "Waiting for the tag...", "info");
+        SetMessage(HasEpc ? TextResources.APP_StringKeys_Wait : TextResources.APP_StringKeys_Wait_To_Read_Tag, "info");
         await TryPairAsync();
     }
 
@@ -172,7 +172,7 @@ public partial class PairTag
 
         _epc = epc;
         EpcInput = epc;
-        SetMessage(HasBarcode ? "Saving..." : "Waiting for the barcode...", "info");
+        SetMessage(HasBarcode ? TextResources.APP_StringKeys_Wait : TextResources.APP_StringKeys_Wait_To_Read_Barcode, "info");
         await TryPairAsync();
     }
 
@@ -291,7 +291,7 @@ public partial class PairTag
                     return Report(serial, epc, "No information was found to register this serial.", PairResultKind.Error);
 
                 case "1":
-                    return await RegisterAsync(serial, epc, "Tag registered.", "The tag could not be registered.");
+                    return await RegisterAsync(serial, epc, TextResources.APP_StringKeys_Registered_Successfully, TextResources.APP_StringKeys_Save_Failed);
 
                 case "2":
                     if (!await ConfirmAsync($"Serial {serial} is already registered. Replace its tag with this one?"))
@@ -301,10 +301,10 @@ public partial class PairTag
                         return true;
                     }
 
-                    return await RegisterAsync(serial, epc, "Tag registration was updated.", "The tag registration could not be updated.");
+                    return await RegisterAsync(serial, epc, "Tag registration was updated.", TextResources.APP_StringKeys_Save_Failed);
 
                 default:
-                    return Report(serial, epc, "Unexpected answer from the server.", PairResultKind.Error);
+                    return Report(serial, epc, TextResources.APP_StringKeys_Error_Unexpected, PairResultKind.Error);
             }
         }
         catch

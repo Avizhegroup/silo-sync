@@ -77,7 +77,7 @@
             </div>
             <div class="form-check">
                 <input id="mx-like" type="checkbox" class="form-check-input" @bind="TechnicalCodeLike" />
-                <label for="mx-like" class="form-check-label">Contains</label>
+                <label for="mx-like" class="form-check-label">@TextResources.APP_StringKeys_Like</label>
             </div>
             <div>
                 <label for="mx-doc" class="form-label">@TextResources.APP_StringKeys_DocKey</label>
@@ -86,7 +86,7 @@
             <div class="d-flex gap-2">
                 <button type="button" class="btn btn-primary" disabled="@(IsLoading || DateError || TimeError)" @onclick="OnSearchClick">@TextResources.APP_StringKeys_Search</button>
                 <button type="button" class="btn btn-outline-secondary" disabled="@IsLoading" @onclick="OnClearClick">@TextResources.APP_StringKeys_Clear</button>
-                <button type="button" class="btn btn-outline-success" disabled="@(IsLoading || PivotRows.Count == 0)" @onclick="OnExcelClick">Excel</button>
+                <button type="button" class="btn btn-outline-success" disabled="@(IsLoading || PivotRows.Count == 0)" @onclick="OnExcelClick">@TextResources.APP_StringKeys_ExportExcel</button>
             </div>
         </div>
     </div>

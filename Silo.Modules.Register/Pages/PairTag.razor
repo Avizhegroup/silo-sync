@@ -19,21 +19,21 @@
             <span class="badge @(IsOperationOn ? "bg-success" : "bg-secondary")">@(IsOperationOn ? "Running" : "Stopped")</span>
             <span class="ms-auto d-flex flex-wrap gap-2">
                 <NavLink href="/register/test" class="btn btn-sm btn-outline-secondary">Test tag</NavLink>
-                <NavLink href="/register/cancel" class="btn btn-sm btn-outline-secondary">Cancel tag registration</NavLink>
+                <NavLink href="/register/cancel" class="btn btn-sm btn-outline-secondary">@TextResources.APP_StringKeys_Revoke</NavLink>
             </span>
         </div>
         <div class="card-body d-flex flex-wrap gap-3 align-items-end">
             <div>
-                <label for="pair-separator" class="form-label">Barcode separator</label>
+                <label for="pair-separator" class="form-label">@TextResources.APP_StringKeys_Separator_Phrase</label>
                 <input id="pair-separator" class="form-control" style="max-width:120px" maxlength="1" @bind="Separator" disabled="@IsOperationOn" />
             </div>
             @if (IsOperationOn)
             {
-                <button type="button" class="btn btn-outline-danger" @onclick="StopOperationAsync">Stop</button>
+                <button type="button" class="btn btn-outline-danger" @onclick="StopOperationAsync">@TextResources.APP_StringKeys_Pause</button>
             }
             else
             {
-                <button type="button" class="btn btn-primary" disabled="@(!IsDeviceConnected)" @onclick="StartOperationAsync">Start</button>
+                <button type="button" class="btn btn-primary" disabled="@(!IsDeviceConnected)" @onclick="StartOperationAsync">@TextResources.APP_StringKeys_Start</button>
             }
             <div class="form-check">
                 <input id="pair-autoprint" type="checkbox" class="form-check-input" @bind="AutoPrint" disabled="@(IsOperationOn || ReceiptFormats.Count == 0)" />
@@ -71,8 +71,8 @@
     {
         <div class="alert alert-warning d-flex flex-wrap gap-3 align-items-center">
             <span>@ConfirmMessage</span>
-            <button type="button" class="btn btn-warning" @onclick="() => AnswerConfirm(true)">Yes</button>
-            <button type="button" class="btn btn-outline-secondary" @onclick="() => AnswerConfirm(false)">No</button>
+            <button type="button" class="btn btn-warning" @onclick="() => AnswerConfirm(true)">@TextResources.APP_StringKeys_Yes</button>
+            <button type="button" class="btn btn-outline-secondary" @onclick="() => AnswerConfirm(false)">@TextResources.APP_StringKeys_No</button>
         </div>
     }
 
@@ -80,29 +80,29 @@
         <div class="card-header fw-bold">Capture</div>
         <div class="card-body d-flex flex-wrap gap-3 align-items-end">
             <div>
-                <label for="pair-barcode" class="form-label">Barcode (serial) <span class="badge @(HasBarcode ? "bg-success" : "bg-light text-dark")">@(HasBarcode ? "captured" : "waiting")</span></label>
+                <label for="pair-barcode" class="form-label">@(TextResources.APP_StringKeys_Barcode) (@(TextResources.APP_StringKeys_ProductSerial)) <span class="badge @(HasBarcode ? "bg-success" : "bg-light text-dark")">@(HasBarcode ? "captured" : "waiting")</span></label>
                 <input id="pair-barcode" @ref="BarcodeBox" class="form-control" style="min-width:260px" @bind="BarcodeInput" @bind:event="oninput"
                        @onkeyup="OnBarcodeKeyUp" disabled="@(!IsOperationOn)" autocomplete="off" />
             </div>
             <div>
-                <label for="pair-epc" class="form-label">Tag EPC <span class="badge @(HasEpc ? "bg-success" : "bg-light text-dark")">@(HasEpc ? "captured" : "waiting")</span></label>
+                <label for="pair-epc" class="form-label">@TextResources.APP_StringKeys_TagEPC <span class="badge @(HasEpc ? "bg-success" : "bg-light text-dark")">@(HasEpc ? "captured" : "waiting")</span></label>
                 <input id="pair-epc" class="form-control" style="min-width:280px" maxlength="24" @bind="EpcInput" @bind:event="oninput"
                        @onkeyup="OnEpcKeyUp" disabled="@(!IsOperationOn)" autocomplete="off" />
             </div>
-            <button type="button" class="btn btn-outline-secondary" disabled="@(!IsOperationOn)" @onclick="ClearCaptureAsync">Clear</button>
+            <button type="button" class="btn btn-outline-secondary" disabled="@(!IsOperationOn)" @onclick="ClearCaptureAsync">@TextResources.APP_StringKeys_Clear</button>
         </div>
     </div>
 
     <div class="card shadow-sm">
         <div class="card-header d-flex flex-wrap gap-3">
-            <span class="fw-bold">Results (@Results.Count)</span>
+            <span class="fw-bold">@(TextResources.APP_StringKeys_Result) (@Results.Count)</span>
             <span class="text-success">@Results.Count(p => p.Kind == PairResultKind.Success) registered</span>
             <span class="text-danger">@Results.Count(p => p.Kind == PairResultKind.Error) failed</span>
         </div>
         <div class="card-body table-responsive">
             <table class="table table-sm align-middle">
                 <thead>
-                    <tr><th>#</th><th>@TextResources.APP_StringKeys_ProductSerial</th><th>EPC</th><th>@TextResources.APP_StringKeys_Status</th></tr>
+                    <tr><th>#</th><th>@TextResources.APP_StringKeys_ProductSerial</th><th>@TextResources.APP_StringKeys_TagEPC</th><th>@TextResources.APP_StringKeys_Status</th></tr>
                 </thead>
                 <tbody>
                     @foreach (var row in Results)

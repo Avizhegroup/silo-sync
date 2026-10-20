@@ -141,14 +141,14 @@ public static class SerialListBuilder
         }
         catch (Exception exception) when (exception is IOException or InvalidDataException or ArgumentException or NotSupportedException)
         {
-            error = "The file could not be read as an .xlsx workbook.";
+            error = TextResources.APP_StringKeys_Validation_Excel_Format;
             serials = [];
             return false;
         }
 
         if (serials.Count == 0)
         {
-            error = "No serial was found in the first column.";
+            error = TextResources.APP_StringKeys_Error_SerialsNotFound;
             return false;
         }
 

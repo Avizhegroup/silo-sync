@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using FastReport;
-using FastReport.Export.PdfSimple;
+using FastReport.Export.Pdf;
 
 namespace Silo.Windows.Register.Printing;
 
@@ -102,6 +102,7 @@ public sealed class FastReportPrinter
         }
     }
 
+    /// <summary>Same calls as the legacy form: the printer is set, no dialog, then the prepared pages are printed.</summary>
     private static ZminResult PrintPrepared(Report report, string? printer)
     {
         if (string.IsNullOrWhiteSpace(printer))
@@ -109,9 +110,9 @@ public sealed class FastReportPrinter
             return new ZminResult(false, "No printer was given for the FastReport label.");
         }
 
-        //report.PrintSettings.Printer = printer;
-        //report.PrintSettings.ShowDialog = false;
-        //report.PrintPrepared();
+        report.PrintSettings.Printer = printer;
+        report.PrintSettings.ShowDialog = false;
+        report.Print();
         return new ZminResult(true, "Sent.");
     }
 
@@ -122,7 +123,7 @@ public sealed class FastReportPrinter
         DeleteOldPdfs(folder);
 
         var path = Path.Combine(folder, $"labels-{DateTime.Now:yyyyMMdd-HHmmss-fff}.pdf");
-        report.Export(new PDFSimpleExport(), path);
+        report.Export(new PDFExport { EmbeddingFonts = true }, path);
         Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
         return new ZminResult(true, $"PDF opened on the workstation: {path}");
     }

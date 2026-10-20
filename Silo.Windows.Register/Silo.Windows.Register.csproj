@@ -12,9 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- FastReport (.frx) labels: the legacy app used the commercial FastReport.NET 2017; the open-source engine loads the same files. -->
-    <PackageReference Include="FastReport.OpenSource" />
-    <PackageReference Include="FastReport.OpenSource.Export.PdfSimple" />
     <PackageReference Include="System.IO.Ports" />
   </ItemGroup>
 
@@ -26,6 +23,12 @@
     </Reference>
     <Reference Include="LabelPrinter">
       <HintPath>Packages\LabelPrinter.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- FastReport.NET (the same commercial build as the legacy app) for the .frx labels; FastReport.Bars/Editor/VSDesign
+         are loaded at run time next to it. All are copied by CopyPackageDlls. -->
+    <Reference Include="FastReport">
+      <HintPath>Packages\FastReport.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

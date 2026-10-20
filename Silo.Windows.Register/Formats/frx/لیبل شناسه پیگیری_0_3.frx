@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="07/03/2018 19:54:30" ReportInfo.Modified="08/08/2023 03:52:52" ReportInfo.CreatorVersion="1.8.29.0">
+  <Dictionary>
+    <Parameter Name="شیفت تولید" DataType="System.String"/>
+    <Parameter Name="ProductDescription" DataType="System.String"/>
+    <Parameter Name="عنوان کالا" DataType="System.String"/>
+    <Parameter Name="وضعیت کالا" DataType="System.String"/>
+    <Parameter Name="کد فنی" DataType="System.String"/>
+    <Parameter Name="کد کالا" DataType="System.String"/>
+    <Parameter Name="سایز کالا" DataType="System.String"/>
+    <Parameter Name="تعداد کالا در محموله" DataType="System.String"/>
+    <Parameter Name="مقدار هر کالا" DataType="System.String"/>
+    <Parameter Name="مقدار محموله" DataType="System.String"/>
+    <Parameter Name="سریال محموله" DataType="System.String"/>
+    <Parameter Name="واحد کالا" DataType="System.String"/>
+    <Parameter Name="تاریخ تولید میلادی" DataType="System.String"/>
+    <Parameter Name="تاریخ تولید شمسی" DataType="System.String"/>
+    <Parameter Name="برند کالا" DataType="System.String"/>
+    <Parameter Name="کد سند" DataType="System.String"/>
+    <Parameter Name="گروه کالا" DataType="System.String"/>
+    <Parameter Name="عنوان کالا لاتین" DataType="System.String"/>
+    <Parameter Name="سریال قدیمی" DataType="System.String"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="45" PaperHeight="15" LeftMargin="1" TopMargin="1" RightMargin="1" BottomMargin="1" FirstPageSource="4" OtherPagesSource="4">
+    <PageHeaderBand Name="PageHeader1" Width="162.54" Height="56.7" Guides="0,774.9,774.9,434.7,444.15">
+      <TextObject Name="Text1" Left="35.25" Top="-3" Width="96.05" Height="19.9" Text="شناسه رهگیری" HorzAlign="Center" VertAlign="Center" Font="IRANSans(FaNum), 8pt, style=Bold"/>
+      <BarcodeObject Name="Barcode1" Left="4.45" Top="14.9" Width="153.75" Height="39.25" Expression="[سریال قدیمی]" Text="4000335523489" Barcode="Code128" Barcode.AutoEncode="true"/>
+      <TextObject Name="Text2" Top="-4" Width="60.6" Height="21.9" Text="[سریال محموله]" VertAlign="Center" Font="Microsoft Sans Serif, 6pt"/>
+    </PageHeaderBand>
+  </ReportPage>
+</Report>

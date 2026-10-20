@@ -19,7 +19,7 @@ public sealed partial class MainForm : Form
     public MainForm()
     {
         InitializeComponent();
-        _settingsButton.Text = Localizer.Text(TextResources.APP_StringKeys_Settings, "Settings");
+        //ApplyTexts();
 
         if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
         {
@@ -30,7 +30,34 @@ public sealed partial class MainForm : Form
         (_reader, _server, _wedge) = Build();
 
         KeyPress += (_, e) => _wedge.Append(e.KeyChar);
+        //Shown += async (_, _) => await LoadTextsAsync();
         FormClosing += OnMainFormClosing;
+    }
+
+    /// <summary>Texts of this window from the shared resources; English until the server has delivered them.</summary>
+    private void ApplyTexts()
+    {
+        _settingsButton.Text = Localizer.Text(TextResources.APP_StringKeys_Settings, "Settings");
+    }
+
+    /// <summary>Loads the texts from the API (anonymous endpoint, like the web app) and refreshes this window.</summary>
+    private async Task LoadTextsAsync()
+    {
+        var (loaded, error) = await Localizer.LoadAsync(_settings.ServerIP);
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        if (loaded)
+        {
+            ApplyTexts();
+            AppendLog("Texts loaded from the server");
+        }
+        else
+        {
+            AppendLog($"Texts not loaded (English is used): {error}");
+        }
     }
 
     private (ReaderManager, DeviceSocketServer, BarcodeWedgeBuffer) Build()
@@ -158,6 +185,7 @@ public sealed partial class MainForm : Form
         _toggleServer.Text = "Start server";
         _toggleReader.Text = "Start reader";
         AppendLog("Settings applied");
+        await LoadTextsAsync();
     }
 
     private async void OnMainFormClosing(object? sender, FormClosingEventArgs e)

@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Managed vendor libraries: RfidApiLib (6061 reader) and LabelPrinter (ZMIN SDK). Copied by CopyPackageDlls. -->
+    <!-- Managed vendor libraries: RfidApiLib (6061 reader) and LabelPrinter (ZMIN SDK).. -->
     <Reference Include="RfidApiLib">
       <HintPath>Packages\RfidApiLib.dll</HintPath>
       <Private>false</Private>
@@ -26,7 +26,7 @@
       <Private>false</Private>
     </Reference>
     <!-- FastReport.NET (the same commercial build as the legacy app) for the .frx labels; FastReport.Bars/Editor/VSDesign
-         are loaded at run time next to it. All are copied by CopyPackageDlls. -->
+         are loaded at run time next to it. All are copied by the Packages\*.dll item below. -->
     <Reference Include="FastReport">
       <HintPath>Packages\FastReport.dll</HintPath>
       <Private>false</Private>
@@ -35,14 +35,13 @@
 
   <ItemGroup>
     <!-- Default label templates (zpl\*.txt, zmin\*.lsf, frx\*.frx); copied next to the executable. -->
-    <None Include="Formats\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Formats\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <Target Name="CopyPackageDlls" AfterTargets="Build">
-    <ItemGroup>
-      <PackageDll Include="$(MSBuildProjectDirectory)\Packages\*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(PackageDll)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
-  </Target>
+  <ItemGroup>
+    <!-- Vendor DLLs (FastReport, RfidApiLib, LabelPrinter, native reader DLLs): next to the exe on build AND publish,
+         in Debug and Release alike. The relative HintPaths above do not depend on the configuration. -->
+    <None Include="Packages\*.dll" Link="%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
 
 </Project>

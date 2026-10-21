@@ -1,0 +1,21 @@
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    <div class="flex-grow-1">
+        <h1 class="h5 fw-semibold mb-1">@Title</h1>
+        @if (!string.IsNullOrEmpty(Subtitle))
+        {
+            <div class="text-secondary small">@Subtitle</div>
+        }
+    </div>
+    @if (ShowDevice)
+    {
+        <DeviceStatusBadge IsConnected="IsDeviceConnected" />
+    }
+    @if (ChildContent is not null)
+    {
+        <div class="d-flex flex-wrap gap-2">@ChildContent</div>
+    }
+</div>
+@if (Steps.Count > 0)
+{
+    <HowToUse Steps="Steps" />
+}

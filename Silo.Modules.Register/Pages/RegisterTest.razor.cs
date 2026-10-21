@@ -6,6 +6,14 @@ namespace Silo.Modules.Register.Pages;
 
 public partial class RegisterTest
 {
+    /// <summary>The steps of the "how to use this page" panel.</summary>
+    public string[] HowToSteps { get; } =
+    [
+        RegisterTexts.TestHowTo1,
+        RegisterTexts.TestHowTo2,
+        RegisterTexts.TestHowTo3
+    ];
+
     private const int EpcLength = 24;
     private static readonly Regex CodeRegex = new("^[A-Za-z0-9]+$", RegexOptions.Compiled);
 
@@ -177,7 +185,7 @@ public partial class RegisterTest
 
         bool same = LabelSide.ProductSerial == TagSide.ProductSerial;
         ResultState = same ? TestResultState.Match : TestResultState.Mismatch;
-        ResultMessage = same ? "Tag registered correctly" : "Tag is registered for another serial";
+        ResultMessage = same ? RegisterTexts.TestMatch : RegisterTexts.TestMismatch;
     }
 
     private async Task<TagInfo?> GetInfoAsync(string serialOrEpc)

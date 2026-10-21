@@ -48,7 +48,7 @@ function open(url, remaining, delayMilliseconds) {
             return;
         }
 
-        notify("OnSocketError", "Connection to the local device host failed.");
+        notify("OnSocketError", "اتصال به برنامه‌ی دستگاه برقرار نشد. مطمئن شوید برنامه اجرا شده و رمز درست است.");
         notify("OnSocketStateChanged", false);
     });
     current.addEventListener("message", event => {

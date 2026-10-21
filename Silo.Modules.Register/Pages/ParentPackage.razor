@@ -2,7 +2,6 @@
 @inherits SiloBasePage
 @namespace Silo.Modules.Register.Pages
 @using Silo.Shared.Components
-@using Telerik.Blazor.Components
 
 <PageTitle>@PageTitle</PageTitle>
 
@@ -12,83 +11,84 @@
                          OnMessageReceived="OnDeviceMessageReceived"
                          OnError="OnDeviceError" />
 
-<TelerikLoaderContainer Visible="@IsLoading" />
-
 <div class="container-fluid mt-2">
-    <div class="row g-3 mb-3">
+    <PageHeader Title="@RegisterTexts.PackageTitle" Subtitle="@RegisterTexts.PackageSubtitle" ShowDevice="true" IsDeviceConnected="IsDeviceConnected" Steps="HowToSteps" />
+
+    <div class="row g-3">
         <div class="col-lg-6">
-            <div class="card shadow-sm h-100">
-                <div class="card-header fw-bold">1. @TextResources.APP_StringKeys_Add @TextResources.APP_StringKeys_ProductSerial</div>
-                <div class="card-body d-flex flex-wrap gap-3 align-items-end">
-                    <div>
-                        <label for="pkg-serial" class="form-label">@TextResources.APP_StringKeys_ProductSerial</label>
-                        <input id="pkg-serial" class="form-control" style="min-width:220px" @bind="Serial" @bind:event="oninput"
-                               @onkeyup="OnSerialKeyUp" autofocus />
+            <SectionCard Step="1" Title="@RegisterTexts.PackageStepAdd" Hint="@RegisterTexts.PackageStepAddHint" Class="h-100">
+                <div class="row g-3 align-items-end">
+                    <FormField Class="col-md-8" Label="@TextResources.APP_StringKeys_ProductSerial" For="pkg-serial">
+                        <ScanInput Id="pkg-serial" @bind-Value="Serial" OnKeyUp="OnSerialKeyUp" />
+                    </FormField>
+                    <div class="col-md-4">
+                        <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" Enabled="@(!IsLoading)" OnClick="OnAddClick">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Add" /> @TextResources.APP_StringKeys_Add
+                        </TelerikButton>
                     </div>
-                    <button type="button" class="btn btn-primary" disabled="@(IsLoading || string.IsNullOrWhiteSpace(Serial))" @onclick="OnAddClick">
-                        @TextResources.APP_StringKeys_Add
-                    </button>
                 </div>
-            </div>
+            </SectionCard>
         </div>
         <div class="col-lg-6">
-            <div class="card shadow-sm h-100">
-                <div class="card-header fw-bold">2. Package</div>
-                <div class="card-body d-flex flex-wrap gap-3 align-items-end">
-                    <div>
-                        <label for="pkg-code" class="form-label">@TextResources.APP_StringKeys_ParentCode</label>
-                        <input id="pkg-code" class="form-control" @bind="PackageCode" @bind:event="oninput" @onkeyup="OnPackageCodeKeyUp" />
+            <SectionCard Step="2" Title="@RegisterTexts.PackageStepPackage" Hint="@RegisterTexts.PackageStepPackageHint" Class="h-100">
+                <div class="row g-3 align-items-end">
+                    <FormField Class="col-md-4" Label="@TextResources.APP_StringKeys_ParentCode" For="pkg-code">
+                        <ScanInput Id="pkg-code" @bind-Value="PackageCode" OnKeyUp="OnPackageCodeKeyUp" />
+                    </FormField>
+                    <FormField Class="col-md-8" Label="@RegisterTexts.PackageEpcLabel" For="pkg-epc">
+                        <ScanInput Id="pkg-epc" @bind-Value="PackageEpc" MaxLength="24" />
+                    </FormField>
+                    <div class="col-12 d-flex flex-wrap gap-2">
+                        <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
+                                       Enabled="@(!IsLoading)" OnClick="OnLoadPackageClick">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Search" /> @TextResources.APP_StringKeys_Search
+                        </TelerikButton>
+                        <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline"
+                                       ThemeColor="@(IsReading ? ThemeConstants.Button.ThemeColor.Warning : ThemeConstants.Button.ThemeColor.Primary)"
+                                       Enabled="@(!IsLoading && IsDeviceConnected)" OnClick="OnReadTagClick"
+                                       Title="@(IsDeviceConnected ? RegisterTexts.PackageReadTagHint : RegisterTexts.PackageReaderNotConnected)">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Sensors" /> @(IsReading ? RegisterTexts.PackageWaitingTag : RegisterTexts.PackageReadTag)
+                        </TelerikButton>
                     </div>
-                    <div>
-                        <label for="pkg-epc" class="form-label">Package EPC</label>
-                        <input id="pkg-epc" class="form-control" maxlength="24" style="min-width:230px" @bind="PackageEpc" @bind:event="oninput" />
-                    </div>
-                    <button type="button" class="btn btn-outline-primary" disabled="@IsLoading" @onclick="OnLoadPackageClick">
-                        @TextResources.APP_StringKeys_Search
-                    </button>
-                    <button type="button" class="btn @(IsReading ? "btn-warning" : "btn-outline-primary")" disabled="@(IsLoading || !IsDeviceConnected)" @onclick="OnReadTagClick"
-                            title="@(IsDeviceConnected ? "Read the package tag with the reader" : "The device host is not connected")">
-                        @(IsReading ? "Waiting for the tag..." : "Read package tag")
-                    </button>
                 </div>
-            </div>
+            </SectionCard>
         </div>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <span class="fw-bold">3. @TextResources.APP_StringKeys_Count: <span class="badge bg-secondary">@Items.Count</span></span>
-            <div class="d-flex flex-wrap gap-2 align-items-center">
-                <span class="text-muted">@TextResources.APP_StringKeys_Value: @TotalValue.ToString("0.##")</span>
-                <select class="form-select" style="max-width:240px" @bind="SelectedFormatKey" disabled="@(IsPrinting || !IsDeviceConnected)">
-                    <option value="">Label format</option>
-                    @foreach (var format in Formats)
-                    {
-                        <option value="@format.Key">@format.Display</option>
-                    }
-                </select>
+    <SectionCard Step="3" Title="@RegisterTexts.PackageStepItems">
+        <HeaderContent>
+            <span class="badge rounded-pill bg-secondary">@TextResources.APP_StringKeys_Count: @Items.Count</span>
+            <span class="text-secondary">@TextResources.APP_StringKeys_Value: @TotalValue.ToString("0.##")</span>
+        </HeaderContent>
+        <ChildContent>
+            <div class="row g-3 align-items-end mb-3">
+                <FormField Class="col-md-4" Label="@RegisterTexts.LabelFormat" For="pkg-format">
+                    <LabelFormatSelect Id="pkg-format" Formats="Formats" @bind-Value="SelectedFormatKey" Enabled="@(!IsPrinting && IsDeviceConnected)" />
+                </FormField>
                 @if (SelectedFormat?.Kind == "zpl")
                 {
-                    <select class="form-select" style="max-width:220px" @bind="SelectedPrinter" disabled="@IsPrinting">
-                        <option value="">(default printer of the host)</option>
-                        @foreach (var printer in Printers)
-                        {
-                            <option value="@printer">@printer</option>
-                        }
-                    </select>
+                    <FormField Class="col-md-4" Label="@RegisterTexts.PrinterLabel" For="pkg-printer">
+                        <PrinterSelect Id="pkg-printer" Printers="Printers" @bind-Value="SelectedPrinter"
+                                       DefaultText="@RegisterTexts.PackageDefaultPrinterLabel" Enabled="@(!IsPrinting)" />
+                    </FormField>
                 }
-                <button type="button" class="btn btn-outline-dark" disabled="@(IsLoading || IsPrinting || SelectedFormat is null || Items.Count == 0 || !IsDeviceConnected)" @onclick="OnPrintLabelClick">
-                    Print label
-                </button>
-                <button type="button" class="btn btn-outline-secondary" disabled="@IsLoading" @onclick="OnClearClick">@TextResources.APP_StringKeys_New</button>
-                <button type="button" class="btn btn-success" disabled="@(IsLoading || Items.Count == 0 || string.IsNullOrWhiteSpace(PackageEpc))" @onclick="OnSaveClick">
-                    @TextResources.APP_StringKeys_Save
-                </button>
+                <div class="col-auto d-flex flex-wrap gap-2">
+                    <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline"
+                                   Enabled="@(!IsLoading && !IsPrinting && SelectedFormat is not null && Items.Count > 0 && IsDeviceConnected)" OnClick="OnPrintLabelClick"
+                                   Title="@(SelectedFormat is null ? RegisterTexts.PrintSelectedFormat : RegisterTexts.PackagePrintLabel)">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Print" /> @RegisterTexts.PackagePrintLabel
+                    </TelerikButton>
+                    <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Enabled="@(!IsLoading)" OnClick="OnClearClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Refresh" /> @TextResources.APP_StringKeys_New
+                    </TelerikButton>
+                    <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Success" Enabled="@(!IsLoading && Items.Count > 0)" OnClick="OnSaveClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Save" /> @TextResources.APP_StringKeys_Save
+                    </TelerikButton>
+                </div>
             </div>
-        </div>
-        <div class="card-body">
-            <TelerikGrid Data="Items" Pageable="true" PageSize="10" Sortable="true">
-                <GridColumns>
+
+            <RegisterGrid TItem="PackageItem" Data="Items" EmptyText="@RegisterTexts.PackageItemsEmpty">
+                <Columns>
                     <GridColumn Field="@nameof(PackageItem.ProductSerial)" Title="@TextResources.APP_StringKeys_ProductSerial" />
                     <GridColumn Field="@nameof(PackageItem.ProductCode)" Title="@TextResources.APP_StringKeys_ProductCode" />
                     <GridColumn Field="@nameof(PackageItem.ProductName)" Title="@TextResources.APP_StringKeys_ProductName" />
@@ -108,15 +108,18 @@
                             }
                         </Template>
                     </GridColumn>
-                    <GridColumn Title="@TextResources.APP_StringKeys_Delete" Width="120px">
+                    <GridColumn Title="@TextResources.APP_StringKeys_Delete" Width="120px" Sortable="false">
                         <Template Context="row">
-                            <button type="button" class="btn btn-sm btn-outline-danger" disabled="@IsLoading" @onclick="() => OnRemoveClick((PackageItem)row)">
-                                @TextResources.APP_StringKeys_Delete
-                            </button>
+                            <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Error" FillMode="@ThemeConstants.Button.FillMode.Outline"
+                                           Size="@ThemeConstants.Button.Size.Small" Enabled="@(!IsLoading)" OnClick="@(() => OnRemoveClick((PackageItem)row))">
+                                <MaterialIcon IconName="@MaterialIconsHelper.Delete" /> @TextResources.APP_StringKeys_Delete
+                            </TelerikButton>
                         </Template>
                     </GridColumn>
-                </GridColumns>
-            </TelerikGrid>
-        </div>
-    </div>
+                </Columns>
+            </RegisterGrid>
+        </ChildContent>
+    </SectionCard>
 </div>
+
+<PageLoader Visible="IsLoading" />

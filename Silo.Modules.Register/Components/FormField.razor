@@ -1,0 +1,18 @@
+<div class="@Class">
+    <label class="form-label fw-medium" for="@For">
+        @Label
+        @if (IsRequired)
+        {
+            <span class="text-danger" title="@RegisterTexts.Required">*</span>
+        }
+    </label>
+    @ChildContent
+    @if (!string.IsNullOrEmpty(Error))
+    {
+        <div class="text-danger small mt-1">@Error</div>
+    }
+    else if (!string.IsNullOrEmpty(Hint))
+    {
+        <div class="form-text">@Hint</div>
+    }
+</div>

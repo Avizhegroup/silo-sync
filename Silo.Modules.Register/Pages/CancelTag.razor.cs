@@ -13,6 +13,14 @@ namespace Silo.Modules.Register.Pages;
 /// </summary>
 public partial class CancelTag
 {
+    /// <summary>The steps of the "how to use this page" panel.</summary>
+    public string[] HowToSteps { get; } =
+    [
+        RegisterTexts.CancelHowTo1,
+        RegisterTexts.CancelHowTo2,
+        RegisterTexts.CancelHowTo3
+    ];
+
     private static readonly Regex CodeRegex = new("^[A-Za-z0-9]+$", RegexOptions.Compiled);
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
@@ -23,7 +31,7 @@ public partial class CancelTag
     public GetRevokeTagsVm? Product { get; set; }
     public string Epc { get; set; } = string.Empty;
     public bool ConfirmPending { get; set; }
-    public string Message { get; set; } = "Read a tag or type its serial or EPC.";
+    public string Message { get; set; } = RegisterTexts.CancelReadOrType;
     public string MessageKind { get; set; } = "info";
     public List<GetRevokeTagsVm> ProductList => Product is null ? [] : [Product];
 
@@ -103,7 +111,7 @@ public partial class CancelTag
     {
         if (!CodeRegex.IsMatch(serialOrEpc))
         {
-            SetMessage("Enter a serial or a 24-character EPC (letters and digits only).", "danger");
+            SetMessage(RegisterTexts.CancelInvalidCode, "danger");
             return;
         }
 
@@ -128,12 +136,12 @@ public partial class CancelTag
 
             if (Product is null)
             {
-                SetMessage("The product of this tag could not be loaded.", "danger");
+                SetMessage(RegisterTexts.CancelProductNotLoaded, "danger");
                 return;
             }
 
             Epc = state.TagEpc;
-            SetMessage("Check the product, then confirm the cancellation.", "warning");
+            SetMessage(RegisterTexts.CancelCheckAndConfirm, "warning");
         }
         catch
         {
@@ -180,7 +188,7 @@ public partial class CancelTag
 
             if (string.IsNullOrWhiteSpace(reason))
             {
-                SetMessage($"The registration of {Product.ProductSerial} was cancelled.", "success");
+                SetMessage(RegisterTexts.CancelDone(Product.ProductSerial), "success");
                 Product = null;
                 Epc = string.Empty;
             }
@@ -206,7 +214,7 @@ public partial class CancelTag
         Product = null;
         Epc = string.Empty;
         ConfirmPending = false;
-        SetMessage("Read a tag or type its serial or EPC.", "info");
+        SetMessage(RegisterTexts.CancelReadOrType, "info");
     }
 
     private void SetMessage(string message, string kind)

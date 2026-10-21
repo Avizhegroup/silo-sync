@@ -1,0 +1,20 @@
+@typeparam TItem
+
+<HeadContent>
+    <link rel="stylesheet" href="_content/Silo.Modules.Register/register.css" />
+</HeadContent>
+
+@if (_items.Count == 0 && !string.IsNullOrEmpty(EmptyText))
+{
+    <StatusMessage Kind="info" Message="@EmptyText" Class="mb-0" />
+}
+else
+{
+    <TelerikGrid Data="_items" Pageable="@(_items.Count > PageSize)" PageSize="PageSize" Sortable="Sortable"
+                 FilterMode="@(Filterable ? GridFilterMode.FilterRow : GridFilterMode.None)"
+                 OnRowRender="OnRowRender">
+        <GridColumns>
+            @Columns
+        </GridColumns>
+    </TelerikGrid>
+}

@@ -1,0 +1,3 @@
+<TelerikDropDownList TItem="OptionItem" TValue="string" Data="@Options" TextField="@nameof(OptionItem.Text)" ValueField="@nameof(OptionItem.Value)"
+                     Value="@Value" ValueChanged="@((string v) => OnValueChanged(v))" Id="@Id" Enabled="@Enabled"
+                     DefaultText="@DefaultText" Width="100%" />

@@ -2,78 +2,64 @@
 @inherits SiloBasePage
 @namespace Silo.Modules.Register.Pages
 @using Silo.Application.Features
-@using Telerik.Blazor.Components
 
 <PageTitle>@PageTitle</PageTitle>
 
-<TelerikLoaderContainer Visible="@IsLoading" />
-
 <div class="container-fluid mt-2">
-    <div class="card shadow-sm mb-3">
-        <div class="card-header fw-bold">1. @TextResources.APP_StringKeys_Search @TextResources.APP_StringKeys_ProductSerial</div>
-        <div class="card-body d-flex flex-wrap gap-3 align-items-end">
-            <div>
-                <label for="date-serial" class="form-label">@TextResources.APP_StringKeys_ProductSerial / EPC</label>
-                <input id="date-serial" class="form-control" style="min-width:260px" @bind="Serial" @bind:event="oninput"
-                       @onkeyup="OnSerialKeyUp" autofocus />
+    <PageHeader Title="@RegisterTexts.DateTitle" Subtitle="@RegisterTexts.DateSubtitle" Steps="HowToSteps" />
+
+    <SectionCard Step="1" Title="@RegisterTexts.DateStepFind">
+        <div class="row g-3 align-items-end">
+            <FormField Class="col-md-6 col-lg-4" Label="@($"{TextResources.APP_StringKeys_ProductSerial} / EPC")" For="date-serial">
+                <ScanInput Id="date-serial" @bind-Value="Serial" OnKeyUp="OnSerialKeyUp" />
+            </FormField>
+            <div class="col-auto">
+                <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" Enabled="@(!IsLoading)" OnClick="OnSearchClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Search" /> @TextResources.APP_StringKeys_Search
+                </TelerikButton>
             </div>
-            <button type="button" class="btn btn-primary" disabled="@(IsLoading || string.IsNullOrWhiteSpace(Serial))" @onclick="OnSearchClick">
-                @TextResources.APP_StringKeys_Search
-            </button>
         </div>
-    </div>
+    </SectionCard>
 
     @if (Product is null)
     {
-        <div class="alert alert-info">@TextResources.APP_StringKeys_ProductSerial</div>
+        <StatusMessage Kind="info" Message="@RegisterTexts.DateFirst" />
     }
     else
     {
-        <div class="card shadow-sm mb-3">
-            <div class="card-header fw-bold">2. @TextResources.APP_StringKeys_ProductName</div>
-            <div class="card-body">
-                <TelerikGrid Data="ProductList" Pageable="false" Sortable="false">
-                    <GridColumns>
-                        <GridColumn Field="@nameof(GetRevokeTagsVm.ProductSerial)" Title="@TextResources.APP_StringKeys_ProductSerial" />
-                        <GridColumn Field="@nameof(GetRevokeTagsVm.ProductCode)" Title="@TextResources.APP_StringKeys_ProductCode" />
-                        <GridColumn Field="@nameof(GetRevokeTagsVm.ProductName)" Title="@TextResources.APP_StringKeys_ProductName" />
-                        <GridColumn Field="@nameof(GetRevokeTagsVm.ProductDate)" Title="@TextResources.APP_StringKeys_Chart_ProductDate" />
-                        <GridColumn Field="@nameof(GetRevokeTagsVm.Warehouse)" Title="@TextResources.APP_StringKeys_Field_Warehouse_Title" />
-                        <GridColumn Field="@nameof(GetRevokeTagsVm.InspectStatus)" Title="@TextResources.APP_StringKeys_Inspect_Status" />
-                    </GridColumns>
-                </TelerikGrid>
-            </div>
-        </div>
+        <SectionCard Step="2" Title="@RegisterTexts.DateStepProduct">
+            <RegisterGrid TItem="GetRevokeTagsVm" Data="ProductList" Sortable="false" EmptyText="@null">
+                <Columns>
+                    <GridColumn Field="@nameof(GetRevokeTagsVm.ProductSerial)" Title="@TextResources.APP_StringKeys_ProductSerial" />
+                    <GridColumn Field="@nameof(GetRevokeTagsVm.ProductCode)" Title="@TextResources.APP_StringKeys_ProductCode" />
+                    <GridColumn Field="@nameof(GetRevokeTagsVm.ProductName)" Title="@TextResources.APP_StringKeys_ProductName" />
+                    <GridColumn Field="@nameof(GetRevokeTagsVm.ProductDate)" Title="@TextResources.APP_StringKeys_Chart_ProductDate" />
+                    <GridColumn Field="@nameof(GetRevokeTagsVm.Warehouse)" Title="@TextResources.APP_StringKeys_Field_Warehouse_Title" />
+                    <GridColumn Field="@nameof(GetRevokeTagsVm.InspectStatus)" Title="@TextResources.APP_StringKeys_Inspect_Status" />
+                </Columns>
+            </RegisterGrid>
+        </SectionCard>
 
-        <div class="alert @(CanEdit ? "alert-success" : "alert-danger")">@EditReason</div>
+        <StatusMessage Kind="@(CanEdit ? "success" : "danger")" Message="@EditReason" />
 
-        <div class="card shadow-sm">
-            <div class="card-header fw-bold">3. @TextResources.APP_StringKeys_Date</div>
-            <div class="card-body d-flex flex-wrap gap-3 align-items-start">
-                <div>
-                    <label for="date-new" class="form-label">@TextResources.APP_StringKeys_Date (1404/01/31)</label>
-                    <input id="date-new" class="form-control @(DateError ? "is-invalid" : string.Empty)" maxlength="10" disabled="@(!CanEdit)"
-                           placeholder="14yy/mm/dd" @bind="NewDate" @bind:event="oninput" />
-                    @if (DateError)
-                    {
-                        <div class="invalid-feedback">14yy/mm/dd</div>
-                    }
-                </div>
-                <div>
-                    <label for="date-time" class="form-label">HH:mm</label>
-                    <input id="date-time" class="form-control @(TimeError ? "is-invalid" : string.Empty)" maxlength="5" disabled="@(!CanEdit)"
-                           placeholder="HH:mm" @bind="NewTime" @bind:event="oninput" />
-                    @if (TimeError)
-                    {
-                        <div class="invalid-feedback">HH:mm</div>
-                    }
-                </div>
-                <div class="align-self-end">
-                    <button type="button" class="btn btn-success" disabled="@(IsLoading || !IsInputValid)" @onclick="OnSaveClick">
-                        @TextResources.APP_StringKeys_Save
-                    </button>
+        <SectionCard Step="3" Title="@RegisterTexts.DateStepNew">
+            <div class="row g-3 align-items-start">
+                <FormField Class="col-md-4 col-lg-3" Label="@TextResources.APP_StringKeys_Date" For="date-new" Hint="@RegisterTexts.DateFormat"
+                           Error="@(DateError ? RegisterTexts.DateFormat : null)">
+                    <TelerikTextBox Id="date-new" @bind-Value="NewDate" MaxLength="10" Placeholder="14yy/mm/dd" Enabled="CanEdit" Width="100%" />
+                </FormField>
+                <FormField Class="col-md-3 col-lg-2" Label="@RegisterTexts.DateTime" For="date-time" Hint="@RegisterTexts.DateTimeFormat"
+                           Error="@(TimeError ? RegisterTexts.DateTimeFormat : null)">
+                    <TelerikTextBox Id="date-time" @bind-Value="NewTime" MaxLength="5" Placeholder="HH:mm" Enabled="CanEdit" Width="100%" />
+                </FormField>
+                <div class="col-auto pt-md-4">
+                    <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Success" Enabled="@(!IsLoading && CanEdit)" OnClick="OnSaveClick">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Save" /> @TextResources.APP_StringKeys_Save
+                    </TelerikButton>
                 </div>
             </div>
-        </div>
+        </SectionCard>
     }
 </div>
+
+<PageLoader Visible="IsLoading" />

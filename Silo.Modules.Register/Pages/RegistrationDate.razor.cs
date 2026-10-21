@@ -6,6 +6,14 @@ namespace Silo.Modules.Register.Pages;
 
 public partial class RegistrationDate
 {
+    /// <summary>The steps of the "how to use this page" panel.</summary>
+    public string[] HowToSteps { get; } =
+    [
+        RegisterTexts.DateHowTo1,
+        RegisterTexts.DateHowTo2,
+        RegisterTexts.DateHowTo3
+    ];
+
     private static readonly Regex SerialRegex = new("^[A-Za-z0-9]+$", RegexOptions.Compiled);
     private static readonly Regex DateRegex = new(@"^14\d{2}/(0[1-9]|1[0-2])/(0[1-9]|[12]\d|3[01])$", RegexOptions.Compiled);
     private static readonly Regex TimeRegex = new(@"^([01]\d|2[0-3]):[0-5]\d$", RegexOptions.Compiled);
@@ -48,7 +56,7 @@ public partial class RegistrationDate
 
         if (!DateRegex.IsMatch(NewDate) || !TimeRegex.IsMatch(NewTime))
         {
-            Notification.Show(TextResources.APP_StringKeys_Alert_Fail, "error");
+            Notification.Show(RegisterTexts.DateInvalidInput, "error");
             return;
         }
 

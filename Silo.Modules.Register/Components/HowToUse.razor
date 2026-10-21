@@ -1,0 +1,21 @@
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-header bg-transparent d-flex align-items-center gap-2">
+        <MaterialIcon IconName="@MaterialIconsHelper.Lightbulb" Class="text-warning" />
+        <span class="fw-semibold">@RegisterTexts.HowToUseTitle</span>
+        <TelerikButton Class="ms-auto" FillMode="@ThemeConstants.Button.FillMode.Flat" OnClick="OnToggleClick"
+                       Title="@(IsOpen ? RegisterTexts.HowToUseHide : RegisterTexts.HowToUseShow)">
+            <MaterialIcon IconName="@(IsOpen ? MaterialIconsHelper.ExpandLess : MaterialIconsHelper.ExpandMore)" />
+        </TelerikButton>
+    </div>
+    @if (IsOpen)
+    {
+        <div class="card-body py-2">
+            <ol class="mb-0 ps-3">
+                @foreach (var step in Steps)
+                {
+                    <li class="py-1">@step</li>
+                }
+            </ol>
+        </div>
+    }
+</div>

@@ -31,7 +31,7 @@ public sealed class TagStateInfo
         var inProduction = string.Equals(state.TagStatus?.Trim(), ProductionStatus, StringComparison.Ordinal);
 
         return notInspected && inProduction
-            ? (true, "The registration date can be changed.")
-            : (false, "The product has been inspected or has left the production warehouses, so its registration date cannot be changed.");
+            ? (true, RegisterTexts.DateEditable)
+            : (false, RegisterTexts.DateNotEditable);
     }
 }

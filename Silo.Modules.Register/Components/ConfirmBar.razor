@@ -1,0 +1,5 @@
+<StatusMessage Kind="@Kind" Message="@Message">
+    <TelerikButton ThemeColor="@(Kind == "danger" ? ThemeConstants.Button.ThemeColor.Error : ThemeConstants.Button.ThemeColor.Warning)"
+                   Enabled="Enabled" OnClick="OnYesClick">@YesText</TelerikButton>
+    <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Enabled="Enabled" OnClick="OnNoClick">@NoText</TelerikButton>
+</StatusMessage>

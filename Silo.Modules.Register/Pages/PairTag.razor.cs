@@ -1,6 +1,7 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.JSInterop;
 using Silo.Modules.Register.Models;
+using Silo.Modules.Register.Components;
 using Silo.Shared.Components;
 
 namespace Silo.Modules.Register.Pages;
@@ -16,9 +17,9 @@ public sealed record PairRow(int Index, string Serial, string Epc, string Status
 {
     public string CssClass => Kind switch
     {
-        PairResultKind.Success => "table-success",
-        PairResultKind.Warning => "table-warning",
-        _ => "table-danger"
+        PairResultKind.Success => "success",
+        PairResultKind.Warning => "warning",
+        _ => "danger"
     };
 }
 
@@ -29,6 +30,15 @@ public sealed record PairRow(int Index, string Serial, string Epc, string Status
 /// </summary>
 public partial class PairTag
 {
+    /// <summary>The steps of the "how to use this page" panel.</summary>
+    public string[] HowToSteps { get; } =
+    [
+        RegisterTexts.PairHowTo1,
+        RegisterTexts.PairHowTo2,
+        RegisterTexts.PairHowTo3,
+        RegisterTexts.PairHowTo4
+    ];
+
     private static readonly TimeSpan UnmatchedTimeout = TimeSpan.FromSeconds(15);
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
@@ -50,14 +60,14 @@ public partial class PairTag
     public string Separator { get; set; } = ",";
     public string BarcodeInput { get; set; } = string.Empty;
     public string EpcInput { get; set; } = string.Empty;
-    public string Message { get; set; } = "Press Start to begin.";
+    public string Message { get; set; } = RegisterTexts.PairPressStart;
     public string MessageKind { get; set; } = "info";
     public string? ConfirmMessage { get; set; }
     public List<PairRow> Results { get; set; } = [];
     public bool HasBarcode => _barcode.Length > 0;
     public bool HasEpc => _epc.Length > 0;
 
-    public ElementReference BarcodeBox { get; set; }
+    public ScanInput? BarcodeBox { get; set; }
     public LocalWebSocketComponent? Socket { get; set; }
     public int DevicePort { get; set; } = 5005;
     public bool IsDeviceConnected { get; set; }
@@ -82,7 +92,7 @@ public partial class PairTag
     {
         IsOperationOn = true;
         ClearCapture();
-        SetMessage("Hold the product sheet, barcode facing up, near the scanner.", "info");
+        SetMessage(RegisterTexts.PairHoldSheet, "info");
         await RestartReaderAsync();
         await FocusBarcodeAsync();
     }
@@ -100,7 +110,7 @@ public partial class PairTag
     public async Task ClearCaptureAsync()
     {
         ClearCapture();
-        SetMessage("Cleared. Scan the barcode and read the tag.", "info");
+        SetMessage(RegisterTexts.PairCleared, "info");
         await RestartReaderAsync();
         await FocusBarcodeAsync();
     }
@@ -145,7 +155,7 @@ public partial class PairTag
         if (!BarcodeParser.IsValidSerial(serial))
         {
             BarcodeInput = string.Empty;
-            SetMessage("The barcode is not a valid serial.", "danger");
+            SetMessage(RegisterTexts.PairBarcodeInvalid, "danger");
             return;
         }
 
@@ -166,7 +176,7 @@ public partial class PairTag
         if (!BarcodeParser.IsValidEpc(epc))
         {
             EpcInput = string.Empty;
-            SetMessage("The EPC must be 24 hexadecimal characters.", "danger");
+            SetMessage(RegisterTexts.PairEpcInvalid, "danger");
             return;
         }
 
@@ -208,7 +218,7 @@ public partial class PairTag
 
         if (ok)
         {
-            SetMessage("Next: scan the barcode and read the tag.", "info");
+            SetMessage(RegisterTexts.PairNext, "info");
             await RestartReaderAsync();
             await FocusBarcodeAsync();
         }
@@ -253,7 +263,7 @@ public partial class PairTag
             }
 
             ClearCapture();
-            SetMessage("The capture timed out and was cleared. Scan the barcode and read the tag again.", "warning");
+            SetMessage(RegisterTexts.PairTimeout, "warning");
             await RestartReaderAsync();
             StateHasChanged();
         });
@@ -273,9 +283,9 @@ public partial class PairTag
                 , new KeyValuePair<string, object>("TagEpc", epc))).Value?.Trim() ?? string.Empty;
 
             if (boundSerial.Length > 0
-                && !await ConfirmAsync($"This tag is already registered for serial {boundSerial}. Remove it from that serial and assign it to {serial}?"))
+                && !await ConfirmAsync(RegisterTexts.PairTagBound(boundSerial, serial)))
             {
-                return Report(serial, epc, "The tag is registered for another serial; not changed.", PairResultKind.Error);
+                return Report(serial, epc, RegisterTexts.PairTagOther, PairResultKind.Error);
             }
 
             // 2. Where is the serial?
@@ -288,20 +298,20 @@ public partial class PairTag
             switch (state)
             {
                 case "0":
-                    return Report(serial, epc, "No information was found to register this serial.", PairResultKind.Error);
+                    return Report(serial, epc, RegisterTexts.PairNoInfo, PairResultKind.Error);
 
                 case "1":
                     return await RegisterAsync(serial, epc, TextResources.APP_StringKeys_Registered_Successfully, TextResources.APP_StringKeys_Save_Failed);
 
                 case "2":
-                    if (!await ConfirmAsync($"Serial {serial} is already registered. Replace its tag with this one?"))
+                    if (!await ConfirmAsync(RegisterTexts.PairSerialRegistered(serial)))
                     {
                         // The legacy form treated "No" as success: the run continues.
-                        Report(serial, epc, "Already registered; left unchanged.", PairResultKind.Warning);
+                        Report(serial, epc, RegisterTexts.PairAlreadyLeft, PairResultKind.Warning);
                         return true;
                     }
 
-                    return await RegisterAsync(serial, epc, "Tag registration was updated.", TextResources.APP_StringKeys_Save_Failed);
+                    return await RegisterAsync(serial, epc, RegisterTexts.PairUpdated, TextResources.APP_StringKeys_Save_Failed);
 
                 default:
                     return Report(serial, epc, TextResources.APP_StringKeys_Error_Unexpected, PairResultKind.Error);
@@ -342,7 +352,7 @@ public partial class PairTag
     {
         if (Socket is null || !IsDeviceConnected || string.IsNullOrEmpty(ReceiptFormatName))
         {
-            Notification.Show("Auto print is on, but no receipt format is available.", "warning");
+            Notification.Show(RegisterTexts.PairNoReceiptFormat, "warning");
             return;
         }
 
@@ -366,12 +376,12 @@ public partial class PairTag
 
             if (!reply.Ok)
             {
-                Notification.Show($"The receipt was not printed: {reply.Value}", "warning");
+                Notification.Show(RegisterTexts.PairReceiptFailed(reply.Value ?? string.Empty), "warning");
             }
         }
         catch (Exception exception) when (exception is TimeoutException or InvalidOperationException)
         {
-            Notification.Show($"The receipt was not printed: {exception.Message}", "warning");
+            Notification.Show(RegisterTexts.PairReceiptFailed(exception.Message), "warning");
         }
     }
 
@@ -449,12 +459,12 @@ public partial class PairTag
         }
         else
         {
-            _rpc.FailAll("The device host disconnected.");
+            _rpc.FailAll(RegisterTexts.DeviceHostDisconnected);
         }
 
         if (!connected && IsOperationOn)
         {
-            SetMessage("The device host disconnected. Reconnect, then press Start again.", "danger");
+            SetMessage(RegisterTexts.PairHostDisconnected, "danger");
             IsOperationOn = false;
         }
 
@@ -511,7 +521,7 @@ public partial class PairTag
         }
         catch (InvalidOperationException)
         {
-            SetMessage("The device host is not connected.", "danger");
+            SetMessage(RegisterTexts.PairHostNotConnected, "danger");
         }
     }
 
@@ -519,7 +529,10 @@ public partial class PairTag
     {
         try
         {
-            await BarcodeBox.FocusAsync();
+            if (BarcodeBox is not null)
+            {
+                await BarcodeBox.FocusAsync();
+            }
         }
         catch (Exception exception) when (exception is InvalidOperationException or JSDisconnectedException)
         {

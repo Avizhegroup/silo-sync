@@ -30,6 +30,17 @@ public partial class LocalWebSocketComponent : IAsyncDisposable
 
     [Parameter] public EventCallback<string> OnError { get; set; }
 
+    private const string TitleText = "اتصال به برنامه‌ی دستگاه";
+    private const string ConnectedText = "متصل";
+    private const string DisconnectedText = "قطع";
+    private const string TokenText = "رمز دستگاه";
+    private const string TokenPlaceholderText = "رمز نمایش‌داده‌شده در برنامه‌ی دستگاه";
+    private const string ConnectText = "اتصال";
+    private const string ConnectingText = "در حال اتصال...";
+    private const string DisconnectText = "قطع اتصال";
+    private const string TokenRequiredText = "رمز دستگاه را وارد کنید.";
+    private const string HintText = "ریدر، چاپگر و اسکنر از طریق برنامه‌ی «Silo.Windows.Register» روی همین رایانه کار می‌کنند. آن برنامه را اجرا کنید و رمز دستگاه را یک‌بار وارد کنید؛ رمز در این مرورگر ذخیره می‌شود.";
+
     public bool IsConnected { get; private set; }
     public string TokenInput { get; set; } = string.Empty;
     public bool IsConnectRequested { get; private set; }
@@ -69,7 +80,13 @@ public partial class LocalWebSocketComponent : IAsyncDisposable
 
     public async Task OnConnectClick()
     {
-        _token = TokenInput.Trim();
+        _token = (TokenInput ?? string.Empty).Trim();
+        if (_token.Length == 0)
+        {
+            Error = TokenRequiredText;
+            return;
+        }
+
         Error = string.Empty;
         IsConnectRequested = true;
         await ConnectAsync();

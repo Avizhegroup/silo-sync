@@ -18,6 +18,15 @@ namespace Silo.Modules.Register.Pages;
 /// </summary>
 public partial class MultiProductBatch : IAsyncDisposable
 {
+    /// <summary>The steps of the "how to use this page" panel.</summary>
+    public string[] HowToSteps { get; } =
+    [
+        RegisterTexts.BatchHowTo1,
+        RegisterTexts.BatchHowTo2,
+        RegisterTexts.BatchHowTo3,
+        RegisterTexts.BatchHowTo4
+    ];
+
     private const string DocumentTypeId = "1";
 
     public bool IsLoading = true;
@@ -67,6 +76,19 @@ public partial class MultiProductBatch : IAsyncDisposable
     /// Legacy <c>HaveLogin</c> whitelist: when the setting <c>Register:BatchAllowedUsers</c> (a list of user names) is not
     /// empty only those users may create print rows; empty means everyone with access to the page.
     /// </summary>
+    public IEnumerable<OptionItem> LineOptions => Lines.Select(p => new OptionItem(p.Code ?? string.Empty, p.Title ?? string.Empty));
+    public IEnumerable<OptionItem> ShiftOptions => Shifts.Select(p => new OptionItem(p.Code ?? string.Empty, p.Title ?? string.Empty));
+    public IEnumerable<OptionItem> WarehouseOptions => Warehouses.Select(p => new OptionItem(p.DestinationCode ?? string.Empty, p.DestinationTitle ?? string.Empty));
+
+    public IReadOnlyList<OptionItem> SerialModeOptions { get; } =
+    [
+        new("range", RegisterTexts.BatchSerialRange),
+        new("excel", RegisterTexts.BatchSerialExcel + " (.xlsx)")
+    ];
+
+    /// <summary>The choices of a dynamic field whose value options are written as "a|b|c".</summary>
+    public static IEnumerable<OptionItem> DynamicOptions(string options) => options.Split('|').Select(p => new OptionItem(p, p));
+
     public bool CanSave => _allowedUsers.Count == 0 || _allowedUsers.Contains(_userName);
 
     [Inject] public RfidConnectApi Api { get; set; } = default!;
@@ -155,7 +177,7 @@ public partial class MultiProductBatch : IAsyncDisposable
         if (LoadedDocument is not null && DocumentItems.Count > 0
             && !DocumentItems.Any(p => string.Equals(p.ProductCode, product.ProductCode, StringComparison.OrdinalIgnoreCase)))
         {
-            Notification.Show("The selected product is not among the items of the document.", "error");
+            Notification.Show(RegisterTexts.BatchProductNotInDocument, "error");
             return;
         }
 
@@ -166,9 +188,9 @@ public partial class MultiProductBatch : IAsyncDisposable
 
     #region Document
 
-    public async Task OnDocumentChanged(ChangeEventArgs e)
+    public async Task OnDocumentChanged(string? value)
     {
-        DocumentId = (e.Value?.ToString() ?? string.Empty).Trim();
+        DocumentId = (value ?? string.Empty).Trim();
         await LoadDocumentAsync();
     }
 
@@ -223,7 +245,7 @@ public partial class MultiProductBatch : IAsyncDisposable
 
         if (!DocumentKey.IsValid(DocumentId))
         {
-            Notification.Show("The document code contains characters that are not allowed.", "error");
+            Notification.Show(RegisterTexts.BatchDocumentInvalid, "error");
             return;
         }
 
@@ -484,7 +506,7 @@ public partial class MultiProductBatch : IAsyncDisposable
         if (CheckRemaining && LoadedDocument is not null && Remain.ContainsKey(CurrentProduct.ProductCode)
             && AvailableFor(CurrentProduct.ProductCode) < requested)
         {
-            Notification.Show("The quantity is greater than what remains in the production document.", "error");
+            Notification.Show(RegisterTexts.BatchQuantityOverRemain, "error");
             return;
         }
 
@@ -509,7 +531,7 @@ public partial class MultiProductBatch : IAsyncDisposable
         if (IsSingleMode)
         {
             var confirmed = await JS.InvokeAsync<bool>("confirm",
-                $"Save {count} serial(s) of {row.ProductName} ({row.TechnicalCode}) with document {row.DocumentId}?");
+                RegisterTexts.BatchConfirmSave(count, row.ProductName, row.TechnicalCode, row.DocumentId));
             if (!confirmed)
             {
                 return;
@@ -559,7 +581,7 @@ public partial class MultiProductBatch : IAsyncDisposable
                 if (!await SaveRowAsync(row))
                 {
                     Notification.Show(row.SavedCount > 0
-                        ? $"Saving stopped after {row.SavedCount} of {row.Serials!.Count} serial(s). Press Confirm to continue."
+                        ? RegisterTexts.BatchSavingStopped(row.SavedCount, row.Serials!.Count)
                         : TextResources.APP_StringKeys_Alert_Fail, "error");
                     return;
                 }
@@ -666,7 +688,7 @@ public partial class MultiProductBatch : IAsyncDisposable
 
         if (Rows.Any(p => !p.IsSaved))
         {
-            Notification.Show("Save or remove the unsaved rows before opening another operation.", "warning");
+            Notification.Show(RegisterTexts.BatchSaveOrRemoveFirst, "warning");
             return;
         }
 
@@ -737,7 +759,7 @@ public partial class MultiProductBatch : IAsyncDisposable
     {
         if (CurrentProduct is null || Count <= 0 || !TryParseValue(TotalWeight, out var weight) || weight <= 0)
         {
-            Notification.Show("Choose a product, enter the count and the total weight first.", "error");
+            Notification.Show(RegisterTexts.BatchAverageNeeds, "error");
             return;
         }
 

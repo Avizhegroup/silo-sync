@@ -3,7 +3,6 @@
 @implements IDisposable
 @namespace Silo.Modules.Register.Pages
 @using Silo.Shared.Components
-@using Telerik.Blazor.Components
 
 <PageTitle>@PageTitle</PageTitle>
 
@@ -14,64 +13,59 @@
                          OnError="OnDeviceError" />
 
 <div class="container-fluid mt-2">
-    <div class="card shadow-sm mb-3">
-        <div class="card-header d-flex flex-wrap gap-3 align-items-center">
-            <span class="fw-bold">Group tag test</span>
-            <span class="badge @(IsReading ? "bg-warning text-dark" : "bg-secondary")">@(IsReading ? "Reading" : "Stopped")</span>
-            <span class="ms-auto d-flex flex-wrap gap-2">
-                <NavLink href="/register/test" class="btn btn-sm btn-outline-secondary">Single test</NavLink>
-            </span>
-        </div>
-        <div class="card-body d-flex flex-wrap gap-4 align-items-center">
-            <div class="fs-5">All tags: <strong>@Rows.Count</strong></div>
-            <div class="fs-5 @(NotRegisteredCount > 0 ? "text-danger" : string.Empty)">@TextResources.APP_StringKeys_No_Register: <strong>@NotRegisteredCount</strong></div>
-            <div class="text-muted">Waiting for lookup: @_pending.Count</div>
-            @if (IsReading)
-            {
-                <button type="button" class="btn btn-outline-danger" @onclick="StopAsync">@TextResources.APP_StringKeys_Pause</button>
-            }
-            else
-            {
-                <button type="button" class="btn btn-primary" disabled="@(!IsDeviceConnected)" @onclick="StartAsync">Start reading</button>
-            }
-            <button type="button" class="btn btn-outline-secondary" disabled="@(!IsDeviceConnected)" @onclick="ResetAsync">@TextResources.APP_StringKeys_Clear</button>
-        </div>
-    </div>
+    <PageHeader Title="@RegisterTexts.GroupTitle" Subtitle="@RegisterTexts.GroupSubtitle" ShowDevice="true" IsDeviceConnected="IsDeviceConnected" Steps="HowToSteps">
+        <NavLink href="/register/test" class="btn btn-outline-secondary">@RegisterTexts.TestSingleLink</NavLink>
+    </PageHeader>
+
+    <SectionCard Step="1" Title="@RegisterTexts.GroupTitle">
+        <HeaderContent>
+            <span class="badge rounded-pill @(IsReading ? "bg-warning text-dark" : "bg-secondary")">@(IsReading ? RegisterTexts.Reading : RegisterTexts.Stopped)</span>
+        </HeaderContent>
+        <ChildContent>
+            <div class="d-flex flex-wrap align-items-center gap-4">
+                <div class="fs-5">@RegisterTexts.GroupAllTags: <strong>@Rows.Count</strong></div>
+                <div class="fs-5 @(NotRegisteredCount > 0 ? "text-danger" : string.Empty)">@TextResources.APP_StringKeys_No_Register: <strong>@NotRegisteredCount</strong></div>
+                <div class="text-secondary">@RegisterTexts.GroupWaitingLookup: @_pending.Count</div>
+                <div class="d-flex flex-wrap gap-2 ms-md-auto">
+                    @if (IsReading)
+                    {
+                        <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Error" FillMode="@ThemeConstants.Button.FillMode.Outline" OnClick="StopAsync">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Stop" /> @TextResources.APP_StringKeys_Pause
+                        </TelerikButton>
+                    }
+                    else
+                    {
+                        <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" Enabled="IsDeviceConnected" OnClick="StartAsync">
+                            <MaterialIcon IconName="@MaterialIconsHelper.PlayArrow" /> @RegisterTexts.GroupStart
+                        </TelerikButton>
+                    }
+                    <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Enabled="IsDeviceConnected" OnClick="ResetAsync">
+                        <MaterialIcon IconName="@MaterialIconsHelper.DeleteSweep" /> @TextResources.APP_StringKeys_Clear
+                    </TelerikButton>
+                </div>
+            </div>
+        </ChildContent>
+    </SectionCard>
 
     @if (!string.IsNullOrEmpty(ErrorMessage))
     {
-        <div class="alert alert-danger">@ErrorMessage</div>
+        <StatusMessage Kind="danger" Message="@ErrorMessage" />
     }
 
-    <div class="card shadow-sm">
-        <div class="card-body table-responsive">
-            <table class="table table-sm align-middle">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>@TextResources.APP_StringKeys_TagEPC</th>
-                        <th>@TextResources.APP_StringKeys_ProductSerial</th>
-                        <th>@TextResources.APP_StringKeys_ProductCode</th>
-                        <th>@TextResources.APP_StringKeys_ProductName</th>
-                        <th>@TextResources.APP_StringKeys_Chart_Regcode</th>
-                        <th>@TextResources.APP_StringKeys_ContractStatus</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var row in Rows)
-                    {
-                        <tr class="@(row.IsRegistered ? "table-success" : "table-danger")">
-                            <td>@row.Index</td>
-                            <td class="font-monospace">@row.Epc</td>
-                            <td>@(row.IsRegistered ? row.Serial : TextResources.APP_StringKeys_No_Register)</td>
-                            <td>@row.ProductCode</td>
-                            <td>@row.ProductName</td>
-                            <td>@row.RegCode</td>
-                            <td>@row.ContractStatus</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <SectionCard Step="2" Title="@TextResources.APP_StringKeys_Result">
+        <RegisterGrid TItem="GroupTagRow" Data="Rows" PageSize="20" Sortable="false"
+                      RowKind="@(row => row.IsRegistered ? "success" : "danger")" EmptyText="@RegisterTexts.GroupHowTo2">
+            <Columns>
+                <GridColumn Field="@nameof(GroupTagRow.Index)" Title="#" Width="70px" />
+                <GridColumn Field="@nameof(GroupTagRow.Epc)" Title="@TextResources.APP_StringKeys_TagEPC" />
+                <GridColumn Title="@TextResources.APP_StringKeys_ProductSerial">
+                    <Template Context="item">@(((GroupTagRow)item).IsRegistered ? ((GroupTagRow)item).Serial : TextResources.APP_StringKeys_No_Register)</Template>
+                </GridColumn>
+                <GridColumn Field="@nameof(GroupTagRow.ProductCode)" Title="@TextResources.APP_StringKeys_ProductCode" />
+                <GridColumn Field="@nameof(GroupTagRow.ProductName)" Title="@TextResources.APP_StringKeys_ProductName" />
+                <GridColumn Field="@nameof(GroupTagRow.RegCode)" Title="@TextResources.APP_StringKeys_Chart_Regcode" />
+                <GridColumn Field="@nameof(GroupTagRow.ContractStatus)" Title="@TextResources.APP_StringKeys_ContractStatus" />
+            </Columns>
+        </RegisterGrid>
+    </SectionCard>
 </div>

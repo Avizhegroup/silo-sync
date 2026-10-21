@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using Silo.Modules.Register.Models;
+using System.Data;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Silo.Application;
@@ -15,6 +16,14 @@ namespace Silo.Modules.Register.Pages;
 /// </summary>
 public partial class RegisterMatrix
 {
+    /// <summary>The steps of the "how to use this page" panel.</summary>
+    public string[] HowToSteps { get; } =
+    [
+        RegisterTexts.MatrixHowTo1,
+        RegisterTexts.MatrixHowTo2,
+        RegisterTexts.MatrixHowTo3
+    ];
+
     private static readonly Regex DateRegex = new(@"^14\d{2}/(0[1-9]|1[0-2])/(0[1-9]|[12]\d|3[01])$", RegexOptions.Compiled);
     private static readonly Regex TimeRegex = new(@"^([01]\d|2[0-3]):[0-5]\d$", RegexOptions.Compiled);
 
@@ -45,6 +54,11 @@ public partial class RegisterMatrix
     public bool ToDateError => ToDate.Length > 0 && !DateRegex.IsMatch(ToDate);
     public bool DateError => (FromDate.Length > 0 && !DateRegex.IsMatch(FromDate)) || (ToDate.Length > 0 && !DateRegex.IsMatch(ToDate));
     public bool TimeError => (FromTime.Length > 0 && !TimeRegex.IsMatch(FromTime)) || (ToTime.Length > 0 && !TimeRegex.IsMatch(ToTime));
+    public IEnumerable<OptionItem> LineOptions => Lines.Select(p => new OptionItem(p.Code ?? string.Empty, p.Title ?? string.Empty));
+    public IEnumerable<OptionItem> ShiftOptions => Shifts.Select(p => new OptionItem(p.Code ?? string.Empty, p.Title ?? string.Empty));
+    public IEnumerable<OptionItem> QcOptions => Qcs.Select(p => new OptionItem(p.Code ?? string.Empty, p.Title ?? string.Empty));
+    public IEnumerable<OptionItem> SizeOptions => Sizes.Select(p => new OptionItem(p.Code ?? string.Empty, p.Title ?? string.Empty));
+
     public decimal GrandTotal => PivotRows.Sum(p => p.Total);
 
     [Inject] public RfidConnectApi Api { get; set; } = default!;
@@ -95,7 +109,7 @@ public partial class RegisterMatrix
     {
         if (DateError || TimeError)
         {
-            Notification.Show("Dates must look like 1404/05/12 and times like 06:00.", "error");
+            Notification.Show(RegisterTexts.MatrixBadInput, "error");
             return;
         }
 

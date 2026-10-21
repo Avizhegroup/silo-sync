@@ -21,6 +21,15 @@ namespace Silo.Modules.Register.Pages;
 /// </summary>
 public partial class PrintRegister
 {
+    /// <summary>The steps of the "how to use this page" panel.</summary>
+    public string[] HowToSteps { get; } =
+    [
+        RegisterTexts.PrintHowTo1,
+        RegisterTexts.PrintHowTo2,
+        RegisterTexts.PrintHowTo3,
+        RegisterTexts.PrintHowTo4
+    ];
+
     private static readonly Regex ActionIdRegex = new("^[0-9]+$", RegexOptions.Compiled);
     private static readonly Regex EpcRegex = new("^[0-9A-F]{24}$", RegexOptions.Compiled);
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
@@ -31,6 +40,26 @@ public partial class PrintRegister
 
     private const int PdfChunkSize = 25;
     private const string ModeStorageKey = "Silo.Register.PrintMode";
+
+    public IReadOnlyList<OptionItem> ModeOptions { get; } =
+    [
+        new("register", RegisterTexts.PrintModeRegister),
+        new("print", RegisterTexts.PrintModePrint),
+        new("autoregister", RegisterTexts.PrintModeAutoRegister)
+    ];
+
+    public IReadOnlyList<OptionItem> OutputOptions { get; } =
+    [
+        new("print", RegisterTexts.PrintFrxPrinter),
+        new("pdf", RegisterTexts.PrintFrxPdf)
+    ];
+
+    public IReadOnlyList<OptionItem> EpcTypeOptions { get; } =
+    [
+        new("2", RegisterTexts.PrintEpcType2),
+        new("1", RegisterTexts.PrintEpcType1),
+        new("kdt", "kdt")
+    ];
 
     public const string ModeRegister = "register";
     public const string ModePrint = "print";
@@ -86,12 +115,12 @@ public partial class PrintRegister
     public bool CanPrint => IsDeviceConnected && !IsBusy && !IsLoading && SelectedFormat is not null && Rows.Any(p => p.IsSelected);
 
     public string PrintButtonText => IsPdf
-        ? "Export PDF"
+        ? RegisterTexts.PrintExportPdf
         : PrintMode switch
         {
             ModePrint => TextResources.APP_StringKeys_Print,
-            ModeAutoRegister => "Print and register",
-            _ => "Register and print"
+            ModeAutoRegister => RegisterTexts.PrintAndRegister,
+            _ => RegisterTexts.PrintRegisterAndPrint
         };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -116,9 +145,9 @@ public partial class PrintRegister
         }
     }
 
-    public async Task OnModeChanged(ChangeEventArgs e)
+    public async Task OnModeChanged(string value)
     {
-        PrintMode = e.Value?.ToString() is ModePrint or ModeAutoRegister ? e.Value!.ToString()! : ModeRegister;
+        PrintMode = value is ModePrint or ModeAutoRegister ? value : ModeRegister;
         try
         {
             await LocalStorage.SetAsync(ModeStorageKey, PrintMode);
@@ -183,11 +212,11 @@ public partial class PrintRegister
 
     public void SelectAll(bool selected) => Rows.ForEach(p => p.IsSelected = selected);
 
-    public string RowClass(PrintLabelRow row) => row.Succeeded switch
+    public string? RowKind(PrintLabelRow row) => row.Succeeded switch
     {
-        true => "table-success",
-        false => "table-danger",
-        _ => string.Empty
+        true => "success",
+        false => "danger",
+        _ => null
     };
 
     #region Device host
@@ -202,7 +231,7 @@ public partial class PrintRegister
         }
         else
         {
-            _rpc.FailAll("The device host disconnected.");
+            _rpc.FailAll(RegisterTexts.DeviceHostDisconnected);
             Formats = [];
             Printers = [];
         }
@@ -235,7 +264,7 @@ public partial class PrintRegister
 
             if (Formats.Count == 0)
             {
-                Notification.Show("The device host has no label format. Add templates to its Formats folder.", "warning");
+                Notification.Show(RegisterTexts.PrintNoFormat, "warning");
             }
         }
         catch (Exception exception) when (exception is TimeoutException or InvalidOperationException or JsonException)
@@ -393,13 +422,13 @@ public partial class PrintRegister
 
                 if (!reply.Ok)
                 {
-                    Notification.Show(reply.Value ?? "The PDF could not be created.", "error");
+                    Notification.Show(reply.Value ?? RegisterTexts.PrintPdfFailed, "error");
                     return;
                 }
 
                 if (!more)
                 {
-                    Notification.Show(reply.Value ?? "The PDF was opened on the workstation.", "success");
+                    Notification.Show(reply.Value ?? RegisterTexts.PrintPdfOpened, "success");
                 }
             }
         }
@@ -424,7 +453,7 @@ public partial class PrintRegister
 
             if (!status.Ok)
             {
-                Notification.Show(status.Value ?? "The printer is not ready.", "error");
+                Notification.Show(status.Value ?? RegisterTexts.PrinterNotReady, "error");
             }
 
             return status.Ok;
@@ -455,7 +484,7 @@ public partial class PrintRegister
 
                 if (!EpcRegex.IsMatch(epc))
                 {
-                    return (false, $"The server did not return a valid EPC for type '{EpcType}'.", false);
+                    return (false, RegisterTexts.PrintInvalidEpc(EpcType), false);
                 }
 
                 if (!await RegisterTagAsync(row, epc))
@@ -488,12 +517,12 @@ public partial class PrintRegister
             if (!reply.Ok)
             {
                 // In mode "register" the tag stays registered with its EPC: after fixing the printer the same row can simply be printed again.
-                return (false, PrintMode == ModeRegister ? $"Registered, but printing failed: {reply.Value}" : $"Printing failed: {reply.Value}", true);
+                return (false, PrintMode == ModeRegister ? RegisterTexts.PrintRegisteredButFailed(reply.Value ?? string.Empty) : RegisterTexts.PrintFailed(reply.Value ?? string.Empty), true);
             }
 
             if (PrintMode == ModePrint)
             {
-                return (true, "Printed. Pair the tag on the register-by-barcode page.", false);
+                return (true, RegisterTexts.PrintedPair, false);
             }
 
             // 3a. Mode "autoregister" (legacy KindRegister 3): the printed barcode is the identity, the EPC is the serial's digits.
@@ -501,18 +530,18 @@ public partial class PrintRegister
             {
                 if (registeredBefore)
                 {
-                    return (true, "Printed (already registered).", false);
+                    return (true, RegisterTexts.PrintedAlready, false);
                 }
 
                 var autoEpc = LetterRegex.Replace(row.ProductSerial ?? string.Empty, string.Empty);
                 if (autoEpc.Length == 0)
                 {
-                    return (false, "Printed, but the serial has no digits to use as the tag id.", true);
+                    return (false, RegisterTexts.PrintedNoDigits, true);
                 }
 
                 if (!await RegisterTagAsync(row, autoEpc))
                 {
-                    return (false, "Printed, but the tag could not be registered.", true);
+                    return (false, RegisterTexts.PrintedNotRegistered, true);
                 }
 
                 row.TagEpc = autoEpc;
@@ -524,8 +553,8 @@ public partial class PrintRegister
 
             row.RegisterFlag = true;
             return (true, PrintMode == ModeAutoRegister
-                ? (marked ? "Printed and registered." : "Printed and registered, but the print status was not updated.")
-                : (marked ? "Registered and printed." : "Printed, but the print status was not updated."), false);
+                ? (marked ? RegisterTexts.PrintedAndRegistered : RegisterTexts.PrintedRegisteredStatusNotUpdated)
+                : (marked ? RegisterTexts.RegisteredAndPrinted : RegisterTexts.PrintedStatusNotUpdated), false);
         }
         catch (Exception exception) when (exception is TimeoutException or InvalidOperationException)
         {

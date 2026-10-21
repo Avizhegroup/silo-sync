@@ -1,0 +1,22 @@
+<div class="card border-0 shadow-sm mb-3 @Class">
+    <div class="card-header bg-transparent d-flex flex-wrap align-items-center gap-2">
+        @if (Step > 0)
+        {
+            <span class="badge rounded-pill bg-primary">@Step</span>
+        }
+        <div class="d-flex flex-column">
+            <span class="fw-semibold">@Title</span>
+            @if (!string.IsNullOrEmpty(Hint))
+            {
+                <span class="text-secondary small">@Hint</span>
+            }
+        </div>
+        @if (HeaderContent is not null)
+        {
+            <div class="ms-auto d-flex flex-wrap align-items-center gap-2">@HeaderContent</div>
+        }
+    </div>
+    <div class="card-body @BodyClass">
+        @ChildContent
+    </div>
+</div>

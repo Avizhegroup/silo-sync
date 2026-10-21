@@ -82,7 +82,7 @@ public static class LabelFieldBuilder
 
         if (!TryPersianDate(row.PrintActionDateTime, out var date, out var day, out var month, out var shortYear))
         {
-            error = $"The print date '{row.PrintActionDateTime}' could not be read.";
+            error = RegisterTexts.PrintBadDate(row.PrintActionDateTime?.ToString() ?? string.Empty);
             return false;
         }
 

@@ -8,6 +8,15 @@ namespace Silo.Modules.Register.Pages;
 
 public partial class ParentPackage
 {
+    /// <summary>The steps of the "how to use this page" panel.</summary>
+    public string[] HowToSteps { get; } =
+    [
+        RegisterTexts.PackageHowTo1,
+        RegisterTexts.PackageHowTo2,
+        RegisterTexts.PackageHowTo3,
+        RegisterTexts.PackageHowTo4
+    ];
+
     private static readonly Regex CodeRegex = new("^[A-Za-z0-9]+$", RegexOptions.Compiled);
 
     public bool IsLoading { get; set; }
@@ -62,6 +71,12 @@ public partial class ParentPackage
     {
         string serial = Serial.Trim();
 
+        if (serial.Length == 0)
+        {
+            Notification.Show(RegisterTexts.PackageNeedSerial, "warning");
+            return;
+        }
+
         if (!CodeRegex.IsMatch(serial))
         {
             Notification.Show(TextResources.APP_StringKeys_Alert_Fail, "error");
@@ -101,6 +116,7 @@ public partial class ParentPackage
 
         if ((code.Length == 0 || code == "0") && epc.Length == 0)
         {
+            Notification.Show(RegisterTexts.PackageNeedCodeOrEpc, "warning");
             return;
         }
 
@@ -140,6 +156,7 @@ public partial class ParentPackage
 
         if (epc.Length == 0 || Items.Count == 0)
         {
+            Notification.Show(Items.Count == 0 ? RegisterTexts.PackageItemsEmpty : RegisterTexts.PackageNeedEpcToSave, "warning");
             return;
         }
 
@@ -224,7 +241,7 @@ public partial class ParentPackage
         else
         {
             IsReading = false;
-            _rpc.FailAll("The device host disconnected.");
+            _rpc.FailAll(RegisterTexts.DeviceHostDisconnected);
             Formats = [];
             Printers = [];
         }
@@ -343,7 +360,7 @@ public partial class ParentPackage
 
         if (code is "" or "-1" or "0")
         {
-            Notification.Show("Save the package first.", "warning");
+            Notification.Show(RegisterTexts.PackageSaveFirst, "warning");
             return;
         }
 

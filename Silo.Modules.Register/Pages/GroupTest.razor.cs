@@ -12,6 +12,15 @@ namespace Silo.Modules.Register.Pages;
 /// </summary>
 public partial class GroupTest
 {
+    /// <summary>The steps of the "how to use this page" panel.</summary>
+    public string[] HowToSteps { get; } =
+    [
+        RegisterTexts.GroupHowTo1,
+        RegisterTexts.GroupHowTo2,
+        RegisterTexts.GroupHowTo3,
+        RegisterTexts.GroupHowTo4
+    ];
+
     private const int BatchSize = 200;
     private static readonly TimeSpan LookupInterval = TimeSpan.FromSeconds(1);
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
@@ -78,7 +87,7 @@ public partial class GroupTest
         }
         catch (InvalidOperationException)
         {
-            ErrorMessage = "The device host is not connected.";
+            ErrorMessage = RegisterTexts.GroupDeviceNotConnected;
         }
     }
 
@@ -176,7 +185,7 @@ public partial class GroupTest
 
         if (!connected && IsReading)
         {
-            ErrorMessage = "The device host disconnected. Reconnect, then press Start reading.";
+            ErrorMessage = RegisterTexts.GroupDeviceDisconnected;
             IsReading = false;
         }
 

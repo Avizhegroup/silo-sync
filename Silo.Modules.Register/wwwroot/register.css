@@ -1,0 +1,4 @@
+/* Row colours of the Register grids (RegisterGrid RowKind); they follow the Bootstrap subtle palette of the app. */
+.register-row-success > td { background-color: var(--bs-success-bg-subtle) !important; }
+.register-row-danger > td { background-color: var(--bs-danger-bg-subtle) !important; }
+.register-row-warning > td { background-color: var(--bs-warning-bg-subtle) !important; }

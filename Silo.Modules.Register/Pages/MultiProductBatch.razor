@@ -3,240 +3,298 @@
 @namespace Silo.Modules.Register.Pages
 @using Silo.Application.Features
 @using Silo.Shared.Components.Modals
-@using Telerik.Blazor.Components
 
 <PageTitle>@PageTitle</PageTitle>
 
 <div class="container-fluid mt-2">
+    <PageHeader Title="@RegisterTexts.BatchTitle" Subtitle="@RegisterTexts.BatchSubtitle" Steps="HowToSteps">
+        <NavLink href="/report/register" class="btn btn-outline-secondary">@TextResources.APP_StringKeys_Reports</NavLink>
+        <NavLink href="/print/management" class="btn btn-outline-secondary">@RegisterTexts.BatchPrintManagement</NavLink>
+    </PageHeader>
+
     @if (!CanSave)
     {
-        <div class="alert alert-warning">@TextResources.APP_StringKeys_You_Dont_Have_Access_Permission</div>
+        <StatusMessage Kind="warning" Message="@RegisterTexts.BatchNoPermission" />
     }
-    <div class="card shadow-sm mb-3">
-        <div class="card-header">@TextResources.APP_StringKeys_OperationInfo @TextResources.APP_StringKeys_Register</div>
-        <div class="card-body d-flex flex-wrap gap-3 align-items-end">
-            <span>@TextResources.APP_StringKeys_OperationCode: @ActionId</span>
-            <div class="input-group" style="max-width:380px">
-                <button type="button" class="btn btn-outline-secondary" title="-1" disabled="@IsLoading" @onclick="() => StepActionAsync(-1)">&lsaquo;</button>
-                <input class="form-control" inputmode="numeric" placeholder="@TextResources.APP_StringKeys_OperationCode" @bind="OpenActionId" @bind:event="oninput" @onkeyup="OnOpenActionKeyUp" />
-                <button type="button" class="btn btn-outline-secondary" disabled="@(IsLoading || string.IsNullOrWhiteSpace(OpenActionId))" @onclick="OnOpenActionClick">@TextResources.APP_StringKeys_Search</button>
-                <button type="button" class="btn btn-outline-secondary" title="+1" disabled="@IsLoading" @onclick="() => StepActionAsync(1)">&rsaquo;</button>
-            </div>
-            <button type="button" class="btn btn-warning" disabled="@IsLoading" @onclick="OnNewClick">@TextResources.APP_StringKeys_New</button>
-            <NavLink href="/print/management" class="btn btn-outline-secondary">@TextResources.APP_StringKeys_Print</NavLink>
-            <span class="text-muted small">F5 clear &middot; F6 save &middot; F7 print</span>
+
+    <SectionCard Step="1" Title="@($"{RegisterTexts.BatchStepOperation}: {ActionId}")" Hint="@RegisterTexts.BatchShortcuts">
+        <HeaderContent>
             @if (HasSavedRows)
             {
-                <NavLink href="@($"/register/print?actionId={ActionId}")" class="btn btn-success">Register and print labels</NavLink>
+                <NavLink href="@($"/register/print?actionId={ActionId}")" class="btn btn-success">@RegisterTexts.BatchRegisterAndPrint</NavLink>
             }
-            <div class="form-check">
-                <input id="register-single" type="checkbox" class="form-check-input" @bind="IsSingleMode" disabled="@(Rows.Count > 0)" />
-                <label for="register-single" class="form-check-label">Single product (save directly)</label>
-            </div>
-            <div class="form-check">
-                <input id="register-check" type="checkbox" class="form-check-input" @bind="CheckRemaining" />
-                <label for="register-check" class="form-check-label">Check the document's remaining quantity</label>
-            </div>
-            <NavLink href="/report/register" class="btn btn-outline-secondary">@TextResources.APP_StringKeys_Reports</NavLink>
-        </div>
-    </div>
-
-    <div class="card shadow-sm mb-3">
-        <div class="card-body d-flex flex-wrap gap-3 align-items-end">
-            <div>
-                <label>@TextResources.APP_StringKeys_Line</label>
-                <TelerikDropDownList Data="Lines" TextField="Title" ValueField="Code" @bind-Value="Line"
-                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed" Width="180px" />
-            </div>
-            <div>
-                <label>@TextResources.APP_StringKeys_Chart_Shift</label>
-                <TelerikDropDownList Data="Shifts" TextField="Title" ValueField="Code" @bind-Value="Shift"
-                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed" Width="180px" />
-            </div>
-            <div>
-                <label>@TextResources.APP_StringKeys_Production_Warehouse</label>
-                <TelerikDropDownList Data="Warehouses" TextField="DestinationTitle" ValueField="DestinationCode"
-                                     @bind-Value="Warehouse" DefaultText="@TextResources.APP_StringKeys_NotChoosed" Width="200px" />
-            </div>
-            <div>
-                <label for="register-document">@TextResources.APP_StringKeys_DocKey</label>
-                <div class="input-group">
-                    <input id="register-document" class="form-control" value="@DocumentId" @onchange="OnDocumentChanged" disabled="@HasSavedRows" />
-                    <button type="button" class="btn btn-outline-secondary" disabled="@(IsLoading || HasSavedRows)" @onclick="ToggleDocumentsAsync">@TextResources.APP_StringKeys_Documents</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @if (ShowDocuments)
-    {
-        <div class="card shadow-sm mb-3">
-            <div class="card-header d-flex gap-3 align-items-center">
-                <span>@TextResources.APP_StringKeys_Documents</span>
-                <input class="form-control" style="max-width:260px" placeholder="@TextResources.APP_StringKeys_DocKey" @bind="DocumentSearch" @bind:event="oninput" />
-                <button type="button" class="btn btn-sm btn-outline-secondary ms-auto" @onclick="ToggleDocumentsAsync">@TextResources.APP_StringKeys_Close</button>
-            </div>
-            <div class="card-body table-responsive" style="max-height:320px;overflow:auto">
-                <table class="table table-sm align-middle">
-                    <tbody>
-                        @foreach (var document in FilteredDocuments)
-                        {
-                            <tr @key="document.Key">
-                                <td>@document.Key</td>
-                                <td>@document.Description</td>
-                                <td><button type="button" class="btn btn-sm btn-primary" @onclick="() => SelectDocumentAsync(document.Key)">@TextResources.APP_StringKeys_Choose</button></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    }
-
-    @if (LoadedDocument is not null)
-    {
-        <div class="card shadow-sm mb-3">
-            <div class="card-header">@TextResources.APP_StringKeys_DocKey: @LoadedDocument.Key</div>
-            <div class="card-body row g-3">
-                @if (HeaderRows.Count > 0)
-                {
-                    <div class="col-12 col-lg-4">
-                        <table class="table table-sm">
-                            @foreach (var header in HeaderRows)
-                            {
-                                <tr><th>@header.Key</th><td>@header.Value</td></tr>
-                            }
-                        </table>
+            <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Warning" Enabled="@(!IsLoading)" OnClick="OnNewClick">
+                <MaterialIcon IconName="@MaterialIconsHelper.Add" /> @TextResources.APP_StringKeys_New
+            </TelerikButton>
+        </HeaderContent>
+        <ChildContent>
+            <div class="row g-3 align-items-end">
+                <FormField Class="col-md-6 col-lg-5" Label="@RegisterTexts.BatchOpenOperation" For="open-action">
+                    <div class="d-flex gap-2">
+                        <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Enabled="@(!IsLoading)" Title="@RegisterTexts.BatchPrevOperation"
+                                       OnClick="@(() => StepActionAsync(-1))">
+                            <MaterialIcon IconName="@MaterialIconsHelper.ChevronRight" />
+                        </TelerikButton>
+                        <div class="flex-grow-1">
+                            <ScanInput Id="open-action" @bind-Value="OpenActionId" OnKeyUp="OnOpenActionKeyUp" Placeholder="@TextResources.APP_StringKeys_OperationCode" />
+                        </div>
+                        <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Enabled="@(!IsLoading)" OnClick="OnOpenActionClick">
+                            <MaterialIcon IconName="@MaterialIconsHelper.Search" /> @TextResources.APP_StringKeys_Search
+                        </TelerikButton>
+                        <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Enabled="@(!IsLoading)" Title="@RegisterTexts.BatchNextOperation"
+                                       OnClick="@(() => StepActionAsync(1))">
+                            <MaterialIcon IconName="@MaterialIconsHelper.ChevronLeft" />
+                        </TelerikButton>
                     </div>
-                }
-                <div class="col-12 col-lg">
-                    <table class="table table-sm align-middle">
-                        <thead>
-                            <tr><th>@TextResources.APP_StringKeys_ProductCode</th><th>@TextResources.APP_StringKeys_ProductName</th><th>Requested</th><th>@TextResources.APP_StringKeys_Remain</th><th></th></tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in DocumentItems)
-                            {
-                                <tr @key="item.ProductCode">
-                                    <td>@item.ProductCode</td>
-                                    <td>@item.ProductTitle</td>
-                                    <td>@item.Count</td>
-                                    <td>@(item.Remain?.ToString("0.##") ?? "-")</td>
-                                    <td><button type="button" class="btn btn-sm btn-outline-primary" disabled="@(IsLoading || HasSavedRows)" @onclick="() => SelectDocumentItemAsync(item)">@TextResources.APP_StringKeys_Choose</button></td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                </FormField>
+                <div class="col-md-6 col-lg-7 d-flex flex-wrap gap-4">
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <TelerikCheckBox Id="register-single" @bind-Value="IsSingleMode" Enabled="@(Rows.Count == 0)" />
+                            <label for="register-single">@RegisterTexts.BatchSingleMode</label>
+                        </div>
+                        <div class="form-text">@RegisterTexts.BatchSingleModeHint</div>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <TelerikCheckBox Id="register-check" @bind-Value="CheckRemaining" />
+                            <label for="register-check">@RegisterTexts.BatchCheckRemaining</label>
+                        </div>
+                        <div class="form-text">@RegisterTexts.BatchCheckRemainingHint</div>
+                    </div>
                 </div>
             </div>
+        </ChildContent>
+    </SectionCard>
+
+    <SectionCard Step="2" Title="@RegisterTexts.BatchStepProduction">
+        <div class="row g-3">
+            <FormField Class="col-md-4" Label="@TextResources.APP_StringKeys_Line" For="register-line">
+                <OptionSelect Id="register-line" Options="LineOptions" @bind-Value="Line" />
+            </FormField>
+            <FormField Class="col-md-4" Label="@TextResources.APP_StringKeys_Chart_Shift" For="register-shift">
+                <OptionSelect Id="register-shift" Options="ShiftOptions" @bind-Value="Shift" />
+            </FormField>
+            <FormField Class="col-md-4" Label="@TextResources.APP_StringKeys_Production_Warehouse" For="register-warehouse">
+                <OptionSelect Id="register-warehouse" Options="WarehouseOptions" @bind-Value="Warehouse" />
+            </FormField>
         </div>
-    }
+    </SectionCard>
+
+    <SectionCard Step="3" Title="@RegisterTexts.BatchStepDocument" Hint="@RegisterTexts.BatchDocumentHint">
+        <div class="row g-3 align-items-end">
+            <FormField Class="col-md-6 col-lg-4" Label="@TextResources.APP_StringKeys_DocKey" For="register-document">
+                <div class="d-flex gap-2">
+                    <div class="flex-grow-1">
+                        <TelerikTextBox Id="register-document" Value="@DocumentId" ValueChanged="OnDocumentChanged" Enabled="@(!HasSavedRows)" Width="100%" />
+                    </div>
+                    <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Enabled="@(!IsLoading && !HasSavedRows)" OnClick="ToggleDocumentsAsync">
+                        <MaterialIcon IconName="@MaterialIconsHelper.ListAlt" /> @TextResources.APP_StringKeys_Documents
+                    </TelerikButton>
+                </div>
+            </FormField>
+        </div>
+
+        @if (ShowDocuments)
+        {
+            <div class="mt-3">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="fw-semibold">@RegisterTexts.BatchDocumentList</span>
+                    <TelerikButton Class="ms-auto" FillMode="@ThemeConstants.Button.FillMode.Outline" Size="@ThemeConstants.Button.Size.Small" OnClick="ToggleDocumentsAsync">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Close" /> @TextResources.APP_StringKeys_Close
+                    </TelerikButton>
+                </div>
+                <RegisterGrid TItem="DocumentInfo" Data="Documents" Filterable="true" Sortable="false" EmptyText="@RegisterTexts.NoRows">
+                    <Columns>
+                        <GridColumn Field="@nameof(DocumentInfo.Key)" Title="@TextResources.APP_StringKeys_DocKey" />
+                        <GridColumn Field="@nameof(DocumentInfo.Description)" Title="@TextResources.APP_StringKeys_Description" />
+                        <GridColumn Title="" Width="120px" Filterable="false">
+                            <Template Context="item">
+                                <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" Size="@ThemeConstants.Button.Size.Small"
+                                               OnClick="@(() => SelectDocumentAsync(((DocumentInfo)item).Key))">@TextResources.APP_StringKeys_Choose</TelerikButton>
+                            </Template>
+                        </GridColumn>
+                    </Columns>
+                </RegisterGrid>
+            </div>
+        }
+
+        @if (LoadedDocument is not null)
+        {
+            <div class="mt-3">
+                <div class="fw-semibold mb-2">@RegisterTexts.BatchDocumentItems (@TextResources.APP_StringKeys_DocKey: @LoadedDocument.Key)</div>
+                <div class="row g-3">
+                    @if (HeaderRows.Count > 0)
+                    {
+                        <div class="col-12 col-lg-4">
+                            <dl class="row mb-0">
+                                @foreach (var header in HeaderRows)
+                                {
+                                    <dt class="col-sm-5 text-secondary fw-normal">@header.Key</dt>
+                                    <dd class="col-sm-7">@header.Value</dd>
+                                }
+                            </dl>
+                        </div>
+                    }
+                    <div class="col-12 col-lg">
+                        <RegisterGrid TItem="DocumentItemInfo" Data="DocumentItems" Sortable="false" EmptyText="@RegisterTexts.NoRows">
+                            <Columns>
+                                <GridColumn Field="@nameof(DocumentItemInfo.ProductCode)" Title="@TextResources.APP_StringKeys_ProductCode" />
+                                <GridColumn Field="@nameof(DocumentItemInfo.ProductTitle)" Title="@TextResources.APP_StringKeys_ProductName" />
+                                <GridColumn Field="@nameof(DocumentItemInfo.Count)" Title="@RegisterTexts.BatchRequested" />
+                                <GridColumn Title="@TextResources.APP_StringKeys_Remain">
+                                    <Template Context="item">@(((DocumentItemInfo)item).Remain?.ToString("0.##") ?? "-")</Template>
+                                </GridColumn>
+                                <GridColumn Title="" Width="120px">
+                                    <Template Context="item">
+                                        <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" FillMode="@ThemeConstants.Button.FillMode.Outline"
+                                                       Size="@ThemeConstants.Button.Size.Small" Enabled="@(!IsLoading && !HasSavedRows)"
+                                                       OnClick="@(() => SelectDocumentItemAsync((DocumentItemInfo)item))">@TextResources.APP_StringKeys_Choose</TelerikButton>
+                                    </Template>
+                                </GridColumn>
+                            </Columns>
+                        </RegisterGrid>
+                    </div>
+                </div>
+            </div>
+        }
+    </SectionCard>
 
     @if (IsSingleMode)
     {
-        <div class="card shadow-sm mb-3">
-            <div class="card-header d-flex flex-wrap gap-3 align-items-center">
-                <span>Serial list (optional - leave empty to let the server generate the serials)</span>
-                <span class="badge bg-@(Serials.Count > 0 ? "success" : "secondary")">@Serials.Count</span>
+        <SectionCard Title="@RegisterTexts.BatchSerialList" Hint="@RegisterTexts.BatchSerialListHint">
+            <HeaderContent>
+                <span class="badge rounded-pill bg-@(Serials.Count > 0 ? "success" : "secondary")">@Serials.Count</span>
                 @if (Serials.Count > 0)
                 {
-                    <button type="button" class="btn btn-sm btn-outline-danger ms-auto" disabled="@HasSavedRows" @onclick="ClearSerials">@TextResources.APP_StringKeys_Delete</button>
+                    <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Error" FillMode="@ThemeConstants.Button.FillMode.Outline"
+                                   Size="@ThemeConstants.Button.Size.Small" Enabled="@(!HasSavedRows)" OnClick="ClearSerials">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Delete" /> @TextResources.APP_StringKeys_Delete
+                    </TelerikButton>
                 }
-            </div>
-            <div class="card-body d-flex flex-wrap gap-3 align-items-end">
-                <div>
-                    <label for="serial-mode">Source</label>
-                    <select id="serial-mode" class="form-select" @bind="SerialMode">
-                        <option value="range">Range</option>
-                        <option value="excel">@TextResources.APP_StringKeys_ExcelFile (.xlsx)</option>
-                    </select>
+            </HeaderContent>
+            <ChildContent>
+                <div class="row g-3 align-items-end">
+                    <FormField Class="col-md-4 col-lg-3" Label="@RegisterTexts.BatchSerialSource" For="serial-mode">
+                        <OptionSelect Id="serial-mode" Options="SerialModeOptions" @bind-Value="SerialMode" DefaultText="@null" />
+                    </FormField>
+                    @if (SerialMode == "range")
+                    {
+                        <FormField Class="col-md-4 col-lg-2" Label="@TextResources.APP_StringKeys_From_Serial" For="serial-from">
+                            <TelerikTextBox Id="serial-from" @bind-Value="RangeFrom" Width="100%" />
+                        </FormField>
+                        <FormField Class="col-md-4 col-lg-2" Label="@($"{TextResources.APP_StringKeys_To_Serial} (<)")" For="serial-to">
+                            <TelerikTextBox Id="serial-to" @bind-Value="RangeTo" Width="100%" />
+                        </FormField>
+                        <FormField Class="col-md-4 col-lg-2" Label="@RegisterTexts.BatchPrefixStart" For="serial-cut-start">
+                            <TelerikNumericTextBox Id="serial-cut-start" @bind-Value="CutStart" Min="0" Decimals="0" Format="N0" Width="100%" />
+                        </FormField>
+                        <FormField Class="col-md-4 col-lg-2" Label="@RegisterTexts.BatchPrefixLength" For="serial-cut-length">
+                            <TelerikNumericTextBox Id="serial-cut-length" @bind-Value="CutLength" Min="0" Decimals="0" Format="N0" Width="100%" />
+                        </FormField>
+                        <div class="col-auto">
+                            <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
+                                           Enabled="@(!HasSavedRows)" OnClick="GenerateRange">
+                                <MaterialIcon IconName="@MaterialIconsHelper.Add" /> @TextResources.APP_StringKeys_Add
+                            </TelerikButton>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-4 col-lg-3 d-flex align-items-center gap-2">
+                            <TelerikCheckBox Id="serial-header" @bind-Value="ExcelHasHeader" />
+                            <label for="serial-header">@RegisterTexts.BatchExcelHeader</label>
+                        </div>
+                        <div class="col-md-6">
+                            <InputFile OnChange="OnExcelSelected" accept=".xlsx" class="form-control" disabled="@HasSavedRows" />
+                        </div>
+                    }
                 </div>
-                @if (SerialMode == "range")
+                @if (Serials.Count > 0)
                 {
-                    <div><label for="serial-from">@TextResources.APP_StringKeys_From_Serial</label><input id="serial-from" class="form-control" style="max-width:150px" @bind="RangeFrom" /></div>
-                    <div><label for="serial-to">@TextResources.APP_StringKeys_To_Serial (&lt;)</label><input id="serial-to" class="form-control" style="max-width:150px" @bind="RangeTo" /></div>
-                    <div><label for="serial-cut-start">Fixed prefix: start</label><input id="serial-cut-start" type="number" min="0" class="form-control" style="max-width:110px" @bind="CutStart" /></div>
-                    <div><label for="serial-cut-length">Fixed prefix: length</label><input id="serial-cut-length" type="number" min="0" class="form-control" style="max-width:110px" @bind="CutLength" /></div>
-                    <button type="button" class="btn btn-outline-primary" disabled="@HasSavedRows" @onclick="GenerateRange">@TextResources.APP_StringKeys_Add</button>
+                    <div class="text-secondary small mt-2">@string.Join(", ", Serials.Take(5))@(Serials.Count > 5 ? " ..." : string.Empty)</div>
+                }
+            </ChildContent>
+        </SectionCard>
+    }
+
+    <SectionCard Step="4" Title="@RegisterTexts.BatchStepProduct">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-6 col-lg-4">
+                <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" FillMode="@ThemeConstants.Button.FillMode.Outline" Enabled="@(!IsLoading)" OnClick="OnChooseProductClick">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Search" /> @TextResources.APP_StringKeys_Search_Product
+                </TelerikButton>
+                @if (CurrentProduct is not null)
+                {
+                    <div class="mt-2 fw-semibold">@CurrentProduct.ProductCode — @CurrentProduct.ProductName</div>
+                    <div class="text-secondary small">@CurrentProduct.TechnicalCode — @CurrentProduct.ProductStatusTitle</div>
                 }
                 else
                 {
-                    <div class="form-check">
-                        <input id="serial-header" type="checkbox" class="form-check-input" @bind="ExcelHasHeader" />
-                        <label for="serial-header" class="form-check-label">First row is a header</label>
-                    </div>
-                    <InputFile OnChange="OnExcelSelected" accept=".xlsx" class="form-control" style="max-width:320px" disabled="@HasSavedRows" />
+                    <div class="form-text">@RegisterTexts.BatchSelectProductFirst</div>
                 }
             </div>
-            @if (Serials.Count > 0)
-            {
-                <div class="card-footer text-muted small">@string.Join(", ", Serials.Take(5))@(Serials.Count > 5 ? " ..." : string.Empty)</div>
-            }
-        </div>
-    }
-
-    <div class="card shadow-sm mb-3">
-        <div class="card-header">@TextResources.APP_StringKeys_Search_Product</div>
-        <div class="card-body d-flex flex-wrap gap-3 align-items-end">
-            <button type="button" class="btn btn-outline-primary" disabled="@IsLoading" @onclick="OnChooseProductClick">@TextResources.APP_StringKeys_Search_Product</button>
-            <span>@CurrentProduct?.ProductCode — @CurrentProduct?.ProductName</span>
-            <span>@CurrentProduct?.TechnicalCode — @CurrentProduct?.ProductStatusTitle</span>
-            <div>
-                <label for="register-count">@TextResources.APP_StringKeys_Count</label>
-                <input id="register-count" type="number" min="1" class="form-control" @bind="Count" disabled="@(IsSingleMode && Serials.Count > 0)" />
-            </div>
-            <div>
-                <label for="register-value">@TextResources.APP_StringKeys_PackValue</label>
-                <input id="register-value" class="form-control" @bind="PackValue" />
-            </div>
-            <div class="form-check">
-                <input id="register-weight-toggle" type="checkbox" class="form-check-input" @bind="ShowWeightPanel" />
-                <label for="register-weight-toggle" class="form-check-label">Pack value from total weight</label>
+            <FormField Class="col-md-3 col-lg-2" Label="@TextResources.APP_StringKeys_Count" For="register-count">
+                <TelerikNumericTextBox Id="register-count" @bind-Value="Count" Min="1" Decimals="0" Format="N0" Enabled="@(!(IsSingleMode && Serials.Count > 0))" Width="100%" />
+            </FormField>
+            <FormField Class="col-md-3 col-lg-2" Label="@TextResources.APP_StringKeys_PackValue" For="register-value">
+                <TelerikTextBox Id="register-value" @bind-Value="PackValue" Width="100%" />
+            </FormField>
+            <div class="col-md-6 col-lg-4">
+                <div class="d-flex align-items-center gap-2">
+                    <TelerikCheckBox Id="register-weight-toggle" @bind-Value="ShowWeightPanel" />
+                    <label for="register-weight-toggle">@RegisterTexts.BatchPackValueFromWeight</label>
+                </div>
             </div>
             @if (ShowWeightPanel)
             {
-                <div class="input-group" style="max-width:320px">
-                    <input class="form-control" inputmode="decimal" placeholder="Total weight" @bind="TotalWeight" />
-                    <button type="button" class="btn btn-outline-primary" disabled="@(CurrentProduct is null)" @onclick="OnApplyAverageWeight">@TextResources.APP_StringKeys_Average</button>
-                </div>
+                <FormField Class="col-md-4 col-lg-3" Label="@RegisterTexts.BatchTotalWeight" For="register-weight">
+                    <div class="d-flex gap-2">
+                        <TelerikTextBox Id="register-weight" @bind-Value="TotalWeight" Width="100%" />
+                        <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Enabled="@(CurrentProduct is not null)" OnClick="OnApplyAverageWeight">
+                            @TextResources.APP_StringKeys_Average
+                        </TelerikButton>
+                    </div>
+                </FormField>
             }
-            <button type="button" class="btn btn-primary" disabled="@(IsLoading || HasSavedRows || !CanSave)" @onclick="OnAddClick">@(IsSingleMode ? TextResources.APP_StringKeys_Confirm : TextResources.APP_StringKeys_Add)</button>
         </div>
+
         @if (DynamicFields.Count > 0)
         {
-            <div class="card-body d-flex flex-wrap gap-3">
+            <div class="row g-3 mt-1">
                 @foreach (var field in DynamicFields)
                 {
-                    <div @key="field">
-                        <label>@field.Title</label>
+                    <FormField @key="field" Class="col-md-4 col-lg-3" Label="@field.Title">
                         @if (field.ValueOptions?.Contains('|') == true)
                         {
-                            <select class="form-select" @bind="field.Value" disabled="@(field.IsReadOnly == true)">
-                                <option value="">@TextResources.APP_StringKeys_NotChoosed</option>
-                                @foreach (var option in field.ValueOptions.Split('|'))
-                                {
-                                    <option value="@option">@option</option>
-                                }
-                            </select>
+                            <OptionSelect Options="DynamicOptions(field.ValueOptions)" @bind-Value="field.Value" Enabled="@(field.IsReadOnly != true)" />
                         }
                         else
                         {
-                            <input class="form-control" @bind="field.Value" readonly="@(field.IsReadOnly == true)" />
+                            <TelerikTextBox @bind-Value="field.Value" Enabled="@(field.IsReadOnly != true)" Width="100%" />
                         }
-                    </div>
+                    </FormField>
                 }
             </div>
         }
-    </div>
 
-    <div class="card shadow-sm">
-        <div class="card-header d-flex justify-content-between">
-            <span>@TextResources.APP_StringKeys_Count: @Rows.Sum(p => p.Count)</span>
-            <button type="button" class="btn btn-success" disabled="@(IsLoading || !CanSave || !Rows.Any(p => !p.IsSaved))" @onclick="OnSaveClick">@TextResources.APP_StringKeys_Confirm</button>
+        <div class="mt-3">
+            <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" Enabled="@(!IsLoading && !HasSavedRows && CanSave)" OnClick="OnAddClick">
+                <MaterialIcon IconName="@MaterialIconsHelper.Add" /> @(IsSingleMode ? TextResources.APP_StringKeys_Confirm : TextResources.APP_StringKeys_Add)
+            </TelerikButton>
         </div>
-        <div class="card-body">
-            <TelerikGrid Data="Rows" Pageable="true" Sortable="true" PageSize="10">
-                <GridColumns>
+    </SectionCard>
+
+    <SectionCard Step="5" Title="@RegisterTexts.BatchStepRows">
+        <HeaderContent>
+            <span class="badge rounded-pill bg-secondary">@TextResources.APP_StringKeys_Count: @Rows.Sum(p => p.Count)</span>
+            <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Success" Enabled="@(!IsLoading && CanSave && Rows.Any(p => !p.IsSaved))" OnClick="OnSaveClick">
+                <MaterialIcon IconName="@MaterialIconsHelper.Save" /> @TextResources.APP_StringKeys_Confirm
+            </TelerikButton>
+        </HeaderContent>
+        <ChildContent>
+            <RegisterGrid TItem="BatchRow" Data="Rows" EmptyText="@RegisterTexts.BatchRowsEmpty">
+                <Columns>
                     <GridColumn Field="@nameof(BatchRow.ProductCode)" Title="@TextResources.APP_StringKeys_ProductCode" />
                     <GridColumn Field="@nameof(BatchRow.ProductName)" Title="@TextResources.APP_StringKeys_ProductName" />
                     <GridColumn Field="@nameof(BatchRow.TechnicalCode)" Title="@TextResources.APP_StringKeys_Chart_Regcode" />
@@ -250,21 +308,21 @@
                     <GridColumn Title="@TextResources.APP_StringKeys_Status">
                         <Template Context="item">@(((BatchRow)item).IsSaved ? TextResources.APP_StringKeys_Done : TextResources.APP_StringKeys_New)</Template>
                     </GridColumn>
-                    <GridColumn Title="@TextResources.APP_StringKeys_Delete">
+                    <GridColumn Title="@TextResources.APP_StringKeys_Delete" Width="120px">
                         <Template Context="item">
-                            <button type="button" class="btn btn-sm btn-outline-danger" disabled="@(IsLoading || ((BatchRow)item).IsSaved || ((BatchRow)item).SavedCount > 0)" @onclick="() => OnRemoveClick((BatchRow)item)">@TextResources.APP_StringKeys_Delete</button>
+                            <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Error" FillMode="@ThemeConstants.Button.FillMode.Outline" Size="@ThemeConstants.Button.Size.Small"
+                                           Enabled="@(!IsLoading && !((BatchRow)item).IsSaved && ((BatchRow)item).SavedCount == 0)"
+                                           OnClick="@(() => OnRemoveClick((BatchRow)item))">
+                                <MaterialIcon IconName="@MaterialIconsHelper.Delete" /> @TextResources.APP_StringKeys_Delete
+                            </TelerikButton>
                         </Template>
                     </GridColumn>
-                </GridColumns>
-            </TelerikGrid>
-        </div>
-    </div>
+                </Columns>
+            </RegisterGrid>
+        </ChildContent>
+    </SectionCard>
 </div>
 
 <ProductCodeModal @ref="ProductModal" OnClickProduct="OnProductSelected" />
 
-@if (IsLoading)
-{
-    <TelerikLoaderContainer LoaderPosition="@LoaderPosition.End" LoaderType="LoaderType.InfiniteSpinner"
-                            Text="@TextResources.APP_StringKeys_Loading" />
-}
+<PageLoader Visible="IsLoading" />

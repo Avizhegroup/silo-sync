@@ -61,7 +61,7 @@ public static class SerialListBuilder
 
         if (cutStart < 0 || cutLength < 0)
         {
-            error = "The prefix position and length cannot be negative.";
+            error = RegisterTexts.SerialPrefixNegative;
             return false;
         }
 
@@ -70,7 +70,7 @@ public static class SerialListBuilder
         {
             if (cutStart + cutLength > from.Length || cutStart + cutLength > to.Length)
             {
-                error = "The prefix is longer than the serial numbers.";
+                error = RegisterTexts.SerialPrefixTooLong;
                 return false;
             }
 
@@ -81,19 +81,19 @@ public static class SerialListBuilder
 
         if (!long.TryParse(from, out var start) || !long.TryParse(to, out var end) || start < 0 || end < 0)
         {
-            error = "The range limits must be numbers.";
+            error = RegisterTexts.SerialRangeNotNumbers;
             return false;
         }
 
         if (end <= start)
         {
-            error = "The end of the range must be greater than the start (the end itself is not included).";
+            error = RegisterTexts.SerialRangeOrder;
             return false;
         }
 
         if (end - start > MaxSerials)
         {
-            error = $"A range can hold at most {MaxSerials} serials.";
+            error = RegisterTexts.SerialRangeTooMany(MaxSerials);
             return false;
         }
 
@@ -118,7 +118,7 @@ public static class SerialListBuilder
             var sheet = workbook.Worksheets.FirstOrDefault();
             if (sheet is null)
             {
-                error = "The file has no worksheet.";
+                error = RegisterTexts.SerialFileNoSheet;
                 return false;
             }
 
@@ -133,7 +133,7 @@ public static class SerialListBuilder
 
                 if (serials.Count > MaxSerials)
                 {
-                    error = $"The file holds more than {MaxSerials} serials.";
+                    error = RegisterTexts.SerialFileTooMany(MaxSerials);
                     serials = [];
                     return false;
                 }
@@ -162,14 +162,14 @@ public static class SerialListBuilder
         var invalid = serials.Where(p => !BarcodeParser.IsValidSerial(p)).Take(3).ToList();
         if (invalid.Count > 0)
         {
-            error = "Invalid serial(s): " + string.Join(", ", invalid) + " (letters, digits and _ - . / only).";
+            error = RegisterTexts.SerialInvalid(string.Join(", ", invalid));
             return false;
         }
 
         var duplicate = serials.GroupBy(p => p, StringComparer.OrdinalIgnoreCase).FirstOrDefault(p => p.Count() > 1);
         if (duplicate is not null)
         {
-            error = $"The serial '{duplicate.Key}' appears more than once.";
+            error = RegisterTexts.SerialDuplicate(duplicate.Key);
             return false;
         }
 

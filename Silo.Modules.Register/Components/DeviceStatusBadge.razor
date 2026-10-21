@@ -1,0 +1,5 @@
+<span class="badge rounded-pill @(IsConnected ? "bg-success" : "bg-secondary") d-inline-flex align-items-center gap-1"
+      title="@(IsConnected ? RegisterTexts.DeviceConnected : RegisterTexts.DeviceNeededHint)">
+    <MaterialIcon IconName="@(IsConnected ? MaterialIconsHelper.Sensors : MaterialIconsHelper.SensorsOff)" />
+    @(IsConnected ? RegisterTexts.DeviceConnected : RegisterTexts.DeviceDisconnected)
+</span>

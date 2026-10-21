@@ -2,7 +2,6 @@
 @inherits SiloBasePage
 @namespace Silo.Modules.Register.Pages
 @using Silo.Shared.Components
-@using Telerik.Blazor.Components
 
 <PageTitle>@PageTitle</PageTitle>
 
@@ -13,137 +12,130 @@
                          OnError="OnDeviceError" />
 
 <div class="container-fluid mt-2">
-    <div class="card shadow-sm mb-3">
-        <div class="card-header fw-bold">1. Operation</div>
-        <div class="card-body d-flex flex-wrap gap-3 align-items-end">
-            <div>
-                <label for="print-action" class="form-label">@TextResources.APP_StringKeys_OperationCode</label>
-                <input id="print-action" class="form-control" style="max-width:180px" @bind="ActionId" @bind:event="oninput"
-                       @onkeyup="OnActionKeyUp" inputmode="numeric" />
-            </div>
-            <button type="button" class="btn btn-primary" disabled="@(IsLoading || IsBusy)" @onclick="LoadAsync">Load serials</button>
-            <NavLink href="/register/batch" class="btn btn-outline-secondary">@TextResources.APP_StringKeys_Register</NavLink>
-        </div>
-    </div>
+    <PageHeader Title="@RegisterTexts.PrintTitle" Subtitle="@RegisterTexts.PrintSubtitle" ShowDevice="true" IsDeviceConnected="IsDeviceConnected" Steps="HowToSteps">
+        <NavLink href="/register/batch" class="btn btn-outline-secondary">@TextResources.APP_StringKeys_Register</NavLink>
+    </PageHeader>
 
-    <div class="card shadow-sm mb-3">
-        <div class="card-header fw-bold">2. Label and printer</div>
-        <div class="card-body d-flex flex-wrap gap-3 align-items-end">
-            <div>
-                <label for="print-mode" class="form-label">Mode</label>
-                <select id="print-mode" class="form-select" style="min-width:260px" value="@PrintMode" @onchange="OnModeChanged" disabled="@IsBusy">
-                    <option value="register">Register the tag, then print (RFID label printer)</option>
-                    <option value="print">Print only (pair the tags later by barcode)</option>
-                    <option value="autoregister">Print the barcode, then register automatically</option>
-                </select>
+    <SectionCard Step="1" Title="@RegisterTexts.PrintStepOperation" Hint="@RegisterTexts.PrintStepOperationHint">
+        <div class="row g-3 align-items-end">
+            <FormField Class="col-md-4 col-lg-3" Label="@TextResources.APP_StringKeys_OperationCode" For="print-action">
+                <ScanInput Id="print-action" @bind-Value="ActionId" OnKeyUp="OnActionKeyUp" />
+            </FormField>
+            <div class="col-auto">
+                <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" Enabled="@(!IsLoading && !IsBusy)" OnClick="LoadAsync">
+                    <MaterialIcon IconName="@MaterialIconsHelper.Search" /> @RegisterTexts.PrintLoadSerials
+                </TelerikButton>
             </div>
-            <div>
-                <label for="print-format" class="form-label">Label format</label>
-                <select id="print-format" class="form-select" style="min-width:260px" @bind="SelectedFormatKey" disabled="@IsBusy">
-                    <option value="">-</option>
-                    @foreach (var format in VisibleFormats)
+        </div>
+    </SectionCard>
+
+    <SectionCard Step="2" Title="@RegisterTexts.PrintStepSettings">
+        <HeaderContent>
+            <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Enabled="@(IsDeviceConnected && !IsBusy)" OnClick="RefreshDeviceAsync"
+                           Title="@RegisterTexts.DeviceNeededHint">
+                <MaterialIcon IconName="@MaterialIconsHelper.Refresh" /> @TextResources.APP_StringKeys_Refresh
+            </TelerikButton>
+            <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Enabled="@(IsDeviceConnected && !IsBusy && SelectedFormat is not null && !IsPdf)" OnClick="CheckPrinterAsync">
+                <MaterialIcon IconName="@MaterialIconsHelper.Print" /> @RegisterTexts.PrintCheckPrinter
+            </TelerikButton>
+        </HeaderContent>
+        <ChildContent>
+            <div class="row g-3 align-items-start">
+                <FormField Class="col-md-6 col-xl-4" Label="@RegisterTexts.PrintMode" For="print-mode">
+                    <OptionSelect Id="print-mode" Options="ModeOptions" Value="@PrintMode" ValueChanged="OnModeChanged" DefaultText="@null" Enabled="@(!IsBusy)" />
+                </FormField>
+                <FormField Class="col-md-6 col-xl-4" Label="@RegisterTexts.LabelFormat" For="print-format">
+                    <LabelFormatSelect Id="print-format" Formats="VisibleFormats" @bind-Value="SelectedFormatKey" Enabled="@(!IsBusy)" />
+                </FormField>
+                @if (SelectedFormat?.IsFastReport == true)
+                {
+                    <FormField Class="col-md-6 col-xl-4" Label="@RegisterTexts.PrintFrxOutput" For="print-output">
+                        <OptionSelect Id="print-output" Options="OutputOptions" @bind-Value="FrxOutput" DefaultText="@null" Enabled="@(!IsBusy)" />
+                    </FormField>
+                }
+                @if (NeedsPrinter)
+                {
+                    <FormField Class="col-md-6 col-xl-4" Label="@RegisterTexts.PrinterLabel" For="print-printer">
+                        <PrinterSelect Id="print-printer" Printers="Printers" @bind-Value="SelectedPrinter"
+                                       DefaultText="@(SelectedFormat?.IsFastReport == true ? RegisterTexts.PrinterFromFile : RegisterTexts.PrinterDefault)" Enabled="@(!IsBusy)" />
+                    </FormField>
+                }
+                <FormField Class="col-md-6 col-xl-4" Label="@RegisterTexts.PrintEpcType" For="print-epc-type">
+                    <OptionSelect Id="print-epc-type" Options="EpcTypeOptions" @bind-Value="EpcType" DefaultText="@null" Enabled="@(!IsBusy)" />
+                </FormField>
+                <div class="col-12 d-flex flex-wrap gap-4">
+                    @if (Formats.Any(p => p.IsFastReport))
                     {
-                        <option value="@format.Key">@format.Display</option>
+                        <div class="d-flex align-items-center gap-2">
+                            <TelerikCheckBox Id="print-brand" @bind-Value="FilterByBrand" Enabled="@(!IsBusy)" />
+                            <label for="print-brand">@RegisterTexts.PrintFilterBrand</label>
+                        </div>
                     }
-                </select>
+                    @if (SelectedFormat?.Kind == "zmin")
+                    {
+                        <div class="d-flex align-items-center gap-2">
+                            <TelerikCheckBox Id="print-rfid" @bind-Value="WriteRfid" Enabled="@(!IsBusy)" />
+                            <label for="print-rfid">@RegisterTexts.PrintWriteRfid</label>
+                        </div>
+                    }
+                    <div class="d-flex align-items-center gap-2">
+                        <TelerikCheckBox Id="print-reprint" @bind-Value="AllowReprint" Enabled="@(!IsBusy)" />
+                        <label for="print-reprint">@RegisterTexts.PrintAllowReprint</label>
+                    </div>
+                </div>
             </div>
-            @if (Formats.Any(p => p.IsFastReport))
-            {
-                <div class="form-check">
-                    <input id="print-brand" type="checkbox" class="form-check-input" @bind="FilterByBrand" disabled="@IsBusy" />
-                    <label for="print-brand" class="form-check-label">Only FastReport formats of the product's brand</label>
-                </div>
-            }
-            @if (SelectedFormat?.IsFastReport == true)
-            {
-                <div>
-                    <label for="print-output" class="form-label">FastReport output</label>
-                    <select id="print-output" class="form-select" @bind="FrxOutput" disabled="@IsBusy">
-                        <option value="print">Printer</option>
-                        <option value="pdf">One PDF (opens on the workstation)</option>
-                    </select>
-                </div>
-            }
-            @if (NeedsPrinter)
-            {
-                <div>
-                    <label for="print-printer" class="form-label">Printer</label>
-                    <select id="print-printer" class="form-select" style="min-width:240px" @bind="SelectedPrinter" disabled="@IsBusy">
-                        <option value="">@(SelectedFormat?.IsFastReport == true ? "(printer named in the file, else the host default)" : "(default of the device host)")</option>
-                        @foreach (var printer in Printers)
-                        {
-                            <option value="@printer">@printer</option>
-                        }
-                    </select>
-                </div>
-            }
-            @if (SelectedFormat?.Kind == "zmin")
-            {
-                <div class="form-check">
-                    <input id="print-rfid" type="checkbox" class="form-check-input" @bind="WriteRfid" disabled="@IsBusy" />
-                    <label for="print-rfid" class="form-check-label">Write the RFID chip while printing</label>
-                </div>
-            }
-            <div>
-                <label for="print-epc-type" class="form-label">EPC type (server)</label>
-                <select id="print-epc-type" class="form-select" @bind="EpcType" disabled="@IsBusy">
-                    <option value="2">2 - product code + new serial</option>
-                    <option value="1">1 - product code + random + serial</option>
-                    <option value="kdt">kdt</option>
-                </select>
-            </div>
-            <div class="form-check">
-                <input id="print-reprint" type="checkbox" class="form-check-input" @bind="AllowReprint" disabled="@IsBusy" />
-                <label for="print-reprint" class="form-check-label">Allow reprint of serials that are already registered</label>
-            </div>
-            <button type="button" class="btn btn-outline-secondary" disabled="@(!IsDeviceConnected || IsBusy)" @onclick="RefreshDeviceAsync">@TextResources.APP_StringKeys_Refresh</button>
-            <button type="button" class="btn btn-outline-secondary" disabled="@(!IsDeviceConnected || IsBusy || SelectedFormat is null || IsPdf)" @onclick="CheckPrinterAsync">Check printer</button>
-        </div>
-    </div>
+        </ChildContent>
+    </SectionCard>
 
-    <div class="card shadow-sm">
-        <div class="card-header d-flex flex-wrap gap-3 align-items-center">
-            <span class="fw-bold">3. Serials (@Rows.Count)</span>
-            <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@IsBusy" @onclick="() => SelectAll(true)">@TextResources.APP_StringKeys_Print_SelectAll</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@IsBusy" @onclick="() => SelectAll(false)">@TextResources.APP_StringKeys_Clear</button>
+    <SectionCard Step="3" Title="@($"{RegisterTexts.PrintStepSerials} ({Rows.Count})")">
+        <HeaderContent>
+            <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Size="@ThemeConstants.Button.Size.Small" Enabled="@(!IsBusy)" OnClick="@(() => SelectAll(true))">
+                <MaterialIcon IconName="@MaterialIconsHelper.SelectAll" /> @TextResources.APP_StringKeys_Print_SelectAll
+            </TelerikButton>
+            <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Size="@ThemeConstants.Button.Size.Small" Enabled="@(!IsBusy)" OnClick="@(() => SelectAll(false))">
+                <MaterialIcon IconName="@MaterialIconsHelper.DeleteSweep" /> @TextResources.APP_StringKeys_Clear
+            </TelerikButton>
             @if (PrintMode == "print")
             {
-                <NavLink href="/register/pair" class="btn btn-sm btn-outline-primary">Pair printed labels with tags</NavLink>
+                <NavLink href="/register/pair" class="btn btn-sm btn-outline-primary">@RegisterTexts.PrintPair</NavLink>
             }
             @if (SelectedFormat?.IsFastReport == true)
             {
-                <button type="button" class="btn btn-outline-secondary ms-auto" disabled="@(!CanPrint)" @onclick="PreviewAsync">Preview first (PDF)</button>
+                <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Enabled="CanPrint" OnClick="PreviewAsync">
+                    <MaterialIcon IconName="@MaterialIconsHelper.PictureAsPdf" /> @RegisterTexts.PrintPreview
+                </TelerikButton>
             }
-            <button type="button" class="btn btn-success @(SelectedFormat?.IsFastReport == true ? string.Empty : "ms-auto")"
-                    disabled="@(!CanPrint)" @onclick="PrintSelectedAsync">@PrintButtonText (@Rows.Count(p => p.IsSelected))</button>
-        </div>
-        <div class="card-body table-responsive">
-            <table class="table table-sm align-middle">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>@TextResources.APP_StringKeys_ProductSerial</th>
-                        <th>@TextResources.APP_StringKeys_ProductCode</th>
-                        <th>@TextResources.APP_StringKeys_ProductName</th>
-                        <th>@TextResources.APP_StringKeys_TagEPC</th>
-                        <th>@TextResources.APP_StringKeys_Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var row in Rows)
-                    {
-                        <tr class="@RowClass(row)">
-                            <td><input type="checkbox" @bind="row.IsSelected" disabled="@IsBusy" /></td>
-                            <td>@row.ProductSerial</td>
-                            <td>@row.ProductCode</td>
-                            <td>@row.ProductName</td>
-                            <td class="font-monospace">@row.TagEpc</td>
-                            <td>@(string.IsNullOrEmpty(row.Status) ? (row.RegisterFlag ? "Registered" : string.Empty) : row.Status)</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
+            <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Success" Enabled="CanPrint" OnClick="PrintSelectedAsync"
+                           Title="@(SelectedFormat is null ? RegisterTexts.PrintSelectedFormat : PrintButtonText)">
+                <MaterialIcon IconName="@MaterialIconsHelper.Print" /> @PrintButtonText (@Rows.Count(p => p.IsSelected))
+            </TelerikButton>
+        </HeaderContent>
+        <ChildContent>
+            <RegisterGrid TItem="PrintLabelRow" Data="Rows" PageSize="20" Sortable="false" RowKind="RowKind" EmptyText="@RegisterTexts.PrintRowsEmpty">
+                <Columns>
+                    <GridColumn Title="" Width="60px" Sortable="false">
+                        <Template Context="item">
+                            @{
+                                var row = (PrintLabelRow)item;
+                            }
+                            <TelerikCheckBox @bind-Value="row.IsSelected" Enabled="@(!IsBusy)" />
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(PrintLabelRow.ProductSerial)" Title="@TextResources.APP_StringKeys_ProductSerial" />
+                    <GridColumn Field="@nameof(PrintLabelRow.ProductCode)" Title="@TextResources.APP_StringKeys_ProductCode" />
+                    <GridColumn Field="@nameof(PrintLabelRow.ProductName)" Title="@TextResources.APP_StringKeys_ProductName" />
+                    <GridColumn Field="@nameof(PrintLabelRow.TagEpc)" Title="@TextResources.APP_StringKeys_TagEPC" />
+                    <GridColumn Title="@TextResources.APP_StringKeys_Status">
+                        <Template Context="item">
+                            @{
+                                var row = (PrintLabelRow)item;
+                            }
+                            @(string.IsNullOrEmpty(row.Status) ? (row.RegisterFlag ? RegisterTexts.Registered : string.Empty) : row.Status)
+                        </Template>
+                    </GridColumn>
+                </Columns>
+            </RegisterGrid>
+        </ChildContent>
+    </SectionCard>
 </div>
-<TelerikLoaderContainer Visible="@(IsLoading || IsBusy)" />
+<PageLoader Visible="@(IsLoading || IsBusy)" />

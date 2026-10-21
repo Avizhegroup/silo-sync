@@ -39,13 +39,9 @@
     </Project>
     <Project Path="Silo.Api/Silo.Api.csproj" />
   </Folder>
-  <Folder Name="/src/Presentation/Api/External/">
-    <Project Path="Silo.Api.External.Sharif/Silo.Api.External.Sharif.csproj" Id="9d64c240-4450-47c0-b652-3ea53ca59f2e" />
-  </Folder>
   <Folder Name="/src/Presentation/Service/">
     <Project Path="Silo.Bot.Support/Silo.Bot.Support.csproj" Id="71e575c3-51c7-429f-a6f0-746470a3ebce" />
     <Project Path="Silo.Jobs.Win/Silo.Jobs.Win.csproj" />
-    <Project Path="Silo.Service.Sharif/Silo.Service.Sharif.csproj" Id="61cba309-bcd5-4e05-8e93-2135a590e69f" />
   </Folder>
   <Folder Name="/src/Presentation/UI/" />
   <Folder Name="/src/Presentation/UI/Web/" />
@@ -76,9 +72,6 @@
     <File Path="Docs/RAG-Chat-Guide.md" />
   </Folder>
   <Folder Name="/Solution Items/Docs/Pages/" />
-  <Folder Name="/Solution Items/Docs/Pages/Inventory/">
-    <File Path="Docs/InventoryConflicts.md" />
-  </Folder>
   <Folder Name="/Solution Items/Docs/Pages/Warehouse/" />
   <Folder Name="/Solution Items/Docs/Pages/Warehouse/ImageAnalize/">
     <File Path="Docs/ImageAnalize.md" />

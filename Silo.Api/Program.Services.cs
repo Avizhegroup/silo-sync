@@ -4,14 +4,12 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Silo.Api.Business;
 using Silo.Api.Extensions;
 using Silo.Api.Services;
-using Silo.Application;
 using Silo.Application.Api.Contracts;
 using Silo.Application.Contracts;
 using Silo.Domains;
 using Silo.Domains.Android;
 using Silo.Identity.Server;
 using Silo.Infrastructure.Shared;
-using Silo.Api.External.Sharif;
 
 namespace Silo.Api;
 public static partial class Program

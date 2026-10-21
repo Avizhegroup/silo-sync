@@ -1,18 +1,13 @@
 ﻿@page "/tag/edit"
+@page "/tag/edit/{Mode:int}"
 @inherits SiloBasePage
 @namespace Silo.Modules.Product.Pages
 @using Silo.Modules.Product.Components
-@using Newtonsoft.Json.Linq
 @using Silo.Shared.Components
 @using Telerik.Blazor.Components
 @using Silo.Components.DynamicField
-@using Silo.Application.Dto.DynamicField
 @using Silo.Shared.Components.Print
-@using Silo.Application.Dto
-@using Silo.Application.Features
 @using Microsoft.AspNetCore.Components.Web
-@using Silo.Shared.Components.Modals
-@using Telerik.Blazor.Components.Grid
 
 
 <div class="row col-md-12">

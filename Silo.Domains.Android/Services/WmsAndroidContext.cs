@@ -17,6 +17,7 @@ public class WmsAndroidContext : DbContext
     public DbSet<InspectElement> Elements { get; set; }
     public DbSet<CustomerAccountingData> Cad { get; set; }
     public DbSet<InventoryTags> InventoryTags { get; set; }
+    public DbSet<InventoryHeader> InventoryHeaders { get; set; }
     public DbSet<Zone> Zones { get; set; }
     public DbSet<Destination> Destinations { get; set; }
     public DbSet<Station> Stations { get; set; }
@@ -89,6 +90,8 @@ public class WmsAndroidContext : DbContext
         Cad.ExecuteDelete();
 
         InventoryTags.ExecuteDelete();
+     
+        InventoryHeaders.ExecuteDelete();
 
         Zones.ExecuteDelete();
 

@@ -261,23 +261,23 @@ public class WmsController : SiloBaseControllerVersion2
                                               .DistinctBy(p => p.Epc)
                                               .ToList();
 
+         
+        List<InventoryHeader> invHeader = ((WmsBusiness)business)
+                                              .SGetAllInventoryHeader()
+                                              .Select()
+                                              .Select(p => new InventoryHeader()
+                                              {
+                                                  InventoryDate = p.ItemArray[1].ToString(),
+                                                  InventoryDescription = p.ItemArray[5].ToString(),
+                                                  InventoryHeaderId = (int)p.ItemArray[0],
+                                                  InventoryStatus = (int)p.ItemArray[6],
+                                                  InventoryStoreCodes = p.ItemArray[3].ToString(),
+                                                  InventoryTime = p.ItemArray[2].ToString(),
+                                                  InventoryUserId = p.ItemArray[4].ToString()
 
-        //List<InventoryHeader> invHeader = ((WmsBusiness)business)
-        //                                      .SGetAllInventoryHeader()
-        //                                      .Select()
-        //                                      .Select(p => new InventoryHeader()
-        //                                      {
-        //                                          InventoryDate = p.ItemArray[1].ToString(),
-        //                                          InventoryDescription = "",
-        //                                          InventoryHeaderId = (int)p.ItemArray[2],
-        //                                          InventoryStatus=0,
-        //                                          InventoryStoreCodes="",
-        //                                          InventoryTime="",
-        //                                          InventoryUserId=""
-                                                  
-        //                                      })
-        //                                      .DistinctBy(p => p.InventoryHeaderId)
-        //                                      .ToList();
+                                              })
+                                              .DistinctBy(p => p.InventoryHeaderId)
+                                              .ToList();
 
         List<Zone> zones = ((WmsBusiness)business)
                                              .SPGetAllZones()
@@ -624,6 +624,7 @@ public class WmsController : SiloBaseControllerVersion2
             await context.AddRangeAsync(elements);
             await context.AddRangeAsync(customerAccounts);
             await context.AddRangeAsync(invTags);
+            await context.AddRangeAsync(invHeader);
             await context.AddRangeAsync(zones);
             await context.AddRangeAsync(fields);
             await context.AddRangeAsync(stations);
@@ -838,6 +839,24 @@ public class WmsController : SiloBaseControllerVersion2
         //                                      .DistinctBy(p => p.Epc)
         //                                      .ToList();
 
+
+        List<InventoryHeader> invHeader = ((WmsBusiness)business)
+                                             .SGetAllInventoryHeader()
+                                             .Select()
+                                             .Select(p => new InventoryHeader()
+                                             {
+                                                 InventoryDate = p.ItemArray[1].ToString(),
+                                                 InventoryDescription = p.ItemArray[5].ToString(),
+                                                 InventoryHeaderId = (int)p.ItemArray[0],
+                                                 InventoryStatus = (int)p.ItemArray[6],
+                                                 InventoryStoreCodes = p.ItemArray[3].ToString(),
+                                                 InventoryTime = p.ItemArray[2].ToString(),
+                                                 InventoryUserId = p.ItemArray[4].ToString()
+
+                                             })
+                                             .DistinctBy(p => p.InventoryHeaderId)
+
+                                             .ToList();
         List<Zone> zones = ((WmsBusiness)business)
                                              .SPGetAllZones()
                                              .Select(p => new Zone()
@@ -1153,6 +1172,7 @@ public class WmsController : SiloBaseControllerVersion2
             await context.AddRangeAsync(dataProducts);
             await context.AddRangeAsync(elements);
             await context.AddRangeAsync(customerAccounts);
+            await context.AddRangeAsync(invHeader);
             await context.AddRangeAsync(invTags);
             await context.AddRangeAsync(zones);
             await context.AddRangeAsync(fields);

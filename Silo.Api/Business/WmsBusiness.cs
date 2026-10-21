@@ -18100,11 +18100,26 @@ FROM            tbl_UHF_ReaderLog LEFT OUTER JOIN
     }
 
 
-    public string SSaveNewInventoryHeaderId(  string[] StoreCodeList, string deviceId,  DateTime? saveDateTime,string UserCode)
+    public string SSaveNewInventoryHeaderId(  string[] StoreCodeList, string deviceId,  DateTime? saveDateTime,string UserCode, string Description)
     {
 
+        string StoreCodes = string.Join(",", StoreCodeList);
+        var invHeader = @" INSERT INTO tbl_InventoryHeader
+                                                          (  fld_InventoryDate, fld_InventoryTime, fld_InventoryUserId,fld_InventoryStoreCodes,fld_InventoryDescription)
+                                 VALUES        ( @Date,@Time,@UserId,@InventoryStoreCodes,@InventoryDescription)                                   ";
+   
 
-        return "555";
+
+       var Result=   dataAccess.CmdSqlExecuteNonQuery(invHeader
+              , new KeyValuePair<string, object>("Date", PersianCalendarTools.GregorianToPersian(saveDateTime))
+              , new KeyValuePair<string, object>("UserId", UserCode)
+              , new KeyValuePair<string, object>("InventoryStoreCodes", StoreCodes)
+              , new KeyValuePair<string, object>("InventoryDescription", Description)
+              , new KeyValuePair<string, object>("Time", saveDateTime.Value.ToString("HH:mm"))
+              );
+
+
+        return (Result > 0) ? SGetNextInventoryHeaderId().ToString() : "-1";
     }
     public bool SSaveInventoryWithDesc(int header, string store, string deviceId, string[] data, string desc, DateTime? saveDateTime = null)
     {
@@ -18122,26 +18137,7 @@ FROM            tbl_UHF_ReaderLog LEFT OUTER JOIN
             var item = splited[i].Split('=');
             descDic.Add(item[0].Trim(), item[1].Trim());
         }
-        var checkInvHeader = " SELECT Count(*) FROM tbl_InventoryHeader WHERE fld_InventoryHeaderId = " + header;
-        var check = (int)dataAccess
-            .SqlDataAdapter(checkInvHeader).Select()[0].ItemArray[0] > 0;
-        if (!check)
-        {
-            var invHeader = @"
-                                 SET IDENTITY_INSERT tbl_InventoryHeader ON;  
-                                 INSERT INTO tbl_InventoryHeader
-                                                          (fld_InventoryHeaderId, fld_InventoryDate, fld_InventoryTime, fld_InventoryUserId)
-                                 VALUES        (@HeaderId,@Date,@Time,@UserId)
-                                 SET IDENTITY_INSERT tbl_InventoryHeader OFF; ";
-            var parameters = new List<KeyValuePair<string, object>>();
-
-            parameters.Add(new("HeaderId", header));
-            parameters.Add(new("Date", PersianCalendarTools.GregorianToPersian(saveDateTime)));
-            parameters.Add(new("UserId", deviceId));
-            parameters.Add(new("Time", saveDateTime.Value.ToString("HH:mm")));
-            childrenCommands.Add(new(invHeader, parameters.ToArray()));
-
-        }
+        
         var headerEpcsCmd = " SELECT fld_InventoryTagEPC FROM tbl_InventoryTags WHERE fld_InventoryHeaderId = " + header;
         var headerEpcs = dataAccess
             .SqlDataAdapter(headerEpcsCmd).Select().Select(p => p.ItemArray[0].ToString()).ToArray();
@@ -18569,6 +18565,7 @@ VALUES('000', " + header.Id.ToString() + @",'" + command?.StationCode + @"','0')
             """;
 
         return dataAccess.CmdSqlExecuteNonQuery(command);
+
     }
 
     public int SGetMaxInvIdByGate(string gate)

@@ -64,6 +64,8 @@
     <PackageVersion Include="Serilog.Extensions.Hosting" Version="9.0.0" />
     <PackageVersion Include="Serilog.Extensions.Logging" Version="9.0.2" />
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageVersion Include="Concentus" Version="2.2.2" />
+    <PackageVersion Include="Concentus.OggFile" Version="1.0.6" />
     <PackageVersion Include="Serilog.Sinks.Seq" Version="9.0.0" />
     <!--<PackageVersion Include="Stimulsoft.Reports.Blazor" Version="2023.1.1" />-->
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="9.0.6" />

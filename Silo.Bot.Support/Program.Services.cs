@@ -32,7 +32,7 @@ public static partial class Program
         {
             client.BaseAddress = new Uri(siloAiOptions.BaseUrl);
 
-            client.Timeout = TimeSpan.FromSeconds(30);
+            client.Timeout = TimeSpan.FromSeconds(120);
 
             client.DefaultRequestHeaders.Add("X-Api-Key", siloAiOptions.ApiKey);
         });

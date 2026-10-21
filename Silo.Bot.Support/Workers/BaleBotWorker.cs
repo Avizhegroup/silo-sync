@@ -95,8 +95,9 @@ public class BaleBotWorker : BackgroundService
 
         var chat = update.Message?.Chat;
         var text = update.Message?.Text;
+        var voice = update.Message?.Voice;
 
-        if (chat is null || string.IsNullOrWhiteSpace(text))
+        if (chat is null || (string.IsNullOrWhiteSpace(text) && voice is null))
             return;
 
         var chatId = chat.Id;
@@ -108,7 +109,10 @@ public class BaleBotWorker : BackgroundService
             await chatSemaphore.WaitAsync(stoppingToken);
             try
             {
-                await HandleMessageAsync(update.UpdateId, chatId, text, stoppingToken);
+                if (voice is not null)
+                    await HandleVoiceAsync(update.UpdateId, chatId, voice, stoppingToken);
+                else
+                    await HandleMessageAsync(update.UpdateId, chatId, text!, stoppingToken);
             }
             finally
             {
@@ -119,6 +123,60 @@ public class BaleBotWorker : BackgroundService
         {
             _globalSemaphore.Release();
         }
+    }
+
+    private async Task HandleVoiceAsync(long updateId, long chatId, BaleVoice voice, CancellationToken stoppingToken)
+    {
+        _logger.LogInformation("Processing voice message for chat {ChatId}", chatId);
+
+        var audio = await _baleClient.DownloadFileAsync(voice.FileId, stoppingToken);
+        if (audio is null || audio.Length == 0)
+        {
+            _logger.LogWarning("Failed to download voice for update {UpdateId} in chat {ChatId}", updateId, chatId);
+            await _baleClient.SendMessageAsync(chatId, FallbackErrorMessage, stoppingToken);
+            return;
+        }
+
+        _chatConversations.TryGetValue(chatId, out var conversationId);
+
+        var contentType = "audio/wav";
+        var fileName = "voice.wav";
+
+        try
+        {
+            var originalLength = audio.Length;
+            audio = OggOpusConverter.ToWav(audio);
+            _logger.LogInformation(
+                "Converted voice for chat {ChatId}: {OriginalBytes} bytes ogg/opus -> {WavBytes} bytes wav",
+                chatId, originalLength, audio.Length);
+
+            var debugPath = Path.Combine(Path.GetTempPath(), "silo-bale-voice-debug.wav");
+            await File.WriteAllBytesAsync(debugPath, audio, stoppingToken);
+            _logger.LogInformation("Saved debug WAV to {Path}", debugPath);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to convert voice for update {UpdateId} in chat {ChatId}", updateId, chatId);
+            await _baleClient.SendMessageAsync(chatId, FallbackErrorMessage, stoppingToken);
+            return;
+        }
+
+        var response = await _siloAiClient.SendVoiceAsync(
+            conversationId, audio, fileName, contentType, RagDocType.GeneralChat, stoppingToken);
+
+        if (response?.Audio is not { Length: > 0 })
+        {
+            _logger.LogWarning("Silo AI voice request failed for update {UpdateId} in chat {ChatId}", updateId, chatId);
+            await _baleClient.SendMessageAsync(chatId, FallbackErrorMessage, stoppingToken);
+            return;
+        }
+
+        if (response.ConversationId is not null)
+            _chatConversations[chatId] = response.ConversationId;
+
+        var sent = await _baleClient.SendVoiceAsync(chatId, response.Audio, response.ContentType, stoppingToken);
+        if (!sent && !string.IsNullOrWhiteSpace(response.ResponseText))
+            await _baleClient.SendMessageAsync(chatId, response.ResponseText, stoppingToken);
     }
 
     private async Task HandleMessageAsync(long updateId, long chatId, string text, CancellationToken stoppingToken)

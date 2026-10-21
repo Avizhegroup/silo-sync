@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Silo.Bot.Support.Models.Bale;
 
@@ -13,6 +13,9 @@ public class BaleMessage
 
     [JsonPropertyName("text")]
     public string? Text { get; set; }
+
+    [JsonPropertyName("voice")]
+    public BaleVoice? Voice { get; set; }
 
     [JsonPropertyName("date")]
     public long Date { get; set; }

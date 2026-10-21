@@ -270,7 +270,7 @@ public class WmsController : SiloBaseControllerVersion2
                                                   InventoryDate = p.ItemArray[1].ToString(),
                                                   InventoryDescription = p.ItemArray[5].ToString(),
                                                   InventoryHeaderId = (int)p.ItemArray[0],
-                                                  InventoryStatus = (int)p.ItemArray[6],
+                                                  InventoryStatus = p.ItemArray[6] is System.DBNull ? 0 : (int)p.ItemArray[6],
                                                   InventoryStoreCodes = p.ItemArray[3].ToString(),
                                                   InventoryTime = p.ItemArray[2].ToString(),
                                                   InventoryUserId = p.ItemArray[4].ToString()

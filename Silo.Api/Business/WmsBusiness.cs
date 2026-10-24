@@ -28314,6 +28314,20 @@ order by fld_OtherDeviceUHFLogActionCode desc ";
     }
 
 
+    public DataTable SGetEpcInventoryByInventoryHeaderId(string InventoryHeaderId)
+    {
+        var cmdData = @$"   SELECT DISTINCT fld_InventoryTagEPC, fld_InventoryStoreCode
+FROM            tbl_InventoryTags
+WHERE        (fld_InventoryHeaderId =  " + InventoryHeaderId + ") ";
+        var mainData = dataAccess.SqlDataAdapter(cmdData);
+        if (mainData.Select().Any())
+        {
+            return mainData;
+        }
+        return null;
+
+    }
+
     #endregion
 
     #region Province

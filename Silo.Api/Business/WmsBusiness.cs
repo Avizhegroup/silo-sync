@@ -2662,7 +2662,7 @@ WHERE        (tbl_Tags.TagEpc IN ({string.Join(", ", epcList.ToArray())} )) ";
                             _tempEpcForLengthCheck.Replace(_tempEpcForLengthCheck, _tempEpcForLengthCheck.Substring(0, 24));
                         }
                     }
-                 
+
                     where = @$"((tbl_Tags.TagEpc IN ({((epcList != null) ? "'" + string.Join("','", epcList.ToArray()) + "'" : "''")})) ) OR (tbl_Tags.TagEpc2 IN ({((epcList != null) ? "'" + string.Join("','", epcList.ToArray()) + "'" : "''")})) and (tbl_Tags.TagEpc <>'')";
                 }
                 else if (serialList is not null && serialList.Any() && serialList[0] != "")
@@ -5771,7 +5771,7 @@ ORDER BY F.ProductSerial;
                 //    PersianCalendar pc = new PersianCalendar();
                 //    serial = pc.GetMonth(DateTime.Now).ToString().Trim().PadLeft(2, '0') + pc.GetDayOfMonth(DateTime.Now).ToString().PadLeft(2, '0') + pc.GetHour(DateTime.Now).ToString().PadLeft(2, '0') + pc.GetMinute(DateTime.Now).ToString().PadLeft(2, '0') + pc.GetSecond(DateTime.Now).ToString().PadLeft(2, '0') + pc.GetMilliseconds(DateTime.Now).ToString().PadLeft(2, '0').Substring(0, 2) + serial;
                 //}
-                
+
                 serial = (serial.Length > 12) ? serial.Trim().Substring(serial.Length - 12, 12) : serial.Trim().PadLeft(12, '0');
 
                 newSerial = productCode + serial;
@@ -5890,7 +5890,7 @@ WHERE        (tbl_Products.ProductCode = @ProductCode) "
             WhereKey += " ProductCode = '" + ProductCode + "' ";
         }
 
-        if(ProductSerial!="")
+        if (ProductSerial != "")
         {
             WhereKey += ((WhereKey != "") ? " AND " : "") + (" ProductSerial = '" + ProductSerial + "' ");
 
@@ -5898,7 +5898,7 @@ WHERE        (tbl_Products.ProductCode = @ProductCode) "
 
         var command = "SELECT        TOP (1) ProductSerial FROM tbl_Tags " + ((WhereKey != "") ? " where " + WhereKey : "") + "  ORDER BY Id DESC ";
 
-        var LastSerial = (dataAccess.SqlDataReaders(command)!=null)? dataAccess.SqlDataReaders(command)[0].Value.ToString():"";
+        var LastSerial = (dataAccess.SqlDataReaders(command) != null) ? dataAccess.SqlDataReaders(command)[0].Value.ToString() : "";
 
         if (LastSerial != "")
         {
@@ -5934,7 +5934,7 @@ WHERE        (tbl_Products.ProductCode = @ProductCode) "
             }
         }
         return LastSerial;
-         
+
     }
 
     public int SRegisterByCodeCount(string[] epcs
@@ -10768,7 +10768,7 @@ ORDER BY
         {
             return first + (string.IsNullOrEmpty(next) ? string.Empty : (",N'" + next + "'"));
         }).Remove(0, 1);
- 
+
         // deviceId =0 ? kiosk / deviceId =1 ? android
         if (RegisterProperties != "")
         {
@@ -10807,7 +10807,7 @@ ORDER BY
         foreach (string _tagEpc in epcList)
         {
             string tagEpc = _tagEpc;
-             
+
 
             if (tagEpc.Contains(","))
             {
@@ -10816,7 +10816,7 @@ ORDER BY
                 tagEpc2 = TemptagEpc[1];
             }
 
-            if(tagEpc.Length>24)
+            if (tagEpc.Length > 24)
             {
                 tagEpc = tagEpc.Substring(0, 24);
             }
@@ -10927,7 +10927,7 @@ ORDER BY
                         parameters.Add(new("ProductSize", _DtPrintData.Rows[0]["ProductSize"].ToString()));
                         parameters.Add(new("ProductRegCode", _DtPrintData.Rows[0]["ProductRegCode"].ToString()));
                         parameters.Add(new("ProductContractType", _DtPrintData.Rows[0]["ProductContractType"].ToString()));
-                        parameters.Add(new("Location",(LocationCode=="")? _DtPrintData.Rows[0]["Location"].ToString(): LocationCode));
+                        parameters.Add(new("Location", (LocationCode == "") ? _DtPrintData.Rows[0]["Location"].ToString() : LocationCode));
                         parameters.Add(new("DocumentId", _DtPrintData.Rows[0]["DocumentId"].ToString()));
                         parameters.Add(new("TagEpc", tagEpc.Trim()));
                         parameters.Add(new("TagRegisterShamsiUnixDate", DateTimeTools.GetUnixPersianTime()));
@@ -10975,7 +10975,7 @@ ORDER BY
                                 string MovementActionDesc = "ورود خودکار به انبار بعد از رجیستر";
 
                                 string DocumentID = _DtPrintData.Rows[0]["DocumentId"].ToString();
-                                SSaveMovementAction2("-1", "-1", _DtPrintData.Rows[0]["WareHouseCode"].ToString(), "0", username, "0", JToken.FromObject(_DtPrintData.Rows[0]["ProductProperties"].ToString()),(LocationCode=="")? _DtPrintData.Rows[0]["Location"].ToString(): LocationCode, MovementActionDesc, DocumentID, "0", new List<string>()
+                                SSaveMovementAction2("-1", "-1", _DtPrintData.Rows[0]["WareHouseCode"].ToString(), "0", username, "0", JToken.FromObject(_DtPrintData.Rows[0]["ProductProperties"].ToString()), (LocationCode == "") ? _DtPrintData.Rows[0]["Location"].ToString() : LocationCode, MovementActionDesc, DocumentID, "0", new List<string>()
                                     {
                                         productSerial
                                     }, new List<int>()
@@ -10996,9 +10996,9 @@ ORDER BY
                     {
                         var commandUpdateTbl_Tag = @"UPDATE tbl_Tags SET 
                                                     TagEpc = @TagEpc,    
-                                                    TagEpc2 = @TagEpc2,"+
-                                                    ((LocationCode!="")?" TagZone='"+ LocationCode + "', ":" ")
-                                                   +@" ProjectCode = ( SELECT TOP ( 1 ) ProjectCode FROM tbl_Print WHERE ( ProductSerial = @ProductSerial ) ORDER BY Id DESC ),
+                                                    TagEpc2 = @TagEpc2," +
+                                                    ((LocationCode != "") ? " TagZone='" + LocationCode + "', " : " ")
+                                                   + @" ProjectCode = ( SELECT TOP ( 1 ) ProjectCode FROM tbl_Print WHERE ( ProductSerial = @ProductSerial ) ORDER BY Id DESC ),
                                                     ProductCode = ( SELECT TOP ( 1 ) ProductCode FROM tbl_Print WHERE ( ProductSerial = @ProductSerial ) ORDER BY Id DESC ),
                                                     ProductName = ( SELECT TOP ( 1 ) ProductName FROM tbl_Print WHERE ( ProductSerial = @ProductSerial ) ORDER BY Id DESC ),
                                                     ProductCount = ( SELECT TOP ( 1 ) ProductCount FROM tbl_Print WHERE ( ProductSerial = @ProductSerial ) ORDER BY Id DESC ),
@@ -11519,7 +11519,7 @@ ORDER BY
         List<KeyValuePair<string, KeyValuePair<string, object>[]>> commands = new();
 
         string actionTypeStr = "-1";
-        ActionType  ActionTypeData;
+        ActionType ActionTypeData;
 
         string ActionTypeChangeTagLocation = "0";
 
@@ -11552,7 +11552,7 @@ WHERE        (tbl_UHF_ReaderLog.fld_InventoryId = @LogGateActionId)   AND (tbl_U
                 actionTypeStr = GetActionType(ActionSourceLocation, ActionDestinationLocation).ToString();
             }
 
-              ActionTypeData = apiContext.ActionTypes.FirstOrDefault(p => p.Code == int.Parse(actionTypeStr));
+            ActionTypeData = apiContext.ActionTypes.FirstOrDefault(p => p.Code == int.Parse(actionTypeStr));
             ActionTypeChangeTagLocation = ActionTypeData?.ChangeTagLocation.ToString();
 
             if (_listProductSerials.Length > 5)
@@ -11934,11 +11934,11 @@ WHERE        (tbl_UHF_ReaderLog.fld_InventoryId = @LogGateActionId)   AND (tbl_U
             if (ActionDestinationLocation.NotEquals("-1"))
             {
                 parameters4.Add(new("StCd", (int)_listAllWarehouseDto.FirstOrDefault(p => p.DestinationCode == ActionDestinationLocation).OperationalType));
-               
+
                 parameters4.Add(new("DestId", ActionDestinationLocation));
 
-              
-                if(ActionTypeChangeTagLocation=="1")
+
+                if (ActionTypeChangeTagLocation == "1")
                 {
                     AllowChangeLocationTag = true;
                     if ((ActionDestinationZoneCode != null && ActionDestinationZoneCode != "" && ActionDestinationZoneCode != "-1" && ActionDestinationZoneCode != "0"))
@@ -11961,11 +11961,11 @@ WHERE        (tbl_UHF_ReaderLog.fld_InventoryId = @LogGateActionId)   AND (tbl_U
                 }
 
 
-                    commandUpdateTagStatus = string.Format(@" UPDATE tbl_Tags SET TagStatus= @StCd, TagInActionId = @ActId, TagInDestinationId = @DestId " + ((AllowChangeLocationTag) ? @",TagZone=@TagZone" : " ") + " WHERE (ProductSerial IN (" + ListProductSerials + "))");
+                commandUpdateTagStatus = string.Format(@" UPDATE tbl_Tags SET TagStatus= @StCd, TagInActionId = @ActId, TagInDestinationId = @DestId " + ((AllowChangeLocationTag) ? @",TagZone=@TagZone" : " ") + " WHERE (ProductSerial IN (" + ListProductSerials + "))");
             }
             else
             {
-                commandUpdateTagStatus = string.Format(@" UPDATE tbl_Tags SET TagInActionId = @ActId "+ ((AllowChangeLocationTag)?@",TagZone=@TagZone":" " )+"  WHERE (ProductSerial IN (" + ListProductSerials + "))");
+                commandUpdateTagStatus = string.Format(@" UPDATE tbl_Tags SET TagInActionId = @ActId " + ((AllowChangeLocationTag) ? @",TagZone=@TagZone" : " ") + "  WHERE (ProductSerial IN (" + ListProductSerials + "))");
             }
 
             parameters4.Add(new("ActId", actionId));
@@ -13085,7 +13085,7 @@ SUBSTRING(TagRegisterShamsiUnixDate,0,5)+'/'+SUBSTRING(TagRegisterShamsiUnixDate
                 var propsToken = new JObject
                 {
                     ["DocumentId"] = "",
-                    ["LocationCode"] =( locations.Count>0 )? locations[i]:"",
+                    ["LocationCode"] = (locations.Count > 0) ? locations[i] : "",
                     ["ProductProductionLine"] = "",
                     ["ProductProductionShift"] = "",
                     ["ProductProperties"] = "",
@@ -13147,7 +13147,7 @@ SUBSTRING(TagRegisterShamsiUnixDate,0,5)+'/'+SUBSTRING(TagRegisterShamsiUnixDate
 
                     string location;
 
-                    if (command.Location is not null 
+                    if (command.Location is not null
                         && command.Location.Any())
                     {
                         location = command.Location[i];
@@ -15170,7 +15170,7 @@ WHERE        (ProductCode = '" + code + "') AND (TagRegisterShamsiUnixDate LIKE 
          , string zoneCode
          , string location
          , DestinationOperationalType warehouseType
-         , bool zoneCodeLike = false) 
+         , bool zoneCodeLike = false)
     {
         logger.LogInformation("SSearchZone" + Environment.NewLine
                             + "productCode" + productCode + Environment.NewLine
@@ -16421,7 +16421,7 @@ WHERE        (tbl_ProductPlacementMissions.fld_PPMStatus IN (0, 1)) " + ((pPMId 
     #endregion
 
     public DataTable SFindTagsProduct(string productSerial, string productCode,
-        string productTechCode, string statusCode, string fromDate, string toDate, string ProductSize, string ProductType, string InspectStatus, string DestinationCode,string DynamicField,string userToken)
+        string productTechCode, string statusCode, string fromDate, string toDate, string ProductSize, string ProductType, string InspectStatus, string DestinationCode, string DynamicField, string userToken)
     {
         if (fromDate != "-1")
             fromDate = fromDate.Replace("/", "").PadRight(14, '0');
@@ -16517,14 +16517,14 @@ WHERE        (tbl_ProductPlacementMissions.fld_PPMStatus IN (0, 1)) " + ((pPMId 
         }
 
 
-        if (!DynamicField.Equals("-1") && !DynamicField.Equals("")&& DynamicField.Contains("&"))
+        if (!DynamicField.Equals("-1") && !DynamicField.Equals("") && DynamicField.Contains("&"))
         {
-            
+
             var DynamicField_Key = DynamicField.Split("&")[0];
             var DynamicField_value = DynamicField.Split("&")[1];
             if (!whereString.Equals(""))
                 whereString += " AND";
-            whereString +=  $"JSON_VALUE(tbl_Tags.ProductProperties,N'$.\"{DynamicField_Key}\"') like N'%{DynamicField_value}%'";
+            whereString += $"JSON_VALUE(tbl_Tags.ProductProperties,N'$.\"{DynamicField_Key}\"') like N'%{DynamicField_value}%'";
         }
 
         cmd += (whereString != string.Empty ? " Where " + whereString : "");
@@ -17713,13 +17713,13 @@ WHERE        (fld_TUTParentSerial = N'{NextUnitLevelSerial}'))         where (fl
     string? ActionActiveControls = "",
     string? TruckCrossId = "",
     DateTime? saveDateTime = null,
-    string? gpsLog  = "")
+    string? gpsLog = "")
     {
-         string _tagZone = "";
-        if(DestinationCode.Contains("&"))
+        string _tagZone = "";
+        if (DestinationCode.Contains("&"))
         {
             var _destination_temp = DestinationCode.Split("&")[0];
-            _tagZone= DestinationCode.Split("&")[1];
+            _tagZone = DestinationCode.Split("&")[1];
             DestinationCode = _destination_temp;
         }
         if (GateType == "_SEND_PRODUCT_TO_GATE_")
@@ -17745,8 +17745,8 @@ WHERE        (fld_TUTParentSerial = N'{NextUnitLevelSerial}'))         where (fl
                 SGetProductsInfoByEpcsForAction(listTags, listSerial, deviceId, invCodTarget, GateType, DestinationCode, true, false, saveDateTime);
 
 
-                var cmd = " Update tbl_UHF_ReaderLog SET fld_TagSelectedFlag = 1 WHERE (fld_InventoryId = " + invCodTarget + ")  AND  fld_ProductSerial IN ("+ ProductSerialListForSendToGate + ")";
-                dataAccess.CmdSqlExecuteNonQuery(cmd );
+                var cmd = " Update tbl_UHF_ReaderLog SET fld_TagSelectedFlag = 1 WHERE (fld_InventoryId = " + invCodTarget + ")  AND  fld_ProductSerial IN (" + ProductSerialListForSendToGate + ")";
+                dataAccess.CmdSqlExecuteNonQuery(cmd);
             }
 
         }
@@ -17889,11 +17889,11 @@ WHERE        (fld_TUTParentSerial = N'{NextUnitLevelSerial}'))         where (fl
                     UsageId = tag,
                     AdditionalData = JsonConvert.SerializeObject(new
                     {
-                        ActionTypeTitle = actionTypes.FirstOrDefault(p=> p.Code.ToString() == GateType)?.Title,
+                        ActionTypeTitle = actionTypes.FirstOrDefault(p => p.Code.ToString() == GateType)?.Title,
                     })
                 });
             }
-            
+
 
             apiContext.SaveChanges();
         }
@@ -18100,23 +18100,23 @@ FROM            tbl_UHF_ReaderLog LEFT OUTER JOIN
     }
 
 
-    public string SSaveNewInventoryHeaderId(  string[] StoreCodeList, string deviceId,  DateTime? saveDateTime,string UserCode, string Description)
+    public string SSaveNewInventoryHeaderId(string[] StoreCodeList, string deviceId, DateTime? saveDateTime, string UserCode, string Description)
     {
 
         string StoreCodes = string.Join(",", StoreCodeList);
         var invHeader = @" INSERT INTO tbl_InventoryHeader
                                                           (  fld_InventoryDate, fld_InventoryTime, fld_InventoryUserId,fld_InventoryStoreCodes,fld_InventoryDescription)
                                  VALUES        ( @Date,@Time,@UserId,@InventoryStoreCodes,@InventoryDescription)                                   ";
-   
 
 
-       var Result=   dataAccess.CmdSqlExecuteNonQuery(invHeader
-              , new KeyValuePair<string, object>("Date", PersianCalendarTools.GregorianToPersian(saveDateTime))
-              , new KeyValuePair<string, object>("UserId", UserCode)
-              , new KeyValuePair<string, object>("InventoryStoreCodes", StoreCodes)
-              , new KeyValuePair<string, object>("InventoryDescription", Description)
-              , new KeyValuePair<string, object>("Time", saveDateTime.Value.ToString("HH:mm"))
-              );
+
+        var Result = dataAccess.CmdSqlExecuteNonQuery(invHeader
+               , new KeyValuePair<string, object>("Date", PersianCalendarTools.GregorianToPersian(saveDateTime))
+               , new KeyValuePair<string, object>("UserId", UserCode)
+               , new KeyValuePair<string, object>("InventoryStoreCodes", StoreCodes)
+               , new KeyValuePair<string, object>("InventoryDescription", Description)
+               , new KeyValuePair<string, object>("Time", saveDateTime.Value.ToString("HH:mm"))
+               );
 
 
         return (Result > 0) ? SGetNextInventoryHeaderId().ToString() : "-1";
@@ -18137,7 +18137,7 @@ FROM            tbl_UHF_ReaderLog LEFT OUTER JOIN
             var item = splited[i].Split('=');
             descDic.Add(item[0].Trim(), item[1].Trim());
         }
-        
+
         var headerEpcsCmd = " SELECT fld_InventoryTagEPC FROM tbl_InventoryTags WHERE fld_InventoryHeaderId = " + header;
         var headerEpcs = dataAccess
             .SqlDataAdapter(headerEpcsCmd).Select().Select(p => p.ItemArray[0].ToString()).ToArray();
@@ -18204,7 +18204,7 @@ FROM            tbl_Destination";
     /// <returns></returns>
     public DataTable SGetProduct(string epc)
     {
-        if(epc.Length>24)
+        if (epc.Length > 24)
         {
             epc = epc.Substring(0, 24);
         }
@@ -19414,8 +19414,8 @@ VALUES        (@MovementActionId,@MovementActionTp, @MovementActionStore, @Movem
         if (sumWeights != "")
         {
 
-            string commandGetSerial= @" SELECT top(1) fld_ProductSerial  From tbl_UHF_ReaderLog Where fld_InventoryId=@operationCode   ";
- 
+            string commandGetSerial = @" SELECT top(1) fld_ProductSerial  From tbl_UHF_ReaderLog Where fld_InventoryId=@operationCode   ";
+
 
             var dt = dataAccess.SqlDataAdapter(commandGetSerial, new KeyValuePair<string, object>("operationCode", operationCode));
             if (dt.Rows.Count > 0)
@@ -19429,7 +19429,7 @@ VALUES        (@MovementActionId,@MovementActionTp, @MovementActionStore, @Movem
                     //command.Parameters.AddWithValue("TagZone", TagZone);
                     dataAccess.CmdSqlExecuteNonQuery(command,
                         new KeyValuePair<string, object>("ProductSerial", ProductSerial),
-                        new KeyValuePair<string, object>("ProductWeight", sumWeights)        
+                        new KeyValuePair<string, object>("ProductWeight", sumWeights)
                         );
                 }
             }
@@ -19473,7 +19473,7 @@ VALUES        (@MovementActionId,@MovementActionTp, @MovementActionStore, @Movem
             var dtLocationOccupiedCapacity = dataAccess.SqlDataAdapter(commandGetLocationOccupiedCapacity, new KeyValuePair<string, object>("ZoneCode", locationCode));
             if (dtLocationOccupiedCapacity.Rows.Count > 0)
             {
-                  RemainLocationCapacity = Convert.ToInt32(LocationCapacity) - Convert.ToInt32(dtLocationOccupiedCapacity.Rows[0][0].ToString());
+                RemainLocationCapacity = Convert.ToInt32(LocationCapacity) - Convert.ToInt32(dtLocationOccupiedCapacity.Rows[0][0].ToString());
             }
 
             if (RemainLocationCapacity >= 0)
@@ -26558,7 +26558,7 @@ GROUP BY tbl_Products.ProductType ";
                 DocStatusChange = row.Field<string>("DocStatusChange"),
                 ActiveControls = row.Field<string>("ActiveControls"),
                 RFIDPower = row.Field<int>("RFIDPower"),
-                ChangeTagLocation= row.Field<int?>("ChangeTagLocation"),
+                ChangeTagLocation = row.Field<int?>("ChangeTagLocation"),
                 ProductType = row.Field<string?>("ProductType")
             };
 
@@ -26739,7 +26739,11 @@ GROUP BY tbl_Products.ProductType ";
         return dataAccess.SqlDataAdapter(command);
     }
 
-    public bool SCancelRegisterTag(string TagEpc, string username, string deviceId, string deviceIp,string FormAccessType)
+    public bool SCancelRegisterTag(string TagEpc
+        , string username
+        , string deviceId
+        , string deviceIp
+        , string FormAccessType)
     {
         if (username.HasNoValue())
         {
@@ -26748,7 +26752,22 @@ GROUP BY tbl_Products.ProductType ";
 
         try
         {
-            if (TagEpc != "")
+            bool resultCheckDestinationAllowCancelRegisterTag = true;
+            if (FormAccessType.Equals("1"))
+            {
+                string commandCheckDestinationAllowCancelRegisterTag = $"""
+            SELECT    Top(1)    tbl_Destination.DestinationAllowCancelTag
+            FROM            tbl_Tags LEFT OUTER JOIN
+                                     tbl_Destination ON tbl_Destination.DestinationCode = tbl_Tags.TagInDestinationId
+            WHERE        (tbl_Tags.ProductSerial = N'{TagEpc}') OR
+                                     (tbl_Tags.TagEpc = N'{TagEpc}')
+            """;
+
+                var _dtCheckDestinationAllowCancelRegisterTag = dataAccess.SqlDataAdapter(commandCheckDestinationAllowCancelRegisterTag);
+                resultCheckDestinationAllowCancelRegisterTag = Convert.ToBoolean(_dtCheckDestinationAllowCancelRegisterTag.Rows[0][0].ToString());
+            }
+
+            if (resultCheckDestinationAllowCancelRegisterTag && TagEpc != "")
             {
                 var childrenCommands = new List<KeyValuePair<string, KeyValuePair<string, object>[]>>();
 
@@ -26803,7 +26822,10 @@ GROUP BY tbl_Products.ProductType ";
         }
     }
 
-    public string SCancelRegisterTagByDestinationAccess(string TagEpc, string username, string deviceId, string deviceIp)
+    public string SCancelRegisterTagByDestinationAccess(string TagEpc
+        , string username
+        , string deviceId
+        , string deviceIp)
     {
         var Result = "";
         if (username.HasNoValue())
@@ -26823,7 +26845,7 @@ GROUP BY tbl_Products.ProductType ";
             """;
 
             var _dtCheckDestinationAllowCancelRegisterTag = dataAccess.SqlDataAdapter(commandCheckDestinationAllowCancelRegisterTag);
-            if (Convert.ToBoolean(_dtCheckDestinationAllowCancelRegisterTag.Rows[0][0].ToString()) && TagEpc!="")
+            if (Convert.ToBoolean(_dtCheckDestinationAllowCancelRegisterTag.Rows[0][0].ToString()) && TagEpc != "")
             {
                 var childrenCommands = new List<KeyValuePair<string, KeyValuePair<string, object>[]>>();
 
@@ -26882,7 +26904,6 @@ GROUP BY tbl_Products.ProductType ";
         }
         return Result;
     }
-
 
     public bool SRevokeTags(List<string> epcs)
     {
@@ -28604,7 +28625,7 @@ order by fld_OtherDeviceUHFLogActionCode desc ";
     }
 
 
-    public int SInsertStationSyncDataLog(string StationCode,DateTime LogTime)
+    public int SInsertStationSyncDataLog(string StationCode, DateTime LogTime)
     {
         string command = @"              INSERT
             INTO              tbl_StationSyncDataLog(fld_StationCode, fld_LogTime)
@@ -28614,7 +28635,7 @@ order by fld_OtherDeviceUHFLogActionCode desc ";
     }
 
 
-  
+
 
 
 
@@ -28889,39 +28910,43 @@ order by fld_OtherDeviceUHFLogActionCode desc ";
         , string desc
         , string properties
         , string userToken
-        ,string FormAccessType)
+        , string FormAccessType)
     {
-        var tagRow = dataAccess.SqlDataAdapter(
-            "SELECT TagInDestinationId, ProductSerial FROM tbl_Tags WHERE ProductSerial = @serial",
-            new KeyValuePair<string, object>("serial", serial));
-
-        if (tagRow.Rows.Count == 0)
-            return false;
-
-        string tagInDestinationId = tagRow.Rows[0]["TagInDestinationId"]?.ToString();
-
-        var warehouseRow = dataAccess.SqlDataAdapter(
-            "SELECT DestinationEpc FROM tbl_Destination WHERE DestinationCode = @code",
-            new KeyValuePair<string, object>("code", tagInDestinationId));
-
-        if (warehouseRow.Rows.Count > 0)
+        if (FormAccessType.Equals("1"))
         {
-            string warehousePermissions = warehouseRow.Rows[0]["DestinationEpc"]?.ToString();
+            var tagRow = dataAccess.SqlDataAdapter(
+                "SELECT TagInDestinationId, ProductSerial FROM tbl_Tags WHERE ProductSerial = @serial",
+                new KeyValuePair<string, object>("serial", serial));
 
-            if (warehousePermissions.HasValue())
+            if (tagRow.Rows.Count == 0)
+                return false;
+
+            string tagInDestinationId = tagRow.Rows[0]["TagInDestinationId"]?.ToString();
+
+            var warehouseRow = dataAccess.SqlDataAdapter(
+                "SELECT DestinationEpc FROM tbl_Destination WHERE DestinationCode = @code",
+                new KeyValuePair<string, object>("code", tagInDestinationId));
+
+            if (warehouseRow.Rows.Count > 0)
             {
-                var json = JToken.Parse(warehousePermissions);
+                string warehousePermissions = warehouseRow.Rows[0]["DestinationEpc"]?.ToString();
 
-                var isEditAllowed = bool.Parse(json.Value<string>("AllowEditInformation"));
-
-                if (!isEditAllowed)
+                if (warehousePermissions.HasValue())
                 {
-                    logger.LogInformation($"Cannot edit tag with serial of '{serial}'");
+                    var json = JToken.Parse(warehousePermissions);
 
-                    return false;
+                    var isEditAllowed = bool.Parse(json.Value<string>("AllowEditInformation"));
+
+                    if (!isEditAllowed)
+                    {
+                        logger.LogInformation($"Cannot edit tag with serial of '{serial}'");
+
+                        return false;
+                    }
                 }
             }
         }
+
 
         var commands = new List<KeyValuePair<string, KeyValuePair<string, object>[]>>();
 

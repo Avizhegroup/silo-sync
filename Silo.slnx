@@ -40,7 +40,6 @@
     <Project Path="Silo.Api/Silo.Api.csproj" />
   </Folder>
   <Folder Name="/src/Presentation/Service/">
-    <Project Path="Silo.Bot.Support/Silo.Bot.Support.csproj" Id="71e575c3-51c7-429f-a6f0-746470a3ebce" />
     <Project Path="Silo.Jobs.Win/Silo.Jobs.Win.csproj" />
   </Folder>
   <Folder Name="/src/Presentation/UI/" />

@@ -25,7 +25,12 @@ public partial class JwtService(IdentityBusiness identityBusiness
 
         if (id.HasNoValue())
         {
-            id = ((IdentityBusiness)identityBusiness).TSLogin(request.Username, request.Password);
+            var avizheLoginResultDt = ((IdentityBusiness)identityBusiness).GetUserByUsername(request.Username, request.Username);
+
+            if (avizheLoginResultDt.Rows.Count != 0)
+            {
+                id = avizheLoginResultDt.Select()[0].ItemArray[0].ToString();
+            }
         }
 
         if (id.Equals("0"))

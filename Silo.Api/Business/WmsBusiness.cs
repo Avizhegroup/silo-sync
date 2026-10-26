@@ -18100,17 +18100,17 @@ FROM            tbl_UHF_ReaderLog LEFT OUTER JOIN
     }
 
 
-    public string SSaveNewInventoryHeaderId(  string[] StoreCodeList, string deviceId,  DateTime? saveDateTime,string UserCode, string Description)
+    public string SSaveNewInventoryHeaderId(  string[] StoreCodeList, string deviceId, string UserCode, string Description)
     {
 
         string StoreCodes = string.Join(",", StoreCodeList);
         var invHeader = @" INSERT INTO tbl_InventoryHeader
                                                           (  fld_InventoryDate, fld_InventoryTime, fld_InventoryUserId,fld_InventoryStoreCodes,fld_InventoryDescription)
                                  VALUES        ( @Date,@Time,@UserId,@InventoryStoreCodes,@InventoryDescription)                                   ";
-   
 
 
-       var Result=   dataAccess.CmdSqlExecuteNonQuery(invHeader
+        DateTime saveDateTime = DateTime.Now;
+      var Result=   dataAccess.CmdSqlExecuteNonQuery(invHeader
               , new KeyValuePair<string, object>("Date", PersianCalendarTools.GregorianToPersian(saveDateTime))
               , new KeyValuePair<string, object>("UserId", UserCode)
               , new KeyValuePair<string, object>("InventoryStoreCodes", StoreCodes)

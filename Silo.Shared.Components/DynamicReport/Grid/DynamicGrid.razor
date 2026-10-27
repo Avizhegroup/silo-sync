@@ -1,0 +1,78 @@
+@namespace Silo.Shared.Components
+@using System.Dynamic
+@using Telerik.Blazor.Components.Grid
+@using Telerik.FontIcons
+
+@if (Rows.Count > 0)
+{
+    <TelerikGrid Data="Rows"
+                 TItem="ExpandoObject"
+                 PageSize="10"
+                 Navigable="true"
+                 Pageable="true"
+                 Sortable="true"
+                 FilterMode="GridFilterMode.FilterMenu"
+                 ScrollMode="GridScrollMode.Scrollable"
+                 Resizable="true"
+                 Width="100%">
+        <GridColumns>
+            @foreach (var column in columns)
+            {
+                <GridColumn Field="@column.Key"
+                            FieldType="@column.FieldType"
+                            Title="@column.Title"
+                            Width="120px"
+                            Sortable="true"
+                            Filterable="true">
+                    <FooterTemplate>
+                        @if (ColumnAgg is not null && ColumnAgg.TryGetValue(column.Title, out var aggregate))
+                        {
+                            if (column.Title.Contains("درصد"))
+                            {
+                                <span>100</span>
+                            }
+                            else
+                            {
+                                <span>@aggregate</span>
+                            }
+                        }
+                    </FooterTemplate>
+                </GridColumn>
+            }
+            @if (HasPivotColumn)
+            {
+                <GridColumn Field="@rowSumKey"
+                            FieldType="@typeof(decimal)"
+                            Title="@TextResources.APP_StringKeys_SumValue">
+                    <FooterTemplate>
+                        @TotalSum
+                    </FooterTemplate>
+                </GridColumn>
+            }
+            @if (SerialColumnName.HasValue())
+            {
+                <GridColumn Title="@string.Empty" Width="80px" Sortable="false" Filterable="false">
+                    <Template>
+                        @{
+                            var url = GetTagHistoryUrl((ExpandoObject)context);
+                        }
+                        @if (url is not null)
+                        {
+                            <a href="@url"
+                                target="_blank" 
+                                rel="noopener" 
+                                class="btn-dt-1 btn-success tr-buttom btn">
+                                @TextResources.APP_StringKeys_Details
+                            </a>
+                        }
+                    </Template>
+                </GridColumn>
+            }
+        </GridColumns>
+        <GridToolBarTemplate>
+            <TelerikButton Icon="@FontIcon.FileExcel" OnClick="@OnExcelExportClick" Class="green-excel">
+                @TextResources.APP_StringKeys_ExportExcel
+            </TelerikButton>
+        </GridToolBarTemplate>
+    </TelerikGrid>
+}

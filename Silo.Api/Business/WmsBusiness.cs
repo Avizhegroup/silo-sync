@@ -18115,7 +18115,7 @@ FROM            tbl_UHF_ReaderLog LEFT OUTER JOIN
               , new KeyValuePair<string, object>("UserId", UserCode)
               , new KeyValuePair<string, object>("InventoryStoreCodes", StoreCodes)
               , new KeyValuePair<string, object>("InventoryDescription", Description)
-              , new KeyValuePair<string, object>("Time", saveDateTime.Value.ToString("HH:mm"))
+              , new KeyValuePair<string, object>("Time", saveDateTime.ToString("HH:mm"))
               );
 
 

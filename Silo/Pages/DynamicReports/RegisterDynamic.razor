@@ -1,4 +1,4 @@
-@page "/dynamicreport/register"
+﻿@page "/dynamicreport/register"
 @page "/dynamicreport/register/{FormatId:int?}"
 @inherits SiloBasePage
 @namespace Silo.Pages.DynamicReports
@@ -49,70 +49,16 @@
 
 @if (Results.Any() && !IsLoading)
 {
-    <TelerikGrid Data="Results"
-                 PageSize="10"
-                 Navigable="true"
-                 Pageable="true"
-                 Sortable="true"
-                 ScrollMode="GridScrollMode.Scrollable"
-                 Resizable="true"
-                 Width="100%">
-        <RowTemplate Context="product">
-            @{
-                var data = (JsonElement)product;
-                decimal rowCount = 0;
-            }
-            @foreach (var item in GridColumns)
-            {
-                @if (data.TryGetProperty(item, out JsonElement element))
-                {
-                    string valueString = element.ToString().Replace("{}", "0");
-
-                    if (valueString.HasNoValue())
-                    {
-                        valueString = "0";
-                    }
-
-                    <td class="td-style">@valueString</td>
-                    @if (ColumnAgg.ContainsKey(item))
-                    {
-                        rowCount += decimal.Parse(valueString);
-                    }
-                }
-            }
-            @if (AddedPivotColumn is not null)
-            {
-                <td class="td-style">@rowCount</td>
-            }
-        </RowTemplate>
-        <GridColumns>
-            @foreach (var item in GridColumns)
-            {
-                <GridColumn Title="@item"
-                            Width="120px">
-                    <FooterTemplate>
-                        @if (ColumnAgg.ContainsKey(item))
-                        {
-                            <span>@ColumnAgg[item]</span>
-                        }
-                    </FooterTemplate>
-                </GridColumn>
-            }
-            @if (AddedPivotColumn is not null)
-            {
-                <GridColumn Title="@TextResources.APP_StringKeys_SumValue">
-                    <FooterTemplate>
-                        @TotalSum
-                    </FooterTemplate>
-                </GridColumn>
-            }
-        </GridColumns>
-        <GridToolBarTemplate>
-            <TelerikButton Icon="@FontIcon.FileExcel" OnClick="@OnExcelExportClick" Class="green-excel">
-                @TextResources.APP_StringKeys_ExportExcel
-            </TelerikButton>
-        </GridToolBarTemplate>
-    </TelerikGrid>
+    <DynamicGrid Results="Results"
+                 GridColumns="GridColumns"
+                 ColumnAgg="ColumnAgg"
+                 HasPivotColumn="AddedPivotColumn is not null"
+                 TotalSum="TotalSum"
+                 OnExcelExportClick="OnExcelExportClick"
+                 SerialColumnName="@(AddedDataColumns.Any(p=> p.Type == RegisterReportDynamicColumnsType.ProductSerial) 
+                                                              ? AddedDataColumns.First(p=> p.Type == RegisterReportDynamicColumnsType.ProductSerial).Title 
+                                                              : string.Empty)">
+    </DynamicGrid>
 
     <DynamicChart Results="Results"
                   AddedDataColumns="AddedDataColumns.Select(p=> p.Title).ToList()"

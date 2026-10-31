@@ -86,6 +86,7 @@ public partial class RegisterDynamic
     [Inject] public SiloAuthenticationStateProvider AuthStateProvider { get; set; }
     [Inject] public IExcelExport ExcelExporter { get; set; }
     [Inject] public IFormalDataCache FormalCache { get; set; }
+
     protected override async Task SiloInitializer()
     {
         DynamicFields = (await Api.PostAsyncByUri<List<GetAllDynamicFieldVm>>("wms/document", "SGetDynamicFieldsByActionTypeId",
@@ -105,6 +106,7 @@ public partial class RegisterDynamic
         Sizes = await FormalCache.GetSizes();
 
         Lines =   await FormalCache.GetLines();
+
         ProductBrands = await FormalCache.GetBrands();
 
         ProductGroups = await FormalCache.GetGroups();

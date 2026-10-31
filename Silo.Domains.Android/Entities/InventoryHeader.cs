@@ -3,9 +3,8 @@
 [Table("tbl_InventoryHeader")]
 public class InventoryHeader
 {
-
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     [Column("fld_InventoryHeaderId")]
     public int InventoryHeaderId { get; set; }
 

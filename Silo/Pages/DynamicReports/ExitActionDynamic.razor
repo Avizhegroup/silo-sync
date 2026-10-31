@@ -1,4 +1,4 @@
-@page "/dynamicreport/exitaction"
+﻿@page "/dynamicreport/exitaction"
 @page "/dynamicreport/exitaction/{FormatId:int?}"
 @inherits SiloBasePage
 @namespace Silo.Pages.DynamicReports
@@ -54,84 +54,7 @@
 
 @if (Results.Any() && !IsLoading)
 {
-    <TelerikGrid Data="Results"
-                 PageSize="10"
-                 Navigable="true"
-                 Pageable="true"
-                 Sortable="true"
-                 ScrollMode="GridScrollMode.Scrollable"
-                 Resizable="true"
-                 Width="100%">
-        <RowTemplate Context="data">
-            @{
-                JsonElement product = (JsonElement)data;
-                decimal rowCount = 0;
-            }
-            @foreach (var item in GridColumns)
-            {
-                @if (product.TryGetProperty(item, out JsonElement element))
-                {
-                    string valueString = element.ToString().Replace("{}", "0");
-
-                    if (valueString.HasNoValue())
-                    {
-                        valueString = "0";
-                    }
-
-                    <td class="td-style">@valueString</td>
-                    @if (ColumnAgg is not null && ColumnAgg.ContainsKey(item))
-                    {
-                        if (decimal.TryParse(valueString, out decimal decimaledValue))
-                        {
-                            rowCount += decimaledValue;
-                        }
-                        else
-                        {
-                            rowCount++;
-                        }
-                    }
-                }
-            }
-            @if (AddedPivotColumn is not null)
-            {
-                <td class="td-style">@rowCount</td>
-            }
-        </RowTemplate>
-        <GridColumns>
-            @foreach (var item in GridColumns)
-            {
-                <GridColumn Title="@item"
-                            Width="120px">
-                    <FooterTemplate>
-                        @if (ColumnAgg is not null && ColumnAgg.ContainsKey(item))
-                        {
-                            if (item.Contains("درصد"))
-                            {
-                                <span>100</span>
-                            }
-                            else
-                            {
-                                <span>@ColumnAgg[item]</span>
-                            }
-                        }
-                    </FooterTemplate>
-                </GridColumn>
-            }
-            @if (AddedPivotColumn is not null)
-            {
-                <GridColumn Title="@TextResources.APP_StringKeys_SumValue">
-                    <FooterTemplate>
-                        @TotalSum
-                    </FooterTemplate>
-                </GridColumn>
-            }
-        </GridColumns>
-        <GridToolBarTemplate>
-            <TelerikButton Icon="@FontIcon.FileExcel" OnClick="@OnExcelExportClick" Class="green-excel">
-                @TextResources.APP_StringKeys_ExportExcel
-            </TelerikButton>
-        </GridToolBarTemplate>
-    </TelerikGrid>
+    <DynamicGrid Results="Results" GridColumns="GridColumns" ColumnAgg="ColumnAgg" HasPivotColumn="AddedPivotColumn is not null" TotalSum="TotalSum" OnExcelExportClick="OnExcelExportClick"></DynamicGrid>
 
     <DynamicChart Results="Results"
                   AddedDataColumns="AddedDataColumns.Select(p=> p.Title).ToList()"

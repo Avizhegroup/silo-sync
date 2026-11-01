@@ -28,7 +28,8 @@
                                                          @bind-Value="Request.User"
                                                          DefaultText="@TextResources.APP_StringKeys_NotChoosed"
                                                          Width="200px"
-                                                         Class="drop-all">
+                                                         Class="drop-all"
+                                                         Filterable="true">
                                     </TelerikDropDownList>
                                     <label style="margin-right: 17px;">@TextResources.APP_StringKeys_FromDate :</label>
                                     <DatePicker InputClass=" input-search-span-lg pointer "
@@ -83,16 +84,18 @@
                                                          @bind-Value="Request.Size"
                                                          DefaultText="@TextResources.APP_StringKeys_NotChoosed"
                                                          Width="200px"
-                                                         Class="drop-all">
+                                                         Class="drop-all"
+                                                         Filterable="true">
                                     </TelerikDropDownList>
-                                    <label style="margin-right: 47px;">@TextResources.APP_StringKeys_ProductType :</label>
+                                    <label style="margin-right: 52px;">@TextResources.APP_StringKeys_ProductType :</label>
                                     <TelerikDropDownList Data="Types"
                                                          TextField="Title"
                                                          ValueField="Code"
                                                          @bind-Value="Request.Type"
                                                          DefaultText="@TextResources.APP_StringKeys_NotChoosed"
                                                          Width="200px"
-                                                         Class="drop-all">
+                                                         Class="drop-all"
+                                                         Filterable="true">
                                     </TelerikDropDownList>
                                     <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Chart_Qc :</label>
                                     <TelerikDropDownList Data="Qcs"
@@ -101,7 +104,18 @@
                                                          @bind-Value="Request.Qc"
                                                          DefaultText="@TextResources.APP_StringKeys_NotChoosed"
                                                          Width="200px"
-                                                         Class="drop-all">
+                                                         Class="drop-all"
+                                                         Filterable="true">
+                                    </TelerikDropDownList>
+                                    <label style="margin-right: 10px;">@TextResources.APP_StringKeys_ProductGroup :</label>
+                                    <TelerikDropDownList Data="Groups"
+                                                         TextField="Title"
+                                                         ValueField="Code"
+                                                         @bind-Value="Request.Group"
+                                                         DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                                         Width="200px"
+                                                         Class="drop-all"
+                                                         Filterable="true">
                                     </TelerikDropDownList>
                                 </div>
                             </TabStripTab>
@@ -216,6 +230,10 @@
                         <td class="td-style">@product.ProductCode</td>
                         <td class="td-style">@product.ProductName</td>
                         <td class="td-style">@product.TechnicalCode</td>
+                        <td class="td-style">@product.TypeTitle</td>
+                        <td class="td-style">@product.GroupTitle</td>
+                        <td class="td-style">@product.SizeTitle</td>
+                        <td class="td-style">@product.StatusTitle</td>
                         <td class="td-style">@(string.Join("| ", product.LocationList))</td>
                         <td class="td-style">@product.Count</td>
                         <td class="td-style">@product.SumCount</td>
@@ -272,6 +290,18 @@
                         <GridColumn Field="@nameof(GetInventoryConflictsVm.TechnicalCode)"
                                     Title="@TextResources.APP_StringKeys_Chart_Regcode"
                                     Width="120px"></GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.TypeTitle)"
+                                    Title="@TextResources.APP_StringKeys_ProductType"
+                                    Width="110px"></GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.GroupTitle)"
+                                    Title="@TextResources.APP_StringKeys_ProductGroup"
+                                    Width="110px"></GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.SizeTitle)"
+                                    Title="@TextResources.APP_StringKeys_Product_Size"
+                                    Width="90px"></GridColumn>
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.StatusTitle)"
+                                    Title="@TextResources.APP_StringKeys_Chart_Qc"
+                                    Width="90px"></GridColumn>
                         <GridColumn Field="@nameof(GetInventoryConflictsVm.Locations)"
                                     Title="@TextResources.APP_StringKeys_Zones"
                                     Width="85px"></GridColumn>

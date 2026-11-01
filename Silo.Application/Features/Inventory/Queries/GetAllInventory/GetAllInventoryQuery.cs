@@ -1,4 +1,4 @@
-namespace Silo.Application.Features;
+﻿namespace Silo.Application.Features;
 
 public class GetAllInventoryQuery
 {
@@ -13,4 +13,8 @@ public class GetAllInventoryQuery
     public string WarehouseCode { get; set; }
     public string TechnicalCode { get; set; }
     public string ProductCode { get; set; }
+    public string ProductType { get; set; }
+    public string ProductGroup { get; set; }
+    public string ProductSize { get; set; }
+    public string ProductStatus { get; set; }
 }

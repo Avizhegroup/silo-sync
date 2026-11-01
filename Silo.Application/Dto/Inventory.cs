@@ -13,4 +13,8 @@ public class InventoryReportRequest
     public string WarehouseCode { get; set; }
     public string ProductCode { get; set; } = "-1";
     public string TechnicalCode { get; set; } = "-1";
+    public string ProductType { get; set; } = "-1";
+    public string ProductGroup { get; set; } = "-1";
+    public string ProductSize { get; set; } = "-1";
+    public string ProductStatus { get; set; } = "-1";
 }

@@ -9,6 +9,10 @@ public partial class Inventory
     public SaveInventoryByEpcsCommand UploadCommand = new();
     public List<UserDropDownableDto> Users;
     public List<GetAllWarehousesVm> Warehouses;
+    public List<GetAllProductTypeVm> Types;
+    public List<GetAllProductGroupVm> Groups;
+    public List<GetAllProductSizeTitleAndCodeVm> Sizes;
+    public List<GetAllProductQcsVm> Qcs;
     public List<GetAllInventoryVm> Inventories;
     public List<string> InventorySerials;
     public List<GetAllInventoryBySerialVm> InventoriesBySerial;
@@ -31,6 +35,10 @@ public partial class Inventory
         Users = Mapper.Map<List<ApplicationUser>, List<UserDropDownableDto>>(applicationUsers.Where(p => p.IsActive).ToList());
 
         Warehouses = await FormalCache.GetWarehouses();
+        Types = await FormalCache.GetTypes();
+        Groups = await FormalCache.GetGroups();
+        Sizes = await FormalCache.GetSizes();
+        Qcs = await FormalCache.GetQcs();
 
         IsLoading = false;
     }
@@ -228,6 +236,11 @@ public partial class Inventory
         {
             search.TechnicalCode = Request.TechnicalCode;
         }
+
+        search.ProductType = string.IsNullOrEmpty(Request.ProductType) ? "-1" : Request.ProductType;
+        search.ProductGroup = string.IsNullOrEmpty(Request.ProductGroup) ? "-1" : Request.ProductGroup;
+        search.ProductSize = string.IsNullOrEmpty(Request.ProductSize) ? "-1" : Request.ProductSize;
+        search.ProductStatus = string.IsNullOrEmpty(Request.ProductStatus) ? "-1" : Request.ProductStatus;
 
         return search;
     }

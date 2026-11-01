@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Silo.Application.Features;
 
@@ -13,6 +13,10 @@ public class GetAllInventoryVm
     public string Place { get; set; }
     public string Code { get; set; }
     public string WarehouseCode { get; set; }
+    public string TypeTitle { get; set; }
+    public string GroupTitle { get; set; }
+    public string SizeTitle { get; set; }
+    public string StatusTitle { get; set; }
 }
 
 [JsonSerializable(typeof(ApiResponse<List<GetAllInventoryVm>>))]

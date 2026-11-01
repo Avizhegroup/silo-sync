@@ -8498,12 +8498,18 @@ ORDER BY MovementActionDate, MovementActionTime
         if (!search.Size.Equals("-1"))
         {
             whereString += string.IsNullOrEmpty(whereString) ? " " : " AND ";
-            whereString += $" tbl_Tags.fld_ProductPropertyCId  = N'{search.Size}' ";
-        }
+			whereString += $" tbl_Tags.fld_ProductPropertyCId  = N'{search.Size}' ";
+		}
 
-        var cmd = $@"
-         SELECT COALESCE(tbl_Tags.ProductCode, N'')			        AS ProductCode
-			   ,COALESCE (tbl_Products.ProductTitle, N'')			AS ProductTitle
+		if (search.Group.NotEquals("-1"))
+		{
+			whereString += string.IsNullOrEmpty(whereString) ? " " : " AND ";
+			whereString += $" tbl_Tags.fld_ProductGroup  = N'{search.Group}' ";
+		}
+
+		var cmd = $@"
+		 SELECT COALESCE(tbl_Tags.ProductCode, N'')			        AS ProductCode
+			   ,{InventoryProductTitlesSql}			   ,COALESCE (tbl_Products.ProductTitle, N'')			AS ProductTitle
 			   ,COALESCE (tbl_Products.ProductTechnicalCode, N'')	AS RegCode
 			   ,COALESCE (tbl_Products.ProductStatus, N'')			AS Qc
 			   ,COALESCE (tbl_Products.ProductSize, N'')			AS ProductSize
@@ -8580,6 +8586,12 @@ ORDER BY MovementActionDate, MovementActionTime
             }
         }
 
+        if (search.Group.NotEquals("-1"))
+        {
+            whereString += string.IsNullOrEmpty(whereString) ? " " : " AND ";
+            whereString += $" tbl_Products.fld_ProductGroup = N'{search.Group}' ";
+        }
+
         string cmd = $"""
             SELECT  COALESCE(tbl_Products.ProductCode, N'')						 AS [ProductCode],
             		COALESCE(tbl_Products.ProductTitle, N'')					 AS [ProductTitle],
@@ -8587,7 +8599,11 @@ ORDER BY MovementActionDate, MovementActionTime
             		COALESCE(tbl_Products.ProductSize, N'')						 AS [ProductSize],
             		COALESCE(tbl_Products.ProductTechnicalCode, N'')			 AS [Regcode],
             		COALESCE(tbl_CustomerAccountingData.fld_CADProductCount, 0)	 AS [ProductCount],
-                    COALESCE(tbl_CustomerAccountingData.fld_CADRealityCount, 0)	 AS [RealityCount]
+                    COALESCE(tbl_CustomerAccountingData.fld_CADRealityCount, 0)	 AS [RealityCount],
+                    COALESCE((SELECT TOP(1) t.ProductTypeTitle FROM tbl_ProductType AS t WHERE t.ProductTypeCode = tbl_Products.ProductType), N'') AS TypeTitle,
+                    COALESCE((SELECT TOP(1) g.fld_ProductGroupTitle FROM tbl_ProductGroup AS g WHERE g.fld_ProductGroupCode = tbl_Products.fld_ProductGroup), N'') AS GroupTitle,
+                    COALESCE((SELECT TOP(1) s.fld_ProductPropertyCTitle FROM tbl_ProductPropertyC AS s WHERE s.fld_ProductPropertyCId = tbl_Products.ProductSize), tbl_Products.ProductSize, N'') AS SizeTitle,
+                    COALESCE((SELECT TOP(1) q.ProductStatusTitle FROM tbl_ProductStatus AS q WHERE q.ProductStatusCode = tbl_Products.ProductStatus), N'') AS StatusTitle
             FROM    tbl_CustomerAccountingData INNER JOIN tbl_Products ON tbl_CustomerAccountingData.fld_CADProductCode = tbl_Products.ProductCode
             {(whereString.HasValue() ? "WHERE " + whereString : "")}
             """;
@@ -8601,6 +8617,7 @@ ORDER BY MovementActionDate, MovementActionTime
         search.Type = "-1";
         search.Size = "-1";
         search.Qc = "-1";
+        search.Group = "-1";
         search.TechnicalCode = "-1";
 
         return SSearchInventoryTags(search, true);
@@ -8698,6 +8715,12 @@ ORDER BY MovementActionDate, MovementActionTime
             whereStringSubQuery += $" tbl_Tags.ProductStatus = N'{search.Qc}' ";
         }
 
+        if (search.Group.NotEquals("-1"))
+        {
+            whereStringSubQuery += string.IsNullOrEmpty(whereStringSubQuery) ? " " : " AND ";
+            whereStringSubQuery += $" tbl_Tags.fld_ProductGroup = N'{search.Group}' ";
+        }
+
         if (search.TechnicalCode.NotEquals("-1"))
         {
             if (search.TechnicalCodeLike)
@@ -8713,7 +8736,7 @@ ORDER BY MovementActionDate, MovementActionTime
         }
 
         //COALESCE(tbl_Tags.TagRegisterShamsiUnixDate,N'')AS [Date]
-        string command = """
+        string command = $"""
             SELECT distinct	tbl_InventoryTags.fld_InventoryDate			    AS [InventoryDate],
             		tbl_InventoryTags.fld_InventoryHeaderId			AS [InventoryHeaderId],
             		tbl_InventoryTags.fld_InventoryStoreCode		AS [InventoryZone],
@@ -8730,7 +8753,8 @@ ORDER BY MovementActionDate, MovementActionTime
                     FROM tbl_Destination RIGHT OUTER JOIN tbl_Tags AS Tags ON tbl_Destination.DestinationCode = Tags.TagInDestinationId
                     WHERE tbl_Tags.ProductSerial = Tags.ProductSerial
                     ),N'') AS [DestinationTitle],
-                    COALESCE(tbl_Tags.TagInDestinationId,N'') AS Place
+                    COALESCE(tbl_Tags.TagInDestinationId,N'') AS Place,
+                    {InventoryProductTitlesSql}
             FROM	tbl_InventoryTags LEFT JOIN tbl_Tags ON tbl_Tags.TagEpc = tbl_InventoryTags.fld_InventoryTagEPC
             """;
 
@@ -25550,14 +25574,17 @@ FROM            tbl_Tags LEFT OUTER JOIN
             whereTag += $" AND tbl_Tags.RegCode = N'{request.TechnicalCode}' ";
         }
 
+        whereTag += InventoryProductFiltersSql(request);
+
         string command = $@"SELECT COALESCE(tbl_Tags.ProductCode,N'') as ProductCode,
 	                               COALESCE(tbl_Tags.RegCode,N'') as RegCode,
 	                               COALESCE(tbl_Tags.ProductName,N'رجیستر نشده') AS ProductName,
 	                               SUM(1) AS [Count],
-	                               COALESCE(SUM(tbl_Tags.ProductCount),0) AS [SumCount]
-                            FROM tbl_Tags 
-                            WHERE tbl_Tags.TagEpc IN (SELECT DISTINCT tbl_InventoryTags.fld_InventoryTagEPC From tbl_InventoryTags {whereInventory}) {whereTag}
-                            GROUP BY tbl_Tags.ProductCode,tbl_Tags.RegCode,tbl_Tags.ProductName";
+								   COALESCE(SUM(tbl_Tags.ProductCount),0) AS [SumCount],
+								   {InventoryProductTitlesSql}
+							FROM tbl_Tags 
+							WHERE tbl_Tags.TagEpc IN (SELECT DISTINCT tbl_InventoryTags.fld_InventoryTagEPC From tbl_InventoryTags {whereInventory}) {whereTag}
+							GROUP BY tbl_Tags.ProductCode,tbl_Tags.RegCode,tbl_Tags.ProductName,tbl_Tags.ProductType,tbl_Tags.fld_ProductGroup,tbl_Tags.fld_ProductPropertyCId,tbl_Tags.ProductStatus";
 
         return dataAccess.SqlDataAdapter(command);
     }
@@ -25682,6 +25709,8 @@ FROM            tbl_Tags LEFT OUTER JOIN
             where += $" AND tbl_Tags.RegCode = N'{request.TechnicalCode}' ";
         }
 
+        where += InventoryProductFiltersSql(request);
+
         string command = $@"WITH RankedTags AS (
             SELECT
                 COALESCE(tbl_Tags.ProductSerial, N'') AS ProductSerial,
@@ -25694,6 +25723,7 @@ FROM            tbl_Tags LEFT OUTER JOIN
                 COALESCE(tbl_Tags.DeviceIp, N'') AS OldSerial,
                 COALESCE(tbl_InventoryTags.fld_InventoryProductDesc, N'') AS [Desc],
                 CONCAT(COALESCE(tbl_InventoryTags.fld_InventoryDate, N''), ' - ', COALESCE(CAST(CAST(tbl_InventoryTags.fld_InventoryDateTime AS TIME) AS NVARCHAR(5)), N'')) AS [DateTime],
+                {InventoryProductTitlesSql},
                 ROW_NUMBER() OVER (PARTITION BY tbl_InventoryTags.fld_InventoryTagEPC ORDER BY tbl_InventoryTags.fld_InventoryDate DESC) AS rn
             FROM
                 tbl_InventoryTags
@@ -25711,7 +25741,11 @@ FROM            tbl_Tags LEFT OUTER JOIN
             ContractStatus,
             OldSerial,
             [Desc],
-            [DateTime]
+            [DateTime],
+            TypeTitle,
+            GroupTitle,
+            SizeTitle,
+            StatusTitle
         FROM
             RankedTags
         WHERE
@@ -25720,6 +25754,39 @@ FROM            tbl_Tags LEFT OUTER JOIN
             [DateTime] DESC;";
 
         return dataAccess.SqlDataAdapter(command);
+    }
+
+    private const string InventoryProductTitlesSql = @"
+                COALESCE((SELECT TOP(1) t.ProductTypeTitle FROM tbl_ProductType AS t WHERE t.ProductTypeCode = tbl_Tags.ProductType), N'') AS TypeTitle,
+                COALESCE((SELECT TOP(1) g.fld_ProductGroupTitle FROM tbl_ProductGroup AS g WHERE g.fld_ProductGroupCode = tbl_Tags.fld_ProductGroup), N'') AS GroupTitle,
+                COALESCE((SELECT TOP(1) s.fld_ProductPropertyCTitle FROM tbl_ProductPropertyC AS s WHERE s.fld_ProductPropertyCId = tbl_Tags.fld_ProductPropertyCId), N'') AS SizeTitle,
+                COALESCE((SELECT TOP(1) q.ProductStatusTitle FROM tbl_ProductStatus AS q WHERE q.ProductStatusCode = tbl_Tags.ProductStatus), N'') AS StatusTitle";
+
+    private static string InventoryProductFiltersSql(InventoryReportRequest request)
+    {
+        var sql = string.Empty;
+
+        if (request.ProductType.NotEquals("-1"))
+        {
+            sql += $" AND tbl_Tags.ProductType = N'{request.ProductType}' ";
+        }
+
+        if (request.ProductGroup.NotEquals("-1"))
+        {
+            sql += $" AND tbl_Tags.fld_ProductGroup = N'{request.ProductGroup}' ";
+        }
+
+        if (request.ProductSize.NotEquals("-1"))
+        {
+            sql += $" AND tbl_Tags.fld_ProductPropertyCId = N'{request.ProductSize}' ";
+        }
+
+        if (request.ProductStatus.NotEquals("-1"))
+        {
+            sql += $" AND tbl_Tags.ProductStatus = N'{request.ProductStatus}' ";
+        }
+
+        return sql;
     }
 
     public List<string> SReportInventorySerials(InventoryReportRequest request)
@@ -25785,6 +25852,8 @@ FROM            tbl_Tags LEFT OUTER JOIN
         {
             where += $" AND tbl_Tags.RegCode = N'{request.TechnicalCode}' ";
         }
+
+        where += InventoryProductFiltersSql(request);
 
         string command = $@"SELECT Distinct tbl_Tags.ProductSerial as ProductSerial
                            FROM tbl_InventoryTags LEFT JOIN tbl_Tags ON tbl_Tags.TagEpc = tbl_InventoryTags.fld_InventoryTagEPC
@@ -27818,6 +27887,11 @@ VALUES        (@AlarmLogDateTime, @AlarmLogGateNumber, @AlarmLogType,@AlarmLogTa
             productFilters.Add($"Tags.ProductType = N'{search.Type}' ");
         }
 
+        if (search.Group.NotEquals("-1"))
+        {
+            productFilters.Add($"Tags.fld_ProductGroup = N'{search.Group}' ");
+        }
+
         if (search.Qc.NotEquals("-1"))
         {
             productFilters.Add($"Tags.ProductStatus = N'{search.Qc}' ");
@@ -28100,6 +28174,11 @@ VALUES        (@AlarmLogDateTime, @AlarmLogGateNumber, @AlarmLogType,@AlarmLogTa
         if (search.Type.NotEquals("-1"))
         {
             productFilters.Add($"Tags.ProductType = N'{search.Type}' ");
+        }
+
+        if (search.Group.NotEquals("-1"))
+        {
+            productFilters.Add($"Tags.fld_ProductGroup = N'{search.Group}' ");
         }
 
         if (search.Desc.NotEquals("-1"))

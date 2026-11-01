@@ -19,6 +19,10 @@ public class GetWarehouseProductsVm
     public string ContractStatus { get; set; }
     public string DestinationTitle { get; set; }
     public string Place { get; set; }
+    public string TypeTitle { get; set; }
+    public string GroupTitle { get; set; }
+    public string SizeTitle { get; set; }
+    public string StatusTitle { get; set; }
 }
 
 [JsonSerializable(typeof(ApiResponse<List<GetWarehouseProductsVm>>))]

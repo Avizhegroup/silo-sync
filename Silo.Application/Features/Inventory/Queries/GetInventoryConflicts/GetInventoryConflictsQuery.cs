@@ -26,6 +26,7 @@ public class GetInventoryConflictsQuery
     public bool ConflictsShown { get; set; } = false;
     public string Size { get; set; }
     public string Type { get; set; }
+    public string Group { get; set; } = "-1";
     public bool TechnicalCodeLike { get; set; } = false;
     public bool IsMovementFiltered { get; set; } = false;
 }

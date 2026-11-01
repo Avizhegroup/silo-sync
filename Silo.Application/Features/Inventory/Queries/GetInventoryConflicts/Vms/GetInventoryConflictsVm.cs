@@ -46,6 +46,14 @@ public class GetInventoryConflictsVm
     [JsonIgnore]
     public bool IsExtraConflict { get; set; }
 
+    public string TypeTitle { get; set; }
+
+    public string GroupTitle { get; set; }
+
+    public string SizeTitle { get; set; }
+
+    public string StatusTitle { get; set; }
+
     [JsonPropertyName("Zones")]
     public string Locations { get; set; }
 

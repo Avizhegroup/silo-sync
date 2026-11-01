@@ -19,7 +19,8 @@
                                              @bind-Value="Request.WarehouseCode"
                                              DefaultText="@TextResources.APP_StringKeys_NotChoosed"
                                              Width="200px"
-                                             Class="drop-all">
+                                             Class="drop-all"
+                                             Filterable="true">
                         </TelerikDropDownList>
                         <label style="margin-right: 38px;">@TextResources.APP_StringKeys_User :</label>
                         <TelerikDropDownList Data="Users"
@@ -28,7 +29,8 @@
                                              @bind-Value="Request.User"
                                              DefaultText="@TextResources.APP_StringKeys_NotChoosed"
                                              Width="200px"
-                                             Class="drop-all">
+                                             Class="drop-all"
+                                             Filterable="true">
                         </TelerikDropDownList>
                         <label style="margin-right: 27px;">@TextResources.APP_StringKeys_ProductCode :</label>
                         <input @bind-value="Request.ProductCode" class="form-control input-search-span-lg pointer" />
@@ -63,6 +65,47 @@
                         <input @bind-value="Request.Place" class="form-control input-search-span-lg pointer" />
                         <label style="margin-right: 20px;">@TextResources.APP_StringKeys_Chart_Regcode :</label>
                         <input @bind-value="Request.TechnicalCode" class="form-control input-search-span-lg pointer" />
+                        <label style="margin-right: 2px;">@TextResources.APP_StringKeys_Chart_Qc :</label>
+                        <TelerikDropDownList Data="Qcs" 
+                                             TextField="Title" 
+                                             ValueField="Code" @bind-Value="Request.ProductStatus"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed" 
+                                             Width="200px" 
+                                             Class="drop-all" 
+                                             Filterable="true">
+                        </TelerikDropDownList>
+                    </div>
+                    <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom:5px;">
+                        <label style="margin-right: 9px;">@TextResources.APP_StringKeys_Field_ProductType :</label>
+                        <TelerikDropDownList Data="Types"
+                                             TextField="Title" 
+                                             ValueField="Code" 
+                                             @bind-Value="Request.ProductType"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed" 
+                                             Width="200px" 
+                                             Class="drop-all"
+                                             Filterable="true">
+                        </TelerikDropDownList>
+                        <label style="margin-right: 20px;">@TextResources.APP_StringKeys_ProductGroup :</label>
+                        <TelerikDropDownList Data="Groups" 
+                                             TextField="Title" 
+                                             ValueField="Code" 
+                                             @bind-Value="Request.ProductGroup"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed" 
+                                             Width="200px" 
+                                             Class="drop-all"
+                                             Filterable="true">
+                        </TelerikDropDownList>
+                        <label style="margin-right: 21px;">@TextResources.APP_StringKeys_Product_Size :</label>
+                        <TelerikDropDownList Data="Sizes" 
+                                             TextField="Title" 
+                                             ValueField="Code"
+                                             @bind-Value="Request.ProductSize"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed" 
+                                             Width="200px" 
+                                             Class="drop-all"
+                                             Filterable="true">
+                        </TelerikDropDownList>
                     </div>
                 </div>
             </form>
@@ -108,6 +151,10 @@
                             <td class="td-style">@inventory.ProductCode</td>
                             <td class="td-style">@inventory.ProductName</td>
                             <td class="td-style">@inventory.RegCode</td>
+                            <td class="td-style">@inventory.TypeTitle</td>
+                            <td class="td-style">@inventory.GroupTitle</td>
+                            <td class="td-style">@inventory.SizeTitle</td>
+                            <td class="td-style">@inventory.StatusTitle</td>
                             <td class="td-style">@inventory.Count</td>
                             <td class="td-style">@inventory.SumCount</td>
                             <td class="td-style">
@@ -137,6 +184,14 @@
                                         Title="@TextResources.APP_StringKeys_Title"></GridColumn>
                             <GridColumn Field="@nameof(GetAllInventoryVm.RegCode)"
                                         Title="@TextResources.APP_StringKeys_Chart_Regcode"></GridColumn>
+                            <GridColumn Field="@nameof(GetAllInventoryVm.TypeTitle)"
+                                        Title="@TextResources.APP_StringKeys_Field_ProductType"></GridColumn>
+                            <GridColumn Field="@nameof(GetAllInventoryVm.GroupTitle)"
+                                        Title="@TextResources.APP_StringKeys_ProductGroup"></GridColumn>
+                            <GridColumn Field="@nameof(GetAllInventoryVm.SizeTitle)"
+                                        Title="@TextResources.APP_StringKeys_Product_Size"></GridColumn>
+                            <GridColumn Field="@nameof(GetAllInventoryVm.StatusTitle)"
+                                        Title="@TextResources.APP_StringKeys_Chart_Qc"></GridColumn>
                             <GridColumn Field="@nameof(GetAllInventoryVm.Count)"
                                         Title="@TextResources.APP_StringKeys_Count"
                                         Width="80px">
@@ -177,6 +232,10 @@
                             <td class="td-style">@inventory.ProductName</td>
                             <td class="td-style">@inventory.ProductCount</td>
                             <td class="td-style">@inventory.RegCode</td>
+                            <td class="td-style">@inventory.TypeTitle</td>
+                            <td class="td-style">@inventory.GroupTitle</td>
+                            <td class="td-style">@inventory.SizeTitle</td>
+                            <td class="td-style">@inventory.StatusTitle</td>
                             <td class="td-style">@inventory.ProductDateTime.ToNormalPersianDateTime()</td>
                             <td class="td-style">@inventory.DateTime</td>
                             <td class="td-style">@inventory.OldSerial</td>
@@ -210,6 +269,18 @@
                                         Width="100px"></GridColumn>
                             <GridColumn Field="@nameof(GetAllInventoryBySerialVm.RegCode)"
                                         Title="@TextResources.APP_StringKeys_Chart_Regcode"
+                                        Width="100px"></GridColumn>
+                            <GridColumn Field="@nameof(GetAllInventoryBySerialVm.TypeTitle)"
+                                        Title="@TextResources.APP_StringKeys_Field_ProductType"
+                                        Width="100px"></GridColumn>
+                            <GridColumn Field="@nameof(GetAllInventoryBySerialVm.GroupTitle)"
+                                        Title="@TextResources.APP_StringKeys_ProductGroup"
+                                        Width="100px"></GridColumn>
+                            <GridColumn Field="@nameof(GetAllInventoryBySerialVm.SizeTitle)"
+                                        Title="@TextResources.APP_StringKeys_Product_Size"
+                                        Width="100px"></GridColumn>
+                            <GridColumn Field="@nameof(GetAllInventoryBySerialVm.StatusTitle)"
+                                        Title="@TextResources.APP_StringKeys_Chart_Qc"
                                         Width="100px"></GridColumn>
                             <GridColumn Field="@nameof(GetAllInventoryBySerialVm.ProductDateTime)"
                                         Title="@TextResources.APP_StringKeys_ProductRegDateTime"

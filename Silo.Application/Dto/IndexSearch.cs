@@ -89,5 +89,6 @@ public class InventoryRequest
     public string Warehouse { get; set; }
     public string Size { get; set; }
     public string Type { get; set; }
+    public string Group { get; set; } = "-1";
     public bool TechnicalCodeLike { get; set; } = false;
 }

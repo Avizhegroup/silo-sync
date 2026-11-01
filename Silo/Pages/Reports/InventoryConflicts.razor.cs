@@ -16,6 +16,7 @@ public partial class InventoryConflicts
     public List<GetAllProductQcsVm> Qcs;
     public List<UserDropDownableDto> Users;
     public List<GetAllProductTypeVm> Types;
+    public List<GetAllProductGroupVm> Groups;
     public List<GetAllWarehousesVm> Warehouses;
     public List<ReportDataItem> WarehouseItems = new();
     public List<GetAllProductSizeTitleAndCodeVm> Sizes;
@@ -72,6 +73,8 @@ public partial class InventoryConflicts
         Sizes = await FormalCache.GetSizes();
 
         Types = await FormalCache.GetTypes();
+
+        Groups = await FormalCache.GetGroups();
 
         Warehouses = await FormalCache.GetWarehouses();
 
@@ -870,6 +873,8 @@ public partial class InventoryConflicts
             search.Type = Request.Type;
         }
 
+        search.Group = Request.Group.HasNoValue() ? "-1" : Request.Group;
+
         if (Request.Warehouse.HasNoValue())
         {
             search.Warehouse = "-1";
@@ -969,6 +974,10 @@ public partial class InventoryConflicts
                 ProductCode = rfid.ProductCode,
                 ProductName = rfid.ProductTitle,
                 Qc = rfid.Qc,
+                TypeTitle = rfid.TypeTitle,
+                GroupTitle = rfid.GroupTitle,
+                SizeTitle = rfid.SizeTitle,
+                StatusTitle = rfid.StatusTitle,
                 ProductSize = rfid.ProductSize,
                 Locations = rfid.Zones,
                 LocationList = new List<string> { rfid.ThisTagZone },
@@ -1058,6 +1067,10 @@ public partial class InventoryConflicts
                         ProductName = accountingRow.ProductTitle,
                         TechnicalCode = accountingRow.RegCode,
                         ProductSize = accountingRow.ProductSize,
+                        TypeTitle = accountingRow.TypeTitle,
+                        GroupTitle = accountingRow.GroupTitle,
+                        SizeTitle = accountingRow.SizeTitle,
+                        StatusTitle = accountingRow.StatusTitle,
                         SumCountAccounting = accountingRow.ProductCount,
                         ConflictSumCountAccounting = accountingRow.ProductCount,
                         ConflictSumCountReality = accountingRow.RealityCount,

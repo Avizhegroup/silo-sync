@@ -233,6 +233,25 @@
                     </TelerikGrid>
                 }
             </TabStripTab>
+            <TabStripTab Title="@($"{TextResources.APP_StringKeys_No_Register} : {UnregisteredEpcs.Count}")">
+                <TelerikGrid Data="UnregisteredEpcs"
+                             PageSize="10"
+                             Pageable="true"
+                             Sortable="true">
+                    <GridColumns>
+                        <GridColumn Field="@nameof(GetInventoryResultTagVm.Epc)" Title="EPC" />
+                        <GridColumn Field="@nameof(GetInventoryResultTagVm.InventoryHeaderId)" Title="@TextResources.APP_StringKeys_OperationCode" />
+                        <GridColumn Field="@nameof(GetInventoryResultTagVm.InventoryZone)" 
+                                    Title="@TextResources.APP_StringKeys_Warehouse" />
+                        <GridColumn Field="@nameof(GetInventoryResultTagVm.InventoryDate)" Title="@TextResources.APP_StringKeys_Date" />
+                    </GridColumns>
+                    <GridToolBarTemplate>
+                        <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel" >
+                            @TextResources.APP_StringKeys_ExportExcel
+                        </GridCommandButton>
+                    </GridToolBarTemplate>
+                </TelerikGrid>
+            </TabStripTab>
         </TelerikTabStrip>
     </div>
 </div>
@@ -336,10 +355,8 @@
         </div>
     </ModalBodyContentHtml>
 </Modal>
-
 <ProductCodeModal @ref="ProductCodeModal"
                   OnClickProductCode="(productCode)=> Request.ProductCode = productCode" />
-
 <TelerikLoaderContainer Visible="IsLoading"
                         LoaderPosition="@LoaderPosition.End"
                         LoaderType="LoaderType.InfiniteSpinner"

@@ -27,6 +27,8 @@ public partial class InventoryConflicts
     public List<GetWarehouseProductsVm> TagsInWarehouse;
     public List<GetWarehouseProductsVm> Accounting;
     public List<GetInventoryResultTagVm> TagsReadedInInventory;
+    public List<GetInventoryResultTagVm> UnregisteredTags = new();
+    public Modal ModalUnregisteredTags { get; set; }
     public List<GetInventoryConflictsVm> Result = new();
     public SaveFixedConflictsCommand FixConflictCommand = new();
     public bool IsAllProductConflictSelected = false;
@@ -137,9 +139,18 @@ public partial class InventoryConflicts
 
         CalculateSummaries();
 
+        UnregisteredTags = (await Api.PostAsyncByContext<List<GetInventoryResultTagVm>>("SSearchUnregisteredInventoryTags"
+                , new GetInventoryResultTagVmContext()
+                , new KeyValuePair<string, object>("search", request))).Value ?? new();
+
         IsFiltersShown = false;
 
         IsLoading = false;
+    }
+
+    public async Task OnUnregisteredTagsClick(MouseEventArgs e)
+    {
+        await ModalUnregisteredTags.Open(e);
     }
 
     public async Task OnClickClear(MouseEventArgs e)
@@ -163,6 +174,8 @@ public partial class InventoryConflicts
         Accounting = null;
 
         TagsReadedInInventory = null;
+
+        UnregisteredTags = new();
 
         CalculateSummaries(0);
 

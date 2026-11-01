@@ -61,7 +61,7 @@
                                     <label style="margin-right:10px;">@TextResources.APP_StringKeys_ProductCode :</label>
                                     <TelerikTextBox @bind-Value="Request.ProductCode" Class="form-control input-search-span-lg pointer"
                                                     Width="200px!important"></TelerikTextBox>
-                                    <button type="button" class="btn btn-light" @onclick="async ()=> await ProductCodeModal.Show()">
+                                    <button type="button" class="btn btn-light" @onclick="async () => await ProductCodeModal.Show()">
                                         <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
                                     </button>
                                     <label style="margin-right: 10px;">@TextResources.APP_StringKeys_Chart_Regcode :</label>
@@ -228,14 +228,14 @@
                         <td class="td-style">@product.ConflictSumCountAccounting</td>
                         <td class="td-style">@product.ConflictSumCountReality</td>
                         <td class="td-style">
-                            <button @onclick="async ()=> await OnShortageConflictModalOpen(product)"
+                            <button @onclick="async () => await OnShortageConflictModalOpen(product)"
                                     class="btn-dt-1 btn-success tr-buttom btn">
                                 @TextResources.APP_StringKeys_Count
                                 @product.Details.Count(p => p.Status.Contains("کسری"))
                             </button>
                         </td>
                         <td class="td-style">
-                            <button @onclick="async ()=> await OnExtraConflictModalOpen(product)"
+                            <button @onclick="async () => await OnExtraConflictModalOpen(product)"
                                     class="btn-dt-1 btn-success tr-buttom btn">
                                 @TextResources.APP_StringKeys_Count
                                 @product.Details.Count(p => p.Status.Contains("اضافی"))
@@ -252,6 +252,11 @@
                         <TelerikButton Icon="@FontIcon.DetailSection" OnClick="OnClickDetails" Class="btn-primary">
                             همه ی جزئیات
                         </TelerikButton>
+                        <button type="button"
+                                class="btn @(UnregisteredTags.Any() ? "btn-danger" : "btn-info")"
+                                @onclick="OnUnregisteredTagsClick">
+                            @TextResources.APP_StringKeys_No_Register : @UnregisteredTags.Count
+                        </button>
                     </GridToolBarTemplate>
                     <GridExport>
                         <GridExcelExport AllPages="true" FileName="@PageTitle" />
@@ -294,7 +299,7 @@
                                     Title="@TextResources.APP_StringKeys_Inventory_SumCount"
                                     Width="130px">
                         </GridColumn>
-                         <GridColumn Field="@nameof(GetInventoryConflictsVm.ConflictCount)"
+                        <GridColumn Field="@nameof(GetInventoryConflictsVm.ConflictCount)"
                                     Title="@TextResources.APP_StringKeys_Count_Conflicts"
                                     Width="115px">
                         </GridColumn>
@@ -548,7 +553,7 @@
                                     Width="200px!important"></TelerikTextBox>
                     <button type="button"
                             class="btn btn-light"
-                            @onclick="async ()=> await LocationModal.Show()"
+                            @onclick="async () => await LocationModal.Show()"
                             style="margin-left: 18px;">
                         <MaterialIcon IconName="Checklist_rtl"></MaterialIcon>
                     </button>
@@ -726,6 +731,30 @@
                     <GridColumn Field="@nameof(ReportDataItem.Value)"
                                 Title="@TextResources.APP_StringKeys_Code"></GridColumn>
                 </GridColumns>
+            </TelerikGrid>
+        </div>
+    </ModalBodyContentHtml>
+</Modal>
+<Modal Buttons="ModalButtons.No"
+       ModalTitle="EPC"
+       @ref="ModalUnregisteredTags"
+       Size="ModalSize.ExtraLarge">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            <TelerikGrid Data="UnregisteredTags"
+                         PageSize="10"
+                         Pageable="true"
+                         Sortable="true">
+                <GridColumns>
+                    <GridColumn Field="@nameof(GetInventoryResultTagVm.Epc)" Title="EPC" />
+                    <GridColumn Field="@nameof(GetInventoryResultTagVm.InventoryZone)" Title="@TextResources.APP_StringKeys_Warehouse" />
+                    <GridColumn Field="@nameof(GetInventoryResultTagVm.InventoryDate)" Title="@TextResources.APP_StringKeys_Inventory_DateTime" />
+                </GridColumns>
+                <GridToolBarTemplate>
+                    <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
+                        @TextResources.APP_StringKeys_ExportExcel
+                    </GridCommandButton>
+                </GridToolBarTemplate>
             </TelerikGrid>
         </div>
     </ModalBodyContentHtml>

@@ -8595,9 +8595,23 @@ ORDER BY MovementActionDate, MovementActionTime
         return dataAccess.SqlDataAdapter(cmd);
     }
 
-    public DataTable SSearchInventoryTags(InventoryRequest search)
+    public DataTable SSearchUnregisteredInventoryTags(InventoryRequest search)
     {
-        string whereStringSubQuery = "";
+        search.ProductCode = "-1";
+        search.Type = "-1";
+        search.Size = "-1";
+        search.Qc = "-1";
+        search.TechnicalCode = "-1";
+
+        return SSearchInventoryTags(search, true);
+    }
+
+    public DataTable SSearchInventoryTags(InventoryRequest search)
+        => SSearchInventoryTags(search, false);
+
+    private DataTable SSearchInventoryTags(InventoryRequest search, bool onlyUnregistered)
+    {
+        string whereStringSubQuery = onlyUnregistered ? " tbl_Tags.TagEpc IS NULL " : "";
 
         if (search.InventoryHeaderId.NotEquals("-1"))
         {
@@ -25548,6 +25562,66 @@ FROM            tbl_Tags LEFT OUTER JOIN
         return dataAccess.SqlDataAdapter(command);
     }
 
+    public DataTable SReportInventoryUnregisteredEpcs(InventoryReportRequest request)
+    {
+        string where = " WHERE tbl_Tags.TagEpc IS NULL AND tbl_InventoryTags.fld_InventoryTagEPC IS NOT NULL ";
+
+        if (request.WarehouseCode.NotEquals("-1"))
+        {
+            where += $" AND tbl_InventoryTags.fld_InventoryStoreCode = N'{request.WarehouseCode}' ";
+        }
+
+        if (request.Place.NotEquals("-1"))
+        {
+            where += $" AND tbl_InventoryTags.fld_InventoryPlace = N'{request.Place}' ";
+        }
+
+        if (request.Desc.NotEquals("-1"))
+        {
+            where += $" AND tbl_InventoryTags.fld_InventoryProductDesc Like N'%{request.Desc}%' ";
+        }
+
+        if (request.User.NotEquals("-1"))
+        {
+            where += $" AND tbl_InventoryTags.fld_InventoryUser = N'{request.User}' ";
+        }
+
+        if (request.Code.NotEquals("-1"))
+        {
+            where += $" AND tbl_InventoryTags.fld_InventoryHeaderId = N'{request.Code}' ";
+        }
+
+        if (request.FromDate.NotEquals("-1"))
+        {
+            where += $" AND tbl_InventoryTags.fld_InventoryDate >= N'{request.FromDate}' ";
+        }
+
+        if (request.ToDate.NotEquals("-1"))
+        {
+            where += $" AND tbl_InventoryTags.fld_InventoryDate <= N'{request.ToDate}' ";
+        }
+
+        if (request.FromTime.NotEquals("-1"))
+        {
+            where += $" AND CAST(CAST(tbl_InventoryTags.fld_InventoryDateTime AS time) AS nvarchar(5)) >= N'{request.FromTime}' ";
+        }
+
+        if (request.ToTime.NotEquals("-1"))
+        {
+            where += $" AND CAST(CAST(tbl_InventoryTags.fld_InventoryDateTime AS time) AS nvarchar(5)) <= N'{request.ToTime}' ";
+        }
+
+        string command = $@"SELECT DISTINCT tbl_InventoryTags.fld_InventoryTagEPC AS Epc,
+                                  tbl_InventoryTags.fld_InventoryHeaderId AS InventoryHeaderId,
+                                  COALESCE(tbl_Destination.DestinationTitle, tbl_InventoryTags.fld_InventoryStoreCode) AS InventoryZone,
+                                  tbl_InventoryTags.fld_InventoryDate AS InventoryDate
+                           FROM tbl_InventoryTags LEFT JOIN tbl_Tags ON tbl_Tags.TagEpc = tbl_InventoryTags.fld_InventoryTagEPC
+                                LEFT JOIN tbl_Destination ON tbl_Destination.DestinationCode = tbl_InventoryTags.fld_InventoryStoreCode
+                           {where}";
+
+        return dataAccess.SqlDataAdapter(command);
+    }
+
     public DataTable SReportInventoryBySerial(InventoryReportRequest request)
     {
 
@@ -25612,7 +25686,7 @@ FROM            tbl_Tags LEFT OUTER JOIN
             SELECT
                 COALESCE(tbl_Tags.ProductSerial, N'') AS ProductSerial,
                 COALESCE(tbl_Tags.ProductCode, N'') AS ProductCode,
-                COALESCE(tbl_Tags.ProductCount, N'') AS ProductCount,
+                COALESCE(tbl_Tags.ProductCount, 0) AS ProductCount,
                 COALESCE(tbl_Tags.RegCode, N'') AS RegCode,
                 COALESCE(tbl_Tags.ProductName, N'') AS ProductName,
                 COALESCE(tbl_Tags.TagRegisterShamsiUnixDate, N'') AS ProductDate,

@@ -12,6 +12,8 @@ public partial class Inventory
     public List<GetAllInventoryVm> Inventories;
     public List<string> InventorySerials;
     public List<GetAllInventoryBySerialVm> InventoriesBySerial;
+    public List<GetInventoryResultTagVm> UnregisteredEpcs = new();
+    public Modal ModalUnregisteredEpcs { get; set; }
 
     [Inject] public IMapper Mapper { get; set; }
     [Inject] public RfidConnectApi Api { get; set; }
@@ -74,6 +76,8 @@ public partial class Inventory
 
         Inventories = null;
 
+        UnregisteredEpcs = new();
+
         UploadCommand = new();
     }
 
@@ -91,9 +95,18 @@ public partial class Inventory
             , new GetAllInventoryBySerialVmContext()
             , new KeyValuePair<string, object>("request", request))).Value;
 
+        UnregisteredEpcs = (await Api.PostAsyncByContext<List<GetInventoryResultTagVm>>("SReportInventoryUnregisteredEpcs"
+            , new GetInventoryResultTagVmContext()
+            , new KeyValuePair<string, object>("request", request))).Value ?? new();
+
         IsFiltersShown = false;
 
         IsLoading = false;
+    }
+
+    public async Task OnUnregisteredEpcsClick(MouseEventArgs e)
+    {
+        await ModalUnregisteredEpcs.Open(e);
     }
 
     public async Task OnClickRowDetails(string productCode)

@@ -350,6 +350,7 @@ public interface IWmsBusiness
     DataTable SReportInventory(InventoryReportRequest request);
     DataTable SReportInventoryBySerial(InventoryReportRequest request);
     List<string> SReportInventorySerials(InventoryReportRequest request);
+    DataTable SReportInventoryUnregisteredEpcs(InventoryReportRequest request);
     DataTable SReportOnBrief();
     DataTable SReportOnDetails(IndexSearch search);
     DataTable SReportOnProductCode(IndexSearch search);
@@ -465,6 +466,7 @@ public interface IWmsBusiness
     DataTable SSearchApiSync(SearchApiSyncSto request);
     DataTable SSearchApiSyncDetails(SearchApiSyncSto request);
     DataTable SSearchInventoryTags(InventoryRequest search);
+    DataTable SSearchUnregisteredInventoryTags(InventoryRequest search);
     DataTable SSearchLastCAD(GetInventoryConflictsQuery search);
     DataTable SSearchOtherDeviceUHFLog(string UserToken);
     DataTable SSearchProductForLocate(List<ReportFilter> reportFilters);

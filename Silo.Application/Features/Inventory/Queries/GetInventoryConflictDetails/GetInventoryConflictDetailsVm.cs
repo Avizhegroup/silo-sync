@@ -16,4 +16,5 @@ public class GetInventoryConflictDetailsVm
     public string? Status { get; set; } = string.Empty;
     public string ContractStatus { get; set; }
     public string DestinationTitle { get; set; }
+    public string ProductProperties { get; set; }
 }

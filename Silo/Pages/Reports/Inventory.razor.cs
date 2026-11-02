@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Silo.Application;
 
 namespace Silo.Pages.Reports;
 public partial class Inventory

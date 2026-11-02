@@ -3,18 +3,15 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks.Dataflow;
 using AutoMapper;
-using DocumentFormat.OpenXml.Spreadsheet;
 using EFCore.BulkExtensions;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RTools_NTS.Util;
 using Silo.Api.Hubs;
 using Silo.Api.Services;
 using Silo.Api.Tools;
-using Silo.Application;
 using Silo.Application.Contracts;
 using Silo.Domains.Entities;
 using Silo.Domains.Entities.Api;
@@ -8531,6 +8528,7 @@ ORDER BY MovementActionDate, MovementActionTime
 	           WHERE tbl_Tags.ProductSerial = Tags.ProductSerial
 	           ),N'') AS [DestinationTitle]
                ,COALESCE(tbl_Tags.TagInDestinationId,N'') AS Place
+               ,tbl_Tags.ProductProperties AS ProductProperties
                FROM tbl_Products RIGHT OUTER JOIN tbl_Tags ON tbl_Products.ProductCode = tbl_Tags.ProductCode "
                + (whereString.HasNoValue() ? "" : $" WHERE {whereString}") +
                "ORDER BY tbl_Tags.ProductCode";
@@ -8754,6 +8752,7 @@ ORDER BY MovementActionDate, MovementActionTime
                     WHERE tbl_Tags.ProductSerial = Tags.ProductSerial
                     ),N'') AS [DestinationTitle],
                     COALESCE(tbl_Tags.TagInDestinationId,N'') AS Place,
+                    CAST(tbl_Tags.ProductProperties AS nvarchar(max)) AS ProductProperties,
                     {InventoryProductTitlesSql}
             FROM	tbl_InventoryTags LEFT JOIN tbl_Tags ON tbl_Tags.TagEpc = tbl_InventoryTags.fld_InventoryTagEPC
             """;
@@ -10095,6 +10094,10 @@ FROM            tbl_TagsMovement RIGHT OUTER JOIN
                 {
                     case "ProductCode":
                         filter.SqlWhereCommand = "Tags.ProductCode";
+                        break;
+
+                    case "ProductSerial":
+                        filter.SqlWhereCommand = "Tags.ProductSerial";
                         break;
 
                     case "TechnicalCode":

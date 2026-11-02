@@ -17,6 +17,7 @@ public partial class InventoryConflicts
     public List<UserDropDownableDto> Users;
     public List<GetAllProductTypeVm> Types;
     public List<GetAllProductGroupVm> Groups;
+    public List<string> DynamicFieldColumns = new();
     public List<GetAllWarehousesVm> Warehouses;
     public List<ReportDataItem> WarehouseItems = new();
     public List<GetAllProductSizeTitleAndCodeVm> Sizes;
@@ -75,6 +76,15 @@ public partial class InventoryConflicts
         Types = await FormalCache.GetTypes();
 
         Groups = await FormalCache.GetGroups();
+
+        var dynamicFields = (await Api.PostAsyncByUri<List<GetAllDynamicFieldVm>>("wms/document", "SGetDynamicFieldsByActionTypeId",
+            new KeyValuePair<string, object>("actionTypeId", 0))).Value ?? new();
+
+        DynamicFieldColumns = dynamicFields
+            .Where(p => p.ActionType == 0 && p.FieldShowColumn)
+            .Select(p => p.Title)
+            .Distinct()
+            .ToList();
 
         Warehouses = await FormalCache.GetWarehouses();
 
@@ -1016,6 +1026,7 @@ public partial class InventoryConflicts
                 ContractStatus = rfid.ContractStatus,
                 DestinationTitle = rfid.DestinationTitle,
                 Place = rfid.Place,
+                ProductProperties = rfid.ProductProperties,
                 Status = tagInInventory == null ? "مغایرت کسری" : string.Empty
             });
         });
@@ -1051,6 +1062,7 @@ public partial class InventoryConflicts
                 ContractStatus = b.ContractStatus,
                 DestinationTitle = b.DestinationTitle,
                 Place = b.Place,
+                ProductProperties = b.ProductProperties,
                 Status = "مغایرت اضافی"
             });
         });
@@ -1238,6 +1250,35 @@ public partial class InventoryConflicts
             }
         }
         #endregion
+    }
+
+    private static string GetDynamicValue(string properties, string field)
+    {
+        if (string.IsNullOrWhiteSpace(properties))
+        {
+            return string.Empty;
+        }
+
+        try
+        {
+            return Newtonsoft.Json.Linq.JToken.Parse(properties)[field]?.ToString() ?? string.Empty;
+        }
+        catch
+        {
+            return string.Empty;
+        }
+    }
+
+    private string GetModalTitle()
+    {
+        var conflictType = ProductFixConflicts.IsExtraConflict
+            ? TextResources.APP_StringKeys_Extra
+            : TextResources.APP_StringKeys_Shortage;
+
+        var productCode = ProductFixConflicts?.ProductCode;
+        var productName = ProductFixConflicts?.ProductName;
+
+        return $"{TextResources.APP_StringKeys_Conflict} {conflictType} کد: {productCode} شرح کالا: {productName}";
     }
     #endregion
 }

@@ -25724,6 +25724,7 @@ FROM            tbl_Tags LEFT OUTER JOIN
                 COALESCE(tbl_InventoryTags.fld_InventoryProductDesc, N'') AS [Desc],
                 CONCAT(COALESCE(tbl_InventoryTags.fld_InventoryDate, N''), ' - ', COALESCE(CAST(CAST(tbl_InventoryTags.fld_InventoryDateTime AS TIME) AS NVARCHAR(5)), N'')) AS [DateTime],
                 {InventoryProductTitlesSql},
+                tbl_Tags.ProductProperties AS ProductProperties,
                 ROW_NUMBER() OVER (PARTITION BY tbl_InventoryTags.fld_InventoryTagEPC ORDER BY tbl_InventoryTags.fld_InventoryDate DESC) AS rn
             FROM
                 tbl_InventoryTags
@@ -25745,7 +25746,8 @@ FROM            tbl_Tags LEFT OUTER JOIN
             TypeTitle,
             GroupTitle,
             SizeTitle,
-            StatusTitle
+            StatusTitle,
+            ProductProperties
         FROM
             RankedTags
         WHERE

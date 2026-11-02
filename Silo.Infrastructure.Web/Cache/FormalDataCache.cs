@@ -8,7 +8,7 @@ public partial class FormalDataCache(IMemoryCache memoryCache
     , IServiceProvider serviceProvider
     , RfidConnectApi api) : IFormalDataCache
 {
-    private readonly SemaphoreSlim _cacheLock = new(1, 1);
+    private static readonly SemaphoreSlim _cacheLock = new(1, 1);
     // Static because FormalDataCache is registered as scoped (a new instance per request/circuit)
     // while the underlying IMemoryCache is a singleton; the locks must be shared across all
     // instances so concurrent requests for the same key still serialize into a single API call.
@@ -170,7 +170,14 @@ public partial class FormalDataCache(IMemoryCache memoryCache
             return;
         }
 
-        ResourceManager.Load(textResources.ToDictionary(x => x.Key, x => x.Value));
+        var resources = new Dictionary<string, string>();
+
+        foreach (var item in textResources)
+        {
+            resources[item.Key] = item.Value;
+        }
+
+        ResourceManager.Load(resources);
     }
 
     public async Task HardRefreshCache()
@@ -197,7 +204,7 @@ public partial class FormalDataCache(IMemoryCache memoryCache
 
             memoryCache.Set(
                 FormalCacheKeyManager.Cache_Key_Dates,
-                DateTime.UtcNow,
+                DateTime.Now,
                 new MemoryCacheEntryOptions()
                     .SetAbsoluteExpiration(TimeSpan.FromDays(1))
                     .SetPriority(CacheItemPriority.Normal)
@@ -231,7 +238,10 @@ public partial class FormalDataCache(IMemoryCache memoryCache
 
             var data = await fetchData(api);
 
-            memoryCache.Set(cacheKey, data, _cacheEntryOptions);
+            if (data is not null)
+            {
+                memoryCache.Set(cacheKey, data, _cacheEntryOptions);
+            }
 
             return data;
         }

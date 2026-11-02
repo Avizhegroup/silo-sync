@@ -1,4 +1,4 @@
-@page "/report/inventory"
+﻿@page "/report/inventory"
 @inherits SiloBasePage
 @namespace Silo.Pages.Reports
 @using Silo.Application.Features;
@@ -241,6 +241,10 @@
                             <td class="td-style">@inventory.OldSerial</td>
                             <td class="td-style">@inventory.ContractStatus</td>
                             <td class="td-style">@inventory.Desc</td>
+                            @foreach (var field in DynamicFieldColumns)
+                            {
+                                <td class="td-style">@GetDynamicValue(inventory.ProductProperties, field)</td>
+                            }
                         </RowTemplate>
                         <GridToolBarTemplate>
                             <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
@@ -297,6 +301,10 @@
                             <GridColumn Field="@nameof(GetAllInventoryBySerialVm.Desc)"
                                         Title="@TextResources.APP_StringKeys_Description"
                                         Width="150px"></GridColumn>
+                            @foreach (var column in DynamicFieldColumns)
+                            {
+                                <GridColumn Field="@nameof(GetAllInventoryBySerialVm.ProductProperties)" Title="@column" Width="100px"></GridColumn>
+                            }
                         </GridColumns>
                         <GridAggregates>
                             <GridAggregate Field=@nameof(GetAllInventoryBySerialVm.ProductSerial) Aggregate="@GridAggregateType.Count" />
@@ -316,6 +324,9 @@
                                     Title="@TextResources.APP_StringKeys_Warehouse" />
                         <GridColumn Field="@nameof(GetInventoryResultTagVm.InventoryDate)" Title="@TextResources.APP_StringKeys_Date" />
                     </GridColumns>
+                    <GridExport>
+                        <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_View_Report_Inventory" />
+                    </GridExport>
                     <GridToolBarTemplate>
                         <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel" >
                             @TextResources.APP_StringKeys_ExportExcel
@@ -353,7 +364,7 @@
                     </GridCommandButton>
                 </GridToolBarTemplate>
                 <GridExport>
-                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_Details" />
+                    <GridExcelExport AllPages="true" FileName="@TextResources.APP_StringKeys_View_Report_Inventory" />
                 </GridExport>
             </TelerikGrid>
         </div>

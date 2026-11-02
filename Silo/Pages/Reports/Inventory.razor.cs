@@ -13,11 +13,29 @@ public partial class Inventory
     public List<GetAllProductGroupVm> Groups;
     public List<GetAllProductSizeTitleAndCodeVm> Sizes;
     public List<GetAllProductQcsVm> Qcs;
+    public List<string> DynamicFieldColumns = new();
+
+    private static string GetDynamicValue(string properties, string field)
+    {
+        if (string.IsNullOrWhiteSpace(properties))
+        {
+            return string.Empty;
+        }
+
+        try
+        {
+            return Newtonsoft.Json.Linq.JToken.Parse(properties)[field]?.ToString() ?? string.Empty;
+        }
+        catch
+        {
+            return string.Empty;
+        }
+    }
     public List<GetAllInventoryVm> Inventories;
     public List<string> InventorySerials;
     public List<GetAllInventoryBySerialVm> InventoriesBySerial;
     public List<GetInventoryResultTagVm> UnregisteredEpcs = new();
-    public Modal ModalUnregisteredEpcs { get; set; }
+    public List<GetAllDynamicFieldVm> DynamicFields = new();
 
     [Inject] public IMapper Mapper { get; set; }
     [Inject] public RfidConnectApi Api { get; set; }
@@ -39,6 +57,15 @@ public partial class Inventory
         Groups = await FormalCache.GetGroups();
         Sizes = await FormalCache.GetSizes();
         Qcs = await FormalCache.GetQcs();
+
+        DynamicFields = (await Api.PostAsyncByUri<List<GetAllDynamicFieldVm>>("wms/document", "SGetDynamicFieldsByActionTypeId",
+                new KeyValuePair<string, object>("actionTypeId", 0))).Value ?? new();
+
+        DynamicFieldColumns = DynamicFields
+            .Where(p => p.ActionType == 0 && p.FieldShowColumn)
+            .Select(p => p.Title)
+            .Distinct()
+            .ToList();
 
         IsLoading = false;
     }
@@ -110,11 +137,6 @@ public partial class Inventory
         IsFiltersShown = false;
 
         IsLoading = false;
-    }
-
-    public async Task OnUnregisteredEpcsClick(MouseEventArgs e)
-    {
-        await ModalUnregisteredEpcs.Open(e);
     }
 
     public async Task OnClickRowDetails(string productCode)

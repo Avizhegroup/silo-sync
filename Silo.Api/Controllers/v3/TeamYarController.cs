@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Silo.Base.Controllers.Base;
 
 namespace Silo.Api.Controllers.v3;
-public class TeamYarController (ILogger<SharifController> logger
+public class TeamYarController (ILogger<LibraryController> logger
     , IConfiguration configuration, IMediator mediator) : SiloBaseControllerVersion3(logger)
 {
     [HttpPost("[action]")]

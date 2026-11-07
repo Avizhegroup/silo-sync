@@ -27285,15 +27285,26 @@ GROUP BY tbl_Products.ProductType ";
     public int GetActionType(string fromWarehouse, string toWarehouse)
     {
 
-        if (fromWarehouse == "-1" || fromWarehouse == "0" || toWarehouse == "-1")
-            return 0;
+        
         var _listWareHouses = SGetAllWarehouses();
         foreach (var type in SGetActionTypes())
         {
-            if (fromWarehouse != "0" && fromWarehouse != "")
+            var froms = type.From.Split(',');
+            var tos = type.To.Split(',');
+
+            if (fromWarehouse == "-1" || fromWarehouse == "0")
             {
-                var froms = type.From.Split(',');
-                var tos = type.To.Split(',');
+                if (tos.Any(j => j.Equals(((int)_listWareHouses.FirstOrDefault(I => I.DestinationCode == toWarehouse).OperationalType).ToString())))
+                {
+                    return type.Code.Value;
+                }
+            }
+
+
+
+            if (fromWarehouse != "-1" && fromWarehouse != "0" && fromWarehouse != "")
+            {
+          
 
                 if (froms.Any(p => p.Equals(((int)_listWareHouses.FirstOrDefault(h => h.DestinationCode == fromWarehouse).OperationalType).ToString())))
                 {

@@ -1,6 +1,6 @@
 ﻿namespace Silo.Pages.Home;
 
-public partial class Home
+public partial class Home : IDisposable
 {
     public bool IsLoading = true;
     public bool IsDashboardShown = false;
@@ -23,18 +23,24 @@ public partial class Home
     [Inject] public IClaimManager ClaimManager { get; set; }
     [Inject] public IConfiguration Configuration { get; set; }
 
+    [CascadingParameter] public SiloComponentsContext SiloContext { get; set; }
+
     public TelerikContextMenu<TelerikContextMenuItem> QuickAccessContextMenuRef { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         IsDashboardShown = bool.Parse(Configuration["DashboardShown"].ToString());
 
+        QuickAccessLinks = await ClaimManager.GetQuickAccessLinks();
+
+        SiloContext.QuickAccessChanged += OnQuickAccessChange;
+
         if (IsDashboardShown)
         {
-            QuickAccessLinks = await ClaimManager.GetQuickAccessLinks();
-
             await LoadDashboardData();
         }
+
+        IsLoading = false;
     }
 
     public async Task OnQuickAccessChange()
@@ -109,5 +115,13 @@ public partial class Home
                 new KeyValuePair<string, object>[] { new("search", defaultRequest) })).Value;
 
         IsLoading = false;
+    }
+
+    public void Dispose()
+    {
+        if (SiloContext is not null)
+        {
+            SiloContext.QuickAccessChanged -= OnQuickAccessChange;
+        }
     }
 }

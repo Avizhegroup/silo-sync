@@ -4,6 +4,71 @@
 
 <PageTitle>@TextResources.APP_StringKeys_View_Home_Index</PageTitle>
 
+@if (IsLoading)
+{
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body py-2 d-flex flex-wrap gap-2 align-items-center">
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        <TelerikSkeleton ShapeType="SkeletonShapeType.Rectangle" Width="110px" Height="32px" />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body py-2">
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <span class="text-muted small me-1">دسترسی سریع:</span>
+                        @if (QuickAccessLinks.Any())
+                        {
+                            @foreach (var qa in QuickAccessLinks)
+                            {
+                                <a href="@qa.Url"
+                                class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
+                                @oncontextmenu:preventDefault="true"
+                                @oncontextmenu="async (e) => await OnQuickAccessRightClick(qa, e)">
+                                    @if (qa.IconName.HasValue())
+                                    {
+                                        <MaterialIcon IconName="@qa.IconName" />
+                                    }
+                                    @qa.Title
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted small">برای افزودن لینک، روی هر صفحه در منو کلیک راست کنید.</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <TelerikContextMenu @ref="QuickAccessContextMenuRef"
+    Data="@QuickContextMenuItems"
+    TextField="@nameof(TelerikContextMenuItem.Text)"
+    DisabledField="@nameof(TelerikContextMenuItem.Disabled)"
+    SeparatorField="@nameof(TelerikContextMenuItem.Separator)"
+    IconField="@nameof(TelerikContextMenuItem.Icon)">
+        <ItemTemplate>
+        @{
+                var ctxItem = context as TelerikContextMenuItem;
+                <div @onclick="async () => await OnQuickAccessContextMenuItemClick(ctxItem)">
+                    @ctxItem.Text
+                </div>
+            }
+        </ItemTemplate>
+    </TelerikContextMenu>
+}
 @if (IsDashboardShown)
 {
     <div class="dashboard-container">
@@ -131,54 +196,6 @@
                 </div>
             </div>
 
-            @* ── Quick Navigation Shortcuts ── *@
-            <div class="row g-3 mb-4">
-                <div class="col-12">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body py-2">
-                            <div class="d-flex flex-wrap gap-2 align-items-center">
-                                <span class="text-muted small me-1">دسترسی سریع:</span>
-                                @if (QuickAccessLinks.Any())
-                                {
-                                    @foreach (var qa in QuickAccessLinks)
-                                    {
-                                        <a href="@qa.Url"
-                                           class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
-                                           @oncontextmenu:preventDefault="true"
-                                           @oncontextmenu="async (e) => await OnQuickAccessRightClick(qa, e)">
-                                            @if (qa.IconName.HasValue())
-                                            {
-                                                <MaterialIcon IconName="@qa.IconName" />
-                                            }
-                                            @qa.Title
-                                        </a>
-                                    }
-                                }
-                                else
-                                {
-                                    <span class="text-muted small">برای افزودن لینک، روی هر صفحه در منو کلیک راست کنید.</span>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <TelerikContextMenu @ref="QuickAccessContextMenuRef"
-                                Data="@QuickContextMenuItems"
-                                TextField="@nameof(TelerikContextMenuItem.Text)"
-                                DisabledField="@nameof(TelerikContextMenuItem.Disabled)"
-                                SeparatorField="@nameof(TelerikContextMenuItem.Separator)"
-                                IconField="@nameof(TelerikContextMenuItem.Icon)">
-                <ItemTemplate>
-                    @{
-                        var ctxItem = context as TelerikContextMenuItem;
-                        <div @onclick="async () => await OnQuickAccessContextMenuItemClick(ctxItem)">
-                            @ctxItem.Text
-                        </div>
-                    }
-                </ItemTemplate>
-            </TelerikContextMenu>
 
             @* ── Charts Row 1: Trend + Product Distribution ── *@
             <div class="row g-3 mb-4">

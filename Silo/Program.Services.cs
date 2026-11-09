@@ -1,10 +1,13 @@
 ﻿using System.IO.Compression;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.FeatureManagement;
+using Silo.Localization;
 using Silo.Modules.Ai;
 using Silo.Profiles;
-using Microsoft.FeatureManagement;
+using Telerik.Blazor.Services;
 
 namespace Silo;
+
 public static partial class Program
 {
     public static void ConfigureServices(this IServiceCollection services
@@ -22,12 +25,12 @@ public static partial class Program
             options.AddPolicy("OpenCors", builder =>
             {
                 builder
-                    .AllowAnyOrigin()          
+                    .AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
         });
-        
+
         services.AddSiloSerilog(configuration);
 
         services.AddSiloClientIdentityServices();
@@ -62,5 +65,6 @@ public static partial class Program
             .Configure<BrotliCompressionProviderOptions>(opt => opt.Level = CompressionLevel.Fastest)
             .Configure<GzipCompressionProviderOptions>(opt => opt.Level = CompressionLevel.Fastest);
 
-            }
-        }
+        services.AddSingleton(typeof(ITelerikStringLocalizer), typeof(TelerikPersianLocalizer));
+    }
+}

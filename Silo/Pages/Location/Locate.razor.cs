@@ -68,15 +68,6 @@ public partial class Locate
                                                      Values = p.SelectMany(q => q.Values ?? new List<string>() { q.Value }).Distinct().ToList()
                                                  }).ToList();
 
-        if (!filters.Exists(p => p.FieldName.Equals("Destination")))
-        {
-            Notification.Show(string.Format(TextResources.APP_StringKeys_Validation_Required,
-                                TextResources.APP_StringKeys_Warehouse)
-                  , "error");
-
-            return;
-        }
-
         IsLoading = true;
 
         TechnicalFilterColumns = new();
@@ -279,6 +270,16 @@ public partial class Locate
             Component = FilterComponent.Text,
             IsLikeCheckboxShown = true,
             Label = TextResources.APP_StringKeys_Chart_Regcode
+        });
+
+        Filters.Add(new()
+        {
+            Id = indexer++,
+            FieldName = "ProductSerial",
+            Type = FilterType.Static,
+            Component = FilterComponent.Text,
+            IsLikeCheckboxShown = false,
+            Label = TextResources.APP_StringKeys_ProductSerial
         });
 
         Filters.Add(new()

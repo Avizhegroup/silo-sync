@@ -12,7 +12,7 @@ public static partial class Program
 
         var app = builder.Build();
 
-              app.Configure();
+        app.Configure();
 
         app.Run();
     }

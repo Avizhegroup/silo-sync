@@ -23,6 +23,7 @@ public class GetWarehouseProductsVm
     public string GroupTitle { get; set; }
     public string SizeTitle { get; set; }
     public string StatusTitle { get; set; }
+    public string ProductProperties { get; set; }
 }
 
 [JsonSerializable(typeof(ApiResponse<List<GetWarehouseProductsVm>>))]

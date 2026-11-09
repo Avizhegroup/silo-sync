@@ -1,4 +1,4 @@
-@page "/report/inventoryconflicts"
+﻿@page "/report/inventoryconflicts"
 @inherits SiloBasePage
 @namespace Silo.Pages.Reports
 @using Silo.Application.Features;
@@ -463,13 +463,6 @@
         </div>
     }
 </div>
-
-<TelerikLoaderContainer Visible="IsLoading"
-                        LoaderPosition="@LoaderPosition.End"
-                        LoaderType="LoaderType.InfiniteSpinner"
-                        Text="@TextResources.APP_StringKeys_Loading">
-</TelerikLoaderContainer>
-
 <Modal Buttons="ModalButtons.OKClose"
        ModalTitle="@TextResources.APP_StringKeys_Details"
        @ref="ModalDetailsAll"
@@ -478,7 +471,7 @@
        OkBtnText="@TextResources.APP_StringKeys_Ok">
     <ModalBodyContentHtml>
         <div class="text-align-center">
-            <TelerikGrid Data="AllDetails"
+            <TelerikGrid @key="DynamicFieldColumns.Count" Data="AllDetails"
                          PageSize="10"
                          Navigable="true"
                          Pageable="true"
@@ -500,6 +493,10 @@
                             @TextResources.APP_StringKeys_Details
                         </a>
                     </td>
+                    @foreach (var field in DynamicFieldColumns)
+                    {
+                        <td class="td-style td-dt">@GetDynamicValue(details.ProductProperties, field)</td>
+                    }
                 </RowTemplate>
                 <GridColumns>
                     <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.ProductSerial)" Width="160px"
@@ -519,6 +516,10 @@
                     <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.Status)" Width="80px"
                                 Title="@TextResources.APP_StringKeys_Field_Status"></GridColumn>
                     <GridColumn Width="60px"></GridColumn>
+                    @foreach (var column in DynamicFieldColumns)
+                    {
+                        <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.ProductProperties)" Title="@column" Width="100px" Sortable="false"></GridColumn>
+                    }
                 </GridColumns>
                 <GridToolBarTemplate>
                     <GridCommandButton Command="ExcelExport" Icon="@FontIcon.FileExcel" Class="green-excel">
@@ -540,24 +541,11 @@
         </div>
     </ModalBodyContentHtml>
 </Modal>
-
 <ProductCodeModal @ref="ProductCodeModal"
                   OnClickProductCode="OnClickProductCode">
 </ProductCodeModal>
-
-@{
-    var conflictType = ProductFixConflicts.IsExtraConflict
-                ? TextResources.APP_StringKeys_Extra
-                : TextResources.APP_StringKeys_Shortage;
-
-    var productCode = ProductFixConflicts?.ProductCode;
-    var productName = ProductFixConflicts?.ProductName;
-
-    var modalTitle = $"{TextResources.APP_StringKeys_Conflict} {conflictType} کد: {productCode} شرح کالا: {productName}";
-}
-
 <Modal Buttons="ModalButtons.No"
-       ModalTitle="@modalTitle"
+       ModalTitle="@GetModalTitle()"
        @ref="ModalFixConflicts"
        Size="ModalSize.ExtraLarge">
     <ModalBodyContentHtml>
@@ -614,7 +602,7 @@
 
             </div>
             <div class="text-align-center">
-                <TelerikGrid @ref="DetailsGridRef"
+                <TelerikGrid @key="DynamicFieldColumns.Count" @ref="DetailsGridRef"
                              Data="FilteredDetails"
                              PageSize="5"
                              Navigable="true"
@@ -636,6 +624,10 @@
                         <td class="td-style td-dt">@details.Date.ToNormalPersianDate()</td>
                         <td class="td-style td-dt">@details.DestinationTitle</td>
                         <td class="td-style td-dt">@details.Zone</td>
+                        @foreach (var field in DynamicFieldColumns)
+                        {
+                            <td class="td-style td-dt">@GetDynamicValue(details.ProductProperties, field)</td>
+                        }
                         <td class="td-style td-dt">
                             <a href="/report/taghistory/@details.ProductSerial"
                                target="_blank"
@@ -680,6 +672,10 @@
                                     Title="@TextResources.APP_StringKeys_Warehouse"></GridColumn>
                         <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.Zone)" Width="80px"
                                     Title="@TextResources.APP_StringKeys_Zone"></GridColumn>
+                        @foreach (var column in DynamicFieldColumns)
+                        {
+                            <GridColumn Field="@nameof(GetInventoryConflictDetailsVm.ProductProperties)" Title="@column" Width="100px" Sortable="false"></GridColumn>
+                        }
                         <GridColumn Width="60px"></GridColumn>
                     </GridColumns>
                     <GridAggregates>
@@ -725,13 +721,10 @@
         </div>
     </ModalFooterHtmlWhitoutCloseBtn>
 </Modal>
-
-
 <LocationModal @ref="LocationModal"
                WarehouseCode="@Request.Warehouse"
                OnClickLocationWithZone="OnChooseDestinationZoneClick">
 </LocationModal>
-
 <Modal Buttons="ModalButtons.OKClose"
        ModalTitle="@TextResources.APP_StringKeys_Choose_Warehouse"
        @ref="ModalWarehouses"
@@ -789,3 +782,8 @@
         </div>
     </ModalBodyContentHtml>
 </Modal>
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

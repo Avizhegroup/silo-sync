@@ -1,4 +1,6 @@
-﻿namespace Silo.Application.Features;
+﻿using Silo.Shared.Tools;
+
+namespace Silo.Application.Features;
 
 public class ChatMessageDto
 {
@@ -7,4 +9,5 @@ public class ChatMessageDto
     public DateTime Datetime { get; set; }
     public List<List<object>> SqlCommandsResults { get; set; } = new();
     public int QueryId { get; set; }
+    public AiReportCommandType? ReportType { get; set; }
 }

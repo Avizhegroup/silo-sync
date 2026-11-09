@@ -23,6 +23,11 @@ public class AiCommandTools
 {
     private const string SqlStart = "<<SQL";
     private const string ConfigStart = "<<CONFIG";
+
+    private const string BarChartStart = "<<BarChart";
+    private const string LineChartStart = "<<LineChart";
+    private const string PieChartStart = "<<PieChart";
+
     private const string BlockEnd = ">>";
 
     /// <summary>
@@ -158,4 +163,73 @@ public class AiCommandTools
 
         return text.Trim();
     }
+
+    public static bool TryExtractChartBlock(
+    string text,
+    out string cleanText,
+    out AiReportCommandType chartType,
+    out string chartQuery)
+    {
+        cleanText = text;
+        chartQuery = string.Empty;
+        chartType = default;
+
+        if (string.IsNullOrEmpty(text))
+            return false;
+
+        var chartMarkers = new[]
+        {
+        (Marker: BarChartStart, Type: AiReportCommandType.BarChart),
+        (Marker: LineChartStart, Type: AiReportCommandType.LineChart),
+        (Marker: PieChartStart, Type: AiReportCommandType.PieChart)
+    };
+
+        var blockStart = -1;
+        var contentStart = -1;
+        var selectedType = default(AiReportCommandType);
+
+        foreach (var item in chartMarkers)
+        {
+            var index = text.IndexOf(
+                item.Marker,
+                StringComparison.OrdinalIgnoreCase);
+
+            if (index >= 0 && (blockStart == -1 || index < blockStart))
+            {
+                blockStart = index;
+                contentStart = index + item.Marker.Length;
+                selectedType = item.Type;
+            }
+        }
+
+        if (blockStart == -1)
+            return false;
+
+        var blockEnd = text.IndexOf(
+            BlockEnd,
+            contentStart,
+            StringComparison.OrdinalIgnoreCase);
+
+        if (blockEnd == -1)
+            return false;
+
+        chartQuery = text
+            .Substring(contentStart, blockEnd - contentStart)
+            .Trim();
+
+        if (string.IsNullOrWhiteSpace(chartQuery))
+            return false;
+
+        cleanText = text.Remove(
+            blockStart,
+            blockEnd + BlockEnd.Length - blockStart
+        ).Trim();
+
+        chartType = selectedType;
+
+        return true;
+    }
 }
+
+
+

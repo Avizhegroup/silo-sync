@@ -64,7 +64,5 @@ public static partial class Program
         })
             .Configure<BrotliCompressionProviderOptions>(opt => opt.Level = CompressionLevel.Fastest)
             .Configure<GzipCompressionProviderOptions>(opt => opt.Level = CompressionLevel.Fastest);
-
-        services.AddSingleton(typeof(ITelerikStringLocalizer), typeof(TelerikPersianLocalizer));
     }
 }

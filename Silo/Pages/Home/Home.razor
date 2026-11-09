@@ -74,7 +74,6 @@ else
     <div class="dashboard-container">
         @if (IsLoading)
         {
-            @* ── Skeleton: KPI Cards ── *@
             <div class="row g-3 mb-4">
                 @for (int i = 0; i < 3; i++)
                 {
@@ -91,8 +90,6 @@ else
                     </div>
                 }
             </div>
-
-            @* ── Skeleton: Quick Navigation ── *@
             <div class="row g-3 mb-4">
                 <div class="col-12">
                     <div class="card shadow-sm border-0">
@@ -105,8 +102,6 @@ else
                     </div>
                 </div>
             </div>
-
-            @* ── Skeleton: Charts Row 1 ── *@
             <div class="row g-3 mb-4">
                 <div class="col-md-7">
                     <div class="card shadow-sm border-0 h-100">
@@ -152,7 +147,7 @@ else
                 </div>
             </div>
         }
-        else if (false)
+        else
         {
             <div class="row g-3 mb-4">
                 <div class="col-md-4">

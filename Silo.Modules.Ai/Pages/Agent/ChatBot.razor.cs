@@ -23,6 +23,8 @@ public partial class ChatBot : SiloBasePage
     private List<ChatHistoryDto> chatHistories = new();
     private int currentChatId = 0;
 
+    public RagDocType? ActiveMode { get; set; }
+
     [Inject] public IJSRuntime JSRuntime { get; set; }
     [Inject] public RfidConnectApi Api { get; set; }
     [Inject] public IMapper Mapper { get; set; }
@@ -67,7 +69,7 @@ public partial class ChatBot : SiloBasePage
 
         var response = await Api.SendAsyncObjectByUri<GetChatHistoriesVm>(
             HttpMethod.Get,
-            $"ChatSessions/GetChatHistories?userId={UserId}&mode={Mode}"
+            $"ChatSessions/GetChatHistories?userId={UserId}&mode={ActiveMode}"
         );
 
         if (response.Value?.Histories is null || response.Value.Histories.Count == 0)
@@ -83,7 +85,7 @@ public partial class ChatBot : SiloBasePage
 
     private async Task InitializeChatWithMode(RagDocType mode)
     {
-        Mode = mode;
+        ActiveMode = mode;
 
         ShowModeSelectionDialog = false;
 
@@ -171,7 +173,7 @@ public partial class ChatBot : SiloBasePage
             new NewChatSessionCommand
             {
                 UserId = UserId,
-                Mode = Mode.Value
+                Mode = ActiveMode!.Value
             }
         );
 
@@ -299,9 +301,9 @@ public partial class ChatBot : SiloBasePage
                     UserId = UserId,
                     SessionId = currentChatId,
                     Message = userMessage,
-                    Mode = Mode.Value
+                    Mode = ActiveMode.Value
                 }
-            );
+               );
 
             if (sendResult?.Value?.StatusCode == 402)
             {
@@ -318,7 +320,8 @@ public partial class ChatBot : SiloBasePage
                 Text = sendResult?.Value?.ResponseText ?? string.Empty,
                 IsUser = false,
                 Datetime = DateTime.Now,
-                QueryId = sendResult?.Value?.QueryId ?? 0
+                QueryId = sendResult?.Value?.QueryId ?? 0,
+                ReportType = sendResult?.Value?.ReportType
 
             };
 

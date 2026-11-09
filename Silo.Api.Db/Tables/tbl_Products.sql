@@ -31,6 +31,7 @@
     [fld_ProductExpireEndDate] NVARCHAR(10) NULL, 
     [fld_ProductGuaranteeMonths] INT NULL, 
     [fld_ProductExpireMonths] INT NULL, 
-    [fld_HasDoubleTag] BIT NULL DEFAULT 0
+    [fld_HasDoubleTag] BIT NULL DEFAULT 0, 
+    [fld_ProductPattern] NVARCHAR(MAX) NULL
 );
 

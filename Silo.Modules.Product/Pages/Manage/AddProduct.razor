@@ -42,6 +42,16 @@
                                     @onclick="OnOpenGallery">
                                 <MaterialIcon IconName="cloud_upload"></MaterialIcon>
                             </button>
+                            @if (Product.ProductGalleryId.NotEquals(0))
+                            {
+                                <button class="btn btn-info"
+                                        type="button"
+                                        style="margin-right: 4px;"
+                                        title="@TextResources.APP_StringKeys_ProductPattern_Analyze"
+                                        @onclick="OnAnalyzeImageClick">
+                                    <MaterialIcon IconName="image_search"></MaterialIcon>
+                                </button>
+                            }
                         }
                     </div>
                 </div>
@@ -211,6 +221,20 @@
                                            Enabled="EnabilityChecker.ProductPackVolume"></TelerikNumericTextBox>
                 </div>
             </div>
+            @if (Product.ProductPattern.HasValue())
+            {
+                <div class="card card-stats col-md-12 text-align-center" style="margin-top:5px;">
+                    <h6 class="form-title card-title" style="text-align: center !important;">
+                        @TextResources.APP_StringKeys_ProductPattern
+                    </h6>
+                    <div class="d-flex flex-row align-items-start flex-wrap gap-2">
+                        <TelerikTextArea @bind-Value="Product.ProductPattern"
+                                         Class="form-control"
+                                         Rows="3"
+                                         Width="100%"></TelerikTextArea>
+                    </div>
+                </div>
+            }
             @if (TechnicalDataItems is not null && TechnicalDataItems.Any())
             {
                 <div class="card card-stats col-md-12 text-align-center" style="margin-top:5px;">

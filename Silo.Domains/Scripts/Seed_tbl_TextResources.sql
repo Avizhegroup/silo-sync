@@ -3015,3 +3015,31 @@ IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP
 IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP_StringKeys_Variety_ProductCode')
     INSERT INTO tbl_TextResources (fld_TextResourceKey, fld_TextResourceValue) VALUES (N'APP_StringKeys_Variety_ProductCode', N'تنوع کدکالا');
 
+IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP_StringKeys_ProductPattern')
+    INSERT INTO tbl_TextResources (fld_TextResourceKey, fld_TextResourceValue) VALUES (N'APP_StringKeys_ProductPattern', N'الگوی تصویری کالا');
+IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP_StringKeys_ProductPattern_Analyze')
+    INSERT INTO tbl_TextResources (fld_TextResourceKey, fld_TextResourceValue) VALUES (N'APP_StringKeys_ProductPattern_Analyze', N'تحلیل تصویر با هوش مصنوعی');
+IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP_StringKeys_ProductPattern_NoImage')
+    INSERT INTO tbl_TextResources (fld_TextResourceKey, fld_TextResourceValue) VALUES (N'APP_StringKeys_ProductPattern_NoImage', N'ابتدا تصویر کالا را بارگذاری کنید');
+IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP_StringKeys_ProductPattern_Failed')
+    INSERT INTO tbl_TextResources (fld_TextResourceKey, fld_TextResourceValue) VALUES (N'APP_StringKeys_ProductPattern_Failed', N'تحلیل تصویر انجام نشد');
+IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP_StringKeys_ProductPattern_UnsupportedImage')
+    INSERT INTO tbl_TextResources (fld_TextResourceKey, fld_TextResourceValue) VALUES (N'APP_StringKeys_ProductPattern_UnsupportedImage', N'فقط تصاویر PNG، JPEG و WebP تا حداکثر ۱۰ مگابایت پذیرفته می‌شوند');
+IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP_StringKeys_ImageSearch_Title')
+    INSERT INTO tbl_TextResources (fld_TextResourceKey, fld_TextResourceValue) VALUES (N'APP_StringKeys_ImageSearch_Title', N'جستجوی کالا با تصویر');
+IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP_StringKeys_ImageSearch_Upload')
+    INSERT INTO tbl_TextResources (fld_TextResourceKey, fld_TextResourceValue) VALUES (N'APP_StringKeys_ImageSearch_Upload', N'انتخاب تصاویر');
+IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP_StringKeys_ImageSearch_Search')
+    INSERT INTO tbl_TextResources (fld_TextResourceKey, fld_TextResourceValue) VALUES (N'APP_StringKeys_ImageSearch_Search', N'جستجو');
+IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP_StringKeys_ImageSearch_Score')
+    INSERT INTO tbl_TextResources (fld_TextResourceKey, fld_TextResourceValue) VALUES (N'APP_StringKeys_ImageSearch_Score', N'درصد شباهت');
+IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP_StringKeys_ImageSearch_NoResult')
+    INSERT INTO tbl_TextResources (fld_TextResourceKey, fld_TextResourceValue) VALUES (N'APP_StringKeys_ImageSearch_NoResult', N'کالای مشابهی یافت نشد');
+IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP_StringKeys_ImageSearch_Hint')
+    INSERT INTO tbl_TextResources (fld_TextResourceKey, fld_TextResourceValue) VALUES (N'APP_StringKeys_ImageSearch_Hint', N'حداکثر ۸ تصویر PNG، JPEG یا WebP با حجم حداکثر ۱۰ مگابایت');
+IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP_StringKeys_ImageSearch_QuerySummary')
+    INSERT INTO tbl_TextResources (fld_TextResourceKey, fld_TextResourceValue) VALUES (N'APP_StringKeys_ImageSearch_QuerySummary', N'خلاصه تحلیل تصویر');
+IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP_StringKeys_ImageSearch_Failed')
+    INSERT INTO tbl_TextResources (fld_TextResourceKey, fld_TextResourceValue) VALUES (N'APP_StringKeys_ImageSearch_Failed', N'جستجوی کالا با تصویر انجام نشد');
+IF NOT EXISTS (SELECT 1 FROM tbl_TextResources WHERE fld_TextResourceKey = N'APP_StringKeys_ImageSearch_Reset')
+    INSERT INTO tbl_TextResources (fld_TextResourceKey, fld_TextResourceValue) VALUES (N'APP_StringKeys_ImageSearch_Reset', N'پاک کردن');

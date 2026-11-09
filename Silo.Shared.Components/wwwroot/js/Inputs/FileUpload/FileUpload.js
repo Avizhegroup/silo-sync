@@ -3,7 +3,7 @@
 
     $('#' + inputId).on('input',function (e) {
         e.stopPropagation();
-        if ($(this).val() === '') {
+        if (!uploadUrl || $(this).val() === '') {
             return;
         }
 

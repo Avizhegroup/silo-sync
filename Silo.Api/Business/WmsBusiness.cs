@@ -435,9 +435,9 @@ WHERE         tbl_ProductPlacementMissions.fld_PPMId = " + _pmCode);
         {
             command = "INSERT INTO tbl_Products " +
                 "(ProductCode, ProductTitle, ProductENTitle, ProductPackValue, ProductPackWeight, ProductPackVolume, ProductCountInPack, ProductValue, ProductTechnicalCode, ProductProperties, ProductType, ProductStatus, ProductSize," +
-                "ProductUnit,ProductRegUser,ProductRegDateTime,fld_ProductBrand,fld_ProductGroup ,ProductTechnicalData)" +
+                "ProductUnit,ProductRegUser,ProductRegDateTime,fld_ProductBrand,fld_ProductGroup ,ProductTechnicalData,fld_ProductPattern)" +
                 "VALUES(@ProductCode, @ProductTitle, @ProductENTitle, @ProductPackValue, @ProductPackWeight, @ProductPackVolume, @ProductCountInPack, @ProductValue, @ProductTechnicalCode, @ProductProperties, @ProductType, @ProductStatus, @ProductSize," +
-                "@ProductUnit,@ProductRegUser,@ProductRegDateTime,@ProductBrand,@ProductGroup,@ProductTechnicalData)";
+                "@ProductUnit,@ProductRegUser,@ProductRegDateTime,@ProductBrand,@ProductGroup,@ProductTechnicalData,@ProductPattern)";
 
 
             if (configuration.GetSection("ProjectConfigs").GetSection("WmsConfigs")["CreateNewProductTitle"].ToString() != "")
@@ -472,7 +472,8 @@ WHERE         tbl_ProductPlacementMissions.fld_PPMId = " + _pmCode);
                 , new KeyValuePair<string, object>("ProductRegDateTime", DateTime.Now)
                 , new KeyValuePair<string, object>("ProductBrand", product.ProductBrand)
                 , new KeyValuePair<string, object>("ProductGroup", product.ProductGroup)
-                , new KeyValuePair<string, object>("ProductTechnicalData", product.ProductTechnicalData ?? (object)DBNull.Value)) > 0;
+                , new KeyValuePair<string, object>("ProductTechnicalData", product.ProductTechnicalData ?? (object)DBNull.Value)
+                , new KeyValuePair<string, object>("ProductPattern", product.ProductPattern ?? (object)DBNull.Value)) > 0;
 
         }
         else
@@ -493,7 +494,8 @@ WHERE         tbl_ProductPlacementMissions.fld_PPMId = " + _pmCode);
 														ProductUnit = @ProductUnit,
                                                         fld_ProductBrand = @ProductBrand,
                                                         fld_ProductGroup = @ProductGroup,
-                                                        ProductTechnicalData = @ProductTechnicalData
+                                                        ProductTechnicalData = @ProductTechnicalData,
+                                                        fld_ProductPattern = COALESCE(NULLIF(@ProductPattern, N''), fld_ProductPattern)
 									WHERE
 										(ProductCode = @ProductCode)";
 
@@ -514,7 +516,8 @@ WHERE         tbl_ProductPlacementMissions.fld_PPMId = " + _pmCode);
                 , new KeyValuePair<string, object>("ProductUnit", product.ProductUnit)
                 , new KeyValuePair<string, object>("ProductBrand", product.ProductBrand)
                 , new KeyValuePair<string, object>("ProductGroup", product.ProductGroup)
-                , new KeyValuePair<string, object>("ProductTechnicalData", product.ProductTechnicalData ?? (object)DBNull.Value)) > 0;
+                , new KeyValuePair<string, object>("ProductTechnicalData", product.ProductTechnicalData ?? (object)DBNull.Value)
+                , new KeyValuePair<string, object>("ProductPattern", product.ProductPattern ?? (object)DBNull.Value)) > 0;
 
         }
 
@@ -577,13 +580,13 @@ WHERE         tbl_ProductPlacementMissions.fld_PPMId = " + _pmCode);
                          (ProductCode, ProductTitle, ProductENTitle, ProductPackValue, ProductPackWeight, 
                           ProductPackVolume, ProductCountInPack, ProductValue, ProductTechnicalCode, ProductProperties,
                          ProductType, ProductStatus, ProductSize, ProductUnit,ProductRegUser,ProductRegDateTime,
-                         ProductGalleryId,fld_ProductGroup,fld_ProductBrand,fld_ProductIsActive,fld_ProductSubGroup,fld_ProductClass,ProductTechnicalData)
+                         ProductGalleryId,fld_ProductGroup,fld_ProductBrand,fld_ProductIsActive,fld_ProductSubGroup,fld_ProductClass,ProductTechnicalData,fld_ProductPattern)
                         VALUES(N'{item.ProductCode}', N'{item.ProductTitle}', N'{item.ProductENTitle}',
                                {item.ProductPackValue}, {item.ProductPackWeight},N'{item.ProductPackVolume}', 
                                {item.ProductCountInPack}, N'{item.ProductValue}', N'{item.ProductTechnicalCode}', 
                                N'{item.ProductProperties}', N'{item.ProductType}', N'{item.ProductStatus}', N'{item.ProductSize}',
                                N'{item.ProductUnit}',N'{userId}',Getdate(),N'{item.ProductGalleryId}',
-                               N'{item.ProductGroup}',N'{item.ProductBrand}',{(item.IsActive ? "1" : "0")},N'{item.ProductSubGroup}',N'{item.ProductClass}' , N'{item.ProductTechnicalData}')";
+                               N'{item.ProductGroup}',N'{item.ProductBrand}',{(item.IsActive ? "1" : "0")},N'{item.ProductSubGroup}',N'{item.ProductClass}' , N'{item.ProductTechnicalData}', {(string.IsNullOrEmpty(item.ProductPattern) ? "NULL" : "N'" + item.ProductPattern.Replace("'", "''") + "'")})";
 
                 childrenCommands.Add(command);
             }
@@ -609,7 +612,7 @@ WHERE         tbl_ProductPlacementMissions.fld_PPMId = " + _pmCode);
                                                         fld_ProductIsActive = {(item.IsActive ? "1" : "0")},
                                                         fld_ProductSubGroup = N'{item.ProductSubGroup}',
                                                         fld_ProductClass = N'{item.ProductClass}',
-                                                        ProductTechnicalData = N'{item.ProductTechnicalData}'
+                                                        ProductTechnicalData = N'{item.ProductTechnicalData}'{(string.IsNullOrEmpty(item.ProductPattern) ? "" : $",\n                                                        fld_ProductPattern = N'{item.ProductPattern.Replace("'", "''")}'")}
 
 									WHERE
 										(ProductCode = N'{item.ProductCode}')";
@@ -5615,6 +5618,7 @@ ORDER BY F.ProductSerial;
  WHERE tbl_ProductClass.fld_ProductClassCode = tbl_Products.fld_ProductClass),N'') AS ProductClassTitle,
  COALESCE ((SELECT tbl_ProductSubGroup.fld_ProductSubGroupTitle FROM tbl_ProductSubGroup 
  WHERE tbl_ProductSubGroup.fld_ProductSubGroupCode = tbl_Products.fld_ProductSubGroup),N'') AS ProductSubGroupTitle,
+ COALESCE (tbl_Products.fld_ProductPattern,N'') AS ProductPattern,
  CAST(COALESCE(tbl_Products.fld_ProductIsActive,1) AS BIT) as [IsActive]
  FROM tbl_Products LEFT OUTER JOIN
  tbl_ProductType ON tbl_Products.ProductType = tbl_ProductType.ProductTypeCode LEFT OUTER JOIN

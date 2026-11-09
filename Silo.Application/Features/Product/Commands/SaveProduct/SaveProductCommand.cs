@@ -54,6 +54,9 @@ public class SaveProductCommand : ICloneable
  
     public string ProductSubGroup { get; set; }
 
+    /// <summary>AI generated image pattern (JSON); null keeps the stored value untouched.</summary>
+    public string ProductPattern { get; set; }
+
     public object Clone()
     {
         return this.MemberwiseClone();
@@ -87,4 +90,5 @@ public class SaveProductCommandEnabilityCheck
     public bool IsActive { get; set; } = true;
     public bool ProductClass { get; set; } = true;
     public bool ProductSubGroup { get; set; } = true;
+    public bool ProductPattern { get; set; } = true;
 }

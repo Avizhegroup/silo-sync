@@ -16576,5 +16576,159 @@ namespace Silo.Shared
                 return ResourceManager.GetString("APP_StringKeys_Column_Duplicate");
             }
         }
+        /// <summary>
+        ///   Looks up a localized string: الگوی تصویری کالا
+        /// </summary>
+        public static string APP_StringKeys_ProductPattern
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_ProductPattern");
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string: تحلیل تصویر با هوش مصنوعی
+        /// </summary>
+        public static string APP_StringKeys_ProductPattern_Analyze
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_ProductPattern_Analyze");
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string: ابتدا تصویر کالا را بارگذاری کنید
+        /// </summary>
+        public static string APP_StringKeys_ProductPattern_NoImage
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_ProductPattern_NoImage");
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string: تحلیل تصویر انجام نشد
+        /// </summary>
+        public static string APP_StringKeys_ProductPattern_Failed
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_ProductPattern_Failed");
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string: فقط تصاویر PNG، JPEG و WebP تا حداکثر ۱۰ مگابایت پذیرفته می‌شوند
+        /// </summary>
+        public static string APP_StringKeys_ProductPattern_UnsupportedImage
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_ProductPattern_UnsupportedImage");
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string: جستجوی کالا با تصویر
+        /// </summary>
+        public static string APP_StringKeys_ImageSearch_Title
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_ImageSearch_Title");
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string: انتخاب تصاویر
+        /// </summary>
+        public static string APP_StringKeys_ImageSearch_Upload
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_ImageSearch_Upload");
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string: جستجو
+        /// </summary>
+        public static string APP_StringKeys_ImageSearch_Search
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_ImageSearch_Search");
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string: درصد شباهت
+        /// </summary>
+        public static string APP_StringKeys_ImageSearch_Score
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_ImageSearch_Score");
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string: کالای مشابهی یافت نشد
+        /// </summary>
+        public static string APP_StringKeys_ImageSearch_NoResult
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_ImageSearch_NoResult");
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string: حداکثر ۸ تصویر PNG، JPEG یا WebP با حجم حداکثر ۱۰ مگابایت
+        /// </summary>
+        public static string APP_StringKeys_ImageSearch_Hint
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_ImageSearch_Hint");
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string: خلاصه تحلیل تصویر
+        /// </summary>
+        public static string APP_StringKeys_ImageSearch_QuerySummary
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_ImageSearch_QuerySummary");
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string: جستجوی کالا با تصویر انجام نشد
+        /// </summary>
+        public static string APP_StringKeys_ImageSearch_Failed
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_ImageSearch_Failed");
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string: پاک کردن
+        /// </summary>
+        public static string APP_StringKeys_ImageSearch_Reset
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_ImageSearch_Reset");
+            }
+        }
+        
     }
 }

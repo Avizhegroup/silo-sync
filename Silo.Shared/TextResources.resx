@@ -4638,4 +4638,46 @@
   <data name="APP_StringKeys_Variety_ProductCode" xml:space="preserve">
     <value>تنوع کدکالا</value>
   </data>
+  <data name="APP_StringKeys_ProductPattern" xml:space="preserve">
+    <value>الگوی تصویری کالا</value>
+  </data>
+  <data name="APP_StringKeys_ProductPattern_Analyze" xml:space="preserve">
+    <value>تحلیل تصویر با هوش مصنوعی</value>
+  </data>
+  <data name="APP_StringKeys_ProductPattern_NoImage" xml:space="preserve">
+    <value>ابتدا تصویر کالا را بارگذاری کنید</value>
+  </data>
+  <data name="APP_StringKeys_ProductPattern_Failed" xml:space="preserve">
+    <value>تحلیل تصویر انجام نشد</value>
+  </data>
+  <data name="APP_StringKeys_ProductPattern_UnsupportedImage" xml:space="preserve">
+    <value>فقط تصاویر PNG، JPEG و WebP تا حداکثر ۱۰ مگابایت پذیرفته می‌شوند</value>
+  </data>
+  <data name="APP_StringKeys_ImageSearch_Title" xml:space="preserve">
+    <value>جستجوی کالا با تصویر</value>
+  </data>
+  <data name="APP_StringKeys_ImageSearch_Upload" xml:space="preserve">
+    <value>انتخاب تصاویر</value>
+  </data>
+  <data name="APP_StringKeys_ImageSearch_Search" xml:space="preserve">
+    <value>جستجو</value>
+  </data>
+  <data name="APP_StringKeys_ImageSearch_Score" xml:space="preserve">
+    <value>درصد شباهت</value>
+  </data>
+  <data name="APP_StringKeys_ImageSearch_NoResult" xml:space="preserve">
+    <value>کالای مشابهی یافت نشد</value>
+  </data>
+  <data name="APP_StringKeys_ImageSearch_Hint" xml:space="preserve">
+    <value>حداکثر ۸ تصویر PNG، JPEG یا WebP با حجم حداکثر ۱۰ مگابایت</value>
+  </data>
+  <data name="APP_StringKeys_ImageSearch_QuerySummary" xml:space="preserve">
+    <value>خلاصه تحلیل تصویر</value>
+  </data>
+  <data name="APP_StringKeys_ImageSearch_Failed" xml:space="preserve">
+    <value>جستجوی کالا با تصویر انجام نشد</value>
+  </data>
+  <data name="APP_StringKeys_ImageSearch_Reset" xml:space="preserve">
+    <value>پاک کردن</value>
+  </data>
 </root>

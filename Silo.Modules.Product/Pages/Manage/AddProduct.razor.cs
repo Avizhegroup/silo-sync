@@ -302,6 +302,46 @@ public partial class AddProduct
         IsLoading = false;
     }
 
+    public async Task OnAnalyzeImageClick()
+    {
+        if (Product.ProductGalleryId.Equals(0))
+        {
+            Notification.Show(TextResources.APP_StringKeys_ProductPattern_NoImage, "error");
+
+            return;
+        }
+
+        IsLoading = true;
+
+        try
+        {
+            var result = (await Api.SendAsyncObjectByUri<AnalyzeProductImageVm>(HttpMethod.Post
+                , "Product/AnalyzeProductImage"
+                , new AnalyzeProductImageCommand { GalleryId = Product.ProductGalleryId }))?.Value;
+
+            if (result is { Succeeded: true })
+            {
+                Product.ProductPattern = result.Pattern;
+
+                Notification.Show(TextResources.APP_StringKeys_Alert_Success, "success");
+            }
+            else
+            {
+                Notification.Show(result?.Message is "UnsupportedImageType" or "ImageSizeInvalid"
+                    ? TextResources.APP_StringKeys_ProductPattern_UnsupportedImage
+                    : TextResources.APP_StringKeys_ProductPattern_Failed, "error");
+            }
+        }
+        catch (Exception)
+        {
+            Notification.Show(TextResources.APP_StringKeys_ProductPattern_Failed, "error");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
     public async Task OnCompleteUpload(GalleryFileUploadedDto galleryFileUploaded)
     {
         Product.ProductGalleryId = galleryFileUploaded.Id;

@@ -69,7 +69,7 @@ public class Product
     public DateTime? RegDateTime { get; set; }
 
     [Column("ProductGalleryId")]
-    public int ProductGalleryId { get; set; }
+    public int? ProductGalleryId { get; set; }
 
     [Column("ProductTechnicalData")]
     public string? TechnicalData { get; set; }
@@ -127,4 +127,8 @@ public class Product
 
     [Column("fld_HasDoubleTag")]
     public bool? HasDoubleTag { get; set; }
+
+    /// <summary>AI generated visual pattern (JSON) of the product image, used by image search.</summary>
+    [Column("fld_ProductPattern")]
+    public string? ProductPattern { get; set; }
 }

@@ -1,0 +1,14 @@
+[
+  {
+    "outputFileName": "wwwroot/js/Silo.Shared.Components.js",
+    "inputFiles": [
+      "wwwroot/js/Inputs/FileUpload/FileUpload.js",
+      "wwwroot/js/Charts/ChartPrinter.js",
+      "wwwroot/js/Inputs/Datepicker/datepicker.js",
+      "wwwroot/js/Inputs/Clockpicker/bootstrap-clockpicker.js"
+    ],
+    "minify": {
+      "enabled": true
+    }
+  }
+]

@@ -14,4 +14,22 @@ public class ProductController(ILogger<DocumentController> logger, IMediator med
         Successful = true,
         Value = (await mediator.Send<TransferProductVm>(command)).Result
     });
+
+    [HttpPost("[action]")]
+    [ProducesDefaultResponseType(typeof(AnalyzeProductImageVm))]
+    public async Task<IActionResult> AnalyzeProductImage([FromBody] AnalyzeProductImageCommand command)
+    => Ok(new ApiResponse<AnalyzeProductImageVm>()
+    {
+        Successful = true,
+        Value = await mediator.Send(command)
+    });
+
+    [HttpPost("[action]")]
+    [ProducesDefaultResponseType(typeof(SearchProductsByImageVm))]
+    public async Task<IActionResult> SearchProductsByImage([FromBody] SearchProductsByImageQuery query)
+    => Ok(new ApiResponse<SearchProductsByImageVm>()
+    {
+        Successful = true,
+        Value = await mediator.Send(query)
+    });
 }

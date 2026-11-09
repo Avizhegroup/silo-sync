@@ -95,9 +95,9 @@ public class SaveGalleryMediaWithFileHandler(WmsApiContext context
                 .FirstOrDefaultAsync(p => p.Code == request.UsageId, cancellationToken);
 
             if (product == null)
-                return false;
+                return true;
 
-            if (product.ProductGalleryId.NotEquals(0))
+            if (product.ProductGalleryId.HasValue && product.ProductGalleryId != 0)
             {
                 await RemoveExistingGalleryMediaAsync(product.ProductGalleryId, cancellationToken);
             }
@@ -108,7 +108,7 @@ public class SaveGalleryMediaWithFileHandler(WmsApiContext context
             return await context.SaveChangesAsync(cancellationToken) > 0;
         }
 
-        async Task RemoveExistingGalleryMediaAsync(int galleryId, CancellationToken cancellationToken)
+        async Task RemoveExistingGalleryMediaAsync(int? galleryId, CancellationToken cancellationToken)
         {
             var existingMedia = await context.GalleryMedias
                 .FirstAsync(p => p.Id == galleryId, cancellationToken);

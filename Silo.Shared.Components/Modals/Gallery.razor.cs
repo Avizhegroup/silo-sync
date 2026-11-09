@@ -78,7 +78,7 @@ public partial class Gallery
                     content
                 )).Value;
 
-                if (media is not null)
+                if (media is not null && media.Id != 0)
                 {
                     GetGalleryMediasDto uploadMedia = Mapper.Map<GetGalleryMediasDto>(media);
 

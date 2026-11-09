@@ -28,4 +28,5 @@ public class GetAllProductVm
     public string ProductClassTitle { get; set; }
     public string ProductSubGroup { get; set; }
     public string ProductSubGroupTitle { get; set; }
+    public string ProductPattern { get; set; }
 }

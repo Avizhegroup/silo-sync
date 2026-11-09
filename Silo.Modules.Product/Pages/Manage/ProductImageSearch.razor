@@ -1,0 +1,92 @@
+@page "/product/imagesearch"
+@inherits SiloBasePage
+@namespace Silo.Modules.Product.Pages
+@using Microsoft.AspNetCore.Components.Web
+@using Silo.Application.Features
+@using Silo.Shared.Components
+@using Telerik.Blazor.Components
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="row col-md-12">
+    <div class="card card-stats border-0 shadow-sm col-md-12 text-align-center">
+        <h6 class="form-title card-title" style="text-align: center !important;">
+            @TextResources.APP_StringKeys_ImageSearch_Title
+        </h6>
+        <div class="d-flex flex-row align-items-center flex-wrap gap-2 justify-content-center">
+            <TelerikFileSelect Multiple="true"
+                               AllowedExtensions="@AllowedExtensions"
+                               MaxFileSize="@MaxFileSize"
+                               OnSelect="OnFilesSelected"
+                               OnRemove="OnFileRemoved"></TelerikFileSelect>
+            <button class="btn btn-primary" type="button"
+                    title="@TextResources.APP_StringKeys_ImageSearch_Search"
+                    disabled="@(Images.Count == 0 || IsLoading)"
+                    @onclick="OnSearchClick">
+                <MaterialIcon IconName="search"></MaterialIcon>
+            </button>
+            <button class="btn btn-warning" type="button"
+                    title="@TextResources.APP_StringKeys_ImageSearch_Reset"
+                    @onclick="OnResetClick">
+                <MaterialIcon IconName="refresh"></MaterialIcon>
+            </button>
+        </div>
+        <small class="text-muted">@TextResources.APP_StringKeys_ImageSearch_Hint</small>
+        @if (Images.Any())
+        {
+            <div class="d-flex flex-row flex-wrap gap-2 justify-content-center" style="margin-top:10px;">
+                @foreach (var image in Images)
+                {
+                    <img width="90" height="90" style="object-fit:cover;border-radius:6px;"
+                         src="data:@image.ContentType;base64,@image.Base64" alt="@image.FileName" />
+                }
+            </div>
+        }
+    </div>
+
+    @if (Result is not null)
+    {
+        <div class="card card-stats border-0 shadow-sm col-md-12 text-align-center" style="margin-top:5px;">
+            @if (Result.QuerySummary.HasValue())
+            {
+                <div style="margin-bottom:8px;">
+                    <b>@TextResources.APP_StringKeys_ImageSearch_QuerySummary :</b> @Result.QuerySummary
+                    @if (Result.QueryKeywords.Any())
+                    {
+                        <div class="d-flex flex-row flex-wrap gap-1 justify-content-center" style="margin-top:6px;">
+                            @foreach (var keyword in Result.QueryKeywords)
+                            {
+                                <span class="badge bg-info">@keyword</span>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            @if (Result.Items.Any())
+            {
+                <TelerikGrid Data="Result.Items"
+                             Sortable="true"
+                             Pageable="true"
+                             PageSize="10"
+                             Class="grid-all">
+                    <GridColumns>
+                        <GridColumn Field="@nameof(ProductImageMatchVm.ProductCode)" Title="@TextResources.APP_StringKeys_ProductCode"></GridColumn>
+                        <GridColumn Field="@nameof(ProductImageMatchVm.ProductTitle)" Title="@TextResources.APP_StringKeys_ProductTitle"></GridColumn>
+                        <GridColumn Field="@nameof(ProductImageMatchVm.PatternSummary)" Title="@TextResources.APP_StringKeys_ProductPattern"></GridColumn>
+                        <GridColumn Field="@nameof(ProductImageMatchVm.Score)" Title="@TextResources.APP_StringKeys_ImageSearch_Score" DisplayFormat="{0:N1} %"></GridColumn>
+                    </GridColumns>
+                </TelerikGrid>
+            }
+            else
+            {
+                <p style="margin:0;">@TextResources.APP_StringKeys_ImageSearch_NoResult</p>
+            }
+        </div>
+    }
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>

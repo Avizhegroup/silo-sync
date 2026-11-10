@@ -1,0 +1,77 @@
+@page "/account/chartaccess"
+@page "/account/chartaccess/{AccountId}"
+@inherits SiloBasePage
+@namespace Silo.Pages.Account
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="card mb-2">
+    <div class="card-body py-2 d-flex align-items-center gap-2 flex-wrap">
+        <button type="button" 
+                class="btn btn-warning btn-sm" 
+                @onclick="OnClearClick">
+            <MaterialIcon IconName="@MaterialIconsHelper.Refresh"></MaterialIcon>
+        </button>
+        <button type="button"
+                class="btn btn-sm btn-primary"
+                @onclick="OnSaveClick">
+            <MaterialIcon IconName="@MaterialIconsHelper.Save"></MaterialIcon>
+        </button>
+    </div>
+</div>
+
+<div class="card card-stats text-align-center col-md-12" style="margin-top:5px;">
+    <div class="row">
+        <div class="col-md-12">
+            @if (IsEditable)
+            {
+                <div style="padding: 20px;">
+                    <h5>@ChartAccessTitle</h5>
+                    <div class="d-flex flex-column gap-3" style="margin-top: 20px;">
+                        @if (AvailableItems.Any())
+                        {
+                            @foreach (var item in AvailableItems)
+                            {
+                                <div class="form-check">
+                                    <TelerikCheckBox @bind-Value="@item.HasAccess" Class="form-check-input" />
+                                    <label class="form-check-label ms-2">
+                                        @item.ItemTitle
+                                    </label>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p>@TextResources.APP_StringKeys_Capacity_Empty</p>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card card-stats text-align-center text-warning" style="margin-top:5px;">
+                    @TextResources.APP_StringKeys_Message_Access_NotChangable
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+<Modal Buttons="ModalButtons.OKClose"
+       ModalTitle="@TextResources.APP_StringKeys_Details"
+       @ref="ModalMessage"
+       Size="ModalSize.Normal"
+       CloseBtnText="@TextResources.APP_StringKeys_Close"
+       OkBtnText="@TextResources.APP_StringKeys_Ok">
+    <ModalBodyContentHtml>
+        <div class="text-align-center">
+            @DialogMessage
+        </div>
+    </ModalBodyContentHtml>
+</Modal>

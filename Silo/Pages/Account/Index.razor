@@ -41,6 +41,9 @@
                         <NavButton Class="btn btn-warning tr-buttom" Link="@($"/account/access/{user.Username}")">
                             <img src="/images/Utilities/unlock.png" width="15" height="15" />
                         </NavButton>
+                        <NavButton Class="btn btn-info tr-buttom" Link="@($"/account/chartaccess/{user.Username}")">
+                            <MaterialIcon IconName="@MaterialIconsHelper.BarChart"></MaterialIcon>
+                        </NavButton>
                     </td>
                 </RowTemplate>
                 <GridColumns>

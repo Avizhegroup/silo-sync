@@ -7,15 +7,17 @@ public class AddBulkUserClaimsHandler(WmsApiContext context)
         AddBulkUserClaimsCommand request,
         CancellationToken cancellationToken)
     {
-        if (!request.UserIds.Any() || !request.Claims.Any())
-        {
+        if (!request.UserIds.Any())
             return new AddBulkUserClaimsVm { Succeeded = false };
-        }
 
-        var claimTypes = request.Claims
-            .Select(c => c.Type)
-            .Distinct()
-            .ToList();
+        var claimTypes = request.ReplaceClaimTypes?.Distinct().ToList()
+            ?? request.Claims.Select(c => c.Type).Distinct().ToList();
+
+        if (!claimTypes.Any())
+            return new AddBulkUserClaimsVm { Succeeded = false };
+
+        if (request.Claims.Any(c => !claimTypes.Contains(c.Type)))
+            return new AddBulkUserClaimsVm { Succeeded = false };
 
         await using var transaction = await context.Database
             .BeginTransactionAsync(cancellationToken);
@@ -25,23 +27,27 @@ public class AddBulkUserClaimsHandler(WmsApiContext context)
             foreach (var userId in request.UserIds)
             {
                 var existing = await context.UserClaims
-                    .Where(uc => uc.UserId == userId && claimTypes.Contains(uc.ClaimType))
+                    .Where(uc =>
+                        uc.UserId == userId &&
+                        claimTypes.Contains(uc.ClaimType))
                     .ToListAsync(cancellationToken);
 
                 context.UserClaims.RemoveRange(existing);
 
-                await context.UserClaims.AddRangeAsync(
-                    request.Claims.Select(c => new UserClaim
-                    {
-                        UserId = userId,
-                        ClaimType = c.Type,
-                        ClaimValue = c.Value
-                    }),
-                    cancellationToken);
+                if (request.Claims.Any())
+                {
+                    await context.UserClaims.AddRangeAsync(
+                        request.Claims.Select(c => new UserClaim
+                        {
+                            UserId = userId,
+                            ClaimType = c.Type,
+                            ClaimValue = c.Value
+                        }),
+                        cancellationToken);
+                }
             }
 
             await context.SaveChangesAsync(cancellationToken);
-
             await transaction.CommitAsync(cancellationToken);
 
             return new AddBulkUserClaimsVm { Succeeded = true };
@@ -49,7 +55,6 @@ public class AddBulkUserClaimsHandler(WmsApiContext context)
         catch
         {
             await transaction.RollbackAsync(cancellationToken);
-
             return new AddBulkUserClaimsVm { Succeeded = false };
         }
     }

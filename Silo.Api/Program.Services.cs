@@ -111,6 +111,7 @@ public static partial class Program
         {
             client.BaseAddress = new Uri(configuration["SiloAI:BaseUrl"]);
             client.DefaultRequestHeaders.Add("X-Api-Key", configuration["SiloAI:ApiKey"]);
+            client.Timeout = TimeSpan.FromMinutes(3);
         });
 
         services.AddOptions<RagAiOptions>()

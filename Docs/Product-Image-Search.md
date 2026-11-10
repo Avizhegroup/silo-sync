@@ -27,5 +27,8 @@ Run `Silo.Domains/Scripts/Migration_ProductImageSearch.sql` (idempotent) on exis
 `Silo.Api.Db/Tables/tbl_Products.sql`. Texts: `Silo.Domains/Scripts/Seed_tbl_TextResources.sql`.
 Non-admin roles receive the page through the Access page (tbl_UserClaim) like any other menu link.
 
-## Tests
-`Silo.Tests` (xunit): pattern parsing/similarity/ranking and `AnalyzeProductImageHandler` with a fake AI client.
+## AI key and upload
+- `SiloAI:ProductIdentifyKey` (Silo.Api appsettings) is sent as the `key` field of `/api/image-analysis`; the stored
+  instructions under that key define the analysis. Without a key the built-in JSON prompt is used.
+- The search page streams the selected files as multipart parts (`Images`) straight to
+  `Product/SearchProductsByImage`; images are never converted to base64. Errors are logged by the page.

@@ -1,15 +1,22 @@
-﻿namespace Silo.Modules.Product.Pages;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.Logging;
+
+namespace Silo.Modules.Product.Pages;
 
 public partial class ProductImageSearch
 {
-    public static readonly List<string> AllowedExtensions = [".png", ".jpg", ".jpeg", ".webp"];
-    public const int MaxFileSize = 10 * 1024 * 1024;
+    public const string AcceptedTypes = ".png,.jpg,.jpeg,.webp";
+    public const long MaxFileSize = 10 * 1024 * 1024;
 
     public bool IsLoading;
-    public List<ProductImageFileDto> Images = [];
+
+    /// <summary>Selected files stay in the browser connection and are streamed on search; nothing is converted to text.</summary>
+    public List<IBrowserFile> Images = [];
+
     public SearchProductsByImageVm Result;
 
     [Inject] public RfidConnectApi Api { get; set; }
+    [Inject] public ILogger<ProductImageSearch> Logger { get; set; }
 
     protected override async Task SiloInitializer()
     {
@@ -18,52 +25,42 @@ public partial class ProductImageSearch
         await Task.CompletedTask;
     }
 
-    public async Task OnFilesSelected(FileSelectEventArgs args)
+    public void OnFilesSelected(InputFileChangeEventArgs args)
     {
         try
         {
-            foreach (var file in args.Files)
+            // GetMultipleFiles throws when more files than the limit are picked
+            foreach (var file in args.GetMultipleFiles(int.MaxValue))
             {
                 if (Images.Count >= ProductPatternHelper.MaxImages)
                 {
                     break;
                 }
 
-                var contentType = ContentTypeOf(file.Extension);
-
-                if (contentType is null || file.Size > MaxFileSize)
+                if (ContentTypeOf(file.Name) is null || file.Size == 0 || file.Size > MaxFileSize)
                 {
                     Notification.Show(TextResources.APP_StringKeys_ProductPattern_UnsupportedImage, "error");
 
                     continue;
                 }
 
-                using var ms = new MemoryStream();
-
-                await file.Stream.CopyToAsync(ms);
-
-                Images.Add(new ProductImageFileDto
-                {
-                    FileName = file.Name,
-                    ContentType = contentType,
-                    Base64 = Convert.ToBase64String(ms.ToArray())
-                });
+                Images.Add(file);
             }
 
+            Result = null;
         }
         catch (Exception ex)
         {
+            Logger.LogError(ex, "Selecting product search images failed");
 
-            throw;
+            Notification.Show(TextResources.APP_StringKeys_ImageSearch_Failed, "error");
         }
     }
 
-    public void OnFileRemoved(FileSelectEventArgs args)
+    public void OnRemoveFile(IBrowserFile file)
     {
-        foreach (var file in args.Files)
-        {
-            Images.RemoveAll(i => i.FileName == file.Name);
-        }
+        Images.Remove(file);
+        Result = null;
     }
 
     public async Task OnSearchClick()
@@ -79,9 +76,19 @@ public partial class ProductImageSearch
 
         try
         {
-            var result = (await Api.SendAsyncObjectByUri<SearchProductsByImageVm>(HttpMethod.Post
-                , "Product/SearchProductsByImage"
-                , new SearchProductsByImageQuery { Images = Images }))?.Value;
+            // Raw files as multipart parts; each is streamed from the browser, so the data is never buffered as base64.
+            using var content = new MultipartFormDataContent();
+
+            foreach (var file in Images)
+            {
+                var part = new StreamContent(file.OpenReadStream(maxAllowedSize: MaxFileSize));
+
+                part.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(ContentTypeOf(file.Name));
+
+                content.Add(part, "Images", file.Name);
+            }
+
+            var result = (await Api.PostMultipartContentAsync<SearchProductsByImageVm>("Product/SearchProductsByImage", content))?.Value;
 
             if (result is { Succeeded: true })
             {
@@ -96,8 +103,10 @@ public partial class ProductImageSearch
                     : TextResources.APP_StringKeys_ImageSearch_Failed, "error");
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Logger.LogError(ex, "Product image search failed");
+
             Result = null;
 
             Notification.Show(TextResources.APP_StringKeys_ImageSearch_Failed, "error");
@@ -114,8 +123,8 @@ public partial class ProductImageSearch
         Result = null;
     }
 
-    public static string ContentTypeOf(string extension)
-        => extension?.ToLowerInvariant() switch
+    public static string ContentTypeOf(string fileName)
+        => Path.GetExtension(fileName)?.ToLowerInvariant() switch
         {
             ".png" => "image/png",
             ".jpg" or ".jpeg" => "image/jpeg",

@@ -2,6 +2,9 @@
 
 public interface IAiApiClient
 {
+    /// <summary>Instruction key (<c>SiloAI:ProductIdentifyKey</c>) used for product image identification.</summary>
+    string ProductIdentifyKey { get; }
+
     /// <summary>Sends image bytes to the AI for OCR and returns the extracted text.</summary>
     Task<string> SendIFileGetStringAsync(byte[] imageData
         , string mediaType

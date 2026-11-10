@@ -9,46 +9,39 @@ public class AnalyzeProductImageHandler(WmsApiContext context
 {
     public async Task<AnalyzeProductImageVm> Handle(AnalyzeProductImageCommand request, CancellationToken cancellationToken)
     {
-        List<AiImageInput> images;
-
-        if (request.Images is { Count: > 0 })
-        {
-            var (created, error) = ProductImageInputFactory.Create(request.Images);
-
-            if (error is not null)
-            {
-                return new() { Succeeded = false, Message = error };
-            }
-
-            images = created;
-        }
-        else if (request.GalleryId > 0)
-        {
-            var gallery = await context.GalleryMedias.AsNoTracking()
-                .FirstOrDefaultAsync(g => g.Id == request.GalleryId, cancellationToken);
-
-            if (gallery is null || !File.Exists(gallery.MediaPath))
-            {
-                return new() { Succeeded = false, Message = "NoImage" };
-            }
-
-            var bytes = await File.ReadAllBytesAsync(gallery.MediaPath, cancellationToken);
-
-            if (bytes.Length == 0 || bytes.Length > ProductPatternHelper.MaxImageBytes)
-            {
-                return new() { Succeeded = false, Message = "ImageSizeInvalid" };
-            }
-
-            images = [new AiImageInput(bytes, ProductImageInputFactory.MediaTypeFromFileName(gallery.MediaName), gallery.MediaName)];
-        }
-        else
+        if (request.GalleryId <= 0)
         {
             return new() { Succeeded = false, Message = "NoImage" };
         }
 
+        var gallery = await context.GalleryMedias.AsNoTracking()
+            .FirstOrDefaultAsync(g => g.Id == request.GalleryId, cancellationToken);
+
+        if (gallery is null || !File.Exists(gallery.MediaPath))
+        {
+            return new() { Succeeded = false, Message = "NoImage" };
+        }
+
+        var mediaType = ProductImageInputFactory.MediaTypeFromFileName(gallery.MediaPath)
+            ?? ProductImageInputFactory.MediaTypeFromFileName(gallery.MediaName);
+
+        if (mediaType is null)
+        {
+            return new() { Succeeded = false, Message = "UnsupportedImageType" };
+        }
+
+        var bytes = await File.ReadAllBytesAsync(gallery.MediaPath, cancellationToken);
+
+        if (bytes.Length == 0 || bytes.Length > ProductPatternHelper.MaxImageBytes)
+        {
+            return new() { Succeeded = false, Message = "ImageSizeInvalid" };
+        }
+
+        List<AiImageInput> images = [new AiImageInput(bytes, mediaType, gallery.MediaName)];
+
         try
         {
-            var text = await aiApiClient.AnalyzeImagesAsync(images, ProductPatternHelper.Prompt, null, cancellationToken);
+            var text = await aiApiClient.AnalyzeImagesAsync(images, ProductPatternHelper.PromptFor(aiApiClient.ProductIdentifyKey), aiApiClient.ProductIdentifyKey, cancellationToken);
             var pattern = ProductPatternHelper.Parse(text);
 
             if (pattern.IsEmpty)

@@ -24,6 +24,10 @@ public static class ProductPatternHelper
         "\"materials\" (array), \"shapes\" (array), \"keywords\" (array of 5-15 short descriptive words, " +
         "Persian and English).";
 
+    /// <summary>The built-in prompt is only needed when no instruction key is configured (the key carries the instructions).</summary>
+    public static string PromptFor(string instructionKey)
+        => string.IsNullOrWhiteSpace(instructionKey) ? Prompt : null;
+
     public static bool IsAllowedMediaType(string mediaType)
         => !string.IsNullOrWhiteSpace(mediaType)
            && AllowedMediaTypes.Contains(mediaType.Trim().ToLowerInvariant());
@@ -55,6 +59,14 @@ public static class ProductPatternHelper
                     pattern.Materials = ReadList(root, "materials");
                     pattern.Shapes = ReadList(root, "shapes");
                     pattern.Keywords = ReadList(root, "keywords");
+
+                    if (pattern.IsEmpty)
+                    {
+                        // Unknown JSON shape (the instructions stored under the AI key may differ): keep every text value.
+                        var texts = new List<string>();
+                        CollectStrings(root, texts);
+                        pattern.Summary = string.Join(" ", texts);
+                    }
 
                     return pattern;
                 }
@@ -194,6 +206,22 @@ public static class ProductPatternHelper
         return start >= 0 && end > start ? text[start..(end + 1)] : null;
     }
 
+    private static void CollectStrings(JsonElement element, List<string> texts)
+    {
+        switch (element.ValueKind)
+        {
+            case JsonValueKind.String when !string.IsNullOrWhiteSpace(element.GetString()):
+                texts.Add(element.GetString()!.Trim());
+                break;
+            case JsonValueKind.Array:
+                foreach (var item in element.EnumerateArray()) CollectStrings(item, texts);
+                break;
+            case JsonValueKind.Object:
+                foreach (var property in element.EnumerateObject()) CollectStrings(property.Value, texts);
+                break;
+        }
+    }
+
     private static string ReadString(JsonElement root, string name)
         => root.TryGetProperty(name, out var el) && el.ValueKind == JsonValueKind.String
             ? el.GetString()?.Trim() ?? string.Empty
@@ -236,6 +264,7 @@ public class ProductPattern
     public List<string> Shapes { get; set; } = [];
     public List<string> Keywords { get; set; } = [];
 
+    [System.Text.Json.Serialization.JsonIgnore]
     public bool IsEmpty => string.IsNullOrWhiteSpace(Summary) && string.IsNullOrWhiteSpace(Category)
         && Colors.Count == 0 && Materials.Count == 0 && Shapes.Count == 0 && Keywords.Count == 0;
 }
@@ -265,7 +294,7 @@ public static class ProductPatternMatcher
                     ProductId = c.Id,
                     ProductCode = c.Code,
                     ProductTitle = c.Title,
-                    ProductGalleryId = (int)c.GalleryId,
+                    ProductGalleryId = c.GalleryId ?? 0,
                     PatternSummary = pattern.Summary,
                     Score = ProductPatternHelper.Similarity(query, pattern)
                 };

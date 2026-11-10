@@ -9,7 +9,7 @@ public class SearchProductsByImageHandler(WmsApiContext context
 {
     public async Task<SearchProductsByImageVm> Handle(SearchProductsByImageQuery request, CancellationToken cancellationToken)
     {
-        var (images, error) = ProductImageInputFactory.Create(request.Images);
+        var (images, error) = await ProductImageInputFactory.CreateAsync(request.Images, cancellationToken);
 
         if (error is not null)
         {
@@ -20,7 +20,7 @@ public class SearchProductsByImageHandler(WmsApiContext context
 
         try
         {
-            var text = await aiApiClient.AnalyzeImagesAsync(images, ProductPatternHelper.Prompt, null, cancellationToken);
+            var text = await aiApiClient.AnalyzeImagesAsync(images, ProductPatternHelper.PromptFor(aiApiClient.ProductIdentifyKey), aiApiClient.ProductIdentifyKey, cancellationToken);
             query = ProductPatternHelper.Parse(text);
         }
         catch (AiImageAnalysisException ex)

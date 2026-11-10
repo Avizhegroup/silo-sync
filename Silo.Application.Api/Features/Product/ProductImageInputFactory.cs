@@ -1,45 +1,40 @@
+using Microsoft.AspNetCore.Http;
 using Silo.Application.Api.Contracts;
 
 namespace Silo.Application.Api.Features;
 
-/// <summary>Validates and decodes the images of an analysis request.</summary>
+/// <summary>Validates uploaded images and converts them to raw AI inputs (bytes, no text encoding).</summary>
 public static class ProductImageInputFactory
 {
-    public static (List<AiImageInput> Images, string Error) Create(IEnumerable<ProductImageFileDto> files)
+    public static async Task<(List<AiImageInput> Images, string Error)> CreateAsync(IEnumerable<IFormFile> files
+        , CancellationToken cancellationToken = default)
     {
         var list = new List<AiImageInput>();
 
         foreach (var file in files ?? [])
         {
-            if (string.IsNullOrWhiteSpace(file?.Base64))
+            if (file is null || file.Length == 0)
             {
                 continue;
             }
 
-            if (!ProductPatternHelper.IsAllowedMediaType(file.ContentType))
+            var mediaType = ResolveMediaType(file.ContentType, file.FileName);
+
+            if (!ProductPatternHelper.IsAllowedMediaType(mediaType))
             {
                 return (null, "UnsupportedImageType");
             }
 
-            byte[] data;
-
-            try
-            {
-                var base64 = file.Base64;
-                var comma = base64.IndexOf(',');
-                data = Convert.FromBase64String(comma >= 0 && base64.StartsWith("data:") ? base64[(comma + 1)..] : base64);
-            }
-            catch (FormatException)
-            {
-                return (null, "InvalidImageData");
-            }
-
-            if (data.Length == 0 || data.Length > ProductPatternHelper.MaxImageBytes)
+            if (file.Length > ProductPatternHelper.MaxImageBytes)
             {
                 return (null, "ImageSizeInvalid");
             }
 
-            list.Add(new AiImageInput(data, file.ContentType.Trim().ToLowerInvariant(), file.FileName));
+            using var ms = new MemoryStream((int)file.Length);
+
+            await file.CopyToAsync(ms, cancellationToken);
+
+            list.Add(new AiImageInput(ms.ToArray(), mediaType, file.FileName));
         }
 
         if (list.Count == 0)
@@ -55,11 +50,18 @@ public static class ProductImageInputFactory
         return (list, null);
     }
 
+    /// <summary>Browser content type when it is an allowed image type, otherwise derived from the extension.</summary>
+    public static string ResolveMediaType(string contentType, string fileName)
+        => ProductPatternHelper.IsAllowedMediaType(contentType)
+            ? contentType.Trim().ToLowerInvariant()
+            : MediaTypeFromFileName(fileName);
+
     public static string MediaTypeFromFileName(string fileName)
         => System.IO.Path.GetExtension(fileName)?.ToLowerInvariant() switch
         {
             ".png" => "image/png",
             ".webp" => "image/webp",
-            _ => "image/jpeg"
+            ".jpg" or ".jpeg" => "image/jpeg",
+            _ => null
         };
 }

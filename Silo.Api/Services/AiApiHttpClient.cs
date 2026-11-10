@@ -5,8 +5,10 @@ namespace Silo.Api.Services;
 /// HTTP client that calls Silo.Api.AI endpoints.
 /// The X-Api-Key header and base address are configured at registration time in Program.Services.cs.
 /// </summary>
-public class AiApiHttpClient(HttpClient httpClient) : IAiApiClient
+public class AiApiHttpClient(HttpClient httpClient, IConfiguration configuration) : IAiApiClient
 {
+    public string ProductIdentifyKey => configuration["SiloAI:ProductIdentifyKey"];
+
     public async Task<string> SendIFileGetStringAsync(byte[] imageData
         , string mediaType
         , RagDocType docType

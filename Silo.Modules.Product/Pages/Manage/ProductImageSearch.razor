@@ -14,11 +14,15 @@
             @TextResources.APP_StringKeys_ImageSearch_Title
         </h6>
         <div class="d-flex flex-row align-items-center flex-wrap gap-2 justify-content-center">
-            <TelerikFileSelect Multiple="true"
-                               AllowedExtensions="@AllowedExtensions"
-                               MaxFileSize="@MaxFileSize"
-                               OnSelect="OnFilesSelected"
-                               OnRemove="OnFileRemoved"></TelerikFileSelect>
+            <label class="btn btn-success" for="image-search-input" style="margin:0;" title="@TextResources.APP_StringKeys_ImageSearch_Upload">
+                <MaterialIcon IconName="cloud_upload"></MaterialIcon>
+                @TextResources.APP_StringKeys_ImageSearch_Upload
+            </label>
+            <InputFile id="image-search-input"
+                       OnChange="OnFilesSelected"
+                       multiple
+                       accept="@AcceptedTypes"
+                       style="width:0;height:0;position:absolute;opacity:0;"></InputFile>
             <button class="btn btn-primary" type="button"
                     title="@TextResources.APP_StringKeys_ImageSearch_Search"
                     disabled="@(Images.Count == 0 || IsLoading)"
@@ -37,8 +41,12 @@
             <div class="d-flex flex-row flex-wrap gap-2 justify-content-center" style="margin-top:10px;">
                 @foreach (var image in Images)
                 {
-                    <img width="90" height="90" style="object-fit:cover;border-radius:6px;"
-                         src="data:@image.ContentType;base64,@image.Base64" alt="@image.FileName" />
+                    <span class="badge bg-secondary d-flex align-items-center gap-1" style="font-size:0.85rem;">
+                        @image.Name (@(image.Size / 1024) KB)
+                        <button type="button" class="btn btn-sm text-white p-0" @onclick="() => OnRemoveFile(image)">
+                            <MaterialIcon IconName="close"></MaterialIcon>
+                        </button>
+                    </span>
                 }
             </div>
         }

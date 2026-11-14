@@ -1,4 +1,6 @@
 ﻿
+using Silo.Application.Shared.Features;
+
 namespace Silo.Pages.Home;
 
 public partial class Home : IDisposable
@@ -15,7 +17,7 @@ public partial class Home : IDisposable
     public List<GetTagStatsOnProductDateVm> OnDates = new();
     public List<GetTagsStatsOnShiftVm> OnShifts = new();
     public List<GetTagStatsOnLineVm> OnLines = new();
-
+    public List<GetDashboardItemsVm> DashboardItems { get; set; } = new();
     public List<GetUserQuickAccessVm> QuickAccessLinks = new();
     public GetUserQuickAccessVm QuickAccessContextTarget;
     public List<TelerikContextMenuItem> QuickContextMenuItems = new()
@@ -24,8 +26,10 @@ public partial class Home : IDisposable
     };
     public string PieSeriesLabel = "#=category#\n #=value# %";
 
-    public HashSet<string> AllowedDashboardItems = new(
-        StringComparer.OrdinalIgnoreCase);
+    public int VisibleKpiCount => DashboardItems.Count(x => x.ItemType == "Card");
+    public bool ShowRow1Charts => HasDashboardAccess("ProductDate") || HasDashboardAccess("ProductCode");
+    public bool ShowRow2Charts => HasDashboardAccess("Shift") || HasDashboardAccess("ProductLine");
+    public bool ShowAnyKpi => VisibleKpiCount > 0;
 
     [Inject] public RfidConnectApi Api { get; set; }
     [Inject] public IClaimManager ClaimManager { get; set; }
@@ -88,40 +92,32 @@ public partial class Home : IDisposable
 
         var isAdmin = await ClaimManager.IsUserAdmin();
 
+        var allDashboardItems = (await Api.SendAsyncObjectByUri<List<GetDashboardItemsVm>>(HttpMethod.Get, "Dashboard/GetDashboardItems")).Value;
+
         if (isAdmin)
         {
-            AllowedDashboardItems = new HashSet<string>(
-                StringComparer.OrdinalIgnoreCase)
-            {
-                "BriefDaily",
-                "BriefMonthly",
-                "BriefYearly",
-                "ProductDate",
-                "ProductCode",
-                "Shift",
-                "ProductLine"
-            };
+            DashboardItems = allDashboardItems;
         }
+
         else
         {
             var claims = await ClaimManager.GetUserClaims();
 
-            AllowedDashboardItems = claims
+            var allowedCodes = claims
                 .Where(c => c.Type == "dashboard")
                 .Select(c => c.Value)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            DashboardItems = allDashboardItems
+                .Where(item => allowedCodes.Contains(item.ItemCode))
+                .ToList();
         }
 
         IsDashboardPermissionsLoaded = true;
 
-        // دریافت اطلاعات KPI فقط در صورت داشتن مجوز حداقل یکی از کارت‌ها
         if (ShowAnyKpi)
         {
-            var onBrief = (await Api
-                .PostAsyncByContext<List<OnBrief>>(
-                    "SReportOnBrief",
-                    new GetOnBriefContext()))
-                .Value?.FirstOrDefault();
+            var onBrief = (await Api.PostAsyncByContext<List<OnBrief>>("SReportOnBrief", new GetOnBriefContext())).Value?.FirstOrDefault();
 
             if (onBrief is not null)
             {
@@ -140,13 +136,11 @@ public partial class Home : IDisposable
             Regcode = "-1"
         };
 
-        if (ShowProductCodeChart)
+        if (HasDashboardAccess("ProductCode"))
         {
-            OnProducts = (await Api
-                .PostAsyncByContext<List<GetTagStatsOnProductCodeVm>>(
-                    "SReportOnProductCode",
-                    new GetOnProductReportContext(),
-                    new KeyValuePair<string, object>[]
+            OnProducts = (await Api.PostAsyncByContext<List<GetTagStatsOnProductCodeVm>>("SReportOnProductCode",
+                  new GetOnProductReportContext(),
+                  new KeyValuePair<string, object>[]
                     {
                         new("search", defaultRequest)
                     }))
@@ -158,11 +152,9 @@ public partial class Home : IDisposable
                 .ToList();
         }
 
-        if (ShowProductDateChart)
+        if (HasDashboardAccess("ProductDate"))
         {
-            OnDates = (await Api
-                .PostAsyncByContext<List<GetTagStatsOnProductDateVm>>(
-                    "SReportOnProductDate",
+            OnDates = (await Api.PostAsyncByContext<List<GetTagStatsOnProductDateVm>>("SReportOnProductDate",
                     new GetOnProductDateContext(),
                     new KeyValuePair<string, object>[]
                     {
@@ -171,11 +163,9 @@ public partial class Home : IDisposable
                 .Value ?? new();
         }
 
-        if (ShowShiftChart)
+        if (HasDashboardAccess("Shift"))
         {
-            OnShifts = (await Api
-                .PostAsyncByContext<List<GetTagsStatsOnShiftVm>>(
-                    "SReportOnShift",
+            OnShifts = (await Api.PostAsyncByContext<List<GetTagsStatsOnShiftVm>>("SReportOnShift",
                     new GetOnShiftContext(),
                     new KeyValuePair<string, object>[]
                     {
@@ -184,11 +174,9 @@ public partial class Home : IDisposable
                 .Value ?? new();
         }
 
-        if (ShowProductLineChart)
+        if (HasDashboardAccess("ProductLine"))
         {
-            OnLines = (await Api
-                .PostAsyncByContext<List<GetTagStatsOnLineVm>>(
-                    "SReportOnProductLine",
+            OnLines = (await Api.PostAsyncByContext<List<GetTagStatsOnLineVm>>("SReportOnProductLine",
                     new GetOnProductLineReportContext(),
                     new KeyValuePair<string, object>[]
                     {
@@ -200,27 +188,13 @@ public partial class Home : IDisposable
         IsLoading = false;
     }
 
-    // KPI permissions
-
-    private bool ShowDailyCard =>
-        AllowedDashboardItems.Contains("BriefDaily");
-
-    private bool ShowMonthlyCard =>
-        AllowedDashboardItems.Contains("BriefMonthly");
-
-    private bool ShowYearlyCard =>
-        AllowedDashboardItems.Contains("BriefYearly");
-
-    private bool ShowAnyKpi =>
-        ShowDailyCard || ShowMonthlyCard || ShowYearlyCard;
-
-    private int VisibleKpiCount =>
-        new[]
+    public void Dispose()
+    {
+        if (SiloContext is not null)
         {
-            ShowDailyCard,
-            ShowMonthlyCard,
-            ShowYearlyCard
-        }.Count(x => x);
+            SiloContext.QuickAccessChanged -= OnQuickAccessChange;
+        }
+    }
 
     private string KpiColumnClass => VisibleKpiCount switch
     {
@@ -229,31 +203,8 @@ public partial class Home : IDisposable
         _ => "col-md-4"
     };
 
-    // Chart permissions
-
-    private bool ShowProductDateChart =>
-        AllowedDashboardItems.Contains("ProductDate");
-
-    private bool ShowProductCodeChart =>
-        AllowedDashboardItems.Contains("ProductCode");
-
-    private bool ShowShiftChart =>
-        AllowedDashboardItems.Contains("Shift");
-
-    private bool ShowProductLineChart =>
-        AllowedDashboardItems.Contains("ProductLine");
-
-    private bool ShowRow1Charts =>
-        ShowProductDateChart || ShowProductCodeChart;
-
-    private bool ShowRow2Charts =>
-        ShowShiftChart || ShowProductLineChart;
-
-    public void Dispose()
+    private bool HasDashboardAccess(string itemCode)
     {
-        if (SiloContext is not null)
-        {
-            SiloContext.QuickAccessChanged -= OnQuickAccessChange;
-        }
+        return DashboardItems.Any(x => x.ItemCode.Equals(itemCode, StringComparison.OrdinalIgnoreCase));
     }
 }

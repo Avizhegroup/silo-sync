@@ -76,13 +76,12 @@ else
 
         @if (IsLoading)
         {
-            @* KPI Skeletons *@
             @if (IsDashboardPermissionsLoaded)
             {
                 @if (ShowAnyKpi)
                 {
                     <div class="row g-3 mb-4">
-                        @if (ShowDailyCard)
+                        @if (HasDashboardAccess("BriefDaily"))
                         {
                             <div class="@KpiColumnClass">
                                 <div class="card kpi-card shadow-sm border-0">
@@ -97,7 +96,7 @@ else
                             </div>
                         }
 
-                        @if (ShowMonthlyCard)
+                        @if (HasDashboardAccess("BriefMonthly"))
                         {
                             <div class="@KpiColumnClass">
                                 <div class="card kpi-card shadow-sm border-0">
@@ -112,7 +111,7 @@ else
                             </div>
                         }
 
-                        @if (ShowYearlyCard)
+                        @if (HasDashboardAccess("BriefYearly"))
                         {
                             <div class="@KpiColumnClass">
                                 <div class="card kpi-card shadow-sm border-0">
@@ -129,13 +128,12 @@ else
                     </div>
                 }
 
-                @* Charts Row 1 Skeletons *@
                 @if (ShowRow1Charts)
                 {
                     <div class="row g-3 mb-4">
-                        @if (ShowProductDateChart)
+                        @if (HasDashboardAccess("ProductDate"))
                         {
-                            <div class="@(ShowProductCodeChart ? "col-md-7" : "col-12")">
+                            <div class="@(HasDashboardAccess("ProductCode") ? "col-md-7" : "col-12")">
                                 <div class="card shadow-sm border-0 h-100">
                                     <div class="card-header bg-transparent">
                                         <TelerikSkeleton ShapeType="SkeletonShapeType.Text" Width="50%" Height="18px" />
@@ -147,9 +145,9 @@ else
                             </div>
                         }
 
-                        @if (ShowProductCodeChart)
+                        @if (HasDashboardAccess("ProductCode"))
                         {
-                            <div class="@(ShowProductDateChart ? "col-md-5" : "col-12")">
+                            <div class="@(HasDashboardAccess("ProductDate") ? "col-md-5" : "col-12")">
                                 <div class="card shadow-sm border-0 h-100">
                                     <div class="card-header bg-transparent">
                                         <TelerikSkeleton ShapeType="SkeletonShapeType.Text" Width="50%" Height="18px" />
@@ -163,13 +161,12 @@ else
                     </div>
                 }
 
-                @* Charts Row 2 Skeletons *@
                 @if (ShowRow2Charts)
                 {
                     <div class="row g-3 mb-4">
-                        @if (ShowShiftChart)
+                        @if (HasDashboardAccess("Shift"))
                         {
-                            <div class="@(ShowProductLineChart ? "col-md-6" : "col-12")">
+                            <div class="@(HasDashboardAccess("ProductLine") ? "col-md-6" : "col-12")">
                                 <div class="card shadow-sm border-0 h-100">
                                     <div class="card-header bg-transparent">
                                         <TelerikSkeleton ShapeType="SkeletonShapeType.Text" Width="40%" Height="18px" />
@@ -181,9 +178,9 @@ else
                             </div>
                         }
 
-                        @if (ShowProductLineChart)
+                        @if (HasDashboardAccess("ProductLine"))
                         {
-                            <div class="@(ShowShiftChart ? "col-md-6" : "col-12")">
+                            <div class="@(HasDashboardAccess("Shift") ? "col-md-6" : "col-12")">
                                 <div class="card shadow-sm border-0 h-100">
                                     <div class="card-header bg-transparent">
                                         <TelerikSkeleton ShapeType="SkeletonShapeType.Text" Width="40%" Height="18px" />
@@ -200,12 +197,11 @@ else
         }
         else
         {
-            @* KPI Cards *@
             @if (ShowAnyKpi)
             {
                 <div class="row g-3 mb-4">
 
-                    @if (ShowDailyCard)
+                    @if (HasDashboardAccess("BriefDaily"))
                     {
                         <div class="@KpiColumnClass">
                             <div class="card kpi-card shadow-sm border-0">
@@ -222,7 +218,7 @@ else
                         </div>
                     }
 
-                    @if (ShowMonthlyCard)
+                    @if (HasDashboardAccess("BriefMonthly"))
                     {
                         <div class="@KpiColumnClass">
                             <div class="card kpi-card shadow-sm border-0">
@@ -239,7 +235,7 @@ else
                         </div>
                     }
 
-                    @if (ShowYearlyCard)
+                    @if (HasDashboardAccess("BriefYearly"))
                     {
                         <div class="@KpiColumnClass">
                             <div class="card kpi-card shadow-sm border-0">
@@ -255,18 +251,16 @@ else
                             </div>
                         </div>
                     }
-
                 </div>
             }
 
-            @* Charts Row 1: Trend + Product Distribution *@
             @if (ShowRow1Charts)
             {
                 <div class="row g-3 mb-4">
 
-                    @if (ShowProductDateChart)
+                    @if (HasDashboardAccess("ProductDate"))
                     {
-                        <div class="@(ShowProductCodeChart ? "col-md-7" : "col-12")">
+                        <div class="@(HasDashboardAccess("ProductCode") ? "col-md-7" : "col-12")">
                             <div class="card shadow-sm border-0 h-100">
                                 <div class="card-header bg-transparent fw-semibold">
                                     روند ورود کالا (۳۰ روز گذشته)
@@ -303,9 +297,9 @@ else
                         </div>
                     }
 
-                    @if (ShowProductCodeChart)
+                    @if (HasDashboardAccess("ProductCode"))
                     {
-                        <div class="@(ShowProductDateChart ? "col-md-5" : "col-12")">
+                        <div class="@(HasDashboardAccess("ProductDate") ? "col-md-5" : "col-12")">
                             <div class="card shadow-sm border-0 h-100">
                                 <div class="card-header bg-transparent fw-semibold">
                                     توزیع کالا بر اساس کد محصول
@@ -333,18 +327,16 @@ else
                             </div>
                         </div>
                     }
-
                 </div>
             }
 
-            @* Charts Row 2: Shift + Line *@
             @if (ShowRow2Charts)
             {
                 <div class="row g-3 mb-4">
 
-                    @if (ShowShiftChart)
+                    @if (HasDashboardAccess("Shift"))
                     {
-                        <div class="@(ShowProductLineChart ? "col-md-6" : "col-12")">
+                        <div class="@(HasDashboardAccess("ProductLine") ? "col-md-6" : "col-12")">
                             <div class="card shadow-sm border-0 h-100">
                                 <div class="card-header bg-transparent fw-semibold">
                                     آمار بر اساس شیفت
@@ -379,9 +371,9 @@ else
                         </div>
                     }
 
-                    @if (ShowProductLineChart)
+                    @if (HasDashboardAccess("ProductLine"))
                     {
-                        <div class="@(ShowShiftChart ? "col-md-6" : "col-12")">
+                        <div class="@(HasDashboardAccess("Shift") ? "col-md-6" : "col-12")">
                             <div class="card shadow-sm border-0 h-100">
                                 <div class="card-header bg-transparent fw-semibold">
                                     آمار بر اساس خط تولید
@@ -415,7 +407,6 @@ else
                             </div>
                         </div>
                     }
-
                 </div>
             }
         }
@@ -430,6 +421,7 @@ else
         </div>
     </article>
 }
+
 <style>
     .dashboard-container {
         padding: 1.25rem;

@@ -8,29 +8,29 @@ public class AddBulkUserClaimsHandler(WmsApiContext context)
         CancellationToken cancellationToken)
     {
         if (!request.UserIds.Any())
+        {
             return new AddBulkUserClaimsVm { Succeeded = false };
+        }
 
-        var claimTypes = request.ReplaceClaimTypes?.Distinct().ToList()
-            ?? request.Claims.Select(c => c.Type).Distinct().ToList();
+        var claimTypes = request.ReplaceClaimTypes?.Distinct().ToList() ?? request.Claims.Select(c => c.Type).Distinct().ToList();
 
         if (!claimTypes.Any())
+        {
             return new AddBulkUserClaimsVm { Succeeded = false };
+        }
 
         if (request.Claims.Any(c => !claimTypes.Contains(c.Type)))
+        {
             return new AddBulkUserClaimsVm { Succeeded = false };
+        }
 
-        await using var transaction = await context.Database
-            .BeginTransactionAsync(cancellationToken);
+        await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
 
         try
         {
             foreach (var userId in request.UserIds)
             {
-                var existing = await context.UserClaims
-                    .Where(uc =>
-                        uc.UserId == userId &&
-                        claimTypes.Contains(uc.ClaimType))
-                    .ToListAsync(cancellationToken);
+                var existing = await context.UserClaims.Where(uc => uc.UserId == userId && claimTypes.Contains(uc.ClaimType)).ToListAsync(cancellationToken);
 
                 context.UserClaims.RemoveRange(existing);
 
@@ -48,6 +48,7 @@ public class AddBulkUserClaimsHandler(WmsApiContext context)
             }
 
             await context.SaveChangesAsync(cancellationToken);
+
             await transaction.CommitAsync(cancellationToken);
 
             return new AddBulkUserClaimsVm { Succeeded = true };
@@ -55,6 +56,7 @@ public class AddBulkUserClaimsHandler(WmsApiContext context)
         catch
         {
             await transaction.RollbackAsync(cancellationToken);
+
             return new AddBulkUserClaimsVm { Succeeded = false };
         }
     }

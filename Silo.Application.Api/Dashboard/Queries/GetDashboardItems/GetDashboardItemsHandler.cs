@@ -5,9 +5,7 @@ namespace Silo.Application.Api.Features;
 public class GetDashboardItemsHandler(WmsApiContext context)
     : IRequestHandler<GetDashboardItemsQuery, List<GetDashboardItemsVm>>
 {
-    public async Task<List<GetDashboardItemsVm>> Handle(
-        GetDashboardItemsQuery request,
-        CancellationToken cancellationToken)
+    public async Task<List<GetDashboardItemsVm>> Handle(GetDashboardItemsQuery request,CancellationToken cancellationToken)
     {
         return await context.Set<DashboardItems>()
             .AsNoTracking()

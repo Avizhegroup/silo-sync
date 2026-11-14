@@ -41,6 +41,10 @@
                         <NavButton Class="btn btn-warning tr-buttom" Link="@($"/account/access/{user.Username}")">
                             <img src="/images/Utilities/unlock.png" width="15" height="15" />
                         </NavButton>
+                        <NavButton Class="btn btn-info tr-buttom" Link="@($"/account/chartaccess/{user.Username}")">
+                            <MaterialIcon IconName="@MaterialIconsHelper.BarChart"
+                                          Style="font-size: 15px; line-height: 15px;" />
+                        </NavButton>
                     </td>
                 </RowTemplate>
                 <GridColumns>
@@ -48,7 +52,7 @@
                                 Title="@TextResources.APP_StringKeys_Name"></GridColumn>
                     <GridColumn Field="@nameof(GetAllUsersVm.Username)"
                                 Title="@TextResources.APP_StringKeys_Field_Username"></GridColumn>
-                    <GridColumn Width="80px"></GridColumn>
+                    <GridColumn Width="150px"></GridColumn>
                 </GridColumns>
             </TelerikGrid>
         </div>

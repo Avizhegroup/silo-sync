@@ -16567,6 +16567,29 @@ namespace Silo.Shared
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to  کل آیتم ها
+        /// </summary>
+        public static string APP_StringKeys_Total_Items
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_Total_Items");
+            }
+        }
+
+
+        /// <summary>
+        ///   Looks up a localized string similar to  دسترسی های فعال
+        /// </summary>
+        public static string APP_StringKeys_Active_Access
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_Active_Access");
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to ستون انتخاب شده قبلاً اضافه شده است
         /// </summary>
         public static string APP_StringKeys_Column_Duplicate

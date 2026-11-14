@@ -1,0 +1,122 @@
+@page "/account/chartaccess"
+@page "/account/chartaccess/{AccountId}"
+@inherits SiloBasePage
+@namespace Silo.Pages.Account
+@using Silo.Application.Shared.Features
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="chart-access-page">
+
+    <div class="card chart-access-content">
+
+        @if (IsEditable)
+        {
+            <div class="card-body chart-access-body">
+                @if (AvailableItems.Any())
+                {
+                    <div class="chart-access-summary mb-4">
+                        <div>
+                            <div class="fw-bold">آیتم‌های داشبورد</div>
+                            <div class="text-muted small mt-1">
+                                دسترسی موردنظر کاربر را انتخاب کنید.
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 flex-wrap">
+                            <div class="access-count">
+                                <span>@TextResources.APP_StringKeys_Total_Items</span>
+                                <strong>@AvailableItems.Count</strong>
+                            </div>
+
+                            <div class="access-count access-count-selected">
+                                <span>@TextResources.APP_StringKeys_Active_Access</span>
+                                <strong>@AvailableItems.Count(x => x.HasAccess)</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <TelerikGrid Data="@AvailableItems"
+                                 PageSize="10"
+                                 Pageable="true"
+                                 Class="chart-access-grid"
+                                 Sortable="true"
+                                 Navigable="false"
+                                 OnRowRender="@OnRowRender">
+                            <GridColumns>
+
+                                <GridColumn Field="@nameof(DashboardAccessItemVm.ItemTitle)"
+                                        Title="@TextResources.APP_StringKeys_Field_Name"
+                                            Width="550px" />
+
+                                <GridColumn Field="@nameof(DashboardAccessItemVm.ItemType)"
+                                            Title="@TextResources.APP_StringKeys_Type"
+                                            Width="100px">
+                                    <Template>
+                                        @{
+                                            var row = (DashboardAccessItemVm)context;
+                                            var (cls, text) = row.ItemType switch
+                                            {
+                                                "Card" => ("access-type-card", "کارت آماری"),
+                                                "Chart" => ("access-type-chart", "نمودار"),
+                                                "Table" => ("access-type-table", "جدول"),
+                                                "Grid" => ("access-type-grid", "گرید"),
+                                                _ => ("access-type-other", "سایر")
+                                            };
+                                        }
+                                        <span class="access-type-badge @cls">@text</span>
+                                    </Template>
+                                </GridColumn>
+
+                            <GridColumn Title="@TextResources.APP_StringKeys_Role" Width="100px" TextAlign="ColumnTextAlign.Center">
+                                    <Template>
+                                        @{
+                                            var row = (DashboardAccessItemVm)context;
+                                        }
+                                        <TelerikCheckBox @bind-Value="@row.HasAccess" />
+                                    </Template>
+                                </GridColumn>
+
+                            </GridColumns>
+                        </TelerikGrid>
+                }
+                else
+                {
+                    <div class="chart-access-empty">
+                        <MaterialIcon IconName="@MaterialIconsHelper.Info" />
+                        <div class="fw-semibold mt-2">
+                            @TextResources.APP_StringKeys_Capacity_Empty
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="chart-access-readonly">
+                <MaterialIcon IconName="@MaterialIconsHelper.Lock1" />
+
+                <div class="fw-semibold mt-2">
+                    @TextResources.APP_StringKeys_Message_Access_NotChangable
+                </div>
+            </div>
+        }
+        <div class="chart-access-footer">
+            <button id="btn-clear" class="btn btn-warning" type="button" style="margin-left: 2px; margin-right: 2px;" @onclick="OnClearClick">
+                <MaterialIcon IconName="refresh"></MaterialIcon>
+            </button>
+
+            <button id="btn-send" class="btn btn-primary" type="button" style="margin-left: 2px; margin-right: 2px;" @onclick="OnSaveClick">
+                <MaterialIcon IconName="@MaterialIconsHelper.Save" />
+            </button>
+        </div>
+    </div>
+</div>
+
+<TelerikLoaderContainer Visible="IsLoading"
+                        LoaderPosition="@LoaderPosition.End"
+                        LoaderType="LoaderType.InfiniteSpinner"
+                        Text="@TextResources.APP_StringKeys_Loading">
+</TelerikLoaderContainer>
+
+

@@ -67,6 +67,9 @@
     <Project Path="Silo.Source/Silo.Source.csproj" />
   </Folder>
   <Folder Name="/Solution Items/Docs/" />
+  <Folder Name="/Solution Items/Docs/3rd Party API/">
+    <File Path="Docs/TeamYar.README.md" />
+  </Folder>
   <Folder Name="/Solution Items/Docs/AI/">
     <File Path="Docs/RAG-Chat-Guide.md" />
   </Folder>

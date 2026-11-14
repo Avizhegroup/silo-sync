@@ -22,7 +22,9 @@ public static class SwaggerExtensions
             // Add file upload filter to properly handle file uploads
             options.OperationFilter<FileUploadOperationFilter>();
 
-            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Silo.xml"), true);
+            // Every Silo.* project generates its own XML doc file, which is copied next to the API assembly
+            foreach (var xmlFile in Directory.EnumerateFiles(AppContext.BaseDirectory, "Silo*.xml"))
+                options.IncludeXmlComments(xmlFile, true);
 
             options.OperationFilter<AuthorizationMethodCheckFilter>(true, "Bearer");
 

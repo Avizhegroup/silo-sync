@@ -6,14 +6,12 @@
 // ─────────────────────────────────────────────────────────────────
 
 [data-bs-theme="dark"] {
-
     // ── Base surfaces ──────────────────────────────────────────────
 
     body {
         background: #1a1a2e !important;
         color: #e8eaed !important;
     }
-
     // ── Cards ──────────────────────────────────────────────────────
 
     .card {
@@ -21,7 +19,6 @@
         border-color: #3a3a55 !important;
         color: #e8eaed !important;
     }
-
     // ── Navbar / header ────────────────────────────────────────────
 
     .silo-navbar {
@@ -71,7 +68,6 @@
         background: #252536 !important;
         border-color: #97DCE1 !important;
     }
-
     // ── Mega-menu drawer ───────────────────────────────────────────
 
     .silo-menu-drawer {
@@ -117,7 +113,6 @@
             background: #1a3050 !important;
             color: #8ab4f8 !important;
         }
-
     // ── Tables / grids ─────────────────────────────────────────────
 
     .thead {
@@ -134,7 +129,6 @@
         background-color: #1e2d45 !important;
         color: #e8eaed !important;
     }
-
     // ── Telerik / Kendo overrides ──────────────────────────────────
 
     .k-grid {
@@ -143,38 +137,38 @@
         border-color: #3a3a55 !important;
     }
 
-    .k-grid .k-grid-header {
-        background-color: #1a3050 !important;
-        color: #e8eaed !important;
-        border-color: #3a3a55 !important;
-    }
+        .k-grid .k-grid-header {
+            background-color: #1a3050 !important;
+            color: #e8eaed !important;
+            border-color: #3a3a55 !important;
+        }
 
-    .k-grid .k-grid-header .k-table-th {
-        background-color: #1a3050 !important;
-        color: #e8eaed !important;
-    }
+            .k-grid .k-grid-header .k-table-th {
+                background-color: #1a3050 !important;
+                color: #e8eaed !important;
+            }
 
-    .k-grid td, .k-grid .k-table-td {
-        background-color: #1e2535 !important;
-        color: #e8eaed !important;
-        border-color: #3a3a55 !important;
-    }
+        .k-grid td, .k-grid .k-table-td {
+            background-color: #1e2535 !important;
+            color: #e8eaed !important;
+            border-color: #3a3a55 !important;
+        }
 
-    .k-grid tr:nth-child(even) td,
-    .k-grid tr:nth-child(even) .k-table-td {
-        background-color: #1a2030 !important;
-    }
+        .k-grid tr:nth-child(even) td,
+        .k-grid tr:nth-child(even) .k-table-td {
+            background-color: #1a2030 !important;
+        }
 
-   .k-grid tr:hover td,
-   .k-grid tr:hover .k-table-td {
-       background-color: #243050 !important;
-    }
+        .k-grid tr:hover td,
+        .k-grid tr:hover .k-table-td {
+            background-color: #243050 !important;
+        }
 
-   .k-grid .k-pager {
-       background-color: #1e1e30 !important;
-       color: #bdc1c6 !important;
-       border-top-color: #3a3a55 !important;
-   }
+        .k-grid .k-pager {
+            background-color: #1e1e30 !important;
+            color: #bdc1c6 !important;
+            border-top-color: #3a3a55 !important;
+        }
 
     .k-listview-content {
         background-color: #1e2535 !important;
@@ -240,7 +234,6 @@
     .k-loader-canvas .k-arc {
         stroke: #97DCE1 !important;
     }
-
     // ── Forms / Bootstrap inputs ───────────────────────────────────
 
     .form-control, .form-select {
@@ -249,16 +242,15 @@
         color: #e8eaed !important;
     }
 
-    .form-control::placeholder {
-        color: #9aa0a6 !important;
-    }
+        .form-control::placeholder {
+            color: #9aa0a6 !important;
+        }
 
     .input-group-text {
         background-color: #2d2d44 !important;
         border-color: #4a4a66 !important;
         color: #e8eaed !important;
     }
-
     // ── Modal ──────────────────────────────────────────────────────
 
     .modal-content {
@@ -270,7 +262,6 @@
     .modal-header, .modal-footer {
         border-color: #3a3a55 !important;
     }
-
     // ── Dividers / borders ─────────────────────────────────────────
 
     hr {
@@ -284,13 +275,11 @@
     .border-bottom {
         border-bottom-color: #3a3a55 !important;
     }
-
     // ── Links ──────────────────────────────────────────────────────
 
     a {
         color: #8ab4f8 !important;
     }
-
     // ── Misc helpers ───────────────────────────────────────────────
 
     .div-bar-save {
@@ -301,7 +290,6 @@
         background-color: #1a3050 !important;
         color: #8ab4f8 !important;
     }
-
     // ── Scrollbars ─────────────────────────────────────────────────
 
     ::-webkit-scrollbar {
@@ -318,10 +306,9 @@
         border-radius: 4px;
     }
 
-    ::-webkit-scrollbar-thumb:hover {
-       background: #4a4a66;
-    }
-
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a4a66;
+        }
     // ── AppErrorBoundary ──────────────────────────────────────────────────────
 
     .eb-overlay {
@@ -366,7 +353,6 @@
         border-top-color: #3a3a55;
         color: #5f6368;
     }
-
     // ── ChatBot ──────────────────────────────────────────────────────
 
     .chat-messages {
@@ -543,7 +529,6 @@
             }
         }
     }
-
     // ── ClockPicker Dark Mode ─────────────────────────────────────
 
     .clockpicker-cls {
@@ -568,10 +553,10 @@
         color: #e8eaed !important;
     }
 
-    .clockpicker-tick:hover {
-       background-color: #2d2d44 !important;
-       color: #ffffff !important;
-    }
+        .clockpicker-tick:hover {
+            background-color: #2d2d44 !important;
+            color: #ffffff !important;
+        }
 
     .clockpicker-canvas-bg {
         fill: #2d2d44 !important;
@@ -636,7 +621,6 @@
             background-color: #243b5a !important;
             color: #ffffff !important;
         }
-
     // ── Custom DatePicker ──────────────────────────────────────────
 
     .date-picker-container .date-picker-input, input.date-picker-input,
@@ -692,7 +676,6 @@
             .date-picker td.date.other-month {
                 color: #6b7280 !important;
             }
-
     // ── Dark Mode for List Group ─────────────────────
 
     .list-group,
@@ -707,21 +690,20 @@
         color: #e8eaed !important;
     }
 
-    .list-group-item:hover {
-       background-color: #2d2d44 !important;
-       color: #e8eaed !important;
-    }
+        .list-group-item:hover {
+            background-color: #2d2d44 !important;
+            color: #e8eaed !important;
+        }
 
-   .list-group-item.active,
-   .list-group-item.active:hover {
-        background-color: #1a3050 !important;
-        color: #8ab4f8 !important;
-   }
+        .list-group-item.active,
+        .list-group-item.active:hover {
+            background-color: #1a3050 !important;
+            color: #8ab4f8 !important;
+        }
 
-   .list-group-item .list-group-item {
-        background-color: #252536 !important;
-   }
-
+        .list-group-item .list-group-item {
+            background-color: #252536 !important;
+        }
     // ── Truck Cross Stepper ───────────────────────────────────────
 
     .tc-stepper {
@@ -757,7 +739,6 @@
             color: #3a3a55 !important;
         }
     }
-
     // ── Telerik TabStrip & Inner Forms Dark Mode ───────────────────
 
     .k-tabstrip {
@@ -805,7 +786,6 @@
             }
         }
     }
-
     // ── Bootstrap Modal & Form Sections Dark Mode ────────────────
 
     .modal-content {
@@ -832,7 +812,6 @@
             border-top-color: #3a3a55 !important;
         }
     }
-
     // ── Global Custom Form Section Fix ───────────────────────────
 
     .tc-form-section {
@@ -852,6 +831,29 @@
             .tc-form-section-header svg {
                 color: #8ab4f8 !important;
             }
+    }
+
+    // ── Chart Access Page ──────────────────────────────────────────
+
+    .chart-access-page {
+        --ca-card-bg: #252536;
+        --ca-card-border: #3a3a55;
+        --ca-card-shadow: none;
+        --ca-item-bg: #2b2b40;
+        --ca-item-border: #3a3a55;
+        --ca-item-hover-border: #8ab4f8;
+        --ca-item-hover-shadow: none;
+        --ca-text: #e8eaed;
+        --ca-muted: #9aa0a6;
+        --ca-accent: #8ab4f8;
+        --ca-active-bg: #1a3050;
+        --ca-active-border: #4f7fc4;
+        --ca-count-bg: #2d2d44;
+        --ca-divider: #3a3a55;
+        --ca-badge-card: #8ab4f8;
+        --ca-badge-chart: #81c995;
+        --ca-badge-table: #f0c070;
+        --ca-badge-grid: #c4a8ee;
     }
 }
 // ── Gallery Component Dark Mode (Fixed) ────────────────────────
@@ -913,4 +915,5 @@
     .gallery-pagination-info {
         color: #bdc1c6 !important;
     }
+   
 }

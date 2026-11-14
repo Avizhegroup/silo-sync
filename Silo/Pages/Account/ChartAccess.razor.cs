@@ -1,7 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Identity;
 using Silo.Application.Shared.Features;
-using Silo.Domains.Entities;
 
 namespace Silo.Pages.Account;
 
@@ -12,11 +11,8 @@ public partial class ChartAccess
     public bool IsBulkMode = false;
     public string ChartAccessTitle = string.Empty;
     public string ThisUserId = string.Empty;
-    public string DialogMessage = string.Empty;
     public List<DashboardAccessItemVm> AvailableItems = new();
     public List<IdentityRole> Roles = new();
-
-    public Modal ModalMessage { get; set; }
 
     [Inject] public RfidConnectApi Api { get; set; }
     [Inject] public SiloAuthenticationStateProvider AuthStateProvider { get; set; }
@@ -48,15 +44,14 @@ public partial class ChartAccess
                 new("userId", AccountId),
                 new("userToken", ThisUserId))).Value;
 
-            var claims = (await Api.PostAsync<List<ClaimVm>>(
-    "GetUserClaims",
-    new("userId", AccountId),
-    new("userToken", ThisUserId))).Value;
+            var claims = (await Api.PostAsync<List<ClaimVm>>("GetUserClaims",
+                new("userId", AccountId),
+                new("userToken", ThisUserId))).Value;
 
             var dashboardClaims = claims
-     .Where(c => c.Type == "dashboard")
-     .Select(c => c.Value)
-     .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                .Where(c => c.Type == "dashboard")
+                .Select(c => c.Value)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
             IsEditable = !Roles.Any(p => p.Name.ToLower() == "admin");
 
@@ -70,6 +65,7 @@ public partial class ChartAccess
                 HasAccess = dashboardClaims.Contains(item.ItemCode)
             }).ToList();
         }
+
         else
         {
             NavigationManager.NavigateTo("/account/index", true);
@@ -81,7 +77,9 @@ public partial class ChartAccess
     public async Task OnSaveClick(MouseEventArgs e)
     {
         if (!IsEditable)
+        {
             return;
+        }
 
         var selectedCharts = AvailableItems
             .Where(p => p.HasAccess)
@@ -94,9 +92,7 @@ public partial class ChartAccess
 
         IsLoading = true;
 
-        var result = await Api.SendAsyncObjectByUri<AddBulkUserClaimsVm>(
-            HttpMethod.Post,
-            "Account/AddBulkUserClaims",
+        var result = await Api.SendAsyncObjectByUri<AddBulkUserClaimsVm>(HttpMethod.Post,"Account/AddBulkUserClaims",
             new AddBulkUserClaimsCommand
             {
                 UserIds = new() { AccountId },
@@ -104,8 +100,7 @@ public partial class ChartAccess
                 ReplaceClaimTypes = new() { "dashboard" }
             });
 
-        Notification.Show(
-            result?.Successful == true
+        Notification.Show( result?.Successful == true
                 ? TextResources.APP_StringKeys_Alert_Success
                 : TextResources.APP_StringKeys_Alert_Fail,
             result?.Successful == true ? "success" : "error");
@@ -117,13 +112,11 @@ public partial class ChartAccess
     {
         AvailableItems.ForEach(p => p.HasAccess = false);
     }
-}
 
+    private void OnRowRender(GridRowRenderEventArgs args)
+    {
+        var item = (DashboardAccessItemVm)args.Item;
 
-public class DashboardAccessItemVm
-{
-    public string ItemCode { get; set; }
-    public string ItemTitle { get; set; }
-    public string ItemType { get; set; }
-    public bool HasAccess { get; set; }
+        args.Class = item.HasAccess ? "access-row-active" : "";
+    }
 }

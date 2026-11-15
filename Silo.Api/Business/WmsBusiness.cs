@@ -8618,13 +8618,13 @@ ORDER BY MovementActionDate, MovementActionTime
         search.Group = "-1";
         search.TechnicalCode = "-1";
 
-        return SSearchInventoryTags(search, true);
+        return SSearchInventoryTagsForWeb(search, true);
     }
 
     public DataTable SSearchInventoryTags(InventoryRequest search)
-        => SSearchInventoryTags(search, false);
+        => SSearchInventoryTagsForWeb(search, false);
 
-    private DataTable SSearchInventoryTags(InventoryRequest search, bool onlyUnregistered)
+    public DataTable SSearchInventoryTagsForWeb(InventoryRequest search, bool onlyUnregistered)
     {
         string whereStringSubQuery = onlyUnregistered ? " tbl_Tags.TagEpc IS NULL " : "";
 

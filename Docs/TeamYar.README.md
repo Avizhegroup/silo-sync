@@ -1,6 +1,6 @@
 # راهنمای اتصال به وب‌سرویس سیلو (تیم‌یار)
 
-این سند برای تیمی نوشته شده که می‌خواهد سیستم خودش (مثلاً نرم‌افزار انبار یا ERP) را به سیلو وصل کند. هر شش اکشنی که در `TeamYarController` هست، همین‌جا با ورودی و خروجی‌شان توضیح داده شده. اگر چیزی مبهم بود، قبل از شروع کدنویسی با تیم سیلو هماهنگ کنید.
+این سند برای تیمی نوشته شده که می‌خواهد سیستم خودش (مثلاً نرم‌افزار انبار یا ERP) را به سیلو وصل کند. هر هفت اکشنی که در `TeamYarController` هست، همین‌جا با ورودی و خروجی‌شان توضیح داده شده. اگر چیزی مبهم بود، قبل از شروع کدنویسی با تیم سیلو هماهنگ کنید.
 
 ## فهرست
 
@@ -14,6 +14,7 @@
    - [DocumentForSales — ثبت حواله فروش](#۴-documentforsales--ثبت-حواله-فروش)
    - [RevokeTags — ابطال سری ساخت](#۵-revoketags--ابطال-سری-ساخت)
    - [GetTagsBySerials — استعلام وضعیت سری ساخت](#۶-gettagsbyserials--استعلام-وضعیت-سری-ساخت)
+   - [DocumentForGeneral — ثبت اسناد عمومی](#۷-documentforgeneral--ثبت-اسناد-عمومی)
 5. [جدول وضعیت‌ها (Enum)](#جدول-وضعیتها-enum)
 6. [نکات پیاده‌سازی](#نکات-پیادهسازی)
 
@@ -53,7 +54,7 @@ POST /RfidCore/v3/TeamYar/SaveTag
 | فیلد | نوع | توضیح |
 |------|-----|-------|
 | `successful` | `bool` | نتیجه‌ی کلی درخواست |
-| `value` | بسته به اکشن | خروجی اصلی. برای ۵ اکشن اول `bool` است و برای استعلام یک شیء. |
+| `value` | بسته به اکشن | خروجی اصلی. برای همه‌ی اکشن‌ها `bool` است، به‌جز `GetTagsBySerials` که یک شیء برمی‌گرداند. |
 | `messages` | `string[]` یا `null` | پیام‌های توضیحی (مثلاً علت خطا). ممکن است `null` باشد. |
 
 کدهای HTTP که باید پوشش بدهید:
@@ -111,7 +112,8 @@ POST /RfidCore/v3/TeamYar/SaveTag
 | `originalCount` | decimal | | مقدار اصلی |
 | `subCount` | decimal | | مقدار فرعی |
 | `date` | string | | تاریخ، مثلاً `1405/07/01` |
-| `unit` | string | | واحد |
+| `unitForOriginalCount` | string | | واحد مقدار اصلی |
+| `unitForSubCount` | string | | واحد مقدار فرعی |
 | `printData` | آرایه‌ای از `{ title, value }` | | فیلدهای اضافه که باید روی برچسب چاپ شوند. هر کدام `title` و `value` اجباری دارند. |
 
 **نمونه درخواست**
@@ -130,7 +132,8 @@ POST /RfidCore/v3/TeamYar/SaveTag
       "date": "1405/07/01",
       "warehouseCode": "W-1",
       "productTypeCode": "T-02",
-      "unit": "عدد",
+      "unitForOriginalCount": "کارتن",
+      "unitForSubCount": "عدد",
       "printData": [
         { "title": "تاریخ انقضا", "value": "1407/07/01" },
         { "title": "شماره پروانه", "value": "88231" }
@@ -242,7 +245,7 @@ POST /RfidCore/v3/TeamYar/SerialConsumption
 POST /RfidCore/v3/TeamYar/DocumentForSales
 ```
 
-برای ثبت، ویرایش یا ابطال حواله‌های فروش. نوع عملیات با فیلد `opType` مشخص می‌شود و می‌توانید چند حواله را در یک درخواست بفرستید.
+برای ثبت، ویرایش یا ابطال حواله‌های فروش. نوع عملیات با فیلد `opType` مشخص می‌شود و می‌توانید چند حواله را در یک درخواست بفرستید. اقلام هر حواله در `items` می‌آید.
 
 **ورودی**
 
@@ -257,9 +260,18 @@ POST /RfidCore/v3/TeamYar/DocumentForSales
 |------|-----|:------:|-------|
 | `documentCode` | string | ✔ | کد سند |
 | `date` | string | ✔ | تاریخ، مثلاً `1405/07/10` |
-| `opType` | int | ✔ | نوع عملیات: `1` ذخیره، `2` بروزرسانی، `3` ابطال ([جدول](#optype-حواله-فروش)) |
-| `refSalesCode` | string | | کد سند مرجع فروش |
+| `opType` | int | ✔ | نوع عملیات: `1` ذخیره، `2` بروزرسانی، `3` ابطال ([جدول](#optype-اسناد)) |
+| `refCode` | string | | کد سند مرجع |
 | `customer` | string | | مشتری |
+| `items` | آرایه‌ای از `SaleItem` | | اقلام حواله. برای ثبت و ویرایش حواله حتماً بفرستید. |
+
+هر عضو `items` (`SaleItem`):
+
+| فیلد | نوع | اجباری | توضیح |
+|------|-----|:------:|-------|
+| `productCode` | string | ✔ | کد کالا |
+| `count` | decimal | ✔ | مقدار |
+| `unit` | string | | واحد |
 
 **نمونه درخواست**
 
@@ -269,10 +281,14 @@ POST /RfidCore/v3/TeamYar/DocumentForSales
   "documents": [
     {
       "documentCode": "SAL-3042",
-      "refSalesCode": "INV-9921",
+      "refCode": "INV-9921",
       "customer": "داروخانه مرکزی",
       "date": "1405/07/10",
-      "opType": 1
+      "opType": 1,
+      "items": [
+        { "productCode": "P-1001", "count": 50, "unit": "کارتن" },
+        { "productCode": "P-1002", "count": 12.5, "unit": "عدد" }
+      ]
     }
   ]
 }
@@ -392,6 +408,74 @@ POST /RfidCore/v3/TeamYar/GetTagsBySerials
 
 ---
 
+### ۷. DocumentForGeneral — ثبت اسناد عمومی
+
+```
+POST /RfidCore/v3/TeamYar/DocumentForGeneral
+```
+
+برای اسنادی که حواله‌ی فروش نیستند و بین دو انبار جابه‌جایی دارند (انبار مبدأ و مقصد). مثل حواله‌ی فروش، می‌توانید چند سند را در یک درخواست بفرستید و نوع عملیات را با `opType` مشخص کنید.
+
+**ورودی**
+
+| فیلد | نوع | اجباری | توضیح |
+|------|-----|:------:|-------|
+| `commandUniqueId` | string | ✔ | [شناسه‌ی یکتای درخواست](#فیلد-commanduniqueid) |
+| `list` | آرایه‌ای از `GeneralDocument` | ✔ | فهرست اسناد |
+
+هر عضو `list` (`GeneralDocument`):
+
+| فیلد | نوع | اجباری | توضیح |
+|------|-----|:------:|-------|
+| `documentCode` | string | ✔ | کد سند |
+| `date` | string | ✔ | تاریخ، مثلاً `1405/07/12` |
+| `originWarehouseCode` | string | ✔ | کد انبار مبدأ |
+| `destinationWarehouseCode` | string | ✔ | کد انبار مقصد |
+| `documentType` | int | ✔ | نوع سند (مقدار عددی؛ لیست مقادیر مجاز را تیم سیلو اعلام می‌کند) |
+| `opType` | int | ✔ | نوع عملیات: `1` ذخیره، `2` بروزرسانی، `3` ابطال ([جدول](#optype-اسناد)) |
+| `items` | آرایه‌ای از `GeneralItem` | | اقلام سند. برای ثبت و ویرایش حتماً بفرستید. |
+
+هر عضو `items` (`GeneralItem`):
+
+| فیلد | نوع | اجباری | توضیح |
+|------|-----|:------:|-------|
+| `productCode` | string | ✔ | کد کالا |
+| `count` | decimal | ✔ | مقدار |
+| `unit` | string | | واحد |
+
+**نمونه درخواست**
+
+```json
+{
+  "commandUniqueId": "7d3a9b52-1c48-4e07-a6f3-2b9e5d8c0a17",
+  "list": [
+    {
+      "documentCode": "GEN-2210",
+      "date": "1405/07/12",
+      "originWarehouseCode": "W-1",
+      "destinationWarehouseCode": "W-2",
+      "documentType": 3,
+      "opType": 1,
+      "items": [
+        { "productCode": "P-1001", "count": 30, "unit": "کارتن" }
+      ]
+    }
+  ]
+}
+```
+
+**خروجی**
+
+```json
+{
+  "successful": true,
+  "value": true,
+  "messages": null
+}
+```
+
+---
+
 ## جدول وضعیت‌ها (Enum)
 
 ### وضعیت برچسب
@@ -406,9 +490,9 @@ POST /RfidCore/v3/TeamYar/GetTagsBySerials
 | 4 | `Revoked` | باطل شده |
 | 5 | `Exited` | خارج شده |
 
-### opType حواله فروش
+### opType اسناد
 
-(فیلد `opType` در `DocumentForSales`)
+(فیلد `opType` در `DocumentForSales` و `DocumentForGeneral`)
 
 | مقدار | نام | معنی |
 |:-----:|-----|------|

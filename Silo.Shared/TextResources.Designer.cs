@@ -16576,5 +16576,16 @@ namespace Silo.Shared
                 return ResourceManager.GetString("APP_StringKeys_Column_Duplicate");
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to عملیات از نوع {0} و کد {1} قبلاً  اجرا شده.
+        /// </summary>
+        public static string APP_StringKeys_Error_DuplicateActionRequested
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_Error_DuplicateActionRequested");
+            }
+        }
     }
 }

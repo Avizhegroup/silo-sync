@@ -10,14 +10,13 @@
         {
             <div style="display:flex; flex-direction:column; gap:4px; @(field.IsReadOnly ? "background-color:#f0eded; padding:4px 6px; border-radius:4px;" : "")">
                 <label class="field-label" style="margin-bottom:2px;">@field.Title</label>
-                @if (field.ValueType == DynamicFieldValueType.TextBox)
+                @if (field.ValueType is DynamicFieldValueType.TextBox or DynamicFieldValueType.Barcode)
                 {
                     <TelerikTextBox @bind-Value="field.EffectiveValue"
                                     Class="form-control input-search-span-lg pointer"
                                     Width="300px"
                                     TabIndex="indexCount"
-                                    ReadOnly="field.IsReadOnly">
-                    </TelerikTextBox>
+                                    ReadOnly="field.IsReadOnly" />
                 }
                 else if (field.ValueType == DynamicFieldValueType.DropDown)
                 {

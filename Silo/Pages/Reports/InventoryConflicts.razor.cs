@@ -139,7 +139,7 @@ public partial class InventoryConflicts
                    , new GetWarehouseProductsVmContext()
                    , new KeyValuePair<string, object>("search", request))).Value;
 
-            TagsReadedInInventory = (await Api.PostAsyncByContext<List<GetInventoryResultTagVm>>("SSearchInventoryTags"
+            TagsReadedInInventory = (await Api.PostAsyncByContext<List<GetInventoryResultTagVm>>("SSearchInventoryTagsForWeb"
                     , new GetInventoryResultTagVmContext()
                     , new KeyValuePair<string, object>("search", request))).Value;
         }

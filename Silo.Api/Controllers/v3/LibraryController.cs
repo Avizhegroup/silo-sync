@@ -34,4 +34,14 @@ public class LibraryController(ILogger<LibraryController> logger
         });
     }
 
+    [HttpPost("[action]")]
+    public async Task<IActionResult> BooksStatus(ChangeBooksStatusCommand request)
+    {
+        //var response = await mediator.Send<ChangeBooksStatusVm>(request);
+        return Ok(new ApiResponse<bool>()
+        {
+            Successful = true,
+            Value = true
+        });
+    }
 }

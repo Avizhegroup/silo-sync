@@ -11,6 +11,9 @@ public static class SwaggerExtensions
     public static void AddSiloApiSwagger(this IServiceCollection services
         , IConfiguration config)
     {
+        var allowedVersions = GetSwaggerList(config, "Version");
+        var allowedControllers = GetSwaggerList(config, "Controller");
+
         services.AddSwaggerGen(options =>
         {
             // Add schema filter FIRST to prevent schema generation errors for types with IFormFile
@@ -19,7 +22,9 @@ public static class SwaggerExtensions
             // Add file upload filter to properly handle file uploads
             options.OperationFilter<FileUploadOperationFilter>();
 
-            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Silo.xml"), true);
+            // Every Silo.* project generates its own XML doc file, which is copied next to the API assembly
+            foreach (var xmlFile in Directory.EnumerateFiles(AppContext.BaseDirectory, "Silo*.xml"))
+                options.IncludeXmlComments(xmlFile, true);
 
             options.OperationFilter<AuthorizationMethodCheckFilter>(true, "Bearer");
 
@@ -55,6 +60,13 @@ public static class SwaggerExtensions
             options.DocInclusionPredicate((docName, apiDesc) =>
             {
                 if (!apiDesc.TryGetMethodInfo(out MethodInfo methodInfo)) return false;
+                if (allowedControllers.Count > 0)
+                {
+                    var controllerName = methodInfo.DeclaringType.Name;
+                    if (controllerName.EndsWith("Controller", StringComparison.OrdinalIgnoreCase))
+                        controllerName = controllerName[..^"Controller".Length];
+                    if (!allowedControllers.Contains(controllerName)) return false;
+                }
                 var versions = methodInfo.DeclaringType
                     .Namespace.Split('.').Last().Replace("v", "");
                 return versions.Any(v => $"v{v}" == docName);
@@ -72,14 +84,31 @@ public static class SwaggerExtensions
             foreach (string ns in namespaces)
             {
                 var version = ns.Split('.').Last().Replace("v", "");
+                if (!IsVersionAllowed(allowedVersions, version)) continue;
                 options.SwaggerDoc("v" + version, new OpenApiInfo() { Version = "v" + version, Title = "API version " + version });
             }
         });
     }
 
+    private static HashSet<string> GetSwaggerList(IConfiguration config, string key)
+    {
+        var value = config?[$"Swagger:{key}"];
+        if (string.IsNullOrWhiteSpace(value)) return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        return value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static bool IsVersionAllowed(HashSet<string> allowedVersions, string version)
+        => allowedVersions.Count == 0
+           || allowedVersions.Contains(version)
+           || allowedVersions.Contains("v" + version);
+
     public static void UseSiloApiSwagger(this IApplicationBuilder app)
     {
         app.UseSwagger();
+
+        var allowedVersions = GetSwaggerList(app.ApplicationServices.GetService<IConfiguration>(), "Version");
 
         app.UseSwaggerUI(option =>
         {
@@ -92,6 +121,7 @@ public static class SwaggerExtensions
             foreach (string ns in namespaces)
             {
                 var version = ns.Split('.').Last().Replace("v", "");
+                if (!IsVersionAllowed(allowedVersions, version)) continue;
 
                 option.SwaggerEndpoint($"/swagger/v{version}/swagger.json", "Doc" + version);
             }

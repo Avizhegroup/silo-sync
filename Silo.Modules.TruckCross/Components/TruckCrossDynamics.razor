@@ -26,6 +26,7 @@
             @switch (dynamicField.ValueType)
             {
                 case DynamicFieldValueType.TextBox:
+                case DynamicFieldValueType.Barcode:
                     <div style=@($"margin-top:{RichTextMarginTop}; display:inline-block;")>
                         <TelerikTextBox Class="text-dir-left"
                                         Width="@FieldWidth"

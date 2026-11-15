@@ -25,16 +25,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="Silo.xml">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <DocumentationFile>/bin/Silo.xml</DocumentationFile>
-    </PropertyGroup>
-
-    <ItemGroup>
         <Using Include="System.ComponentModel.DataAnnotations" />
         <Using Include="System.ComponentModel.DataAnnotations.Schema" />
         <Using Include="Silo.Application.Dto" />

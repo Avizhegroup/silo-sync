@@ -1,7 +1,6 @@
 ﻿using System.IO.Compression;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.FeatureManagement;
-using Silo.Localization;
 using Silo.Modules.Ai;
 using Silo.Profiles;
 using Telerik.Blazor.Services;

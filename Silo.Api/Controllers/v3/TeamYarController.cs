@@ -102,4 +102,18 @@ public class TeamYarController (ILogger<LibraryController> logger
             }
         });
     }
+
+    /// <summary>
+    /// ثبت اسناد عمومی
+    /// </summary>
+    [HttpPost("[action]")]
+    public async Task<IActionResult> DocumentForGeneral(SaveDocumentForGeneralCommand request)
+    {
+        //var response = await mediator.Send<SaveDocumentForGeneralVm>(request);
+        return Ok(new ApiResponse<bool>()
+        {
+            Successful = true,
+            Value = true
+        });
+    }
 }

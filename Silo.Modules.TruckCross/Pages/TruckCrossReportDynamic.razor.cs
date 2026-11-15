@@ -779,7 +779,7 @@ public partial class TruckCrossReportDynamic
     {
         foreach (var field in DynamicFields)
         {
-            if (field.ValueType == DynamicFieldValueType.TextBox)
+            if (field.ValueType is DynamicFieldValueType.TextBox or DynamicFieldValueType.Barcode)
             {
                 Filters.Add(new()
                 {

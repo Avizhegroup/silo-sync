@@ -9,9 +9,9 @@ public class SaveDocumentForSaleHeaderDto
     public string DocumentCode { get; set; }
 
     /// <summary>
-    /// کد سند مرجع فروش
+    /// کد سند مرجع
     /// </summary>
-    public string? RefSalesCode { get; set; }
+    public string? RefCode { get; set; }
 
     /// <summary>
     /// مشتری
@@ -24,6 +24,14 @@ public class SaveDocumentForSaleHeaderDto
     [Required]
     public string Date { get; set; }
 
+    /// <summary>
+    /// نوع عملیات
+    /// </summary>
     [Required]
     public SaveDocumentForSaleOpType OpType { get; set; }
+
+    /// <summary>
+    /// آیتم‌ها
+    /// </summary>
+    public List<SaveDocumentForSaleItemsDto> Items { get; set; }
 }

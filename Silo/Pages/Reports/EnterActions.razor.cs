@@ -936,7 +936,7 @@ public partial class EnterActions
 
             foreach (var field in DynamicFields.Where(p => p.FieldType == DynamicFieldType.HeaderData))
             {
-                if (field.ValueType == DynamicFieldValueType.TextBox)
+                if (field.ValueType is DynamicFieldValueType.TextBox or DynamicFieldValueType.Barcode)
                 {
 
                     Filters.Add(new()

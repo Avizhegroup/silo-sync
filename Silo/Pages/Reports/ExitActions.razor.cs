@@ -1145,7 +1145,7 @@ public partial class ExitActions
 
             foreach (var field in DynamicFields.Where(p => p.FieldType != DynamicFieldType.ItemData))
             {
-                if (field.ValueType == DynamicFieldValueType.TextBox)
+                if (field.ValueType is DynamicFieldValueType.TextBox or DynamicFieldValueType.Barcode)
                 {
 
                     Filters.Add(new()

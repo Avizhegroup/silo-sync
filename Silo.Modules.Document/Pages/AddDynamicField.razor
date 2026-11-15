@@ -68,6 +68,8 @@
                     <InputRadioGroup @bind-Value="DynamicField.ValueType">
                         <label style="margin-right: 10px !important;"> @TextResources.APP_StringKeys_Textbox  </label>
                         <InputRadio Value="DynamicFieldValueType.TextBox" />
+                        <label style="margin-right: 10px !important;"> @TextResources.APP_StringKeys_Barcode  </label>
+                        <InputRadio Value="DynamicFieldValueType.Barcode" />
                         <label style="margin-right: 10px !important;"> @TextResources.APP_StringKeys_Dropdown  </label>
                         <InputRadio Value="DynamicFieldValueType.DropDown" />
                         <label style="margin-right: 10px !important;"> @TextResources.APP_StringKeys_Numeric  </label>
@@ -258,6 +260,9 @@
                             {
                                 case DynamicFieldValueType.TextBox:
                                     <text>Textbox</text>
+                                    break;
+                                case DynamicFieldValueType.Barcode:
+                                    <text>@TextResources.APP_StringKeys_Barcode</text>
                                     break;
                                 case DynamicFieldValueType.DropDown:
                                     <text>Dropdown</text>

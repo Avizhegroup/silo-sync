@@ -375,7 +375,7 @@ public partial class Store
 
         foreach (var field in DynamicFieldsForFilters.Where(p => p.FieldType == DynamicFieldType.HeaderData))
         {
-            if (field.ValueType == DynamicFieldValueType.TextBox)
+            if (field.ValueType is DynamicFieldValueType.TextBox or DynamicFieldValueType.Barcode)
             {
                 Filters.Add(new()
                 {

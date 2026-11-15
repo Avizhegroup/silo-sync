@@ -53,9 +53,14 @@ public class SaveTagForTeamYarDto
     public string ProductTypeCode { get; set; }
 
     /// <summary>
-    ///  واحد
+    ///  واحد برای مقدار اصلی
     /// </summary>
-    public string? Unit { get; set; }
+    public string? UnitForOriginalCount { get; set; }
+
+    /// <summary>
+    ///  واحد برای مقدار فرعی
+    /// </summary>
+    public string? UnitForSubCount { get; set; }
 
     /// <summary>
     /// فیلد های چاپ

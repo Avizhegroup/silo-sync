@@ -29095,7 +29095,7 @@ WHERE        (fld_InventoryHeaderId =  " + InventoryHeaderId + ") ";
         , string userToken
         , string FormAccessType)
     {
-        if (FormAccessType.Equals("1"))
+        if (FormAccessType==null || FormAccessType.Equals("1"))
         {
             var tagRow = dataAccess.SqlDataAdapter(
                 "SELECT TagInDestinationId, ProductSerial FROM tbl_Tags WHERE ProductSerial = @serial",

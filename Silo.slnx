@@ -30,6 +30,9 @@
     <Project Path="Silo.Identity.Client/Silo.Identity.Client.csproj" />
     <Project Path="Silo.Identity.Server/Silo.Identity.Server.csproj" />
   </Folder>
+  <Folder Name="/src/Map/">
+    <Project Path="Silo.ThreeDMap/Silo.ThreeDMap.csproj" />
+  </Folder>
   <Folder Name="/src/Presentation/" />
   <Folder Name="/src/Presentation/Api/">
     <Project Path="Silo.Api.Db/Silo.Api.Db.sqlproj" Id="925c7de7-333a-4f88-a954-3486fef61d97">

@@ -22,16 +22,17 @@ public partial class ChatBot : SiloBasePage
     private bool isSidebarExpanded = false;
     private List<ChatHistoryDto> chatHistories = new();
     private int currentChatId = 0;
+    private RagDocType? ActiveMode;
 
-    public RagDocType? ActiveMode { get; set; }
+    [Parameter] public int? Mode { get; set; }
 
     [Inject] public IJSRuntime JSRuntime { get; set; }
     [Inject] public RfidConnectApi Api { get; set; }
     [Inject] public IMapper Mapper { get; set; }
     [Inject] public ILogger<ChatBot> Logger { get; set; }
     [Inject] public IExcelExport ExcelExporter { get; set; }
+    [Inject] public NavigationManager NavigationManager { get; set; }
 
-    [Parameter] public RagDocType? Mode { get; set; }
 
     [CascadingParameter] public DialogFactory Dialog { get; set; }
 
@@ -54,11 +55,26 @@ public partial class ChatBot : SiloBasePage
             IsInitialLoading = false;
 
             StateHasChanged();
-
             return;
         }
 
-        await InitializeChatWithMode(Mode.Value);
+        if (!Enum.IsDefined(typeof(RagDocType), Mode.Value) || Mode.Value > 1)
+        {
+            ShowModeSelectionDialog = true;
+
+            IsLoading = false;
+
+            IsInitialLoading = false;
+
+            StateHasChanged();
+            return;
+        }
+
+        var selectedRouteMode = (RagDocType)Mode.Value;
+
+        selectedMode = selectedRouteMode;
+
+        await InitializeChatWithMode(selectedRouteMode);
     }
 
     private async Task<bool> LoadUserChatHistoriesFromDb()
@@ -68,8 +84,13 @@ public partial class ChatBot : SiloBasePage
         UserId = (await AuthState.GetAuthenticationStateAsync()).User.GetUserId();
 
         var response = await Api.SendAsyncObjectByUri<GetChatHistoriesVm>(
-            HttpMethod.Get,
-            $"ChatSessions/GetChatHistories?userId={UserId}&mode={ActiveMode}"
+            HttpMethod.Post,
+            $"ChatSessions/GetChatHistories",
+              new GetChatHistoriesQuery
+              {
+                  UserId = UserId,
+                  Mode = ActiveMode!.Value
+              }
         );
 
         if (response.Value?.Histories is null || response.Value.Histories.Count == 0)

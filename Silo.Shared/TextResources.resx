@@ -4638,4 +4638,10 @@
   <data name="APP_StringKeys_Variety_ProductCode" xml:space="preserve">
     <value>تنوع کدکالا</value>
   </data>
+  <data name="APP_StringKeys_Total_Items" xml:space="preserve">
+    <value>کل آیتم ها</value>
+  </data>
+  <data name="APP_StringKeys_Active_Access" xml:space="preserve">
+    <value>دسترسی های فعال</value>
+  </data>
 </root>

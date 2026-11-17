@@ -80,6 +80,7 @@ public partial class WmsApiContext(IConfiguration configuration
     public DbSet<GPSLogs> GpsLogs { get; set; }
     public DbSet<TextResource> TextResources { get; set; }
     public DbSet<AiGeneratedQueries> AiGeneratedQueries { get; set; }
+    public DbSet<DashboardItems> DashboardItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

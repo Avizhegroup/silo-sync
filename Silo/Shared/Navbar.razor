@@ -179,7 +179,21 @@
     <ItemTemplate>
         @{
             var ctxItem = context as TelerikContextMenuItem;
-            <div @onclick="async () => await OnNavContextMenuItemClick(ctxItem)">
+        }
+
+        @if (ctxItem.Text == "باز کردن در تب جدید")
+        {
+            <a href="@NavContextMenuTarget?.Url"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="silo-context-menu-item">
+                @ctxItem.Text
+            </a>
+        }
+        else
+        {
+            <div class="silo-context-menu-item"
+                 @onclick="async () => await OnNavContextMenuItemClick(ctxItem)">
                 @ctxItem.Text
             </div>
         }
@@ -551,4 +565,24 @@
         from { opacity: 0; transform: translateY(-6px); }
         to   { opacity: 1; transform: translateY(0); }
     }
+
+    .k-menu-link .silo-context-menu-item,
+    .k-menu-link .silo-context-menu-item:visited,
+    .k-menu-link .silo-context-menu-item:hover,
+    .k-menu-link .silo-context-menu-item:focus,
+    .k-menu-link .silo-context-menu-item:active {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        color: inherit !important;
+        text-decoration: none !important;
+        background: transparent;
+        font: inherit;
+        line-height: inherit;
+        white-space: nowrap;
+        cursor: pointer;
+        padding: 0;
+        margin: 0;
+    }
+
 </style>

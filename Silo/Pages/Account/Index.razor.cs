@@ -1,6 +1,4 @@
-using Silo.Application.Features;
-
-namespace Silo.Pages.Account;
+﻿namespace Silo.Pages.Account;
 
 public partial class Index
 {

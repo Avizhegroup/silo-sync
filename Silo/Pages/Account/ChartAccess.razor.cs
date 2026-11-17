@@ -34,8 +34,6 @@ public partial class ChartAccess
                 NavigationManager.NavigateTo("/account/deadend", true);
             }
 
-            ChartAccessTitle = string.Format(TextResources.APP_StringKeys_Claim_AddTo_User, user.Name);
-
             AccountId = user.Id;
 
             ThisUserId = (await AuthStateProvider.GetAuthenticationStateAsync()).User.GetUserId();
@@ -77,30 +75,26 @@ public partial class ChartAccess
     public async Task OnSaveClick(MouseEventArgs e)
     {
         if (!IsEditable)
-        {
             return;
-        }
 
         var selectedCharts = AvailableItems
             .Where(p => p.HasAccess)
-            .Select(p => new Silo.Application.Dto.Claim
-            {
-                Value = p.ItemCode,
-                Type = "dashboard"
-            })
+            .Select(p => p.ItemCode)
             .ToList();
 
         IsLoading = true;
 
-        var result = await Api.SendAsyncObjectByUri<AddBulkUserClaimsVm>(HttpMethod.Post,"Account/AddBulkUserClaims",
-            new AddBulkUserClaimsCommand
+        var result = await Api.SendAsyncObjectByUri<AddBulkUserClaimsVm>(
+            HttpMethod.Post,
+            "Dashboard/AddBulkDashboardClaims",
+            new AddBulkDashboardClaimsCommand
             {
                 UserIds = new() { AccountId },
-                Claims = selectedCharts,
-                ReplaceClaimTypes = new() { "dashboard" }
+                ItemCodes = selectedCharts
             });
 
-        Notification.Show( result?.Successful == true
+        Notification.Show(
+            result?.Successful == true
                 ? TextResources.APP_StringKeys_Alert_Success
                 : TextResources.APP_StringKeys_Alert_Fail,
             result?.Successful == true ? "success" : "error");

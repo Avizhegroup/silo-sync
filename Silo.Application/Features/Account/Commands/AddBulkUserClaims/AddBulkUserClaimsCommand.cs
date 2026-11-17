@@ -5,6 +5,4 @@ public class AddBulkUserClaimsCommand : IRequest<AddBulkUserClaimsVm>
     public List<string> UserIds { get; set; } = new();
 
     public List<Claim> Claims { get; set; } = new();
-
-    public List<string>? ReplaceClaimTypes { get; set; }
 }

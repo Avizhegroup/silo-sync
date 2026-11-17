@@ -17,4 +17,14 @@ public class DashboardController(
            Value = await mediator.Send(
                new GetDashboardItemsQuery())
        });
+
+    [HttpPost("[action]")]
+    public async Task<IActionResult> AddBulkDashboardClaims(
+     [FromBody] AddBulkDashboardClaimsCommand command,
+     CancellationToken cancellationToken)
+     => Ok(new ApiResponse<AddBulkUserClaimsVm>
+     {
+         Successful = true,
+         Value = await mediator.Send(command, cancellationToken)
+     });
 }

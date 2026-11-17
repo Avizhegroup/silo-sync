@@ -214,14 +214,18 @@ public partial class Navbar : IDisposable
         }
 
         NavContextMenuItems = new()
+    {
+        new TelerikContextMenuItem
         {
-            new TelerikContextMenuItem
-            {
-                Text = label,
-                Disabled = disabled,
-                Icon = MaterialIconsHelper.Bookmark
-            }
-        };
+            Text = "باز کردن در تب جدید",
+        },
+         new TelerikContextMenuItem
+        {
+            Text = label,
+            Disabled = disabled,
+            Icon = MaterialIconsHelper.Bookmark
+        }
+    };
 
         if (NavContextMenuRef is not null)
         {
@@ -231,9 +235,8 @@ public partial class Navbar : IDisposable
 
     public async Task OnNavContextMenuItemClick(TelerikContextMenuItem item)
     {
-        if (NavContextMenuTarget is null || item.Disabled) return;
-
-        item.Disabled = true;
+        if (NavContextMenuTarget is null || item.Disabled)
+            return;
 
         await ClaimManager.SaveQuickAccessLink(NavContextMenuTarget.Id);
 

@@ -24,11 +24,11 @@
                                 دستیار هوشمند سیلو
                                 <MaterialIcon Class="chat-header-icon" IconName="@MaterialIconsHelper.NetworkIntelligence" />
                             </h3>
-                            @if (Mode is not null)
+                            @if (ActiveMode is not null)
                             {
                                 <div class="chat-mode-info">
-                                    <MaterialIcon Class="chat-mode-icon" IconName="@GetModeIcon(Mode.Value)" />
-                                    <span>حالت: @GetModeFriendlyName(Mode.Value)</span>
+                                    <MaterialIcon Class="chat-mode-icon" IconName="@GetModeIcon(ActiveMode.Value)" />
+                                    <span>حالت: @GetModeFriendlyName(ActiveMode.Value)</span>
                                 </div>
                             }
                         </div>
@@ -67,13 +67,19 @@
                                         {
                                             @((MarkupString)ConvertMarkdownToHtml(message.Text))
 
-                                            <AiResultGrid Data="@message.SqlCommandsResults"
-                                                          QueryId="@message.QueryId"
-                                                          Mode="@Mode?.ToString()"
-                                                          ShowSaveButton="true" />
-
+                                            @if (message.ReportType.HasValue)
+                                            {
+                                                <AiResultChart Data="@message.SqlCommandsResults"
+                                                               Type="@message.ReportType.Value" />
+                                            }
+                                            else
+                                            {
+                                                <AiResultGrid Data="@message.SqlCommandsResults"
+                                                              QueryId="@message.QueryId"
+                                                              Mode="@ActiveMode?.ToString()"
+                                                              ShowSaveButton="true" />
+                                            }
                                         }
-                                       
                                     </div>
                                     @if (!message.IsUser)
                                     {

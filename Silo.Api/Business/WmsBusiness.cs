@@ -4702,7 +4702,7 @@ FROM            tbl_Tags RIGHT OUTER JOIN
                          tbl_ProductType ON tbl_Products.ProductType = tbl_ProductType.ProductTypeCode LEFT OUTER JOIN
                          tbl_ProductStatus ON tbl_Products.ProductStatus = tbl_ProductStatus.ProductStatusCode ON tbl_Print.ProductCode = tbl_Products.ProductCode   
 WHERE        (tbl_Print.PrintActionId = @PrintActionId)
-ORDER BY tbl_Print.ProductSerial
+ORDER BY tbl_Print.Id
 ";
         dtProductInfo = dataAccess.SqlDataAdapter(command,
             new KeyValuePair<string, object>("PrintActionId", PrintActionId));
@@ -17738,7 +17738,25 @@ WHERE        (fld_TUTParentSerial = N'{NextUnitLevelSerial}'))         where (fl
         return true;
     }
 
+    public string GetLatestNextlevelProductUnitbyEpc(string epc)
+    {
+        string command = $"""
+                        SELECT TOP (1) fld_TUTSerial
+            FROM   tbl_TagsUnitTree
+            WHERE (fld_TUTEPC = N'{epc}')
+            """;
 
+        var dataRow = dataAccess.SqlDataAdapter(command);
+
+        if (dataRow != null && dataRow.Rows.Count > 0)
+        {
+            return dataRow.Rows[0].ItemArray[0].ToString();
+        }
+        else
+        {
+            return "";
+        }
+    }
 
     public bool SIdentifyPallets
 (

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Silo.Application.Dto;
 using Silo.Application.Exceptions;
+using Silo.Application.Shared.Exceptions;
 
 namespace Silo.Infrastructure.Shared;
 public class AppExceptionHandlerMiddleware
@@ -188,6 +189,24 @@ public class AppExceptionHandlerMiddleware
                     Messages = new[]
                     {
                         TextResources.APP_StringKeys_Error_Unexpected
+                    },
+                });
+
+                break;
+
+            case DuplicateActionRequestedException duplicateActionRequestedException:
+
+                httpStatusCode = HttpStatusCode.Conflict;
+
+                result = JsonConvert.SerializeObject(new ApiResponse()
+                {
+                    Successful = false,
+                    Value = null,
+                    Messages = new[]
+                    {
+                        string.Format(TextResources.APP_StringKeys_Error_DuplicateActionRequested
+                        , duplicateActionRequestedException.ActionName
+                        , duplicateActionRequestedException.ActionCode)
                     },
                 });
 

@@ -102,7 +102,9 @@ The client never sends `null`. `FixEmptiness()` replaces every empty string filt
 ## 4. The conflict algorithm (`CheckConflicts` in `.razor.cs`)
 
 Inputs: `TagsInWarehouse` (A), `TagsReadedInInventory` (B), `Accounting`.
-Output: `Result` — product-level rows ordered by `ProductCode`.
+Output: `Result` — product-level rows ordered by `ProductCode` (ordinal).
+
+> The method is **sequential on purpose** (plain `Dictionary`, `foreach` loops). The product rows hold non-thread-safe fields and lists, so parallelising it made totals differ between runs on identical data (issue #5, fixed). Do not reintroduce `AsParallel`/`Parallel.ForEach` here. Lookups use a `HashSet` of A serials and a `ToLookup` of B by product code. At the end each row's `Details` is sorted by `ProductSerial` and `LocationList` is sorted, so output is deterministic.
 
 **Step 1 — iterate A (system tags).** Get-or-create the product row. For each tag:
 - `Count++`, `SumCount += ProductCount`
@@ -112,12 +114,12 @@ Output: `Result` — product-level rows ordered by `ProductCode`.
 
 **Step 2 — iterate B (inventory tags) not found in A.** Get-or-create product row, then **extra**: `ConflictCount++`, `CountInventory++`, `ConflictSumCount += ProductCount`, `SumCountInventory += ProductCount`, detail `Status = "مغایرت اضافی"`.
 
-**Step 3 — accounting rows** (`SSearchLastCAD`), per product code:
-- product not in `Result` → new row with `SumCountAccounting = ConflictSumCountAccounting = accounting count`, `ConflictSumCountReality = RealityCount`, one detail `مغایرت کالایی حسابداری`.
-- product exists but has **no inventory tags** → subtract accounting/reality counts from the conflict fields and append `- مغایرت کالایی حسابداری` / `- مغایرت کالایی شمارش فیزیکی` to **every** detail status.
-- product exists with inventory tags → `diff = Σ inventory count − accounting count` (and same for reality); non-zero diff overwrites `ConflictSumCountAccounting` / `ConflictSumCountReality` and appends `- مغایرت مقداری حسابداری` to every detail.
+**Step 3 — accounting rows** (`SSearchLastCAD`). Rows are first **grouped by product code** (accounting and reality counts summed, ordered by code) so the result does not depend on row order or duplicates. Then per product code:
+- product not in `Result` → new row with `SumCountAccounting = accounting count`, `SumCountReality = reality count`, `ConflictSumCountAccounting = −accounting count`, `ConflictSumCountReality = −reality count`, one detail `مغایرت کالایی حسابداری`.
+- product exists but has **no inventory tags** → add counts to `SumCountAccounting` / `SumCountReality`, subtract them from the conflict fields and append `- مغایرت کالایی حسابداری` / `- مغایرت کالایی شمارش فیزیکی` to **every** detail status.
+- product exists with inventory tags (distinct by EPC) → `diff = Σ inventory count − accounting count` (and same for reality); a non-zero diff is **added** (`+=`) to `ConflictSumCountAccounting` / `ConflictSumCountReality` and appends `- مغایرت مقداری حسابداری` (accounting) or `- مغایرت مقداری شمارش فیزیکی` (physical count) to every detail.
 
-**Sign convention:** shortage conflicts are **negative** in `ConflictSumCount`, extras **positive**.
+**Sign convention:** shortage conflicts are **negative** in `ConflictSumCount`, extras **positive**. Accounting-only products follow the same rule (negative conflict values).
 
 ### Summary bar & chart (`CalculateSummaries`)
 Sums of the `Result` columns: product-code count, RFID count/sum, accounting sum, reality sum, RFID conflict count/sum, accounting conflict sum, reality conflict sum, inventory count/sum. The bar chart shows four values: RFID, accounting, physical count, inventory.
@@ -203,7 +205,7 @@ Pre-filtered to the chosen status, local search (serial, contract status, zone, 
 
 ## 8. Known issues & risks (verified by reading the code)
 
-Severity: 🔴 breaks behaviour / security · 🟠 wrong results in some cases · 🟡 minor/cosmetic.
+Severity: 🔴 breaks behaviour / security · 🟠 wrong results in some cases · 🟡 minor/cosmetic · ✅ fixed.
 
 | # | Sev | Location | Issue |
 |---|---|---|---|
@@ -211,9 +213,9 @@ Severity: 🔴 breaks behaviour / security · 🟠 wrong results in some cases �
 | 2 | 🔴 | All six API methods | Filters are built by **string concatenation** from request values → SQL injection risk. Use parameters (`dataAccess` already supports `KeyValuePair<string,object>[]` elsewhere). |
 | 3 | 🟠 | `SGetFreezedInventoryProductsBeforeMovements`, Place filter | Uses `search.Desc` instead of `search.Place` in the three `fld_InventoryPlace = ...` conditions. |
 | 4 | 🟠 | `OnToggleSelectAll` | Always `Serials.Add(p)` even when unchecking; "select all" repeatedly adds duplicates and "unselect all" never removes. Also adds even if the single-status validation failed for some rows. |
-| 5 | 🟠 | `CheckConflicts` | `AsParallel().ForAll` mutates shared `GetInventoryConflictsVm` objects (`Count++`, `+=`, `Details.Add`, `LocationList.Add`) without locking → race conditions / lost updates. `ConcurrentDictionary` protects only the dictionary. Also `TagsInWarehouse.Any(...)` inside the B loop is O(n·m). |
+| 5 | ✅ fixed | `CheckConflicts` | Was: `AsParallel().ForAll` mutated shared `GetInventoryConflictsVm` objects without locking → lost updates, so the same filter gave different totals on each search. Now sequential, uses `HashSet`/`ToLookup` instead of O(n·m) scans, and output is sorted deterministically (see §4). |
 | 6 | 🟠 | `OnClickDetails` / `OnClickShowAllDetails` | `ProductForDetails` is never assigned (stays `new()`), so the "all details" modal is empty. Also `IsDetailsShown` is forced to `false` and then tested, so the branch is dead; `IsAllDetailsShown` toggles but isn't what the branch reads. |
-| 7 | 🟠 | `CheckConflicts` accounting block | The reality-count status appended uses the **accounting** text (`مغایرت مقداری حسابداری`) — copy/paste; the first branch appends both accounting+reality texts to every detail, including already-matched tags. |
+| 7 | 🟠 partly fixed | `CheckConflicts` accounting block | Fixed: the reality-count quantity mismatch now appends `مغایرت مقداری شمارش فیزیکی` (it used the accounting text). Still open: the "no inventory tags" branch appends both accounting+reality texts to every detail, including already-matched tags. |
 | 8 | 🟠 | `RecalculateFixedConflicts` | `SumCountReality - SumCountReality` is always 0 (so `ConflictSumCountReality` becomes 0); `Count` is decremented once per selected serial regardless of conflict type. In-memory only — a re-query will show real numbers. |
 | 9 | 🟡 | `CalculateFreezedLists` | In both exit and enter loops the `if` and `else` branches do the same thing, so the "matched" distinction has no effect. |
 | 10 | 🟠 | Freezed-mode VMs | The row mapping in `SGetFreezed*` does not read `ContractStatus`, `DestinationTitle`, `Place`, `Date` (tag side) or `RegCode`, `RegisterDate` (inventory side) even though the SQL selects some of them, so those columns are empty in detail grids / exports in movement-filtered mode. |
@@ -237,7 +239,7 @@ Severity: 🔴 breaks behaviour / security · 🟠 wrong results in some cases �
 7. **Preserve sign convention** (shortage negative, extra positive) — summaries and PDF depend on it.
 8. **Excel contract:** column 0 = product code, column 1 = numeric; JSON property names are camelCase (`GetInventoryConflictsExcelVm`).
 9. **Verify** with at least: normal mode with one warehouse; multiple warehouses; movement-filtered mode with a product filter (issue #1 repro); shortage fix; extra fix; both Excel uploads twice in a row (issue #11b).
-10. Start fixing in this order of value/risk: #1, #3, #4, #11, #5, #6, then the rest, then #2 as a dedicated refactor.
+10. Start fixing in this order of value/risk: #1, #3, #4, #11, #6, then the rest (#5 is done, #7 partly), then #2 as a dedicated refactor.
 
 ---
 
@@ -252,4 +254,5 @@ Severity: 🔴 breaks behaviour / security · 🟠 wrong results in some cases �
 
 ## 11. Change log of this document
 
+- **2026-11-17** — `CheckConflicts` made sequential and deterministic (issue #5); accounting rows aggregated per product code, conflict amounts accumulate with `+=`, accounting-only products now get negative conflict values and a `SumCountReality`, physical-count mismatch status text fixed (part of #7). §4 and §8 updated accordingly.
 - **2026-10-05** — Initial version, written from a read-only review of `dev` @ `5f75f01`. History for the reviewed files contains only the initial import commit, so there were no earlier functional changes to merge in. **No source code was modified**; items in §8 are documented findings, not applied fixes.

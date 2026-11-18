@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using System.Text.Json;
-using System.Collections.Concurrent;
 
 namespace Silo.Pages.Reports;
 public partial class InventoryConflicts
@@ -968,31 +967,41 @@ public partial class InventoryConflicts
         }
     }
 
+    // Must stay sequential: the accumulated fields and lists are plain (non thread-safe) members,
+    // and parallel updates made the totals differ between runs.
     private void CheckConflicts()
-     {
-        var productCodeToResultMap = new ConcurrentDictionary<string, GetInventoryConflictsVm>(
-            Result.GroupBy(p => p.ProductCode).ToDictionary(g => g.Key, g => g.First())
-        );
-        var productSerialToInventoryMap = new ConcurrentDictionary<string, GetInventoryResultTagVm>(
-            TagsReadedInInventory.GroupBy(p => p.ProductSerial).ToDictionary(g => g.Key, g => g.First())
-        );
+    {
+        var productCodeToResultMap = new Dictionary<string, GetInventoryConflictsVm>();
 
-        TagsInWarehouse.AsParallel().ForAll(rfid =>
+        var productSerialToInventoryMap = TagsReadedInInventory
+            .GroupBy(p => p.ProductSerial)
+            .ToDictionary(g => g.Key, g => g.First());
+
+        var warehouseSerials = TagsInWarehouse.Select(p => p.ProductSerial).ToHashSet();
+
+        var inventoryByProductCode = TagsReadedInInventory.ToLookup(p => p.ProductCode);
+
+        foreach (var rfid in TagsInWarehouse)
         {
-            var c = productCodeToResultMap.GetOrAdd(rfid.ProductCode, _ => new GetInventoryConflictsVm
+            if (!productCodeToResultMap.TryGetValue(rfid.ProductCode, out var c))
             {
-                ProductCode = rfid.ProductCode,
-                ProductName = rfid.ProductTitle,
-                Qc = rfid.Qc,
-                TypeTitle = rfid.TypeTitle,
-                GroupTitle = rfid.GroupTitle,
-                SizeTitle = rfid.SizeTitle,
-                StatusTitle = rfid.StatusTitle,
-                ProductSize = rfid.ProductSize,
-                Locations = rfid.Zones,
-                LocationList = new List<string> { rfid.ThisTagZone },
-                TechnicalCode = rfid.RegCode
-            });
+                c = new GetInventoryConflictsVm
+                {
+                    ProductCode = rfid.ProductCode,
+                    ProductName = rfid.ProductTitle,
+                    Qc = rfid.Qc,
+                    TypeTitle = rfid.TypeTitle,
+                    GroupTitle = rfid.GroupTitle,
+                    SizeTitle = rfid.SizeTitle,
+                    StatusTitle = rfid.StatusTitle,
+                    ProductSize = rfid.ProductSize,
+                    Locations = rfid.Zones,
+                    LocationList = new List<string> { rfid.ThisTagZone },
+                    TechnicalCode = rfid.RegCode
+                };
+
+                productCodeToResultMap[rfid.ProductCode] = c;
+            }
 
             if (!c.LocationList.Contains(rfid.ThisTagZone))
             {
@@ -1029,20 +1038,25 @@ public partial class InventoryConflicts
                 ProductProperties = rfid.ProductProperties,
                 Status = tagInInventory == null ? "مغایرت کسری" : string.Empty
             });
-        });
+        }
 
-        TagsReadedInInventory.AsParallel().ForAll(b =>
+        foreach (var b in TagsReadedInInventory)
         {
-            if (TagsInWarehouse.Any(p => p.ProductSerial.Equals(b.ProductSerial)))
+            if (warehouseSerials.Contains(b.ProductSerial))
             {
-                return;
+                continue;
             }
 
-            var mainResult = productCodeToResultMap.GetOrAdd(b.ProductCode, _ => new GetInventoryConflictsVm
+            if (!productCodeToResultMap.TryGetValue(b.ProductCode, out var mainResult))
             {
-                ProductCode = b.ProductCode,
-                ProductName = b.ProductName
-            });
+                mainResult = new GetInventoryConflictsVm
+                {
+                    ProductCode = b.ProductCode,
+                    ProductName = b.ProductName
+                };
+
+                productCodeToResultMap[b.ProductCode] = mainResult;
+            }
 
             mainResult.ConflictCount++;
             mainResult.CountInventory++;
@@ -1065,11 +1079,18 @@ public partial class InventoryConflicts
                 ProductProperties = b.ProductProperties,
                 Status = "مغایرت اضافی"
             });
-        });
+        }
 
-        if (Accounting.Any())
+        // Aggregate accounting rows per product so the result does not depend on row order
+        var accountingRows = Accounting
+            .GroupBy(p => p.ProductCode)
+            .Select(g => (First: g.First(), ProductCount: g.Sum(p => p.ProductCount), RealityCount: g.Sum(p => p.RealityCount)))
+            .OrderBy(p => p.First.ProductCode, StringComparer.Ordinal)
+            .ToList();
+
+        if (accountingRows.Count > 0)
         {
-            Accounting.AsParallel().ForAll(accountingRow =>
+            foreach (var (accountingRow, accountingCount, realityCount) in accountingRows)
             {
                 if (!productCodeToResultMap.TryGetValue(accountingRow.ProductCode, out var tagInResult))
                 {
@@ -1083,71 +1104,79 @@ public partial class InventoryConflicts
                         GroupTitle = accountingRow.GroupTitle,
                         SizeTitle = accountingRow.SizeTitle,
                         StatusTitle = accountingRow.StatusTitle,
-                        SumCountAccounting = accountingRow.ProductCount,
-                        ConflictSumCountAccounting = accountingRow.ProductCount,
-                        ConflictSumCountReality = accountingRow.RealityCount,
+                        SumCountAccounting = accountingCount,
+                        SumCountReality = realityCount,
+                        ConflictSumCountAccounting = -accountingCount,
+                        ConflictSumCountReality = -realityCount,
                         Details = new List<GetInventoryConflictDetailsVm>
                         {
                             new GetInventoryConflictDetailsVm
                             {
                                 ProductCode = accountingRow.ProductCode,
                                 ProductName = accountingRow.ProductTitle,
-                                ProductCount = accountingRow.ProductCount,
+                                ProductCount = accountingCount,
                                 RegCode = accountingRow.RegCode,
                                 Status = "مغایرت کالایی حسابداری"
                             }
                         }
                     };
 
-                    productCodeToResultMap.TryAdd(tagInResult.ProductCode, tagInResult);
+                    productCodeToResultMap[tagInResult.ProductCode] = tagInResult;
 
-                    return;
+                    continue;
                 }
 
-                var tagInInventories = TagsReadedInInventory
-                    .Where(p => p.ProductCode.Equals(accountingRow.ProductCode))
+                var tagInInventories = inventoryByProductCode[accountingRow.ProductCode]
                     .DistinctBy(p => p.Epc)
                     .ToList();
 
                 if (!tagInInventories.Any())
                 {
-                    tagInResult.SumCountAccounting += accountingRow.ProductCount;
-                    tagInResult.ConflictSumCountAccounting -= accountingRow.ProductCount;
+                    tagInResult.SumCountAccounting += accountingCount;
+                    tagInResult.ConflictSumCountAccounting -= accountingCount;
                     tagInResult.Details.ForEach(d => d.Status += $" -  مغایرت کالایی حسابداری");
 
-                    tagInResult.SumCountReality += accountingRow.RealityCount;
-                    tagInResult.ConflictSumCountReality -= accountingRow.RealityCount;
+                    tagInResult.SumCountReality += realityCount;
+                    tagInResult.ConflictSumCountReality -= realityCount;
                     tagInResult.Details.ForEach(d => d.Status += $" -  مغایرت کالایی شمارش فیزیکی");
                 }
                 else
                 {
-                    tagInResult.SumCountAccounting += accountingRow.ProductCount;
-                    var diff = tagInInventories.Sum(p => p.ProductCount) - accountingRow.ProductCount;
+                    var inventorySum = tagInInventories.Sum(p => p.ProductCount);
+
+                    tagInResult.SumCountAccounting += accountingCount;
+                    var diff = inventorySum - accountingCount;
 
                     if (diff != 0)
                     {
-                        tagInResult.ConflictSumCountAccounting = diff;
+                        tagInResult.ConflictSumCountAccounting += diff;
                         tagInResult.Details.ForEach(d => d.Status += $" -  مغایرت مقداری حسابداری");
                     }
 
-                    tagInResult.SumCountReality += accountingRow.RealityCount;
-                    diff = tagInInventories.Sum(p => p.ProductCount) - accountingRow.RealityCount;
+                    tagInResult.SumCountReality += realityCount;
+                    diff = inventorySum - realityCount;
 
                     if (diff != 0)
                     {
-                        tagInResult.ConflictSumCountReality = diff;
-                        tagInResult.Details.ForEach(d => d.Status += $" -  مغایرت مقداری حسابداری");
+                        tagInResult.ConflictSumCountReality += diff;
+                        tagInResult.Details.ForEach(d => d.Status += $" -  مغایرت مقداری شمارش فیزیکی");
                     }
                 }
+            }
+        }
 
-              
-                   
-            });
+        foreach (var item in productCodeToResultMap.Values)
+        {
+            item.Details = item.Details
+                .OrderBy(p => p.ProductSerial, StringComparer.Ordinal)
+                .ToList();
+
+            item.LocationList.Sort(StringComparer.Ordinal);
         }
 
         Result = productCodeToResultMap.Values
             .Where(p => p.ProductCode.HasValue())
-            .OrderBy(p => p.ProductCode)
+            .OrderBy(p => p.ProductCode, StringComparer.Ordinal)
             .ToList();
     }
 

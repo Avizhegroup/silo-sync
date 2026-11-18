@@ -18235,7 +18235,7 @@ FROM            tbl_Destination";
 
         var result = int.Parse(dataAccess.SqlDataReaders(command)[0].Value.ToString());
         if (result != 0)
-            return result + 1;
+            return result ;
         return 1;
     }
     /// <summary>

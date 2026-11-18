@@ -1,8 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Silo.Api.Attributes;
 using Silo.Base.Controllers.Base;
 
 namespace Silo.Api.Controllers.v3;
+[DuplicateActionRequested]
 public class TeamYarController (ILogger<LibraryController> logger
     , IConfiguration configuration, IMediator mediator) : SiloBaseControllerVersion3(logger)
 {

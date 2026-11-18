@@ -42,4 +42,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="fld_TruckCrossCauseEnterActionTypeId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="abb16ea4-6296-41ea-babf-95259fc55fc6" ChangeDateTime="11/18/2026 06:39:51">
+    <Property Name="ElementName" Value="[dbo].[tbl_StructuredExternalConnection].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[tbl_StructuredExternalConnection]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="fld_SecId" />
+  </Operation>
 </Operations>

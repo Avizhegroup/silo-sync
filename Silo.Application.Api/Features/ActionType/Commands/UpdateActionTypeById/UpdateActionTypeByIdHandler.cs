@@ -18,12 +18,24 @@ public class UpdateActionTypeByIdHandler(WmsApiContext context, IMapper mapper)
            );
 
         actionType.Code = request.Code;
+
         actionType.Title = request.Title;
+
         actionType.From = $",{string.Join(",", request.ChoosenFromWarehouseTypes)}";
+
         actionType.To = $",{string.Join(",", request.ChoosenToWarehouseTypes)}";
+
         actionType.DocStatusPermitted = $",{string.Join(",", request.ChoosenDocumentPermittedStatuses)}";
+
         actionType.DocStatusChange = string.Join(",", request.ChoosenDocumentChangeStatuses);
+
         actionType.RFIDPower = request.RfidPower;
+
+        actionType.ProductType = request.ProductType;
+
+        actionType.ChangeTagLocation = request.ChangeTagLocation;
+
+        actionType.ActionTypeKind = request.ActionTypeKind.ToString();
 
         actionType.ActiveControls = JsonConvert.SerializeObject(activeControlsDict);
 

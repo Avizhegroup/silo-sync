@@ -35,6 +35,8 @@ public class WmsProfile : Profile
             .ForMember(dest => dest.DestinationTitle, opt => opt.MapFrom(src => src.Title))
             .ForMember(dest => dest.InventoryType, opt => opt.MapFrom(src => src.InventoryType == "1" ? DestinationInventoryType.Physical : DestinationInventoryType.Virtual))
             .ForMember(dest => dest.OperationalType, opt => opt.MapFrom(src => (DestinationOperationalType)src.OperationalType))
+            .ForMember(dest => dest.DestinationTypeCode,opt => opt.MapFrom(src => src.OperationalType.HasValue? src.OperationalType.Value.ToString(): null))
+            .ForMember(dest => dest.Epc, opt => opt.MapFrom(src => src.Permissions))
             .ReverseMap();
 
         CreateMap<ZoneDto, Zone>()

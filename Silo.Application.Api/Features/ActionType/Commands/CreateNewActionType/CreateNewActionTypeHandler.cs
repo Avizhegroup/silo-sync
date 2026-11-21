@@ -19,7 +19,9 @@ public class CreateNewActionTypeHandler(WmsApiContext context, IMapper mapper)
 
         actionType.ActiveControls = JsonConvert.SerializeObject(activeControlsDict);
 
-        actionType.From = $",{string.Join(",", request.ChoosenFromWarehouseTypes)}";
+        actionType.From = request.ActionTypeKind == ActionTypeKindEnum.Register
+            ? "-1"
+            : $",{string.Join(",", request.ChoosenFromWarehouseTypes)}";
 
         actionType.To = $",{string.Join(",", request.ChoosenToWarehouseTypes)}";
 
@@ -28,6 +30,12 @@ public class CreateNewActionTypeHandler(WmsApiContext context, IMapper mapper)
         actionType.DocStatusChange = string.Join(",", request.ChoosenDocumentChangeStatuses);
 
         actionType.RFIDPower = request.RfidPower ;
+
+        actionType.ProductType = request.ProductType;
+
+        actionType.ChangeTagLocation = request.ChangeTagLocation;
+
+        actionType.ActionTypeKind = request.ActionTypeKind.ToString();
 
         if (request.Id.HasNoValue())
         {

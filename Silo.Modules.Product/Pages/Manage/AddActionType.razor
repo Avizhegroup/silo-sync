@@ -22,19 +22,37 @@
                 <label style="margin-right:93px;">@TextResources.APP_StringKeys_Title</label>
                 <TelerikTextBox @bind-Value="Request.Title"
                                 Class="form-control input-search-span"></TelerikTextBox>
-                <label style="margin-right:46px;">@TextResources.APP_StringKeys_fld_ActionTypeFromDestinationType</label>
-                <TelerikMultiSelect Data="@Warehouses"
-                                    @bind-Value="Request.ChoosenFromWarehouseTypes"
-                                    TextField="Title"
-                                    ValueField="Code"
-                                    width="179px"/>
+                <label style="margin-right: 73px !important;">@TextResources.APP_StringKeys_ProductType :</label>
+                <TelerikDropDownList Data="Types"
+                                     TextField="Title"
+                                     ValueField="Code"
+                                     @bind-Value="Request.ProductType"
+                                     DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                     Width="179px"
+                                     Class="drop-all"
+                                     Filterable="true"
+                                     FilterOperator="StringFilterOperator.Contains">
+                </TelerikDropDownList>
+                <label style="margin-right:26px;">جنس عملیات</label>
+                <TelerikDropDownList Data="@ActionTypeKinds"
+                                     TextField="Title"
+                                     ValueField="Value"
+                                     @bind-Value="Request.ActionTypeKind"
+                                     Width="179px">
+                </TelerikDropDownList>
+                @if (Request.ActionTypeKind == ActionTypeKindEnum.Movement)
+                {
+                    <label style="margin-right:31px;">
+                        @TextResources.APP_StringKeys_fld_ActionTypeFromDestinationType
+                    </label>
 
-                <label style="margin-right:20px;">@TextResources.APP_StringKeys_ActionTypeToTypeDestinationType</label>
-                <TelerikMultiSelect Data="@Warehouses"
-                                    @bind-Value="Request.ChoosenToWarehouseTypes"
-                                    TextField="Title"
-                                    ValueField="Code"
-                                    width="179px" />
+                    <TelerikMultiSelect Data="@Warehouses"
+                                        @bind-Value="Request.ChoosenFromWarehouseTypes"
+                                        TextField="Title"
+                                        ValueField="Code"
+                                        Width="179px" />
+                }
+               
             </div>
             <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
                 <label style="margin-right:25px;">@TextResources.APP_StringKeys_RfidPower</label>
@@ -52,6 +70,12 @@
                                     TextField="Title"
                                     ValueField="Id"
                                     width="179px" />
+                <label style="margin-right:20px;">@TextResources.APP_StringKeys_ActionTypeToTypeDestinationType</label>
+                <TelerikMultiSelect Data="@Warehouses"
+                                    @bind-Value="Request.ChoosenToWarehouseTypes"
+                                    TextField="Title"
+                                    ValueField="Code"
+                                    width="179px" />
             </div>
             <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important; margin-top:8px;">
                 <label style="margin-right:21px;">@TextResources.APP_StringKeys_ActionControls</label>
@@ -61,6 +85,9 @@
                     @GetActionControlsText()
                     <MaterialIcon IconName="@MaterialIconsHelper.Checklist_rtl"></MaterialIcon>
                 </button>
+
+                <label style="margin-right:20px;">@TextResources.APP_StringKeys_ChangeTagLocation</label>
+                <TelerikCheckBox @bind-Value="IsChangeTagLocation" />
             </div>
 
             <div style="left:12px; top:92px; position:absolute;">

@@ -35,4 +35,8 @@ public class GetAllActionTypesDto
     public List<int> ChoosenDocumentPermittedStatuses { get; set; } = new();
     public List<string> ChoosenActionControls { get; set; } = new();
 
+    public string? ProductType { get; set; }
+    public int? ChangeTagLocation { get; set; }
+    public string? ActionTypeKind { get; set; }
+
 }

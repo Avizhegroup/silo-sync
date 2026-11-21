@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json;
+using Silo.Application;
+using Silo.Application.Shared.Features;
 using Silo.Shared.Components;
 
 namespace Silo.Modules.Product.Pages;
@@ -14,7 +16,10 @@ public partial class AddActionType
     public List<GetAllDocumentStatusVm> DocumentStatuses;
     public List<GetAllWarehouseTypesDto> Warehouses { get; set; }
     public List<GetAllActionTypeControlsDto> ActionControls;
+    public List<GetAllProductTypeVm> Types;
+    public bool IsChangeTagLocation { get; set; }
 
+    [Inject] public IFormalDataCache FormalCache { get; set; }
     [Inject] public RfidConnectApi Api { get; set; }
     [Inject] public IMapper Mapper { get; set; }
     [CascadingParameter] public DialogFactory Dialog { get; set; }
@@ -23,10 +28,18 @@ public partial class AddActionType
     public Modal ModalMessage { get; set; }
     public Modal ModalActionControls { get; set; }
 
+    public List<ActionTypeKindItem> ActionTypeKinds { get; set; } = new()
+    {
+    new() { Value = ActionTypeKindEnum.Movement, Title = "جابجایی" },
+    new() { Value = ActionTypeKindEnum.Register, Title = "رجیستر" }
+    };
 
     public async Task OnRefreshClick(MouseEventArgs e)
     {
         Request = new();
+
+        IsChangeTagLocation = false;
+
     }
 
     protected override async Task SiloInitializer()
@@ -44,6 +57,8 @@ public partial class AddActionType
 
         ActionControls = (await Api.SendAsyncObjectByUri<GetAllActionTypeControlsVm>(HttpMethod.Get
          , "ActionTypeControls/GetAll")).Value.List;
+
+        Types = await FormalCache.GetTypes();
 
         IsLoading = false;
     }
@@ -65,6 +80,8 @@ public partial class AddActionType
         IsLoading = true;
 
         BuildActiveControlsJson();
+
+        Request.ChangeTagLocation = IsChangeTagLocation ? 1 : 0;
 
         if (Request.Id.HasNoValue())
         {
@@ -128,6 +145,8 @@ public partial class AddActionType
     public async Task OnSelectType(GetAllActionTypesDto actiontype)
     {
         Request = Mapper.Map<CreateNewActionTypeCommand>(actiontype);
+
+        IsChangeTagLocation = actiontype.ChangeTagLocation == 1;
 
         if (!string.IsNullOrWhiteSpace(actiontype.From))
         {

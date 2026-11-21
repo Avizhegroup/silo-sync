@@ -21,4 +21,8 @@ public class CreateNewActionTypeCommand : IRequest<CreateNewActionTypeVm>
     public string? ActiveControls { get; set; }
     public string? To { get; set; }
     public string? From { get; set; }
+    public string ProductType { get; set; }
+    public int? ChangeTagLocation { get; set; }
+    public ActionTypeKindEnum? ActionTypeKind { get; set; }
+
 }

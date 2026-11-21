@@ -13,4 +13,6 @@ public class WarehouseDto
     public bool IsActive { get; set; }
     public string Epc { get; set; }
     public string Coordinates { get; set; }
+    public string? DestinationTypeCode { get; set; }
+    public string? ActionTypeKind { get; set; }
 }

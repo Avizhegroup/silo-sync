@@ -16556,6 +16556,61 @@ namespace Silo.Shared
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to  امکان لغو تگ
+        /// </summary>
+        public static string APP_StringKeys_AllowCancelTag
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_AllowCancelTag");
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to  امکان چاپ مجدد تگ
+        /// </summary>
+        public static string APP_StringKeys_AllowRePrintTag
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_AllowRePrintTag");
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to امکان ویرایش اطلاعات
+        /// </summary>
+        public static string APP_StringKeys_AllowEditInformation
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_AllowEditInformation");
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to  امکان ویرایش مقدار تگ 
+        /// </summary>
+        public static string APP_StringKeys_AllowEditTagValue
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_AllowEditTagValue");
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to  پاکسازی موقعیت مکانی تگ 
+        /// </summary>
+        public static string APP_StringKeys_ChangeTagLocation
+        {
+            get
+            {
+                return ResourceManager.GetString("APP_StringKeys_ChangeTagLocation");
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to مقدار فیلد {0} باید برابر با فیلد {1} باشد.
         /// </summary>
         public static string APP_StringKeys_Validation_Compare_Equals

@@ -1,15 +1,16 @@
-@page "/warehouse/ManageWarehouse"
+﻿@page "/warehouse/ManageWarehouse"
 @inherits SiloBasePage
 @namespace Silo.Pages.Warehouse
 @using Silo.Shared;
 @using Silo.Application.Features;
+@using Silo.Application.Shared.Features;
 
 <PageTitle>@PageTitle</PageTitle>
 
 <div class="row col-md-12">
     <div class="card card-stats col-md-12 text-align-center">
         <form asp-action="Search" asp-controller="Home" method="post" role="form" class="form-search-span" id="form-main">
-            <div class="col-md-9 text-align-center" style="margin-top:10px;padding:5px">
+            <div class="col-md-11 text-align-center" style="margin-top:10px;padding:5px">
                 <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
                     <label style="margin-right: 62px !important;">@TextResources.APP_StringKeys_Field_Warehouse_Code :</label>
                     <input @bind-value="Warehouse.DestinationCode" type="text" class="form-control input-search-span-lg pointer" disabled="@IsDisabled" />
@@ -20,20 +21,28 @@
                                      Enabled="@(!IsDisabled)">
                     </TelerikCheckBox>
                 </div>
-                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                <div class=" d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important">
                     <label style="margin-right: 20px !important; margin-left:3px !important;">@TextResources.APP_StringKeys_Field_Warehouse_Operational_Type :</label>
                     @if (IsDisabled)
                     {
-                        <input @bind-value="OperationalType[(int)Warehouse.OperationalType+1].Name" type="text" style="width:200px !important;margin-left:-3px !important;margin-right:0px" class="form-control input-search-span-lg pointer" disabled="@IsDisabled" />
+                        <input value="@DestinationTypes.FirstOrDefault(
+                               p => p.Code == Warehouse.DestinationTypeCode)?.Title"
+                               type="text"
+                               style="width:200px !important"
+                               class="form-control input-search-span-lg pointer"
+                               disabled />
                     }
                     else
                     {
-                        <TelerikDropDownList Data="OperationalType"
-                                         TextField="Name"
-                                         ValueField="Value"
-                                         @bind-Value="Warehouse.OperationalType"
-                                         Width="200px"
-                                         Class="drop-all">
+                        <TelerikDropDownList Data="@DestinationTypes"
+                                             TextField="@nameof(GetAllDestinationTypeDto.Title)"
+                                             ValueField="@nameof(GetAllDestinationTypeDto.Code)"
+                                             @bind-Value="Warehouse.DestinationTypeCode"
+                                             DefaultText="@TextResources.APP_StringKeys_NotChoosed"
+                                             Filterable="true"
+                                             FilterOperator="StringFilterOperator.Contains"
+                                             Width="200px"
+                                             Class="drop-all">
                         </TelerikDropDownList>
                     }
                     <label style="margin-right: 20px !important;  margin-left:6px !important;">@TextResources.APP_StringKeys_Field_Warehouse_Inventory_Type :</label>
@@ -51,6 +60,14 @@
                                          Class="drop-all">
                         </TelerikDropDownList>
                     }
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_AllowCancelTag :</label>
+                    <TelerikCheckBox @bind-Value="Warehouse.AllowCancelTag" />
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_AllowRePrintTag :</label>
+                    <TelerikCheckBox @bind-Value="Warehouse.AllowRePrintTag" />
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_AllowEditInformation :</label>
+                    <TelerikCheckBox @bind-Value="Warehouse.AllowEditInformation" />
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_AllowEditTagValue :</label>
+                    <TelerikCheckBox @bind-Value="Warehouse.AllowEditTagValue" />
                 </div>
             </div>
             <div class=" d-flex flex-row align-items-center flex-wrap save-button-div" style="margin-top: -45px;">
@@ -94,8 +111,8 @@
                 <RowTemplate Context="warehouse">
                     <td class="td-style td-dt">@warehouse.DestinationCode</td>
                     <td class="td-style td-dt">@warehouse.DestinationTitle</td>
-                    <td class="td-style td-dt">@OperationalType.FirstOrDefault(p=>p.Value == warehouse.OperationalType).Name</td>
-                    <td class="td-style td-dt">@InventoryType.FirstOrDefault(p=>p.Value == warehouse.InventoryType).Name</td>
+                    <td class="td-style td-dt">@DestinationTypes.FirstOrDefault(p => p.Code == warehouse.DestinationTypeCode.ToString())?.Title</td>
+                    <td class="td-style td-dt">@InventoryType?.FirstOrDefault(p => p.Value == warehouse.InventoryType)?.Name</td>
                     <td class="td-style td-dt">
                         @if (warehouse.IsDefault)
                         {

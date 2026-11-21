@@ -1,4 +1,6 @@
-﻿using Silo.Application;
+﻿using System.Text.Json;
+using Silo.Application;
+using Silo.Application.Shared.Features;
 
 namespace Silo.Pages.Warehouse;
 public partial class ManageWarehouse
@@ -8,45 +10,8 @@ public partial class ManageWarehouse
     public bool IsDisabled = false;
     public GetAllWarehousesVm Warehouse = new();
     public List<GetAllWarehousesVm> Warehouses = new();
-    public List<TelerikDropDownItemGeneric<DestinationOperationalType>> OperationalType = new()
-    {
-        new()
-        {
-            Name= TextResources.APP_StringKeys_NotChoosed,
-            Value = DestinationOperationalType.NotSpecified
-        },
-        new()
-        {
-            Name= TextResources.APP_StringKeys_Production_Warehouse,
-            Value = DestinationOperationalType.Quarentine
-        },
-        new()
-        {
-            Name= TextResources.APP_StringKeys_Product_Warehouse,
-            Value = DestinationOperationalType.Product
-        },
-        new()
-        {
-            Name= TextResources.APP_StringKeys_Material_Warehouse,
-            Value = DestinationOperationalType.Material
-        },
-        new()
-        {
-            Name= TextResources.APP_StringKeys_Waste_Warehouse,
-            Value = DestinationOperationalType.Waste
-        },
-        new()
-        {
-            Name= TextResources.APP_StringKeys_Loading_Warehouse,
-            Value = DestinationOperationalType.Loading
-        },
-        new()
-        {
-            Name= "انبار خروج",
-            Value = DestinationOperationalType.Sales
-        }
+    public List<GetAllDestinationTypeDto> DestinationTypes = new();
 
-    };
     public List<TelerikDropDownItemGeneric<DestinationInventoryType>> InventoryType = new()
     {
         new()
@@ -78,6 +43,10 @@ public partial class ManageWarehouse
 
         UserToken = (await AuthState.GetAuthenticationStateAsync()).User.GetUserId();
 
+
+        DestinationTypes = (await Api.SendAsyncObjectByUri<GetAllDestinationTypeVm>(HttpMethod.Get
+                , "DestinationType/ReadAll")).Value.List;
+
         await RefreshWarehousesData();
 
         IsLoading = false;
@@ -99,7 +68,15 @@ public partial class ManageWarehouse
 
         Warehouse.IsDefault = false;
 
-        int result = (await Api.PostAsync<int>("SSaveWarehouse",
+        Warehouse.Epc = JsonSerializer.Serialize(new
+        {
+            AllowCancelTag = Warehouse.AllowCancelTag.ToString().ToLowerInvariant(),
+            AllowRePrintTag = Warehouse.AllowRePrintTag.ToString().ToLowerInvariant(),
+            AllowEditInformation = Warehouse.AllowEditInformation.ToString().ToLowerInvariant(),
+            AllowEditTagValue = Warehouse.AllowEditTagValue.ToString().ToLowerInvariant()
+        });
+
+        int result = (await Api.PostAsync<int>("SSaveWarehouseWithDestinationType",
             new KeyValuePair<string, object>("warehouse", Warehouse))).Value;
 
         if (Warehouse.Id == 0)
@@ -181,6 +158,14 @@ public partial class ManageWarehouse
 
         IsDisabled = warehouse.IsDefault;
 
+        Warehouse.DestinationTypeCode = warehouse.DestinationTypeCode;
+
+        Warehouse.Epc = warehouse.Epc;
+
+        LoadEpcSettings(warehouse.Epc);
+
+        IsDisabled = warehouse.IsDefault;
+
         await ModalWarehouses.Close(new());
     }
 
@@ -213,7 +198,7 @@ public partial class ManageWarehouse
             validationString = TextResources.APP_StringKeys_Field_Warehouse_Title + " " + TextResources.APP_StringKeys_Validation_EmptyError;
         }
 
-        if (Warehouse.OperationalType == DestinationOperationalType.NotSpecified)
+        if (Warehouse.DestinationTypeCode.HasNoValue())
         {
             validationString = TextResources.APP_StringKeys_Validation_Operational_Type;
         }
@@ -231,5 +216,39 @@ public partial class ManageWarehouse
         }
 
         return true;
+    }
+
+    private void LoadEpcSettings(string? epc)
+    {
+        Warehouse.AllowCancelTag = false;
+        Warehouse.AllowRePrintTag = false;
+        Warehouse.AllowEditInformation = false;
+        Warehouse.AllowEditTagValue = false;
+
+        if (string.IsNullOrWhiteSpace(epc))
+            return;
+
+        using var document = JsonDocument.Parse(epc);
+        var root = document.RootElement;
+
+        Warehouse.AllowCancelTag = GetEpcBoolean(root, "AllowCancelTag");
+        Warehouse.AllowRePrintTag = GetEpcBoolean(root, "AllowRePrintTag");
+        Warehouse.AllowEditInformation = GetEpcBoolean(root, "AllowEditInformation");
+        Warehouse.AllowEditTagValue = GetEpcBoolean(root, "AllowEditTagValue");
+    }
+
+    private static bool GetEpcBoolean(JsonElement root, string propertyName)
+    {
+        if (!root.TryGetProperty(propertyName, out var value))
+            return false;
+
+        return value.ValueKind switch
+        {
+            JsonValueKind.True => true,
+            JsonValueKind.False => false,
+            JsonValueKind.String =>
+                bool.TryParse(value.GetString(), out var result) && result,
+            _ => false
+        };
     }
 }

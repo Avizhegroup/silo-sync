@@ -151,4 +151,15 @@ public class HostedServiceManager : BackgroundService
             logger.LogInformation($"RunGetProduct result: {result}");
         }
     }
+
+    public async Task RunTeamYar()
+    {
+        if (configuration["Modes"].NotContains("TeamYar"))
+        {
+            return;
+        }
+        logger.LogInformation($"RunTeamYar: {DateTime.Now}");
+        bool result = (await api.PostAsync<bool>("STeamYar")).Value;
+        logger.LogInformation($"RunTeamYar result: {result}");  
+    }
 }

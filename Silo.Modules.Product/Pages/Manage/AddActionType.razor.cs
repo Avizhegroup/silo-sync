@@ -83,6 +83,11 @@ public partial class AddActionType
 
         Request.ChangeTagLocation = IsChangeTagLocation ? 1 : 0;
 
+        if (Request.ActionTypeKind == ActionTypeKindEnum.Register)
+        {
+            Request.ChoosenFromWarehouseTypes.Clear();
+        }
+
         if (Request.Id.HasNoValue())
         {
             bool CheckCode = (await Api.SendAsyncObjectByUri<GetActionTypeByCodeVm>(HttpMethod.Get, "ActionType/CheckCode", Request)).Value.Result;
@@ -146,11 +151,29 @@ public partial class AddActionType
     {
         Request = Mapper.Map<CreateNewActionTypeCommand>(actiontype);
 
+        Request.ActionTypeKind = Enum.TryParse<ActionTypeKindEnum>(actiontype.ActionTypeKind, true,out var actionTypeKind)? actionTypeKind : ActionTypeKindEnum.Movement;
+
         IsChangeTagLocation = actiontype.ChangeTagLocation == 1;
 
-        if (!string.IsNullOrWhiteSpace(actiontype.From))
+        if (Request.ActionTypeKind == ActionTypeKindEnum.Movement && !string.IsNullOrWhiteSpace(actiontype.From))
         {
-            var fromCodes = actiontype.From.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            var fromCodes = actiontype.From.Split(
+                ',',
+                StringSplitOptions.RemoveEmptyEntries);
+
+            Request.ChoosenFromWarehouseTypes = Warehouses
+                .Where(w => fromCodes.Contains(w.Code))
+                .Select(w => w.Code!)
+                .ToList();
+        }
+
+        if (Request.ActionTypeKind == ActionTypeKindEnum.Movement &&
+        !string.IsNullOrWhiteSpace(actiontype.From))
+        {
+            var fromCodes = actiontype.From.Split(
+                ',',
+                StringSplitOptions.RemoveEmptyEntries);
+
             Request.ChoosenFromWarehouseTypes = Warehouses
                 .Where(w => fromCodes.Contains(w.Code))
                 .Select(w => w.Code!)
@@ -159,7 +182,10 @@ public partial class AddActionType
 
         if (!string.IsNullOrWhiteSpace(actiontype.To))
         {
-            var toCodes = actiontype.To.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            var toCodes = actiontype.To.Split(
+                ',',
+                StringSplitOptions.RemoveEmptyEntries);
+
             Request.ChoosenToWarehouseTypes = Warehouses
                 .Where(w => toCodes.Contains(w.Code))
                 .Select(w => w.Code!)

@@ -25,4 +25,5 @@ public class DynamicFieldDto
     public int? Order { get; set; }
     public int? ParentId { get; set; }
     public bool? IsReadOnly { get; set; } = false;
+    public int? ProductType { get; set; }
 }

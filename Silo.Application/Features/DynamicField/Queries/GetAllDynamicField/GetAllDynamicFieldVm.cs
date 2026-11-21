@@ -38,4 +38,5 @@ public class GetAllDynamicFieldVm
         get => int.TryParse(Value, out var val) ? val : 0;
         set => Value = value?.ToString();
     }
+    public int? ProductType { get; set; }
 }

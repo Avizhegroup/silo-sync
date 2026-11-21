@@ -19,9 +19,7 @@ public class CreateNewActionTypeHandler(WmsApiContext context, IMapper mapper)
 
         actionType.ActiveControls = JsonConvert.SerializeObject(activeControlsDict);
 
-        actionType.From = request.ActionTypeKind == ActionTypeKindEnum.Register
-            ? "-1"
-            : $",{string.Join(",", request.ChoosenFromWarehouseTypes)}";
+        actionType.From = request.ActionTypeKind == ActionTypeKindEnum.Register? ",-1" : $",{string.Join(",", request.ChoosenFromWarehouseTypes)}";
 
         actionType.To = $",{string.Join(",", request.ChoosenToWarehouseTypes)}";
 

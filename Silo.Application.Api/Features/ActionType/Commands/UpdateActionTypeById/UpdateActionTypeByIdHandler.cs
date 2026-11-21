@@ -21,7 +21,7 @@ public class UpdateActionTypeByIdHandler(WmsApiContext context, IMapper mapper)
 
         actionType.Title = request.Title;
 
-        actionType.From = $",{string.Join(",", request.ChoosenFromWarehouseTypes)}";
+        actionType.From = request.ActionTypeKind == ActionTypeKindEnum.Register ? ",-1" : $",{string.Join(",", request.ChoosenFromWarehouseTypes)}";
 
         actionType.To = $",{string.Join(",", request.ChoosenToWarehouseTypes)}";
 

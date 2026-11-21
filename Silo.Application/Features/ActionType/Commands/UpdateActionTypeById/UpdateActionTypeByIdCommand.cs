@@ -14,6 +14,5 @@ public class UpdateActionTypeByIdCommand : IRequest<UpdateActionTypeByIdVm>
     public List<string> ChoosenActionControls { get; set; } = new();
     public string ProductType { get; set; }
     public int? ChangeTagLocation { get; set; }
-    public string? ActionTypeKind { get; set; }
-
+    public ActionTypeKindEnum? ActionTypeKind { get; set; }
 }

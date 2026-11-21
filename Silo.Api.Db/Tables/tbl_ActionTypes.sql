@@ -9,5 +9,6 @@
     [fld_ActionTypeActiveControls] NVARCHAR(MAX) NULL, 
     [fld_ActionTypeRfidPower] INT NULL, 
     [fld_ActionTypeChangeTagLocation] INT NULL, 
-    [fld_ActionTypeProductType] NVARCHAR(50) NULL
+    [fld_ActionTypeProductType] NVARCHAR(50) NULL, 
+    [fld_ActionTypeKind] NVARCHAR(MAX) NULL
 ) ON [PRIMARY]

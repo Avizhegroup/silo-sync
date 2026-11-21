@@ -79,4 +79,7 @@ public class DynamicField
 
     [Column("fld_DynamicFieldIsReadOnly")]
     public bool? IsReadOnly { get; set; }
+
+    [Column("fld_DynamicFieldProductType")]
+    public int? ProductType { get; set; }
 }

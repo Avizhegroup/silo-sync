@@ -1,6 +1,6 @@
 # راهنمای اتصال به وب‌سرویس سیلو (تیم‌یار)
 
-این سند برای تیمی نوشته شده که می‌خواهد سیستم خودش (مثلاً نرم‌افزار انبار یا ERP) را به سیلو وصل کند. هر هفت اکشنی که در `TeamYarController` هست، همین‌جا با ورودی و خروجی‌شان توضیح داده شده. اگر چیزی مبهم بود، قبل از شروع کدنویسی با تیم سیلو هماهنگ کنید.
+این سند برای تیمی نوشته شده که می‌خواهد سیستم خودش (مثلاً نرم‌افزار انبار یا ERP) را به سیلو وصل کند. هر هشت اکشنی که در `TeamYarController` هست، همین‌جا با ورودی و خروجی‌شان توضیح داده شده. اگر چیزی مبهم بود، قبل از شروع کدنویسی با تیم سیلو هماهنگ کنید.
 
 ## فهرست
 
@@ -9,12 +9,13 @@
 3. [فیلد `commandUniqueId`](#فیلد-commanduniqueid)
 4. [اکشن‌ها](#اکشنها)
    - [SaveTag — ثبت اطلاعات سری ساخت](#۱-savetag--ثبت-اطلاعات-سری-ساخت)
-   - [VerifyLocate — تایید ثبت نهایی جابه‌جایی](#۲-verifylocate--تایید-ثبت-نهایی-جابهجایی)
-   - [SerialConsumption — ثبت مصرف سری ساخت](#۳-serialconsumption--ثبت-مصرف-سری-ساخت)
-   - [DocumentForSales — ثبت حواله فروش](#۴-documentforsales--ثبت-حواله-فروش)
-   - [RevokeTags — ابطال سری ساخت](#۵-revoketags--ابطال-سری-ساخت)
-   - [GetTagsBySerials — استعلام وضعیت سری ساخت](#۶-gettagsbyserials--استعلام-وضعیت-سری-ساخت)
-   - [DocumentForGeneral — ثبت اسناد عمومی](#۷-documentforgeneral--ثبت-اسناد-عمومی)
+   - [UpdateTagCount — ویرایش مقادیر سری ساخت](#۲-updatetagcount--ویرایش-مقادیر-سری-ساخت)
+   - [VerifyLocate — تایید ثبت نهایی جابه‌جایی](#۳-verifylocate--تایید-ثبت-نهایی-جابهجایی)
+   - [SerialConsumption — ثبت مصرف سری ساخت](#۴-serialconsumption--ثبت-مصرف-سری-ساخت)
+   - [DocumentForSales — ثبت حواله فروش](#۵-documentforsales--ثبت-حواله-فروش)
+   - [RevokeTags — ابطال سری ساخت](#۶-revoketags--ابطال-سری-ساخت)
+   - [GetTagsBySerials — استعلام وضعیت سری ساخت](#۷-gettagsbyserials--استعلام-وضعیت-سری-ساخت)
+   - [DocumentForGeneral — ثبت اسناد عمومی](#۸-documentforgeneral--ثبت-اسناد-عمومی)
 5. [جدول وضعیت‌ها (Enum)](#جدول-وضعیتها-enum)
 6. [نکات پیاده‌سازی](#نکات-پیادهسازی)
 
@@ -64,13 +65,14 @@ POST /RfidCore/v3/TeamYar/SaveTag
 | `200` | درخواست پردازش شد. حتماً `successful` را هم چک کنید. |
 | `400` | بدنه‌ی درخواست ایراد دارد (فیلد اجباری خالی، JSON خراب، نوع اشتباه و...) |
 | `401` | توکن ارسال نشده یا معتبر نیست |
+| `409` | درخواست تکراری است ( `commandUniqueId` قبلاً ثبت شده) |
 | `5xx` | خطای داخلی سرور. بعد از کمی صبر و با **همان `commandUniqueId`** دوباره تلاش کنید. |
 
 ---
 
 ## فیلد `commandUniqueId`
 
-ورودی تمام اکشن‌ها به‌جز `GetTagsBySerials` این فیلد را دارند و **اجباری** است.
+ورودی تمام اکشن‌ها به‌جز `GetTagsBySerials` و `UpdateTagCount` این فیلد را دارند و **اجباری** است.
 
 این یک شناسه‌ی یکتا برای هر درخواست است که شما می‌سازید (مثلاً یک GUID). کارش این است که اگر به هر دلیلی (قطع شدن اینترنت، timeout و...) مطمئن نشدید درخواست ثبت شده یا نه، بتوانید همان درخواست را دوباره بفرستید و سند دوبار ثبت نشود.
 
@@ -84,7 +86,7 @@ POST /RfidCore/v3/TeamYar/SaveTag
 
 ## اکشن‌ها
 
-### ۱. SaveTag — ثبت اطلاعات سری ساخت
+### ۱. SaveTag — ثبت/ ویرایش اطلاعات سری ساخت
 
 ```
 POST /RfidCore/v3/TeamYar/SaveTag
@@ -157,7 +159,59 @@ POST /RfidCore/v3/TeamYar/SaveTag
 
 ---
 
-### ۲. VerifyLocate — تایید ثبت نهایی جابه‌جایی
+### ۲. UpdateTagCount — ویرایش مقادیر سری ساخت
+
+```
+POST /RfidCore/v3/TeamYar/UpdateTagCount
+```
+
+با این اکشن مقدار اصلی یا فرعی و واحدهای سری ساخت را ویرایش کنید. برای هر سری ساخت، فقط فیلدهایی را که تغییر کرده‌اند ارسال کنید؛ فیلدهای بدون تغییر را `null` بفرستید.
+
+**ورودی**
+
+| فیلد | نوع | اجباری | توضیح |
+|------|-----|:------:|-------|
+| `list` | آرایه‌ای از `UpdateTagCountDto` | ✔ | فهرست سری‌ساخت‌هایی که باید ویرایش شوند |
+
+هر عضو `list` (`UpdateTagCountDto`):
+
+| فیلد | نوع | اجباری | توضیح |
+|------|-----|:------:|-------|
+| `productSerial` | string | ✔ | سری ساخت |
+| `originalCount` | decimal یا `null` | | مقدار اصلی جدید؛ اگر تغییر نکرده، `null` بفرستید |
+| `subCount` | decimal یا `null` | | مقدار فرعی جدید؛ اگر تغییر نکرده، `null` بفرستید |
+| `unitForOriginalCount` | string یا `null` | | واحد جدید مقدار اصلی؛ اگر تغییر نکرده، `null` بفرستید |
+| `unitForSubCount` | string یا `null` | | واحد جدید مقدار فرعی؛ اگر تغییر نکرده، `null` بفرستید |
+
+**نمونه درخواست**
+
+```json
+{
+  "list": [
+    {
+      "productSerial": "3852489025529",
+      "originalCount": 120,
+      "subCount": 10,
+      "unitForOriginalCount": "کارتن",
+      "unitForSubCount": "عدد"
+    }
+  ]
+}
+```
+
+**خروجی**
+
+```json
+{
+  "successful": true,
+  "value": true,
+  "messages": null
+}
+```
+
+---
+
+### ۳. VerifyLocate — تایید ثبت نهایی جابه‌جایی
 
 ```
 POST /RfidCore/v3/TeamYar/VerifyLocate
@@ -199,7 +253,7 @@ POST /RfidCore/v3/TeamYar/VerifyLocate
 
 ---
 
-### ۳. SerialConsumption — ثبت مصرف سری ساخت
+### ۴. SerialConsumption — ثبت مصرف سری ساخت
 
 ```
 POST /RfidCore/v3/TeamYar/SerialConsumption
@@ -239,7 +293,7 @@ POST /RfidCore/v3/TeamYar/SerialConsumption
 
 ---
 
-### ۴. DocumentForSales — ثبت حواله فروش
+### ۵. DocumentForSales — ثبت حواله فروش
 
 ```
 POST /RfidCore/v3/TeamYar/DocumentForSales
@@ -306,7 +360,7 @@ POST /RfidCore/v3/TeamYar/DocumentForSales
 
 ---
 
-### ۵. RevokeTags — ابطال سری ساخت
+### ۶. RevokeTags — ابطال سری ساخت
 
 ```
 POST /RfidCore/v3/TeamYar/RevokeTags
@@ -346,7 +400,7 @@ POST /RfidCore/v3/TeamYar/RevokeTags
 
 ---
 
-### ۶. GetTagsBySerials — استعلام وضعیت سری ساخت
+### ۷. GetTagsBySerials — استعلام وضعیت سری ساخت
 
 ```
 POST /RfidCore/v3/TeamYar/GetTagsBySerials
@@ -408,7 +462,7 @@ POST /RfidCore/v3/TeamYar/GetTagsBySerials
 
 ---
 
-### ۷. DocumentForGeneral — ثبت اسناد عمومی
+### ۸. DocumentForGeneral — ثبت اسناد عمومی
 
 ```
 POST /RfidCore/v3/TeamYar/DocumentForGeneral
@@ -431,7 +485,7 @@ POST /RfidCore/v3/TeamYar/DocumentForGeneral
 | `date` | string | ✔ | تاریخ، مثلاً `1405/07/12` |
 | `originWarehouseCode` | string | ✔ | کد انبار مبدأ |
 | `destinationWarehouseCode` | string | ✔ | کد انبار مقصد |
-| `documentType` | int | ✔ | نوع سند (مقدار عددی؛ لیست مقادیر مجاز را تیم سیلو اعلام می‌کند) |
+| `documentType` | int | ✔ | نوع سند (مقادیر در جدول انواع سند) |
 | `opType` | int | ✔ | نوع عملیات: `1` ذخیره، `2` بروزرسانی، `3` ابطال ([جدول](#optype-اسناد)) |
 | `items` | آرایه‌ای از `GeneralItem` | | اقلام سند. برای ثبت و ویرایش حتماً بفرستید. |
 
@@ -442,6 +496,14 @@ POST /RfidCore/v3/TeamYar/DocumentForGeneral
 | `productCode` | string | ✔ | کد کالا |
 | `count` | decimal | ✔ | مقدار |
 | `unit` | string | | واحد |
+
+**انواع سند**
+
+| نوع سند | مقدار `documentType` |
+|----------|:--------------------:|
+| رسید خرید | `1` |
+| حواله انتقال | `36` |
+| حواله مصرف مرکز | `4` |
 
 **نمونه درخواست**
 

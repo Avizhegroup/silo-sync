@@ -148,14 +148,14 @@ public class SaveGalleryMediaWithFileHandler(WmsApiContext context
                 string uhfLogCommand = $"""
                     SELECT TOP(1) fld_Reader_GateType
                     FROM tbl_UHF_ReaderLog
-                    WHERE fld_InventoryId = {data.UsageId}
+                    WHERE fld_InventoryId = {data.UsageId} AND fld_Reader_GateType IS NOT NULL
                     """;
 
                 var resultUhfLog = dataAccess.SqlDataAdapter(uhfLogCommand).Select();
 
                 if (resultUhfLog.Any())
                 {
-                    var actionTypeCode = (int)resultUhfLog[0].ItemArray[0];
+                    var actionTypeCode = int.Parse(resultUhfLog[0].ItemArray[0].ToString());
 
                     var actionTypesTitle = context.ActionTypes.FirstOrDefault(p => p.Code == actionTypeCode)?.Title;
 

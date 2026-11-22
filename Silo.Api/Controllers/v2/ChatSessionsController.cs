@@ -64,12 +64,12 @@ public class ChatSessionsController(ILogger<ChatSessionsController> logger
             Value = await mediator.Send<SendChatMessageVm>(command)
         });
 
-    [HttpGet("[action]")]
-    public async Task<IActionResult> GetChatHistories([FromQuery] string userId, [FromQuery] RagDocType? mode)
+    [HttpPost("[action]")]
+    public async Task<IActionResult> GetChatHistories([FromBody] GetChatHistoriesQuery query)
         => Ok(new ApiResponse<GetChatHistoriesVm>()
         {
             Successful = true,
-            Value = await mediator.Send<GetChatHistoriesVm>(new GetChatHistoriesQuery { UserId = userId, Mode = mode })
+            Value = await mediator.Send(query)
         });
 }
 

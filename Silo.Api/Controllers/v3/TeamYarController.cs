@@ -1,13 +1,16 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Silo.Api.Attributes;
 using Silo.Base.Controllers.Base;
 
 namespace Silo.Api.Controllers.v3;
+
+[DuplicateActionRequested]
 public class TeamYarController (ILogger<LibraryController> logger
     , IConfiguration configuration, IMediator mediator) : SiloBaseControllerVersion3(logger)
 {
     /// <summary>
-    /// ثبت اطلاعات سری ساخت
+    /// ثبت/ ویرایش اطلاعات سری ساخت
     /// </summary>
     [HttpPost("[action]")]
     public async Task<IActionResult> SaveTag(SaveTagForTeamYarCommand request)
@@ -18,8 +21,22 @@ public class TeamYarController (ILogger<LibraryController> logger
             Successful = true,
             Value = true
         });
-    }  
-    
+    }
+
+    /// <summary>
+    ///  ویرایش مقادیر سری ساخت
+    /// </summary>
+    [HttpPost("[action]")]
+    public async Task<IActionResult> UpdateTagCount(UpdateTagCountCommand request)
+    {
+        //var response = await mediator.Send<UpdateTagCountVm>(request);
+        return Ok(new ApiResponse<bool>()
+        {
+            Successful = true,
+            Value = true
+        });
+    }
+
     /// <summary>
     /// تایید ثبت نهایی جابه جایی
     /// </summary>

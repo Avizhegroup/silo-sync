@@ -1,0 +1,152 @@
+﻿@namespace Silo.Shared.Components.Ai
+
+@using Telerik.SvgIcons
+@using Silo.Shared.Tools
+@using Telerik.Blazor
+@using Telerik.Blazor.Components
+@using Silo.Application.Shared.Features
+
+@if (ChartData.Count == 0)
+{
+    <div class="mt-3">
+        <p class="bg-warning p-2 rounded text-dark">داده معتبری برای نمایش نمودار وجود ندارد.</p>
+    </div>
+}
+else
+{
+   <div class="mt-3 ai-chart-wrapper">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="ai-chart-note">تعداد موارد: @ChartData.Count.ToString("N0")</div>
+
+        <TelerikButton OnClick="@DownloadChartAsync"
+                       ThemeColor="@ThemeConstants.Button.ThemeColor.Info"
+                       Icon="@SvgIcon.Image"
+                       Title="دانلود تصویر نمودار">
+            دانلود تصویر نمودار
+        </TelerikButton>
+    </div>
+
+    <div @ref="ChartContainer">
+        @switch (Type)
+        {
+            case AiReportCommandType.PieChart:
+                <div class="ai-chart-scroll-y">
+                    <TelerikChart Height="@PieHeightText" Transitions="false">
+                        <ChartSeriesItems>
+                            <ChartSeries Type="ChartSeriesType.Pie"
+                                         Data="@ChartData"
+                                         Field="@nameof(ChartPoint.Value)"
+                                         CategoryField="@nameof(ChartPoint.Label)"
+                                         ColorField="@nameof(ChartPoint.Color)" />
+                        </ChartSeriesItems>
+                        <ChartLegend Position="ChartLegendPosition.Right" />
+                        <ChartTooltip Visible="true">
+                            <Template>
+                                @{
+                                    var p = context.DataItem as ChartPoint;
+                                }
+                                @if (p != null)
+                                {
+                                    <div style="direction:rtl">
+                                        @p.Category: @p.Value.ToString("N0") (@((p.Value / PieTotal).ToString("P1")))
+                                    </div>
+                                }
+                            </Template>
+                        </ChartTooltip>
+                    </TelerikChart>
+                </div>
+                break;
+
+            case AiReportCommandType.LineChart:
+                <div class="ai-chart-scroll-x">
+                    <div style="@LineContainerStyle">
+                        <TelerikChart Height="@LineHeightText" Transitions="false">
+                            <ChartSeriesItems>
+                                <ChartSeries Type="ChartSeriesType.Line"
+                                             Data="@ChartData"
+                                             Field="@nameof(ChartPoint.Value)"
+                                             CategoryField="@nameof(ChartPoint.Key)"
+                                             Color="@BaseColor">
+                                    <ChartSeriesMarkers Visible="true" Size="7" />
+                                </ChartSeries>
+                            </ChartSeriesItems>
+                            <ChartCategoryAxes>
+                                <ChartCategoryAxis>
+                                    <ChartCategoryAxisLabels Step="1">
+                                        <ChartCategoryAxisLabelsRotation Angle="-60" />
+                                    </ChartCategoryAxisLabels>
+                                </ChartCategoryAxis>
+                            </ChartCategoryAxes>
+                            <ChartValueAxes>
+                                <ChartValueAxis>
+                                    <ChartValueAxisLabels Format="{0:N0}" />
+                                </ChartValueAxis>
+                            </ChartValueAxes>
+                            <ChartLegend Visible="false" />
+                            <ChartTooltip Visible="true">
+                                <Template>
+                                    @{
+                                        var p = context.DataItem as ChartPoint;
+                                    }
+                                    @if (p != null)
+                                    {
+                                        <div style="direction:rtl">@p.Category: @p.Value.ToString("N0")</div>
+                                    }
+                                </Template>
+                            </ChartTooltip>
+                        </TelerikChart>
+                    </div>
+                </div>
+                break;
+
+            default: 
+                <div class="ai-chart-scroll-x">
+                    <div class="ai-chart-inner" style="@ColumnContainerStyle">
+                        <TelerikChart Height="@ColumnHeightText" Transitions="false">
+                            <ChartSeriesItems>
+                                <ChartSeries Type="ChartSeriesType.Column"
+                                             Data="@ChartData"
+                                             Field="@nameof(ChartPoint.Value)"
+                                             CategoryField="@nameof(ChartPoint.Key)"
+                                             Color="@BaseColor"
+                                             Gap="0.3">
+                                    <ChartSeriesLabels Visible="true"
+                                                       Position="ChartSeriesLabelsPosition.OutsideEnd"
+                                                       Format="{0:N0}"
+                                                       Background="transparent" />
+                                </ChartSeries>
+                            </ChartSeriesItems>
+                            <ChartCategoryAxes>
+                                <ChartCategoryAxis>
+                                    <ChartCategoryAxisLabels Step="1">
+                                        <ChartCategoryAxisLabelsRotation Angle="-45" />
+                                    </ChartCategoryAxisLabels>
+                                </ChartCategoryAxis>
+                            </ChartCategoryAxes>
+                            <ChartValueAxes>
+                                <ChartValueAxis>
+                                    <ChartValueAxisLabels Format="{0:N0}" />
+                                </ChartValueAxis>
+                            </ChartValueAxes>
+                            <ChartLegend Visible="false" />
+                            <ChartTooltip Visible="true">
+                                <Template>
+                                    @{
+                                        var p = context.DataItem as ChartPoint;
+                                    }
+                                    @if (p != null)
+                                    {
+                                        <div style="direction:rtl">@p.Category: @p.Value.ToString("N0")</div>
+                                    }
+                                </Template>
+                            </ChartTooltip>
+                        </TelerikChart>
+                    </div>
+                </div>
+                break;
+        }
+    </div>
+    </div>
+}
+

@@ -61,27 +61,59 @@ public class SendChatMessageHandler(
 
         var priceUsage = result.PriceUsage;
 
+        var hasChart = AiCommandTools.TryExtractChartBlock(
+            result.ResponseText ?? string.Empty,
+            out var cleanResponseText,
+            out var chartType,
+            out var chartQuery);
+
         var sqlCommands = new List<string>();
 
-        var cleanResponseText = AiCommandTools.StripSqlBlocks(result.ResponseText ?? string.Empty, sqlCommands);
+        cleanResponseText = AiCommandTools.StripSqlBlocks(cleanResponseText, sqlCommands);
 
         var configCommands = new List<string>();
 
-        cleanResponseText = AiCommandTools.StripConfigBlocks(cleanResponseText,configCommands);
+        cleanResponseText = AiCommandTools.StripConfigBlocks(
+            cleanResponseText,
+            configCommands);
+
+        AiReportCommandType? reportType = hasChart ? chartType : null;
 
         var sqlResults = new List<List<object>>();
 
-        if (sqlCommands.Count > 0)
+        if (hasChart)
         {
             try
             {
-                var data = DataTableTools.DataTableToObjects(dataAccess.SqlDataAdapter(sqlCommands[0]));
+                var data = DataTableTools.DataTableToObjects(
+                    dataAccess.SqlDataAdapter(chartQuery));
 
                 sqlResults.Add(data);
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "Failed to execute SQL command from AI response for user {UserId}", request.UserId);
+                logger.LogWarning(
+                    ex,
+                    "Failed to execute chart SQL command from AI response for user {UserId}",
+                    request.UserId);
+            }
+        }
+
+        else if (sqlCommands.Count > 0)
+        {
+            try
+            {
+                var data = DataTableTools.DataTableToObjects(
+                    dataAccess.SqlDataAdapter(sqlCommands[0]));
+
+                sqlResults.Add(data);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(
+                    ex,
+                    "Failed to execute SQL command from AI response for user {UserId}",
+                    request.UserId);
             }
         }
 
@@ -179,7 +211,8 @@ public class SendChatMessageHandler(
             ResponseText = cleanResponseText,
             SessionId = sessionId,
             SqlCommandsResults = sqlResults,
-            QueryId = aiQuery?.Id
+            QueryId = aiQuery?.Id,
+            ReportType = reportType
         };
     }
 }

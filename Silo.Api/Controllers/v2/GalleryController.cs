@@ -1,9 +1,13 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Silo.Application.Features;
 using Silo.Base.Controllers.Base;
 
 namespace Silo.Api.Controllers.v2;
+#if DEBUG
+[AllowAnonymous]
+#endif
 public class GalleryController(ILogger<GalleryController> logger, IMediator mediator) : SiloBaseControllerVersion2(logger)
 {
     [HttpPost("[action]")]

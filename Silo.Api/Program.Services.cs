@@ -55,6 +55,7 @@ public static partial class Program
         services.AddControllers();
 
         services.AddApplicationApiServices();
+        services.AddTransient(typeof(MediatR.IPipelineBehavior<,>), typeof(Silo.Application.TeamYarSecBehavior<,>));
 
         services.AddSingleton<IDataAccess, SqlDataAccess>();
 

@@ -625,3 +625,57 @@
         color: $text-primary;
     }
 }
+
+// ─── Chart ────────────────────────────────────────────────────────────────────
+
+.ai-chart-wrapper {
+    direction: ltr;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 12px;
+    background: rgba($color-white, .02);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    contain: inline-size; 
+}
+
+.ai-chart-note {
+    direction: rtl;
+    font-size: .8rem;
+    opacity: .7;
+    margin-bottom: 8px;
+}
+
+.ai-chart-scroll-y {
+    max-height: 650px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-width: 0;
+}
+
+.ai-chart-scroll-x {
+    direction: rtl; 
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 8px;
+}
+
+.message-content:has(.ai-chart-wrapper) {
+    width: 70%;
+    min-width: 0;
+}
+
+.ai-chart-inner,
+.ai-chart-scroll-x > div {
+    direction: ltr;          
+}
+
+.message-text {
+    min-width: 0;
+}

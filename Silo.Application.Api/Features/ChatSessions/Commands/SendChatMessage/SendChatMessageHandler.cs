@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using Microsoft.Extensions.Logging;
 using Silo.Application.Contracts;
 using Silo.Shared.Tools;
@@ -55,6 +55,23 @@ public class SendChatMessageHandler(
             return new SendChatMessageVm
             {
                 StatusCode = 402,
+                SessionId = request.SessionId
+            };
+        }
+
+        // SiloAiClient reports any non-success response as a result carrying only StatusCode (no
+        // conversation id, no text). Treating that like a normal answer used to overwrite the saved
+        // conversation id with Guid.Empty and store an empty reply, which broke the conversation
+        // for every following message. A failed turn must leave the stored session untouched.
+        if (result.StatusCode is not null)
+        {
+            logger.LogWarning(
+                "Silo AI returned {StatusCode} for user {UserId}, sessionId {SessionId}",
+                (int)result.StatusCode, request.UserId, request.SessionId);
+
+            return new SendChatMessageVm
+            {
+                ResponseText = FallbackErrorMessage,
                 SessionId = request.SessionId
             };
         }

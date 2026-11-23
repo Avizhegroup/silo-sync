@@ -4,6 +4,7 @@
 public class StructuredExternalConnection
 {
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("fld_SecId")]
     public int Id { get; set; }
 

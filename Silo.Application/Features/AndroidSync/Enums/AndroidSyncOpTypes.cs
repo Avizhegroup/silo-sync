@@ -5,5 +5,6 @@ public enum AndroidSyncOpTypes
     RegisterByCountSerial,
     RegisterOffline,
     RegisterByCount,
-    Inventory
+    Inventory,
+    EditOffline
 }

@@ -18253,7 +18253,7 @@ FROM            tbl_Destination";
 
         var result = int.Parse(dataAccess.SqlDataReaders(command)[0].Value.ToString());
         if (result != 0)
-            return result + 1;
+            return result ;
         return 1;
     }
     /// <summary>
@@ -28994,6 +28994,36 @@ WHERE        (fld_InventoryHeaderId =  " + InventoryHeaderId + ") ";
                     SSaveInventoryWithDesc(int.Parse(header), store, deviceId, data, desc);
                 }
 
+            }
+            else if (item.OpType == AndroidSyncOpTypes.EditOffline) 
+            {
+                foreach (var inv in item.Data)
+                {
+                    var dict = inv.ToObject<Dictionary<string, object>>();
+
+                    var serial = dict["Serial"]?.ToString() ?? "";
+                    var productCode = dict["productCode"]?.ToString() ?? "";
+                    var line = dict["Line"]?.ToString() ?? "";
+                    var shift = dict["Shift"]?.ToString() ?? "";
+                    var tagZone = dict["TagZone"]?.ToString() ?? "";
+                    var refCode = dict["RefCode"]?.ToString() ?? "";
+                    var properties = dict["Properties"]?.ToString() ?? "";
+                    var desc = dict["Desc"]?.ToString() ?? "";
+                    var userToken = dict["UserToken"]?.ToString() ?? "";
+                    var FormAccessType = dict["FormAccessType"]?.ToString() ?? "";
+
+                    SEditProductInformation(serial
+                        , productCode
+                        , line
+                        , shift
+                        , tagZone
+                        , refCode
+                        , desc
+                        , properties
+                        , userToken
+                        , FormAccessType);
+                }
+                
             }
         }
 

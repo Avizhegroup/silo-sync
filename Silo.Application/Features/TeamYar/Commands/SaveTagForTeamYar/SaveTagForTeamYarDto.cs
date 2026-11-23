@@ -67,12 +67,3 @@ public class SaveTagForTeamYarDto
     /// </summary>
     public List<SaveTagForTeamYarPrintDto> PrintData { get; set; }
 }
-
-public class SaveTagForTeamYarPrintDto
-{
-    [Required]
-    public string Title { get; set; }
-
-    [Required]
-    public string Value { get; set; }
-}

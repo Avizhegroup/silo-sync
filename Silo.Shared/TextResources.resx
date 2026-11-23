@@ -4638,4 +4638,19 @@
   <data name="APP_StringKeys_Variety_ProductCode" xml:space="preserve">
     <value>تنوع کدکالا</value>
   </data>
+  <data name="APP_StringKeys_AllowCancelTag" xml:space="preserve">
+    <value>امکان لغو تگ</value>
+  </data>
+  <data name="APP_StringKeys_AllowRePrintTag" xml:space="preserve">
+    <value>امکان چاپ مجدد تگ</value>
+  </data>
+  <data name="APP_StringKeys_AllowEditInformation" xml:space="preserve">
+    <value>امکان ویرایش اطلاعات</value>
+  </data>
+  <data name="APP_StringKeys_AllowEditTagValue" xml:space="preserve">
+    <value>امکان ویرایش مقدار تگ</value>
+  </data>
+  <data name="APP_StringKeys_ChangeTagLocation" xml:space="preserve">
+    <value>پاکسازی موقعیت مکانی تگ</value>
+  </data>
 </root>

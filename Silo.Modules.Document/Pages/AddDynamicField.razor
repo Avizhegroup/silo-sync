@@ -37,7 +37,7 @@
                             <DropDownListPopupSettings Class="text-align-right" />
                         </DropDownListSettings>
                     </TelerikDropDownList>
-                    <label style="margin-right: 30px !important;">@TextResources.APP_StringKeys_Type :</label>
+                    <label style="margin-right: 33px !important;">@TextResources.APP_StringKeys_Type :</label>
                     <TelerikDropDownList Data="FieldTypes"
                                          TItem="FieldTypeVm"
                                          TValue="DynamicFieldType?"
@@ -52,39 +52,35 @@
                             <DropDownListPopupSettings Class="text-align-right" />
                         </DropDownListSettings>
                     </TelerikDropDownList>
-                </div>
-                <div class="d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
-                    <label style="margin-right: 30px !important;">@TextResources.APP_StringKeys_RelatedTitles :</label>
-                    <InputText @bind-Value="DynamicField.RelatedTitle1" class="form-control input-search-span-lg pointer" />
-                    <InputText @bind-Value="DynamicField.RelatedTitle2" class="form-control input-search-span-lg pointer" />
-                    <InputText @bind-Value="DynamicField.RelatedTitle3" class="form-control input-search-span-lg pointer" />
-                    <label style="margin-right: 38px !important;">@TextResources.APP_StringKeys_Systematic_Element :</label>
-                    <InputCheckbox @bind-Value="DynamicField.IsSystematicField" style="margin-right: 5px;" />
-                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Header_Key :</label>
-                    <InputCheckbox @bind-Value="DynamicField.IsHeaderKey" style="margin-right: 5px;" />
-                    <label style="margin-right: 20px !important;"> @TextResources.APP_StringKeys_Required : </label>
-                    <InputCheckbox @bind-Value="DynamicField.IsRequired" style="margin-right: 5px;" />
-                    <label style="margin-right: 10px !important;">@TextResources.APP_StringKeys_ValueType :</label>
-                    <InputRadioGroup @bind-Value="DynamicField.ValueType">
-                        <label style="margin-right: 10px !important;"> @TextResources.APP_StringKeys_Textbox  </label>
-                        <InputRadio Value="DynamicFieldValueType.TextBox" />
-                        <label style="margin-right: 10px !important;"> @TextResources.APP_StringKeys_Barcode  </label>
-                        <InputRadio Value="DynamicFieldValueType.Barcode" />
-                        <label style="margin-right: 10px !important;"> @TextResources.APP_StringKeys_Dropdown  </label>
-                        <InputRadio Value="DynamicFieldValueType.DropDown" />
-                        <label style="margin-right: 10px !important;"> @TextResources.APP_StringKeys_Numeric  </label>
-                        <InputRadio Value="DynamicFieldValueType.Numeric" />
-                        <label style="margin-right: 10px !important;"> @TextResources.APP_StringKeys_RichTextEditor  </label>
-                        <InputRadio Value="DynamicFieldValueType.RichTextEditor" />
-                        <label style="margin-right: 10px !important;"> @TextResources.APP_StringKeys_Plaque  </label>
-                        <InputRadio Value="DynamicFieldValueType.Plaque" />
-                    </InputRadioGroup>
                     <label style="margin-right: 20px !important;"> نمایش در جداول اطلاعاتی : </label>
                     <InputCheckbox @bind-Value="DynamicField.FieldShowColumn" style="margin-right: 5px;" />
                     <label style="margin-right: 20px !important;"> نمایش در جداول اطلاعاتی عملیاتی : </label>
                     <InputCheckbox @bind-Value="DynamicField.FieldShowColumnForAction" style="margin-right: 5px;" />
                     <label style="margin-right: 20px !important; margin-left: 5px;"> فقط خواندنی : </label>
                     <TelerikCheckBox @bind-Value="DynamicField.IsReadOnly" />
+                </div>
+                <div class="d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important;">
+                    <label style="margin-right: 30px !important;">@TextResources.APP_StringKeys_RelatedTitles :</label>
+                    <InputText @bind-Value="DynamicField.RelatedTitle1" class="form-control input-search-span-lg pointer" />
+                    <InputText @bind-Value="DynamicField.RelatedTitle2" class="form-control input-search-span-lg pointer" />
+                    <InputText @bind-Value="DynamicField.RelatedTitle3" class="form-control input-search-span-lg pointer" />
+                    <label style="margin-right: 3px !important;">
+                        @TextResources.APP_StringKeys_ValueType :
+                    </label>
+
+                    <TelerikDropDownList Data="@ValueTypes"
+                                         TextField="Title"
+                                         ValueField="Code"
+                                         @bind-Value="DynamicField.ValueType"
+                                         Width="200px">
+                    </TelerikDropDownList>
+                    <label style="margin-right: 38px !important;">@TextResources.APP_StringKeys_Systematic_Element :</label>
+                    <InputCheckbox @bind-Value="DynamicField.IsSystematicField" style="margin-right: 5px;" />
+                    <label style="margin-right: 20px !important;">@TextResources.APP_StringKeys_Header_Key :</label>
+                    <InputCheckbox @bind-Value="DynamicField.IsHeaderKey" style="margin-right: 5px;" />
+                    <label style="margin-right: 20px !important;"> @TextResources.APP_StringKeys_Required : </label>
+                    <InputCheckbox @bind-Value="DynamicField.IsRequired" style="margin-right: 5px;" />
+                   
                 </div>
                 <div class="d-flex flex-row align-items-center flex-wrap" style="margin-bottom: 2px !important; margin-top: 4px;">
                     <label style="margin-right: 28px !important;">@TextResources.APP_StringKeys_DisplayOrder :</label>
@@ -110,7 +106,7 @@
                             <DropDownListPopupSettings Class="text-align-right" />
                         </DropDownListSettings>
                     </TelerikDropDownList>
-                    <label style="margin-right: 15px !important;">
+                    <label style="margin-right: 19px !important;">
                         @TextResources.APP_StringKeys_ParentField :
                     </label>
                     <TelerikDropDownList Data="ParentFields"
@@ -125,7 +121,7 @@
                         </DropDownListSettings>
                     </TelerikDropDownList>
                     <div class="d-flex flex-row align-items-center" style="margin-left: 20px;">
-                        <button id="btn-list" class="btn btn-light" type="button" style="margin-left: 2px; margin-right: 10px;" @onclick="OnModalDynamicFieldsClick">
+                        <button id="btn-list" class="btn btn-light" type="button" style="margin-left: 2px; margin-right: 343px;" @onclick="OnModalDynamicFieldsClick">
                             <MaterialIcon IconName="list"></MaterialIcon>
                         </button>
                         <button id="btn-clear" class="btn btn-warning" type="button" style="margin-left: 2px; margin-right: 2px;" @onclick="OnClearClick">

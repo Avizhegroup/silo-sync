@@ -19,6 +19,7 @@
     [fld_DynamicFieldRequirement] BIT NULL DEFAULT 0, 
     [fld_DynamicFieldOrder] INT NULL, 
     [fld_DynamicFieldSectionId] INT NULL, 
-    [fld_DynamicFieldIsReadOnly] BIT NULL DEFAULT 0
+    [fld_DynamicFieldIsReadOnly] BIT NULL DEFAULT 0, 
+    [fld_DynamicFieldProductType] INT NULL
 );
 

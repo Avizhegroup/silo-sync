@@ -38,6 +38,9 @@ public class ActionType
     [Column("fld_ActionTypeProductType")]
     public string? ProductType { get; set; }
 
+    [Column("fld_ActionTypeKind")]
+    public string? ActionTypeKind { get; set; } 
+
 
     public ICollection<TruckCrossCause> EnterTruckCrossCauses { get; set; }
     public ICollection<TruckCrossCause> ExitTruckCrossCauses { get; set; }

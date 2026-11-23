@@ -15,6 +15,7 @@ public partial class AddDynamicField
     public List<GetAllDynamicFieldVm> ParentFields;
     public List<GetAllDynamicFieldSectionsVm> FilteredSections;
     public List<FieldTypeVm> FieldTypes = new();
+    public List<ValueTypeVm> ValueTypes = new();
 
     [Inject] public RfidConnectApi Api { get; set; }
     [Inject] public SiloAuthenticationStateProvider AuthenticationStateProvider { get; set; }
@@ -46,6 +47,16 @@ public partial class AddDynamicField
 
         };
 
+        ValueTypes = new List<ValueTypeVm>
+        {
+            new() { Code = DynamicFieldValueType.TextBox, Title = TextResources.APP_StringKeys_Textbox },
+            new() { Code = DynamicFieldValueType.Barcode, Title = TextResources.APP_StringKeys_Barcode },
+            new() { Code = DynamicFieldValueType.DropDown, Title = TextResources.APP_StringKeys_Dropdown },
+            new() { Code = DynamicFieldValueType.Numeric, Title = TextResources.APP_StringKeys_Numeric },
+            new() { Code = DynamicFieldValueType.RichTextEditor, Title = TextResources.APP_StringKeys_RichTextEditor },
+            new() { Code = DynamicFieldValueType.Plaque, Title = TextResources.APP_StringKeys_Plaque }
+        };
+
         DynamicFields = (await Api.PostAsyncByUri<List<GetAllDynamicFieldVm>>("wms/Document", "SGetAllDynamicFields")).Value;
 
         RebuildParentFields();
@@ -72,6 +83,19 @@ public partial class AddDynamicField
         {
             DynamicField.DateTime = DateTime.Now;
         }
+
+        var selectedActionType = ActionTypes.FirstOrDefault(x => x.Code?.ToString() == DynamicField.ActionType?.ToString());
+
+        if (selectedActionType == null)
+        {
+            Notification.Show(TextResources.APP_StringKeys_Validation_Choose, "error");
+
+            IsLoading = false;
+
+            return;
+        }
+
+        DynamicField.ProductType = selectedActionType.ProductType;
 
         FixRelatedTitleForSave();
 

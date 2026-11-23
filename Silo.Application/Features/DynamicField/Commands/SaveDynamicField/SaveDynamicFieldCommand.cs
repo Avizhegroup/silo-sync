@@ -39,4 +39,5 @@ public class SaveDynamicFieldCommand
     public bool FieldShowColumn { get; set; } = false;
     public bool FieldShowColumnForAction { get; set; } = false;
     public bool? IsReadOnly { get; set; } = false;
+    public string? ProductType { get; set; }
 }

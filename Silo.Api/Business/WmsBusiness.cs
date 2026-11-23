@@ -22662,7 +22662,38 @@ FROM            tbl_Tags LEFT OUTER JOIN
     }
 
 
+    public int SSaveWarehouseWithDestinationType(WarehouseDto warehouse)
+    {
+        if (!int.TryParse(warehouse.DestinationTypeCode, out var destinationTypeCode))
+        {
+            return -1;
+        }
 
+        Warehouse data = new()
+        {
+            Code = warehouse.DestinationCode,
+            Title = warehouse.DestinationTitle,
+            OperationalType = destinationTypeCode,
+            InventoryType = ((int)warehouse.InventoryType).ToString(),
+            IsActive = warehouse.IsActive ? 1 : 0,
+            IsDefault = warehouse.IsDefault ? 1 : 0,
+            Id = warehouse.Id,
+            Permissions = warehouse.Epc
+        };
+
+        var shouldInsert = CheckFieldUniqueness("tbl_Destination","DestinationCode",warehouse.DestinationCode, "");
+
+        if (shouldInsert == 0)
+        {
+            apiContext.Warehouses.Add(data);
+        }
+        else
+        {
+            apiContext.Warehouses.Update(data);
+        }
+
+        return apiContext.SaveChanges() > 0 ? data.Id : -1;
+    }
 
     public int SSaveWarehouse(WarehouseDto warehouse)
     {

@@ -28,7 +28,20 @@ public class GetAllWarehousesVm
     [JsonPropertyName("IsActive")]
     public bool IsActive { get; set; }
 
+    [JsonPropertyName("DestinationTypeCode")]
+    public string? DestinationTypeCode { get; set; }
+
     public string Coordinates { get; set; }
+
+    public string? Epc  { get; set; }
+
+    public bool AllowCancelTag { get; set; }
+
+    public bool AllowRePrintTag { get; set; }
+
+    public bool AllowEditInformation { get; set; }
+
+    public bool AllowEditTagValue { get; set; }
 }
 
 [JsonSerializable(typeof(ApiResponse<List<GetAllWarehousesVm>>))]
@@ -54,3 +67,4 @@ public enum DestinationInventoryType
     Physical
 
 }
+

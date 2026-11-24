@@ -15,11 +15,11 @@ public class TeamYarController (ILogger<LibraryController> logger
     [HttpPost("[action]")]
     public async Task<IActionResult> SaveTag(SaveTagForTeamYarCommand request)
     {
-        //var response = await mediator.Send<SaveTagForTeamYarVm>(request);
+        var response = await mediator.Send<SaveTagForTeamYarVm>(request);
         return Ok(new ApiResponse<bool>()
         {
             Successful = true,
-            Value = true
+            Value = response.Result
         });
     }
 
@@ -29,11 +29,11 @@ public class TeamYarController (ILogger<LibraryController> logger
     [HttpPost("[action]")]
     public async Task<IActionResult> UpdateTagCount(UpdateTagCountCommand request)
     {
-        //var response = await mediator.Send<UpdateTagCountVm>(request);
+        var response = await mediator.Send<UpdateTagCountVm>(request);
         return Ok(new ApiResponse<bool>()
         {
             Successful = true,
-            Value = true
+            Value = response.Result
         });
     }
 
@@ -43,11 +43,11 @@ public class TeamYarController (ILogger<LibraryController> logger
     [HttpPost("[action]")]
     public async Task<IActionResult> VerifyLocate(VerifyLocateForTeamYarCommand request)
     {
-        //var response = await mediator.Send<VerifyLocateForTeamYarVm>(request);
+        var response = await mediator.Send<VerifyLocateForTeamYarVm>(request);
         return Ok(new ApiResponse<bool>()
         {
             Successful = true,
-            Value = true
+            Value = response.Result
         });
     }
 
@@ -57,11 +57,11 @@ public class TeamYarController (ILogger<LibraryController> logger
     [HttpPost("[action]")]
     public async Task<IActionResult> SerialConsumption(SaveSerialConsumptionCommand request)
     {
-        //var response = await mediator.Send<SaveSerialConsumptionVm>(request);
+        var response = await mediator.Send<SaveSerialConsumptionVm>(request);
         return Ok(new ApiResponse<bool>()
         {
             Successful = true,
-            Value = true
+            Value = response.Result
         });
     }
     
@@ -71,11 +71,11 @@ public class TeamYarController (ILogger<LibraryController> logger
     [HttpPost("[action]")]
     public async Task<IActionResult> DocumentForSales(SaveDocumentForSaleCommand request)
     {
-        //var response = await mediator.Send<SaveDocumentForSaleVm>(request);
+        var response = await mediator.Send<SaveDocumentForSaleVm>(request);
         return Ok(new ApiResponse<bool>()
         {
             Successful = true,
-            Value = true
+            Value = response.Result
         });
     }
 
@@ -85,11 +85,11 @@ public class TeamYarController (ILogger<LibraryController> logger
     [HttpPost("[action]")]
     public async Task<IActionResult> RevokeTags(RevokeTagForTeamYarCommand request)
     {
-        //var response = await mediator.Send<RevokeTagForTeamYarVm>(request);
+        var response = await mediator.Send<RevokeTagForTeamYarVm>(request);
         return Ok(new ApiResponse<bool>()
         {
             Successful = true,
-            Value = true
+            Value = response.Result
         });
     }
 
@@ -99,24 +99,11 @@ public class TeamYarController (ILogger<LibraryController> logger
     [HttpPost("[action]")]
     public async Task<IActionResult>GetTagsBySerials(GetTagsBySerialsQuery request)
     {
-        //var response = await mediator.Send<GetTagsBySerialsVm>(request);
+        var response = await mediator.Send<GetTagsBySerialsVm>(request);
         return Ok(new ApiResponse<GetTagsBySerialsVm>()
         {
             Successful = true,
-            Value = new()
-            {
-                Result = 
-                {
-                    new()
-                    {
-                        Epc = "E20047027B606426C8D3010B",
-                        LocationCode = "L-1",
-                        WarehouseCode = "W-1",
-                        ProductSerial = "3852489025529",
-                        Status = GetTagsBySerialsStatusEnum.Active
-                    } 
-                }
-            }
+            Value = response
         });
     }
 
@@ -126,11 +113,11 @@ public class TeamYarController (ILogger<LibraryController> logger
     [HttpPost("[action]")]
     public async Task<IActionResult> DocumentForGeneral(SaveDocumentForGeneralCommand request)
     {
-        //var response = await mediator.Send<SaveDocumentForGeneralVm>(request);
+        var response = await mediator.Send<SaveDocumentForGeneralVm>(request);
         return Ok(new ApiResponse<bool>()
         {
             Successful = true,
-            Value = true
+            Value = response.Result
         });
     }
 }

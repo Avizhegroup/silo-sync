@@ -29,6 +29,25 @@ public sealed class TeamYarSecBehavior<TRequest, TResponse>(
         dbContext.StructuredExternalConnections.Add(connection);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return await next(cancellationToken);
+        try
+        {
+            return await next(cancellationToken);
+        }
+        catch
+        {
+            // The request did not complete, so its CommandUniqueId is released and the caller can retry with the same id.
+            try
+            {
+                await dbContext.StructuredExternalConnections
+                               .Where(x => x.Id == connection.Id)
+                               .ExecuteDeleteAsync(CancellationToken.None);
+            }
+            catch
+            {
+                // Keep the original exception.
+            }
+
+            throw;
+        }
     }
 }

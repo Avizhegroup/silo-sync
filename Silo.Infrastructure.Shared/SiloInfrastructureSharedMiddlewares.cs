@@ -11,6 +11,8 @@ public static class SiloInfrastructureSharedMiddlewares
         
         app.UseMiddleware<RequestLoggingMiddleware>();
 
+        app.UseMiddleware<TeamYarSecResponseLoggingMiddleware>();
+
         app.UseMiddleware<AppExceptionHandlerMiddleware>();
     }
 }

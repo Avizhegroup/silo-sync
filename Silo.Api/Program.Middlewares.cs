@@ -32,9 +32,9 @@ public static partial class Program
 
         app.MapHub<WmsHub>("/wmshub");
 
-        app.UseInfrastructureSharedMiddlewares();
-
         app.UseResponseCompression();
+
+        app.UseInfrastructureSharedMiddlewares();
 
         return app;
     }

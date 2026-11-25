@@ -67,9 +67,17 @@ POST /RfidCore/v3/TeamYar/SaveTag
 | `401` | توکن ارسال نشده یا معتبر نیست |
 | `404` | اطلاعات هدف درخواست ارسالی یافت نشد |
 | `409` | درخواست تکراری است ( `commandUniqueId` قبلاً ثبت شده) |
-| `5xx` | خطای داخلی سرور. بعد از کمی صبر و با **همان `commandUniqueId`** دوباره تلاش کنید. |
+| `5xx` | خطای داخلی سرور |
 
 ---
+
+## Internal response audit
+
+For handlers implementing `ITeamYarSecHandler`, `tbl_StructuredExternalConnection.fld_SecResponse` stores the final API response as `ApiResponseWithStatusCode<T>` JSON, including `successful`, `value`, `messages`, and `httpstatuscode`. The HTTP response sent to the caller is unchanged.
+
+Capture runs outside `AppExceptionHandlerMiddleware`, so exception responses use the actual HTTP status selected by that middleware. Each attempt is correlated by its database record ID in the current HTTP context, not by `commandUniqueId`; retrying an ID does not overwrite an earlier attempt. Responses are captured before HTTP compression.
+
+Failed handlers retain their audit records with `fld_SecStatus = -1`. Duplicate detection ignores these failed attempts, allowing retries with the same `commandUniqueId`; existing non-failed status values retain their meaning. Requests rejected before a marked handler starts do not create or overwrite a handler audit record. Audit-update errors are logged without replacing the original API response.
 
 ## فیلد `commandUniqueId`
 

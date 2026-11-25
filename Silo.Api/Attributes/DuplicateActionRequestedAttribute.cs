@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Silo.Application.Shared.Exceptions;
+using Silo.Domains.Entities;
 using Silo.Domains.Services;
 
 namespace Silo.Api.Attributes;
@@ -21,7 +22,8 @@ public sealed class DuplicateActionRequestedFilter(WmsApiContext dbContext) : IA
         foreach (var command in context.ActionArguments.Values.OfType<TeamYarBaseCommand>())
         {
             var isDuplicate = await dbContext.StructuredExternalConnections
-                .AnyAsync(connection => connection.EventId == command.CommandUniqueId,
+                .AnyAsync(connection => connection.EventId == command.CommandUniqueId
+                    && connection.Status != StructuredExternalConnection.FailedStatus,
                     context.HttpContext.RequestAborted);
 
             if (isDuplicate)

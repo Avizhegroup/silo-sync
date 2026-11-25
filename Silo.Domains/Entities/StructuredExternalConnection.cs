@@ -3,6 +3,8 @@
 [Table("tbl_StructuredExternalConnection")]
 public class StructuredExternalConnection
 {
+    public const int FailedStatus = -1;
+
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("fld_SecId")]

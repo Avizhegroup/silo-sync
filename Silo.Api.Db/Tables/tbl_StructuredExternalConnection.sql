@@ -5,5 +5,7 @@
     [fld_SecEventId] NVARCHAR(256) NOT NULL, 
     [fld_SecDateTime] DATETIME NOT NULL, 
     [fld_SecData] NVARCHAR(MAX) NOT NULL, 
-    [fld_SecMethod] NVARCHAR(256) NOT NULL
+    [fld_SecMethod] NVARCHAR(256) NOT NULL,
+    [fld_SecResponse] NVARCHAR(MAX) NULL,
+    [fld_SecStatus] INT NOT NULL
 )

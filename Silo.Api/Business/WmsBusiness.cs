@@ -29281,4 +29281,11 @@ WHERE        (fld_InventoryHeaderId =  " + InventoryHeaderId + ") ";
 
         return mapper.Map<PrintReportVm>(result);
     }
+
+    public bool STeamYar()
+    {
+        var secs = apiContext.StructuredExternalConnections.Where(p => p.Status == 1);
+
+
+    }
 }

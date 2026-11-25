@@ -23,7 +23,8 @@ public sealed class TeamYarSecBehavior<TRequest, TResponse>(
             EventId = command.CommandUniqueId,
             DateTime = DateTime.Now,
             Data = JsonSerializer.Serialize(request),
-            Method = requestHandler.GetType().Name
+            Method = requestHandler.GetType().Name,
+            Status = 0,
         };
 
         dbContext.StructuredExternalConnections.Add(connection);

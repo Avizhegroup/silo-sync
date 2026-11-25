@@ -25,4 +25,10 @@ public class StructuredExternalConnection
     [Column("fld_SecMethod")]
     [StringLength(256)]
     public string Method { get; set; }
+
+    [Column("fld_SecResponse")]
+    public string? Response { get; set; }
+
+    [Column("fld_SecStatus")]
+    public int Status { get; set; }
 }

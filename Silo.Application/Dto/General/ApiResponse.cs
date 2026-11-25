@@ -31,6 +31,21 @@ public class ApiResponse<T>
     public string[]? Messages { get; set; }
 }
 
+public class ApiResponseWithStatusCode<T>
+{
+    [JsonPropertyName("successful")]
+    public bool Successful { get; set; }
+
+    [JsonPropertyName("value")]
+    public T Value { get; set; }
+
+    [JsonPropertyName("messages")]
+    public string[]? Messages { get; set; }
+
+    [JsonPropertyName("httpstatuscode")]
+    public int HttpStatusCode { get; set; }
+}
+
 public class ApiResponse
 {
     public bool Successful { get; set; }

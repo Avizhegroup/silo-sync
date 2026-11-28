@@ -1,6 +1,6 @@
 # راهنمای اتصال به وب‌سرویس سیلو (تیم‌یار)
 
-این سند برای تیمی نوشته شده که می‌خواهد سیستم خودش (مثلاً نرم‌افزار انبار یا ERP) را به سیلو وصل کند. هر نه اکشنی که در `TeamYarController` هست، همین‌جا با ورودی و خروجی‌شان توضیح داده شده. اگر چیزی مبهم بود، قبل از شروع کدنویسی با تیم سیلو هماهنگ کنید.
+این سند برای تیمی نوشته شده که می‌خواهد سیستم خودش (مثلاً نرم‌افزار انبار یا ERP) را به سیلو وصل کند. هر ده اکشنی که در `TeamYarController` هست، همین‌جا با ورودی و خروجی‌شان توضیح داده شده. اگر چیزی مبهم بود، قبل از شروع کدنویسی با تیم سیلو هماهنگ کنید.
 
 ## فهرست
 
@@ -17,6 +17,7 @@
    - [GetTagsBySerials — استعلام وضعیت سری ساخت](#۷-gettagsbyserials--استعلام-وضعیت-سری-ساخت)
    - [DocumentForGeneral — ثبت اسناد عمومی](#۸-documentforgeneral--ثبت-اسناد-عمومی)
    - [GetRequestResponse — استعلام پاسخ درخواست](#۹-getrequestresponse--استعلام-پاسخ-درخواست)
+   - [SetPrintFormat — ثبت قالب چاپ برای سری‌های ساخت](#۱۰-setprintformat--ثبت-قالب-چاپ-برای-سریهای-ساخت)
 5. [جدول وضعیت‌ها (Enum)](#جدول-وضعیتها-enum)
 6. [نکات پیاده‌سازی](#نکات-پیادهسازی)
 
@@ -64,8 +65,7 @@ POST /RfidCore/v3/TeamYar/SaveTag
 | کد | معنی |
 |----|------|
 | `200` | درخواست پردازش شد. حتماً `successful` را هم چک کنید. |
-| `202` | فقط در `GetRequestResponse`: رکورد درخواست وجود دارد ولی پاسخ آن هنوز در دسترس نیست. |
-| `400` | بدنه‌ی درخواست ایراد دارد (فیلد اجباری خالی، JSON خراب، نوع اشتباه و...) |
+| `400` | ورودی نامعتبر است؛ برای مثال شناسه‌ی اجباری درخواست خالی است. |
 | `401` | توکن ارسال نشده یا معتبر نیست |
 | `404` | اطلاعات هدف درخواست ارسالی یافت نشد |
 | `409` | درخواست تکراری است |
@@ -73,22 +73,13 @@ POST /RfidCore/v3/TeamYar/SaveTag
 
 ---
 
-## Internal response audit
-
-For handlers implementing `ITeamYarSecHandler`, `tbl_StructuredExternalConnection.fld_SecResponse` stores the final API response as `ApiResponseWithStatusCode<T>` JSON, including `successful`, `value`, `messages`, and `httpstatuscode`. The HTTP response sent to the caller is unchanged.
-
-Capture runs outside `AppExceptionHandlerMiddleware`, so exception responses use the actual HTTP status selected by that middleware. Each attempt is correlated by its database record ID in the current HTTP context, not by `commandUniqueId`; retrying an ID does not overwrite an earlier attempt. Responses are captured before HTTP compression.
-
-Failed handlers retain their audit records with `fld_SecStatus = -1`. Duplicate detection ignores these failed attempts, allowing retries with the same `commandUniqueId`; existing non-failed status values retain their meaning. Requests rejected before a marked handler starts do not create or overwrite a handler audit record. Audit-update errors are logged without replacing the original API response.
-
 ## فیلد `commandUniqueId`
 
-ورودی تمام اکشن‌ها، این فیلد را دارند و **اجباری** است. در `GetRequestResponse` باید شناسه‌ی درخواست قبلی را بفرستید، نه یک شناسه‌ی جدید.
+ورودی تمام اکشن‌ها این فیلد را دارند و **اجباری** است. در `GetRequestResponse` باید شناسه‌ی درخواست قبلی را بفرستید، نه یک شناسه‌ی جدید.
 
 این یک شناسه‌ی یکتا برای هر درخواست است که شما می‌سازید (مثلاً یک GUID). کارش این است که اگر به هر دلیلی (قطع شدن اینترنت، timeout و...) مطمئن نشدید درخواست ثبت شده یا نه، بتوانید پاسخ ذخیره‌شده را استعلام کنید و سند دوبار ثبت نشود.
 
 قاعده‌ی کار:
-
 - برای هر درخواست **جدید** یک مقدار تازه بسازید.
 - یک `commandUniqueId` را برای دو درخواست متفاوت استفاده نکنید.
 - اگر درخواست قبلاً بدون خطا انجام شده باشد، ارسال مجدد آن `409` می‌دهد؛ برای دریافت پاسخ قبلی از `GetRequestResponse` استفاده کنید.
@@ -560,7 +551,7 @@ POST /RfidCore/v3/TeamYar/DocumentForGeneral
 POST /RfidCore/v3/TeamYar/GetRequestResponse
 ```
 
-پاسخ ذخیره‌شده‌ی آخرین تلاش برای `commandUniqueId` را برمی‌گرداند. 
+پاسخ ذخیره‌شده‌ی یک درخواست با `commandUniqueId` مشخص را برمی‌گرداند، بدون اینکه آن درخواست دوباره اجرا شود. 
 
 **ورودی**
 
@@ -617,17 +608,45 @@ POST /RfidCore/v3/TeamYar/GetRequestResponse
 | `value.messages` | پیام‌های درخواست اصلی. |
 | `value.httpstatuscode` | کد HTTP درخواست اصلی؛ با کد HTTP استعلام تفاوت دارد. |
 
-**وضعیت‌های استعلام**
+---
 
-- `200`: پاسخ ذخیره‌شده پیدا شد؛ حتی اگر کد درخواست اصلی در `value.httpstatuscode` برابر `400`، `401` یا `500` باشد.
-- `202`: رکورد آخرین تلاش وجود دارد ولی `Response` هنوز `null` است. ممکن است درخواست در حال پردازش باشد یا ذخیره‌ی پاسخ با خطا مواجه شده باشد؛ این وضعیت تضمین نمی‌کند که پردازش هنوز ادامه دارد. پاسخ شامل `successful: false`، `value: null` و پیام تلاش مجدد است. پس از کمی صبر دوباره استعلام کنید.
-- `404`: هیچ رکوردی برای شناسه وجود ندارد؛ پاسخ شامل `successful: false`، `value: null` و پیام یافت‌نشدن است.
-- `400`: ورودی نامعتبر است؛ مثلاً شناسه خالی است یا JSON درخواست معتبر نیست.
-- `5xx`: خطا در استعلام یا خواندن پاسخ ذخیره‌شده؛ داده‌ی JSON خراب به‌عنوان پاسخ موفق یا وضعیت `202` بازگردانده نمی‌شود.
+### ۱۰. SetPrintFormat — ثبت قالب چاپ برای سری‌های ساخت
 
-بررسی شناسه و وضعیت پاسخ در `GetRequestResponseHandler` انجام می‌شود؛ پاسخ‌های `404` و `202` از طریق `AppExceptionHandlerMiddleware` ساخته می‌شوند. خطاهای اتصال JSON به مدل ورودی پیش از اجرای اکشن با `ValidateModelState` بررسی می‌شوند. قالب JSON و کدهای HTTP فوق تغییری ندارند.
+```
+POST /RfidCore/v3/TeamYar/SetPrintFormat
+```
 
-اگر چند تلاش با یک شناسه وجود داشته باشد، رکورد دارای بزرگ‌ترین `Id` انتخاب می‌شود؛ وجود پاسخ در تلاش قدیمی باعث نمی‌شود پاسخ آن به‌جای تلاش آخر بازگردانده شود. استعلام خواندنی است، مشمول بررسی تکراری‌بودن فرمان نیست و رکورد لاگ جدیدی ایجاد نمی‌کند.
+برای ثبت قالب چاپ برای سری‌های ساخت مشخص
+
+**ورودی**
+
+| فیلد | نوع | اجباری | توضیح |
+|------|-----|:------:|-------|
+| `commandUniqueId` | string | ✔ | [شناسه‌ی یکتای درخواست](#فیلد-commanduniqueid) |
+| `serials` | آرایه‌ای از string | | فهرست سری‌های ساخت |
+| `printFormatCode` | string | ✔ | کد قالب چاپ |
+
+**نمونه درخواست**
+
+```json
+{
+  "commandUniqueId": "593950fe-62f0-446f-bd89-e27178521a4d",
+  "serials": ["3852489025529", "3852489025530"],
+  "printFormatCode": "FORMAT-01"
+}
+```
+
+**خروجی**
+
+در پاسخ موفق HTTP `200`، فیلد `value` از نوع `bool` است:
+
+```json
+{
+  "successful": true,
+  "value": true,
+  "messages": null
+}
+```
 
 ---
 

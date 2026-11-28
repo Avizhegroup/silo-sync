@@ -132,8 +132,22 @@ public class TeamYarController (ILogger<LibraryController> logger
     [HttpPost("[action]")]
     public async Task<IActionResult> GetRequestResponse(GetRequestResponseQuery request)
     {
-        var response = await mediator.Send<GetRequestResponseVm>(request, HttpContext.RequestAborted);
+        var response = await mediator.Send<GetRequestResponseVm>(request);
         return Ok(new ApiResponse<ApiResponseWithStatusCode<JsonElement>>()
+        {
+            Successful = true,
+            Value = response.Result
+        });
+    }
+
+    /// <summary>
+    /// ثبت قالب چاپ برای سری ساخت های مشخص
+    /// </summary>
+    [HttpPost("[action]")]
+    public async Task<IActionResult> SetPrintFormat(SetPrintFormatCommand request)
+    {
+        var response = await mediator.Send<SetPrintFormatVm>(request);
+        return Ok(new ApiResponse<bool>()
         {
             Successful = true,
             Value = response.Result

@@ -5,13 +5,13 @@ public class RevokeTagForTeamYarCommand : TeamYarBaseCommand, IRequest<RevokeTag
     /// <summary>
     /// لیست سری ساخت
     /// </summary>
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public List<string> Serials { get; set; }
 
     /// <summary>
     /// کد سند
     /// </summary>
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public string DocumentCode { get; set; }
 
     /// <summary>

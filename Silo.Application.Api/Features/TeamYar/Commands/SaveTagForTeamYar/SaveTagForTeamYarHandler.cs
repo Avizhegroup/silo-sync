@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Silo.Application.Exceptions;
 using Silo.Application.Shared.Contracts;
 
 namespace Silo.Application.Api.Features;
@@ -17,6 +19,13 @@ public class SaveTagForTeamYarHandler(WmsApiContext context
 
     public async Task<SaveTagForTeamYarVm> Handle(SaveTagForTeamYarCommand request, CancellationToken cancellationToken)
     {
+        var validationErrors = new List<ValidationResult>();
+
+        if (!Validator.TryValidateObject(request, new ValidationContext(request), validationErrors, true))
+        {
+            throw new SiloValidationException(validationErrors);
+        }
+
         var items = request.Data;
 
         if (items is null || items.Count == 0 || items.Any(i => i is null))

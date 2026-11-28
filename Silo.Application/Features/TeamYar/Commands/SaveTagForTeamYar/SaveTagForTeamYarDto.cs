@@ -4,25 +4,25 @@ public class SaveTagForTeamYarDto
     /// <summary>
     /// کدکالا
     /// </summary>
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public string ProductCode { get; set; }
 
     /// <summary>
     /// کد سند
     /// </summary>
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public string DocumentCode { get; set; }
 
     /// <summary>
     /// نوع سند
     /// </summary>
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public int DocumentType { get; set; }
 
     /// <summary>
     /// سری ساخت
     /// </summary>
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public string ProductSerial { get; set; }
 
     /// <summary>
@@ -43,13 +43,13 @@ public class SaveTagForTeamYarDto
     /// <summary>
     /// کد انبار
     /// </summary>
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public string WarehouseCode { get; set; }
 
     /// <summary>
     /// کد نوع کالا
     /// </summary>
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public string ProductTypeCode { get; set; }
 
     /// <summary>

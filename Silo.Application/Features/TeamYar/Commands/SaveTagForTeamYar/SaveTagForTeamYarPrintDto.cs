@@ -2,9 +2,9 @@
 
 public class SaveTagForTeamYarPrintDto
 {
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public string Title { get; set; }
 
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public string Value { get; set; }
 }

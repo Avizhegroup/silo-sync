@@ -4,10 +4,10 @@ namespace Silo.Application.Features;
 
 public class GetRequestResponseVm
 {
-    public ApiResponseWithStatusCode<JsonElement>? Result { get; set; }
+    public required ApiResponseWithStatusCode<JsonElement> Result { get; set; }
 }
 
-[JsonSerializable(typeof(ApiResponse<ApiResponseWithStatusCode<JsonElement>?>))]
+[JsonSerializable(typeof(ApiResponse<ApiResponseWithStatusCode<JsonElement>>))]
 public partial class GetRequestResponseVmContext : JsonSerializerContext
 {
 }

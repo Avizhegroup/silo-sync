@@ -5,13 +5,13 @@ public class SaveDocumentForGeneralItemsDto
     /// <summary>
     /// کدکالا
     /// </summary>
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public string ProductCode { get; set; }
 
     /// <summary>
     /// مقدار 
     /// </summary>
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public decimal Count { get; set; }
 
     /// <summary>

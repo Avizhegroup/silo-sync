@@ -4,7 +4,7 @@ public class UpdateTagCountDto
     /// <summary>
     /// سری ساخت
     /// </summary>
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public string ProductSerial { get; set; }
 
     /// <summary>

@@ -5,7 +5,7 @@ public class SaveDocumentForSaleHeaderDto
     /// <summary>
     /// کد سند
     /// </summary>
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public string DocumentCode { get; set; }
 
     /// <summary>
@@ -21,13 +21,13 @@ public class SaveDocumentForSaleHeaderDto
     /// <summary>
     /// تاریخ
     /// </summary>
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public string Date { get; set; }
 
     /// <summary>
     /// نوع عملیات
     /// </summary>
-    [Required]
+    [Required(ErrorMessageResourceType = typeof(TextResources), ErrorMessageResourceName = nameof(TextResources.APP_StringKeys_Validation_Required))]
     public SaveDocumentForSaleOpType OpType { get; set; }
 
     /// <summary>

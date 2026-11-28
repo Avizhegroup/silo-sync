@@ -132,36 +132,8 @@ public class TeamYarController (ILogger<LibraryController> logger
     [HttpPost("[action]")]
     public async Task<IActionResult> GetRequestResponse(GetRequestResponseQuery request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new ApiResponse<ApiResponseWithStatusCode<JsonElement>?>()
-            {
-                Successful = false,
-                Messages = ModelState.Values.SelectMany(value => value.Errors)
-                    .Select(error => error.ErrorMessage).ToArray()
-            });
-        }
-
-        var response = await mediator.Send<GetRequestResponseVm?>(request, HttpContext.RequestAborted);
-        if (response is null)
-        {
-            return NotFound(new ApiResponse<ApiResponseWithStatusCode<JsonElement>?>()
-            {
-                Successful = false,
-                Messages = new[] { TextResources.APP_StringKeys_Validation_NotFound }
-            });
-        }
-
-        if (response.Result is null)
-        {
-            return Accepted(new ApiResponse<ApiResponseWithStatusCode<JsonElement>?>()
-            {
-                Successful = false,
-                Messages = new[] { TextResources.APP_StringKeys_Alert_TryAgain }
-            });
-        }
-
-        return Ok(new ApiResponse<ApiResponseWithStatusCode<JsonElement>?>()
+        var response = await mediator.Send<GetRequestResponseVm>(request, HttpContext.RequestAborted);
+        return Ok(new ApiResponse<ApiResponseWithStatusCode<JsonElement>>()
         {
             Successful = true,
             Value = response.Result

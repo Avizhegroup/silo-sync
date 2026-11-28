@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Silo.Application.Shared.Contracts;
 
 namespace Silo.Application.Api.Features;
 
@@ -10,7 +11,7 @@ namespace Silo.Application.Api.Features;
 public class UpdateTagCountHandler(WmsApiContext context
     , IHttpContextAccessor httpContextAccessor
     , ILogger<UpdateTagCountHandler> logger)
-    : IRequestHandler<UpdateTagCountCommand, UpdateTagCountVm>
+    : IRequestHandler<UpdateTagCountCommand, UpdateTagCountVm>, ITeamYarSecHandler
 {
     public async Task<UpdateTagCountVm> Handle(UpdateTagCountCommand request, CancellationToken cancellationToken)
     {

@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.Text.Json;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Silo.Api.Attributes;
@@ -119,6 +120,48 @@ public class TeamYarController (ILogger<LibraryController> logger
     {
         var response = await mediator.Send<SaveDocumentForGeneralVm>(request);
         return Ok(new ApiResponse<bool>()
+        {
+            Successful = true,
+            Value = response.Result
+        });
+    }
+
+    /// <summary>
+    /// استعلام پاسخ آخرین درخواست با شناسه یکتا
+    /// </summary>
+    [HttpPost("[action]")]
+    public async Task<IActionResult> GetRequestResponse(GetRequestResponseQuery request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new ApiResponse<ApiResponseWithStatusCode<JsonElement>?>()
+            {
+                Successful = false,
+                Messages = ModelState.Values.SelectMany(value => value.Errors)
+                    .Select(error => error.ErrorMessage).ToArray()
+            });
+        }
+
+        var response = await mediator.Send<GetRequestResponseVm?>(request, HttpContext.RequestAborted);
+        if (response is null)
+        {
+            return NotFound(new ApiResponse<ApiResponseWithStatusCode<JsonElement>?>()
+            {
+                Successful = false,
+                Messages = new[] { TextResources.APP_StringKeys_Validation_NotFound }
+            });
+        }
+
+        if (response.Result is null)
+        {
+            return Accepted(new ApiResponse<ApiResponseWithStatusCode<JsonElement>?>()
+            {
+                Successful = false,
+                Messages = new[] { TextResources.APP_StringKeys_Alert_TryAgain }
+            });
+        }
+
+        return Ok(new ApiResponse<ApiResponseWithStatusCode<JsonElement>?>()
         {
             Successful = true,
             Value = response.Result

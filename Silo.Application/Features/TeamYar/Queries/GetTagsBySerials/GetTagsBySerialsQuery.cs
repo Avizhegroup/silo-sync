@@ -1,6 +1,6 @@
 ﻿namespace Silo.Application.Features;
 
-public class GetTagsBySerialsQuery : IRequest<GetTagsBySerialsVm>
+public class GetTagsBySerialsQuery : TeamYarBaseCommand, IRequest<GetTagsBySerialsVm>
 {
     /// <summary>
     /// لیست سری ساخت

@@ -1,4 +1,6 @@
-﻿namespace Silo.Application.Api.Features;
+﻿using Silo.Application.Shared.Contracts;
+
+namespace Silo.Application.Api.Features;
 
 /// <summary>
 /// Returns the status of serials.
@@ -7,7 +9,7 @@
 /// The date range filters tags by their registration date, and revoked serials by their revoke date.
 /// </summary>
 public class GetTagsBySerialsHandler(WmsApiContext context)
-    : IRequestHandler<GetTagsBySerialsQuery, GetTagsBySerialsVm>
+    : IRequestHandler<GetTagsBySerialsQuery, GetTagsBySerialsVm> , ITeamYarSecHandler
 {
     private sealed record TagRow(string Serial, string Epc, string? WarehouseCode, string? Zone, bool? Freeze, bool? Deactivate);
 
